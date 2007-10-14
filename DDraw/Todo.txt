@@ -1,0 +1,57 @@
+Undo/Redo
+=========
+- see http://www.codeproject.com/cs/library/AutomatingUndoRedo.asp
+
+Math
+====
+- Rotation (check)
+- Sharp3D.Math http://www.codeplex.com/Wiki/View.aspx?ProjectName=Sharp3D
+
+Selection
+=========
+- Use indented invisible RectFigure for selection rect (with invisible drag handles too)? (check)
+
+Transforms
+==========
+- http://www.bobpowell.net/transformations.htm
+- http://www.bobpowell.net/animation.htm
+- http://www.bobpowell.net/backtrack.htm
+
+Speed Ideas
+===========
+- http://objectmix.com/dotnet/102040-gdi-very-slow.html
+- http://www.vbforums.com/showthread.php?t=228258
+- http://www.devnewsgroups.net/group/microsoft.public.dotnet.faqs/topic195.aspx
+- http://www.ureader.com/message/33219915.aspx
+- http://www.eggheadcafe.com/software/aspnet/29304019/performance-of-drawing-to.aspx
+- http://objectmix.com/dotnet/102271-most-common-gdi-question-2.html <---
+
+Figure
+======
+- Replace Rect property with BoundingBox (BBox?) property that can take into account strokewidth etc
+
+PolylineFigure
+==============
+- Paint using rounded corners so the hittest and selection rect works properly (check)
+- fix points.bounds function (check)
+
+TextFigure
+==========
+- Move font stuff into an interface (check)
+
+Drawing
+=======
+- Use selected colors/styles etc for drawing (check)
+
+WinFormsDemo
+============
+- Preview container widget with "Selected" property (check)
+- Previews widget that manages preview child controls and scrolling (check)
+
+Selection
+=========
+- Select into a group of objects
+
+Zoom
+====
+-?
