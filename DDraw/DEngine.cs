@@ -181,8 +181,18 @@ namespace DDraw
 
         public void UngroupFigure(GroupFigure gf)
         {
-            // TODO: apply group properties (rotation etc) to group figures
-
+            // apply group properties (rotation etc) to child figures
+            DPoint gcpt = gf.Rect.Center;
+            foreach (Figure f in gf.Figures)
+            {
+                // rotation
+                DPoint fcpt = f.Rect.Center;
+                DPoint rotpt = DGeom.RotatePoint(fcpt, gcpt, gf.Rotation);
+                f.X += rotpt.X - fcpt.X;
+                f.Y += rotpt.Y - fcpt.Y;
+                f.Rotation += gf.Rotation;
+                // TODO: alpha
+            }
             // add group figures to figure list and selected list
             ClearSelected();
             foreach (Figure f in gf.Figures)
