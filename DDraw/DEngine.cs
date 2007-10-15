@@ -78,6 +78,7 @@ namespace DDraw
         SelectionFigure selectionRect;
         bool mouseDown = false;
         DPoint dragPt;
+        double dragRot;
         DHitTest mouseHitTest;
 
         DAuthorProperties authorProps;
@@ -268,6 +269,9 @@ namespace DDraw
                                 dragPt = CalcSizeDelta(f.RotatePointToFigure(pt), f);
                                 break;
                             case DHitTest.Rotate:
+                                dragRot = GetRotationOfPointComparedToFigure(f, pt) - f.Rotation;
+                                if (dragRot > Math.PI)
+                                    dragRot = dragRot - (Math.PI * 2);
                                 break;
                         }
                     }
@@ -345,6 +349,11 @@ namespace DDraw
         DRect GetBoundingBox(Figure f)
         {
             return DGeom.BoundingBoxOfRotatedRect(f.GetEncompassingRect(), f.Rotation, f.Rect.Center);
+        }
+
+        double GetRotationOfPointComparedToFigure(Figure f, DPoint pt)
+        {
+            return DGeom.AngleBetweenPoints(f.GetSelectRect().Center, pt);
         }
 
         protected const int MIN_SIZE = 5;
@@ -442,7 +451,7 @@ namespace DDraw
                                 // initial update rect
                                 updateRect = GetBoundingBox(currentFigure);
                                 // apply rotation to figure
-                                currentFigure.Rotation = DGeom.AngleBetweenPoints(currentFigure.Rect.Center, pt);
+                                currentFigure.Rotation = GetRotationOfPointComparedToFigure(currentFigure, pt) - dragRot;
                                 // final update rect
                                 updateRect = updateRect.Union(GetBoundingBox(currentFigure));
                                 // debug message
