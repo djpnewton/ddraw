@@ -121,12 +121,14 @@ namespace WinFormsDemo
             tbStrokeWidth.Value = tbStrokeWidth.Minimum;
             tbAlpha.Value = tbAlpha.Minimum;
             cbFont.SelectedIndex = -1;
+            btnGroup.Text = "Group";
             // deselect controls
             btnFill.Enabled = false;
             btnStroke.Enabled = false;
             tbStrokeWidth.Enabled = false;
             tbAlpha.Enabled = false;
             cbFont.Enabled = false;
+            btnGroup.Enabled = false;
             // update controls based on the EditMode of DEngine
             switch (dap.EditMode)
             {
@@ -190,7 +192,18 @@ namespace WinFormsDemo
                         tbAlpha.Value = (int)(dap.Alpha * tbAlpha.Maximum);
                     break;
             }
-
+            // update group button
+            Figure[] figss = de.SelectedFigures;
+            if (figss.Length == 1 && figss[0] is GroupFigure)
+            {
+                btnGroup.Enabled = true;
+                btnGroup.Text = "Ungroup";
+            }
+            else if (figss.Length > 1)
+            {
+                btnGroup.Enabled = true;
+                btnGroup.Text = "Group";
+            }
         }
 
         void dap_EditModeChanged()
@@ -299,6 +312,16 @@ namespace WinFormsDemo
             }
         }
 
+        private void btnGroup_Click(object sender, EventArgs e)
+        {
+            Figure[] figs = de.SelectedFigures;
+            if (figs.Length == 1 && figs[0] is GroupFigure)
+                de.UngroupFigure((GroupFigure)figs[0]);
+            else if (figs.Length > 1)
+                de.GroupFigures(figs);
+        }
+
+
         private void UpdateSelectedFigures(Control control)
         {
             Figure[] figs = de.SelectedFigures;
@@ -316,7 +339,7 @@ namespace WinFormsDemo
                 if (control == tbAlpha && f is IAlphaBlendable)
                     ((IAlphaBlendable)f).Alpha = tbAlpha.Value / (float)tbAlpha.Maximum;
                 if (control == cbFont && f is ITextable)
-                    ((ITextable)f).FontName = (string)cbFont.SelectedItem;                    
+                    ((ITextable)f).FontName = (string)cbFont.SelectedItem;     
             }
             dvEditor.Update();
         }

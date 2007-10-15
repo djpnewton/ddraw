@@ -93,25 +93,25 @@ namespace DDraw
 
     public abstract class Figure: ISelectable
     {
-        protected double x;
+        double x;
         public virtual double X
         {
             get { return x; }
             set { x = value; }
         }
-        protected double y;
+        double y;
         public virtual double Y
         {
             get { return y; }
             set { y = value; }
         }
-        protected double width;
+        double width;
         public virtual double Width
         {
             get { return width; }
             set { width = value; }
         }
-        protected double height;
+        double height;
         public virtual double Height
         {
             get { return height; }
@@ -119,27 +119,27 @@ namespace DDraw
         }
         public virtual double Left
         {
-            get { return x; }
+            get { return X; }
             set { X = value; }
         }
         public virtual double Top
         {
-            get { return y; }
+            get { return Y; }
             set { Y = value; }
         }
         public virtual double Right
         {
-            get { return x + width; }
+            get { return X + Width; }
             set { Width = value - x; }
         }
         public virtual double Bottom
         {
-            get { return y + height; }
+            get { return Y + Height; }
             set { Height = value - y; }
         }
         public virtual DPoint TopLeft
         {
-            get { return new DPoint(x, y); }
+            get { return new DPoint(X, Y); }
             set 
             {
                 X = value.X;
@@ -157,7 +157,7 @@ namespace DDraw
         }
         public DRect Rect
         {
-            get { return new DRect(x, y, width, height); }
+            get { return new DRect(X, Y, Width, Height); }
             set
             {
                 x = value.X;
@@ -184,7 +184,12 @@ namespace DDraw
             }
         }
 
-        public bool LockAspectRatio = false;
+        bool lockAspectRatio = false;
+        public virtual bool LockAspectRatio
+        {
+            get { return lockAspectRatio; }
+            set { lockAspectRatio = value; }
+        }
 
         public Figure()
         {
@@ -234,10 +239,14 @@ namespace DDraw
 
         protected abstract void PaintBody(DViewer dv);
 
-        public bool contains(Figure f)
+        public bool Contains(Figure childFigure)
         {
-            //TODO rotate
-            return Rect.Contains(f.Rect);
+            // rotate childFigure's rect by its rotation
+            DRect r = DGeom.BoundingBoxOfRotatedRect(childFigure.Rect, childFigure.Rotation, childFigure.Rect.Center);
+            // rotate result by the reverse rotation of this figures rect
+            r = DGeom.BoundingBoxOfRotatedRect(r, -rotation, Rect.Center);
+            // return whether result lies within this figures rect
+            return Rect.Contains(r);
         }
 
         public virtual void BeforeResize(){}
@@ -281,7 +290,12 @@ namespace DDraw
 
         public virtual DRect GetSelectRect()
         {
-            return Rect.Offset(-S_INDENT, -S_INDENT).Inflate(S_INDENT + S_INDENT, S_INDENT + S_INDENT);
+            return MakeSelectRect(Rect);
+        }
+
+        public DRect MakeSelectRect(DRect r)
+        {
+            return r.Offset(-S_INDENT, -S_INDENT).Inflate(S_INDENT + S_INDENT, S_INDENT + S_INDENT);
         }
 
         public virtual DRect GetResizeHandleRect()
@@ -473,9 +487,9 @@ namespace DDraw
         {
             set
             {
-                double scale = value / width;
+                double scale = value / Width;
                 foreach (DPoint pt in points)
-                    pt.X += (pt.X - x) * (scale - 1);
+                    pt.X += (pt.X - X) * (scale - 1);
                 Points = Points;
             }
         }
@@ -484,9 +498,9 @@ namespace DDraw
         {
             set
             {
-                double scale = value / height;
+                double scale = value / Height;
                 foreach (DPoint pt in points)
-                    pt.Y += (pt.Y - y) * (scale - 1);
+                    pt.Y += (pt.Y - Y) * (scale - 1);
                 Points = Points;
             }
         }
@@ -517,12 +531,12 @@ namespace DDraw
 
         public override void BeforeResize()
         {
-            beforeResizeSize = new DPoint(width, height);    
+            beforeResizeSize = new DPoint(Width, Height);    
         }
 
         public override void AfterResize()
         {
-            strokeWidth *= ((width / beforeResizeSize.X) + (height / beforeResizeSize.Y)) / 2;
+            strokeWidth *= ((Width / beforeResizeSize.X) + (Height / beforeResizeSize.Y)) / 2;
         }
 
         #region IStrokeable Members
@@ -646,33 +660,36 @@ namespace DDraw
         {
             get
             {
-                return base.width;
+                return base.Width;
             }
             set
             {
-                fontSize *= value / base.width;
+                fontSize *= value / base.Width;
                 base.Width = value;
             }
+        }
+
+        public override bool LockAspectRatio
+        {
+            get { return true; }
         }
 
         public TextFigure(DPoint pt, string text, DTextExtent textExtent, double rotation)
         {
             this.textExtent = textExtent;
-            base.TopLeft = pt;
+            TopLeft = pt;
             Text = text;
-            base.Rotation = rotation;
-            LockAspectRatio = true;
+            Rotation = rotation;
         }
 
         public TextFigure(DPoint pt, string text, string fontName, double fontSize, DTextExtent textExtent, double rotation)
         {
             this.textExtent = textExtent;
-            base.TopLeft = pt;
+            TopLeft = pt;
             this.fontName = fontName;
             this.fontSize = fontSize;
             Text = text;
-            base.Rotation = rotation;
-            LockAspectRatio = true;
+            Rotation = rotation;
         }
 
         protected override void PaintBody(DViewer dv)
@@ -688,5 +705,162 @@ namespace DDraw
             set { fill = value; }
         }
         #endregion
+    }
+
+    public class GroupFigure : RectbaseFigure
+    {
+        public override double X
+        {
+            get
+            {
+                double x = figures[0].X;
+                foreach (Figure f in figures)
+                    if (f.X < x)
+                        x = f.X;
+                return x;
+            }
+            set
+            {
+                double dX = value - X;
+                foreach (Figure f in figures)
+                    f.X += dX;
+            }
+        }
+
+        public override double Y
+        {
+            get
+            {
+                double y = figures[0].Y;
+                foreach (Figure f in figures)
+                    if (f.Y < y)
+                        y = f.Y;
+                return y;
+            }
+            set
+            {
+                double dY = value - Y;
+                foreach (Figure f in figures)
+                    f.Y += dY;
+            }
+        }
+
+        public override double Width
+        {
+            get { return Right - X; }
+            set
+            {
+                double sx = value / Width;
+                double x = X;
+                foreach (Figure f in figures)
+                {
+                    f.X += ((f.X - x) * sx) - (f.X - x); 
+                    f.Width *= sx;
+                }
+            }
+        }
+
+        public override double Height
+        {
+            get { return Bottom - Y; }
+            set
+            {
+                double sy = value / Height;
+                double y = Y;
+                foreach (Figure f in figures)
+                {
+                    f.Y += ((f.Y - y) * sy) - (f.Y - y);
+                    f.Height *= sy;
+                }
+            }
+        }
+
+        public override double Right
+        {
+            get
+            {
+                double r = figures[0].Right;
+                foreach (Figure f in figures)
+                    if (f.Right > r)
+                        r = f.Right;
+                return r;
+            }
+            set
+            { Width = value - X; }
+        }
+
+        public override double Bottom
+        {
+            get
+            {
+                double b = figures[0].Bottom;
+                foreach (Figure f in figures)
+                    if (f.Bottom > b)
+                        b = f.Bottom;
+                return b;
+            }
+            set { Height = value - Y; }
+        }
+
+        public override bool LockAspectRatio
+        {
+            get { return true; }
+        }
+
+        Figure[] figures;
+        public Figure[] Figures
+        {
+            get { return figures; }
+        }
+
+        public GroupFigure(Figure[] figs)
+        {
+            System.Diagnostics.Debug.Assert(figs != null, "figures is not assigned");
+            System.Diagnostics.Debug.Assert(figs.Length > 1, "figures.Length is less than 2");
+            figures = figs;
+        }
+
+        protected override DHitTest _HitTest(DPoint pt)
+        {
+            DHitTest ht;
+            foreach (Figure f in figures)
+            {
+                ht = f.HitTest(pt);
+                if (ht == DHitTest.Body)
+                    return ht;
+            }
+            return DHitTest.None;
+        }
+
+        protected override void PaintBody(DViewer dv)
+        {
+            foreach (Figure f in figures)
+                f.Paint(dv);
+        }
+
+        public override DRect GetSelectRect()
+        {
+            if (figures.Length > 0)
+            {
+                DRect r = DGeom.BoundingBoxOfRotatedRect(figures[0].Rect, figures[0].Rotation);
+                foreach (Figure f in figures)
+                    r = r.Union(DGeom.BoundingBoxOfRotatedRect(f.Rect, f.Rotation));
+                return MakeSelectRect(r);
+            }
+            else
+                return new DRect();
+        }
+
+        public override void BeforeResize()
+        {
+            foreach (Figure f in figures)
+                f.BeforeResize();
+        }
+
+        public override void AfterResize()
+        {
+            foreach (Figure f in figures)
+                f.AfterResize();
+        }
     }
 }

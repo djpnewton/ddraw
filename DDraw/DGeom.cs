@@ -93,6 +93,8 @@ namespace DDraw
 
         public static DRect BoundingBoxOfRotatedRect(DRect rect, double angle, DPoint origin)
         {
+            if (angle == 0)
+                return rect;
             DPoint p1 = RotatePoint(rect.TopLeft, origin, angle);
             DPoint p2 = RotatePoint(rect.TopRight, origin, angle);
             DPoint p3 = RotatePoint(rect.BottomLeft, origin, angle);

@@ -30,15 +30,18 @@ namespace WinFormsDemo
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.pnlPreviews = new System.Windows.Forms.Panel();
+            this.previewBar1 = new WinFormsDemo.PreviewBar();
             this.tsEditorMode = new System.Windows.Forms.ToolStrip();
             this.btnAntiAlias = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.btnSelect = new System.Windows.Forms.ToolStripButton();
             this.btnPen = new System.Windows.Forms.ToolStripButton();
             this.btnRect = new System.Windows.Forms.ToolStripButton();
+            this.btnEllipse = new System.Windows.Forms.ToolStripButton();
             this.toolStripContainer1 = new System.Windows.Forms.ToolStripContainer();
             this.pnlMain = new System.Windows.Forms.Panel();
             this.pnlViewer = new System.Windows.Forms.Panel();
+            this.wfvcEditor = new DDraw.WFViewerControl();
             this.pnlFigureProps = new System.Windows.Forms.Panel();
             this.cbFont = new System.Windows.Forms.ComboBox();
             this.tbStrokeWidth = new System.Windows.Forms.TrackBar();
@@ -47,14 +50,12 @@ namespace WinFormsDemo
             this.btnFill = new System.Windows.Forms.Button();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.lbInfo = new System.Windows.Forms.ToolStripStatusLabel();
-            this.colorDialog1 = new System.Windows.Forms.ColorDialog();
-            this.btnEllipse = new System.Windows.Forms.ToolStripButton();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.insertToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.imageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.textToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.previewBar1 = new WinFormsDemo.PreviewBar();
-            this.wfvcEditor = new DDraw.WFViewerControl();
+            this.colorDialog1 = new System.Windows.Forms.ColorDialog();
+            this.btnGroup = new System.Windows.Forms.Button();
             this.pnlPreviews.SuspendLayout();
             this.tsEditorMode.SuspendLayout();
             this.toolStripContainer1.ContentPanel.SuspendLayout();
@@ -77,6 +78,17 @@ namespace WinFormsDemo
             this.pnlPreviews.Name = "pnlPreviews";
             this.pnlPreviews.Size = new System.Drawing.Size(81, 244);
             this.pnlPreviews.TabIndex = 9;
+            // 
+            // previewBar1
+            // 
+            this.previewBar1.AutoScroll = true;
+            this.previewBar1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.previewBar1.Location = new System.Drawing.Point(0, 0);
+            this.previewBar1.Name = "previewBar1";
+            this.previewBar1.Size = new System.Drawing.Size(81, 244);
+            this.previewBar1.TabIndex = 0;
+            this.previewBar1.PreviewSelected += new WinFormsDemo.PreviewSelectedHandler(this.previewBar1_PreviewSelected);
+            this.previewBar1.PreviewAdd += new System.EventHandler(this.previewBar1_PreviewAdd);
             // 
             // tsEditorMode
             // 
@@ -139,6 +151,16 @@ namespace WinFormsDemo
             this.btnRect.Text = "Rectangle";
             this.btnRect.Click += new System.EventHandler(this.btnRect_Click);
             // 
+            // btnEllipse
+            // 
+            this.btnEllipse.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.btnEllipse.Image = ((System.Drawing.Image)(resources.GetObject("btnEllipse.Image")));
+            this.btnEllipse.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnEllipse.Name = "btnEllipse";
+            this.btnEllipse.Size = new System.Drawing.Size(40, 22);
+            this.btnEllipse.Text = "Ellipse";
+            this.btnEllipse.Click += new System.EventHandler(this.btnEllipse_Click);
+            // 
             // toolStripContainer1
             // 
             // 
@@ -179,8 +201,17 @@ namespace WinFormsDemo
             this.pnlViewer.Size = new System.Drawing.Size(439, 244);
             this.pnlViewer.TabIndex = 10;
             // 
+            // wfvcEditor
+            // 
+            this.wfvcEditor.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.wfvcEditor.Location = new System.Drawing.Point(0, 0);
+            this.wfvcEditor.Name = "wfvcEditor";
+            this.wfvcEditor.Size = new System.Drawing.Size(358, 244);
+            this.wfvcEditor.TabIndex = 0;
+            // 
             // pnlFigureProps
             // 
+            this.pnlFigureProps.Controls.Add(this.btnGroup);
             this.pnlFigureProps.Controls.Add(this.cbFont);
             this.pnlFigureProps.Controls.Add(this.tbStrokeWidth);
             this.pnlFigureProps.Controls.Add(this.tbAlpha);
@@ -268,16 +299,6 @@ namespace WinFormsDemo
             this.lbInfo.Name = "lbInfo";
             this.lbInfo.Size = new System.Drawing.Size(0, 17);
             // 
-            // btnEllipse
-            // 
-            this.btnEllipse.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.btnEllipse.Image = ((System.Drawing.Image)(resources.GetObject("btnEllipse.Image")));
-            this.btnEllipse.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btnEllipse.Name = "btnEllipse";
-            this.btnEllipse.Size = new System.Drawing.Size(40, 22);
-            this.btnEllipse.Text = "Ellipse";
-            this.btnEllipse.Click += new System.EventHandler(this.btnEllipse_Click);
-            // 
             // menuStrip1
             // 
             this.menuStrip1.Dock = System.Windows.Forms.DockStyle.None;
@@ -301,35 +322,28 @@ namespace WinFormsDemo
             // imageToolStripMenuItem
             // 
             this.imageToolStripMenuItem.Name = "imageToolStripMenuItem";
-            this.imageToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.imageToolStripMenuItem.Size = new System.Drawing.Size(115, 22);
             this.imageToolStripMenuItem.Text = "Image";
             this.imageToolStripMenuItem.Click += new System.EventHandler(this.imageToolStripMenuItem_Click);
             // 
             // textToolStripMenuItem
             // 
             this.textToolStripMenuItem.Name = "textToolStripMenuItem";
-            this.textToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.textToolStripMenuItem.Size = new System.Drawing.Size(115, 22);
             this.textToolStripMenuItem.Text = "Text";
             this.textToolStripMenuItem.Click += new System.EventHandler(this.textToolStripMenuItem_Click);
             // 
-            // previewBar1
+            // btnGroup
             // 
-            this.previewBar1.AutoScroll = true;
-            this.previewBar1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.previewBar1.Location = new System.Drawing.Point(0, 0);
-            this.previewBar1.Name = "previewBar1";
-            this.previewBar1.Size = new System.Drawing.Size(81, 244);
-            this.previewBar1.TabIndex = 0;
-            this.previewBar1.PreviewSelected += new WinFormsDemo.PreviewSelectedHandler(this.previewBar1_PreviewSelected);
-            this.previewBar1.PreviewAdd += new System.EventHandler(this.previewBar1_PreviewAdd);
-            // 
-            // wfvcEditor
-            // 
-            this.wfvcEditor.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.wfvcEditor.Location = new System.Drawing.Point(0, 0);
-            this.wfvcEditor.Name = "wfvcEditor";
-            this.wfvcEditor.Size = new System.Drawing.Size(358, 244);
-            this.wfvcEditor.TabIndex = 0;
+            this.btnGroup.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnGroup.Location = new System.Drawing.Point(3, 190);
+            this.btnGroup.Name = "btnGroup";
+            this.btnGroup.Size = new System.Drawing.Size(92, 23);
+            this.btnGroup.TabIndex = 11;
+            this.btnGroup.Text = "Group";
+            this.btnGroup.UseVisualStyleBackColor = true;
+            this.btnGroup.Click += new System.EventHandler(this.btnGroup_Click);
             // 
             // Form1
             // 
@@ -392,6 +406,7 @@ namespace WinFormsDemo
         private System.Windows.Forms.ToolStripMenuItem insertToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem imageToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem textToolStripMenuItem;
+        private System.Windows.Forms.Button btnGroup;
 
     }
 }

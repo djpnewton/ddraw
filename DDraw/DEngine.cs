@@ -163,6 +163,40 @@ namespace DDraw
             DoSelectedFiguresChanged();
         }
 
+        public void GroupFigures(Figure[] figs)
+        {
+            // make group
+            GroupFigure gf = new GroupFigure(figs);
+            figures.Add(gf);
+            // change selected figures to the group
+            ClearSelected();
+            AddToSelected(gf);
+            DoSelectedFiguresChanged();
+            // remove child figures from figure list
+            foreach (Figure f in figs)
+                figures.Remove(f);
+            // update all viewers
+            UpdateViewers();
+        }
+
+        public void UngroupFigure(GroupFigure gf)
+        {
+            // TODO: apply group properties (rotation etc) to group figures
+
+            // add group figures to figure list and selected list
+            ClearSelected();
+            foreach (Figure f in gf.Figures)
+            {
+                figures.Add(f);
+                AddToSelected(f);
+            }
+            DoSelectedFiguresChanged();
+            // remove group
+            figures.Remove(gf);
+            // update all viewers
+            UpdateViewers();
+        }
+
         // Helper Functions //
 
         Figure HitTestFigures(DPoint pt, out DHitTest hitTest)
@@ -276,8 +310,8 @@ namespace DDraw
         {
             if (f.LockAspectRatio)
             {
-                DPoint intersectionPt = DGeom.IntersectionOfTwoLines(f.Height / f.Width, f.BottomRight, -1, pt);
-                return intersectionPt.Offset(-f.BottomRight.X, -f.BottomRight.Y);
+                DPoint intersectionPt = DGeom.IntersectionOfTwoLines(f.Height / f.Width, f.BottomRight, -1, pt);     
+                return intersectionPt.Offset(-f.BottomRight.X - dragPt.X, -f.BottomRight.Y - dragPt.Y);
             }
             else
                 return new DPoint((pt.X - f.X) - f.Width - dragPt.X, (pt.Y - f.Y) - f.Height - dragPt.Y);
@@ -489,10 +523,10 @@ namespace DDraw
                     {
                         DRect updateRect = selectionRect.Rect;
                         foreach (Figure f in figures)
-                            if (selectionRect.contains(f))
+                            if (selectionRect.Contains(f))
                             {
                                 AddToSelected(f);
-                                updateRect = updateRect.Union(f.GetEncompassingRect());
+                                updateRect = updateRect.Union(GetBoundingBox(f));
                             }
                         DoSelectedFiguresChanged();
                         drawSelectionRect = false;
