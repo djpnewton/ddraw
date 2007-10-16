@@ -397,5 +397,11 @@ namespace WinFormsDemo
                 de.UpdateViewers();
             }
         }
+
+        private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            AboutBox f = new AboutBox();
+            f.ShowDialog();
+        }
     }
 }
