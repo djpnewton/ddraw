@@ -324,8 +324,23 @@ namespace DDraw
         {
             if (f.LockAspectRatio)
             {
-                DPoint intersectionPt = DGeom.IntersectionOfTwoLines(f.Height / f.Width, f.BottomRight, -1, pt);     
-                return intersectionPt.Offset(-f.BottomRight.X - dragPt.X, -f.BottomRight.Y - dragPt.Y);
+                pt = pt.Offset(-dragPt.X, -dragPt.Y);
+                double m = f.Height / f.Width;
+                DPoint intersectionPt = DGeom.IntersectionOfTwoLines(m, f.BottomRight, -1, pt);
+                // using soh/cah/toa
+                double h = DGeom.DistBetweenTwoPts(f.BottomRight, intersectionPt);
+                double A = Math.Atan(m);
+                // cos(A) = a/h
+                double dX = Math.Cos(A) * h;
+                // sin(A) = o/h
+                double dY = Math.Sin(A) * h;
+                // find out the angle of the line between the mouse pt and the botton left of the figure
+                double angle = -(Math.Atan2(pt.Y - f.BottomRight.Y, pt.X - f.BottomRight.X) - Math.PI);
+                // if the angle is on the topleft side (225 deg to 45 deg) then we are resizing smaller
+                if (angle < Math.PI / 4 || angle > Math.PI + Math.PI / 4)
+                    return new DPoint(-dX, -dY);
+                else
+                    return new DPoint(dX, dY);
             }
             else
                 return new DPoint((pt.X - f.X) - f.Width - dragPt.X, (pt.Y - f.Y) - f.Height - dragPt.Y);

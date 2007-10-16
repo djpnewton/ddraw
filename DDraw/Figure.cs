@@ -290,12 +290,7 @@ namespace DDraw
 
         public virtual DRect GetSelectRect()
         {
-            return MakeSelectRect(Rect);
-        }
-
-        public DRect MakeSelectRect(DRect r)
-        {
-            return r.Offset(-S_INDENT, -S_INDENT).Inflate(S_INDENT + S_INDENT, S_INDENT + S_INDENT);
+            return Rect.Offset(-S_INDENT, -S_INDENT).Inflate(S_INDENT + S_INDENT, S_INDENT + S_INDENT);
         }
 
         public virtual DRect GetResizeHandleRect()
@@ -711,14 +706,7 @@ namespace DDraw
     {
         public override double X
         {
-            get
-            {
-                double x = figures[0].X;
-                foreach (Figure f in figures)
-                    if (f.X < x)
-                        x = f.X;
-                return x;
-            }
+            get { return GetBoundingBox().X; }
             set
             {
                 double dX = value - X;
@@ -729,14 +717,7 @@ namespace DDraw
 
         public override double Y
         {
-            get
-            {
-                double y = figures[0].Y;
-                foreach (Figure f in figures)
-                    if (f.Y < y)
-                        y = f.Y;
-                return y;
-            }
+            get { return GetBoundingBox().Y; }
             set
             {
                 double dY = value - Y;
@@ -777,28 +758,14 @@ namespace DDraw
 
         public override double Right
         {
-            get
-            {
-                double r = figures[0].Right;
-                foreach (Figure f in figures)
-                    if (f.Right > r)
-                        r = f.Right;
-                return r;
-            }
+            get { return GetBoundingBox().Right; }
             set
             { Width = value - X; }
         }
 
         public override double Bottom
         {
-            get
-            {
-                double b = figures[0].Bottom;
-                foreach (Figure f in figures)
-                    if (f.Bottom > b)
-                        b = f.Bottom;
-                return b;
-            }
+            get { return GetBoundingBox().Bottom; }
             set { Height = value - Y; }
         }
 
@@ -838,17 +805,20 @@ namespace DDraw
                 f.Paint(dv);
         }
 
-        public override DRect GetSelectRect()
+        DRect GetBoundingBox()
         {
-            if (figures.Length > 0)
+            DRect r = DGeom.BoundingBoxOfRotatedRect(figures[0].Rect, figures[0].Rotation);
+            foreach (Figure f in figures)
             {
-                DRect r = DGeom.BoundingBoxOfRotatedRect(figures[0].Rect, figures[0].Rotation);
-                foreach (Figure f in figures)
-                    r = r.Union(DGeom.BoundingBoxOfRotatedRect(f.Rect, f.Rotation));
-                return MakeSelectRect(r);
+                DRect r2 = DGeom.BoundingBoxOfRotatedRect(f.Rect, f.Rotation);
+                // TODO: figure out why this screws things up
+                /*
+                if (f is IStrokeable)
+                    r2 = StrokeHelper.RectIncludingStrokeWidth(r2, ((IStrokeable)f).StrokeWidth);
+                 */
+                r = r.Union(r2);
             }
-            else
-                return new DRect();
+            return r;
         }
 
         public override void BeforeResize()
