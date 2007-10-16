@@ -22,7 +22,9 @@ namespace DDraw.WinForms
         protected override IntPtr LoadBitmap(string filename)
         {
             FileStream fs = new FileStream(filename, FileMode.Open);
-            return LoadBitmap(fs);
+            IntPtr b = LoadBitmap(fs);
+            fs.Dispose();
+            return b;
         }
 
         protected override IntPtr LoadBitmap(Stream s)
