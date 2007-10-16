@@ -81,7 +81,7 @@ namespace DDraw
             get;
             set;
         }
-        void PaintSelectionChrome(DViewer dv);
+        void PaintSelectionChrome(DGraphics dg);
         DRect GetSelectRect();
         DRect GetResizeHandleRect();
         DRect GetRotateHandleRect();
@@ -228,16 +228,17 @@ namespace DDraw
 
         protected abstract DHitTest _HitTest(DPoint pt);
 
-        public void Paint(DViewer dv)
+        public void Paint(DGraphics dg, bool editFigures)
         {
-            DMatrix m = dv.SaveTransform();
-            dv.Rotate(Rotation, Rect.Center);
-            PaintBody(dv);
-            PaintSelectionChrome(dv);
-            dv.LoadTransform(m);
+            DMatrix m = dg.SaveTransform();
+            dg.Rotate(Rotation, Rect.Center);
+            PaintBody(dg);
+            if (editFigures)
+                PaintSelectionChrome(dg);
+            dg.LoadTransform(m);
         }
 
-        protected abstract void PaintBody(DViewer dv);
+        protected abstract void PaintBody(DGraphics dg);
 
         public bool Contains(Figure childFigure)
         {
@@ -264,26 +265,26 @@ namespace DDraw
             set { selected = value; }
         }
 
-        public virtual void PaintSelectionChrome(DViewer dv)
+        public virtual void PaintSelectionChrome(DGraphics dg)
         {
-            if (Selected && dv.EditFigures)
+            if (Selected)
             {
                 // draw selection rectangle
                 DRect r = GetSelectRect();
-                dv.DrawRect(r, DColor.White);
-                dv.DrawRect(r, DColor.Black, 1, DPenStyle.Dot);
+                dg.DrawRect(r, DColor.White);
+                dg.DrawRect(r, DColor.Black, 1, DPenStyle.Dot);
                 // draw resize handle
                 r = GetResizeHandleRect();
-                dv.FillEllipse(r, DColor.Red);
-                dv.DrawEllipse(r, DColor.Black);
+                dg.FillEllipse(r, DColor.Red);
+                dg.DrawEllipse(r, DColor.Black);
                 // draw rotate handle
                 r = GetRotateHandleRect();
                 DPoint p1 = r.Center;
                 DPoint p2 = p1.Offset(0, 3 * HANDLE_SZ - S_INDENT);
-                dv.DrawLine(p1, p2, DColor.White);
-                dv.DrawLine(p1, p2, DColor.Black, DPenStyle.Dot);
-                dv.FillEllipse(r, DColor.Blue);
-                dv.DrawEllipse(r, DColor.Black);
+                dg.DrawLine(p1, p2, DColor.White);
+                dg.DrawLine(p1, p2, DColor.Black, DPenStyle.Dot);
+                dg.FillEllipse(r, DColor.Blue);
+                dg.DrawEllipse(r, DColor.Black);
                 //dv.DrawRect(GetEncompassingRect(), DColor.Black);
             }
         }
@@ -360,10 +361,10 @@ namespace DDraw
             return DHitTest.None;
         }
 
-        protected override void PaintBody(DViewer dv)
+        protected override void PaintBody(DGraphics dg)
         {
-            dv.FillRect(X, Y, Width, Height, fill, alpha);
-            dv.DrawRect(X, Y, Width, Height, stroke, alpha, strokeWidth);
+            dg.FillRect(X, Y, Width, Height, fill, alpha);
+            dg.DrawRect(X, Y, Width, Height, stroke, alpha, strokeWidth);
         }
 
         #region IFillable Members
@@ -414,10 +415,10 @@ namespace DDraw
         {
         }
 
-        protected override void PaintBody(DViewer dv)
+        protected override void PaintBody(DGraphics dg)
         {
-            dv.DrawRect(X, Y, Width, Height, DColor.White, Alpha, StrokeWidth);
-            dv.DrawRect(X, Y, Width, Height, DColor.Black, Alpha, StrokeWidth, DPenStyle.Dot);
+            dg.DrawRect(X, Y, Width, Height, DColor.White, Alpha, StrokeWidth);
+            dg.DrawRect(X, Y, Width, Height, DColor.Black, Alpha, StrokeWidth, DPenStyle.Dot);
         }
     }
 
@@ -436,10 +437,10 @@ namespace DDraw
 
         }
 
-        protected override void PaintBody(DViewer dv)
+        protected override void PaintBody(DGraphics dg)
         {
-            dv.FillEllipse(X, Y, Width, Height, Fill, Alpha);
-            dv.DrawEllipse(X, Y, Width, Height, Stroke, Alpha, StrokeWidth);
+            dg.FillEllipse(X, Y, Width, Height, Fill, Alpha);
+            dg.DrawEllipse(X, Y, Width, Height, Stroke, Alpha, StrokeWidth);
         }
     }
 
@@ -517,9 +518,9 @@ namespace DDraw
             return DHitTest.None;
         }
 
-        protected override void PaintBody(DViewer dv)
+        protected override void PaintBody(DGraphics dg)
         {
-            dv.DrawPolyline(points, stroke, alpha, strokeWidth);
+            dg.DrawPolyline(points, stroke, alpha, strokeWidth);
         }
 
         DPoint beforeResizeSize;
@@ -604,9 +605,9 @@ namespace DDraw
             Bitmap = bitmap;
         }
 
-        protected override void PaintBody(DViewer dv)
+        protected override void PaintBody(DGraphics dg)
         {
-            dv.DrawBitmap(Bitmap, Rect, Alpha);
+            dg.DrawBitmap(Bitmap, Rect, Alpha);
         }
     }
 
@@ -687,9 +688,9 @@ namespace DDraw
             Rotation = rotation;
         }
 
-        protected override void PaintBody(DViewer dv)
+        protected override void PaintBody(DGraphics dg)
         {
-            dv.DrawText(Text, fontName, fontSize, Rect, fill, Alpha);
+            dg.DrawText(Text, fontName, fontSize, Rect, fill, Alpha);
         }
 
         #region IFillable Members
@@ -799,10 +800,10 @@ namespace DDraw
             return DHitTest.None;
         }
 
-        protected override void PaintBody(DViewer dv)
+        protected override void PaintBody(DGraphics dg)
         {
             foreach (Figure f in figures)
-                f.Paint(dv);
+                f.Paint(dg, false);
         }
 
         DRect GetBoundingBox()

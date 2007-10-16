@@ -39,6 +39,7 @@
     <Compile Include="DDraw.cs" />
     <Compile Include="DGeom.cs" />
     <Compile Include="DEngine.cs" />
+    <Compile Include="DGraphics.cs" />
     <Compile Include="DViewer.cs" />
     <Compile Include="Figure.cs" />
     <Compile Include="HiPerfTimer.cs" />
@@ -49,6 +50,7 @@
       <DependentUpon>Resource.resx</DependentUpon>
     </Compile>
     <Compile Include="DTypes.cs" />
+    <Compile Include="WFGraphics.cs" />
     <Compile Include="WFViewerControl.cs">
       <SubType>Component</SubType>
     </Compile>
