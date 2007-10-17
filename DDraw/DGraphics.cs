@@ -130,6 +130,7 @@ namespace DDraw
         abstract public void LoadTransform(DMatrix matrix);
         abstract public void Scale(double sx, double sy);
         abstract public void Rotate(double angle, DPoint center);
+        abstract public void Translate(DPoint offset);
         abstract public void ResetTransform();
 
         abstract public DCompositingMode CompositingMode

@@ -587,7 +587,7 @@ namespace DDraw
 
         #region IAlphaBlendable Members
         double alpha = 1;
-        public double Alpha
+        public virtual double Alpha
         {
             get { return alpha; }
             set { alpha = value; }
@@ -775,6 +775,8 @@ namespace DDraw
             get { return true; }
         }
 
+        public bool UseRealAlpha = true;
+
         Figure[] figures;
         public Figure[] Figures
         {
@@ -802,8 +804,58 @@ namespace DDraw
 
         protected override void PaintBody(DGraphics dg)
         {
-            foreach (Figure f in figures)
-                f.Paint(dg, false);
+            if (UseRealAlpha)
+            {
+                if (Width > 0 && Height > 0)
+                {
+                    DBitmap bmp = GraphicsHelper.MakeBitmap(Width, Height);
+                    DGraphics bmpGfx = GraphicsHelper.MakeGraphics(bmp);
+                    bmpGfx.AntiAlias = dg.AntiAlias;
+                    bmpGfx.Translate(new DPoint(-X, -Y));
+                    foreach (Figure f in figures)
+                        f.Paint(bmpGfx, false);
+                    dg.DrawBitmap(bmp, Rect, Alpha);
+                }
+            }
+            else
+                foreach(Figure f in figures)
+                    f.Paint(dg, false);
+        }
+
+        public override double Alpha
+        {
+            get
+            {
+                if (UseRealAlpha)
+                    return base.Alpha;
+                else
+                {
+                    List<IAlphaBlendable> figuresWithAlpha = new List<IAlphaBlendable>();
+                    foreach (Figure f in figures)
+                        if (f is IAlphaBlendable)
+                            figuresWithAlpha.Add((IAlphaBlendable)f);
+                    if (figuresWithAlpha.Count > 0)
+                    {
+                        for (int i = 1; i < figuresWithAlpha.Count; i++)
+                            if (figuresWithAlpha[i].Alpha != figuresWithAlpha[i - 1].Alpha)
+                                return -1;
+                        return figuresWithAlpha[0].Alpha;
+                    }
+                    else
+                        return -1;
+                }
+            }
+            set
+            {
+                if (UseRealAlpha)
+                    base.Alpha = value;
+                else
+                {
+                    foreach (Figure f in figures)
+                        if (f is IAlphaBlendable)
+                            ((IAlphaBlendable)f).Alpha = value;
+                }
+            }
         }
 
         DRect GetBoundingBox()
@@ -853,9 +905,9 @@ namespace DDraw
                 DGraphics bmpGfx = GraphicsHelper.MakeGraphics(bmp);
                 bmpGfx.AntiAlias = dg.AntiAlias;
                 bmpGfx.CompositingMode = DCompositingMode.SourceCopy;
-                bmpGfx.FillRect(0, 0, Width, Height, DColor.Blue, Alpha);
-                bmpGfx.FillRect(0, 0, 2 * Width / 3, 2 * Height / 3, DColor.Red, Alpha);
-                bmpGfx.FillRect(Width / 3, Height / 3, Width, Height, DColor.Green, Alpha);
+                bmpGfx.FillRect(1, 1, Width - 2, Height - 2, DColor.Blue, Alpha);
+                bmpGfx.FillRect(1, 1, 2 * Width / 3, 2 * Height / 3, DColor.Red, Alpha);
+                bmpGfx.FillRect(Width / 3, Height / 3, 2 * Width / 3 - 1, 2 * Height / 3 - 1, DColor.Green, Alpha);
                 dg.DrawBitmap(bmp, Rect, Alpha);
             }
         }

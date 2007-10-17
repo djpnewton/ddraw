@@ -192,7 +192,9 @@ namespace DDraw
                 f.X += rotpt.X - fcpt.X;
                 f.Y += rotpt.Y - fcpt.Y;
                 f.Rotation += gf.Rotation;
-                // TODO: alpha
+                // alpha
+                if (gf.UseRealAlpha && f is IAlphaBlendable)
+                    ((IAlphaBlendable)f).Alpha *= gf.Alpha;
             }
             // add group figures to figure list and selected list
             ClearSelected();

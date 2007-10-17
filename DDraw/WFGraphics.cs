@@ -346,6 +346,11 @@ namespace DDraw.WinForms
             g.TranslateTransform((float)-center.X, (float)-center.Y);
         }
 
+        public override void Translate(DPoint offset)
+        {
+            g.TranslateTransform((float)offset.X, (float)offset.Y);
+        }
+
         public override void ResetTransform()
         {
             g.ResetTransform();
