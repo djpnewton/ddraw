@@ -43,6 +43,8 @@ namespace WinFormsDemo
         public Form1()
         {
             InitializeComponent();
+            // Initialze DGraphics
+            DGraphics.Init(DGraphicsSystem.WinForms);
             // create author properties
             dap = new DAuthorProperties(DColor.Blue, DColor.Red, 3, 1, "Arial");
             dap.EditModeChanged += new DEditModeChangedHandler(dap_EditModeChanged);
@@ -62,10 +64,10 @@ namespace WinFormsDemo
             de.AddFigure(f);
             // polyline figure
             DPoints pts = new DPoints();
-            pts.Add(new DPoint(150, 50));
-            pts.Add(new DPoint(160, 40));
-            pts.Add(new DPoint(170, 70));
-            pts.Add(new DPoint(180, 50));
+            pts.Add(new DPoint(150, 80));
+            pts.Add(new DPoint(160, 70));
+            pts.Add(new DPoint(170, 100));
+            pts.Add(new DPoint(180, 80));
             f = new PolylineFigure(pts);
             de.AddFigure(f);
             // bitmap images
@@ -81,6 +83,10 @@ namespace WinFormsDemo
             f = new TextFigure(new DPoint(100, 200), "hello dan", new WFTextExtent(), 0);
             de.AddFigure(f);
             TextFigure tf = (TextFigure)f;
+            // compositing figure
+            f = new CompositedExampleFigure();
+            f.Rect = new DRect(20, 150, 50, 50);
+            de.AddFigure(f);
             // Init controls
             InitcbFont();
             InitPropertyControls();

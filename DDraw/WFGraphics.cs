@@ -11,6 +11,16 @@ namespace DDraw.WinForms
 {
     public class WFBitmap : DBitmap
     {
+        Bitmap bmp
+        {
+            get { return (Bitmap)nativeBmp; }
+        }
+
+        public WFBitmap(Bitmap bmp)
+        {
+            nativeBmp = bmp;
+        }
+
         public WFBitmap(int width, int height)
             : base(width, height)
         { }
@@ -23,20 +33,20 @@ namespace DDraw.WinForms
             : base(s)
         { }
 
-        protected override IntPtr MakeBitmap(int width, int height)
+        protected override object MakeBitmap(int width, int height)
         {
-            return new Bitmap(width, height).GetHbitmap();
+            return new Bitmap(width, height);
         }
 
-        protected override IntPtr LoadBitmap(string filename)
+        protected override object LoadBitmap(string filename)
         {
             FileStream fs = new FileStream(filename, FileMode.Open);
-            IntPtr b = LoadBitmap(fs);
+            object b = LoadBitmap(fs);
             fs.Dispose();
             return b;
         }
 
-        protected override IntPtr LoadBitmap(Stream s)
+        protected override object LoadBitmap(Stream s)
         {
             // speed up bitmaps by converting to 32bppPArgb format (apparently this can 
             // then be accelerated by GDI). 
@@ -47,39 +57,26 @@ namespace DDraw.WinForms
             using (Graphics g = Graphics.FromImage(newBmp))
                 g.DrawImage(orignalBmp, new Rectangle(0, 0, orignalBmp.Width, orignalBmp.Height));
             orignalBmp.Dispose();
-            return newBmp.GetHbitmap();
+            return newBmp;
         }
 
         protected override void DisposeBitmap()
         {
-            Bitmap.FromHbitmap(handle).Dispose();
+            ((Bitmap)nativeBmp).Dispose();
         }
 
         public override int Width
         {
-            get
-            {
-                Bitmap bmp = Bitmap.FromHbitmap(handle);
-                int w = bmp.Width;
-                bmp.Dispose();
-                return w;
-            }
+            get { return bmp.Width; }
         }
 
         public override int Height
         {
-            get
-            {
-                Bitmap bmp = Bitmap.FromHbitmap(handle);
-                int h = bmp.Height;
-                bmp.Dispose();
-                return h;
-            }
+            get { return bmp.Height; }
         }
 
         public override void Save(string filename)
         {
-            Bitmap bmp = Bitmap.FromHbitmap(handle);
             bmp.Save(filename);
         }
     }
@@ -104,7 +101,7 @@ namespace DDraw.WinForms
 
         public WFGraphics(DBitmap bmp)
         {
-            g = Graphics.FromImage(Bitmap.FromHbitmap(bmp.Handle));
+            g = Graphics.FromImage((Bitmap)bmp.NativeBmp);
         }
 
         // Helper Functions //
@@ -286,12 +283,12 @@ namespace DDraw.WinForms
 
         public override void DrawBitmap(DBitmap bitmap, DPoint pt)
         {
-            g.DrawImage(Image.FromHbitmap(bitmap.Handle), new PointF((float)pt.X, (float)pt.Y));
+            g.DrawImage((Bitmap)bitmap.NativeBmp, new PointF((float)pt.X, (float)pt.Y));
         }
 
         public override void DrawBitmap(DBitmap bitmap, DRect rect)
         {
-            g.DrawImage(Image.FromHbitmap(bitmap.Handle), MakeRect(rect.Inflate(1, 1)));
+            g.DrawImage((Bitmap)bitmap.NativeBmp, MakeRect(rect.Inflate(1, 1)));
         }
 
         ImageAttributes MakeImageAttributesWithAlpha(double alpha)
@@ -311,9 +308,9 @@ namespace DDraw.WinForms
 
         public override void DrawBitmap(DBitmap bitmap, DRect rect, double alpha)
         {
-            Image image = Image.FromHbitmap(bitmap.Handle);
-            g.DrawImage(image, MakeRect(rect.Inflate(1, 1)),
-                0, 0, image.Width, image.Height, GraphicsUnit.Pixel, MakeImageAttributesWithAlpha(alpha));
+            Bitmap bmp = (Bitmap)bitmap.NativeBmp;
+            g.DrawImage(bmp, MakeRect(rect.Inflate(1, 1)),
+                0, 0, bmp.Width, bmp.Height, GraphicsUnit.Pixel, MakeImageAttributesWithAlpha(alpha));
         }
 
         public override void DrawText(string text, string fontName, double fontSize, DRect rect, DColor color)
@@ -354,21 +351,33 @@ namespace DDraw.WinForms
             g.ResetTransform();
         }
 
-        public override DCompostingMode CompostingMode
+        public override DCompositingMode CompositingMode
         {
             get
             {
-                if (g.CompositingMode == CompositingMode.SourceCopy)
-                    return DCompostingMode.SourceCopy;
+                if (g.CompositingMode == System.Drawing.Drawing2D.CompositingMode.SourceCopy)
+                    return DCompositingMode.SourceCopy;
                 else
-                    return DCompostingMode.SourceOver;
+                    return DCompositingMode.SourceOver;
             }
             set
             {
-                if (value == DCompostingMode.SourceOver)
-                    g.CompositingMode = CompositingMode.SourceOver;
+                if (value == DCompositingMode.SourceOver)
+                    g.CompositingMode = System.Drawing.Drawing2D.CompositingMode.SourceOver;
                 else
-                    g.CompositingMode = CompositingMode.SourceCopy;
+                    g.CompositingMode = System.Drawing.Drawing2D.CompositingMode.SourceCopy;
+            }
+        }
+
+        public override bool AntiAlias
+        {
+            get { return g.SmoothingMode == SmoothingMode.AntiAlias; }
+            set
+            {
+                if (value)
+                    g.SmoothingMode = SmoothingMode.AntiAlias;
+                else
+                    g.SmoothingMode = SmoothingMode.None;
             }
         }
     }

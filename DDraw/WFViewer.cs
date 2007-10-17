@@ -37,11 +37,7 @@ namespace DDraw.WinForms
             timer.Start();
 
             dg = new WFGraphics(e.Graphics);
-            
-            if (AntiAlias)
-                e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
-            else
-                e.Graphics.SmoothingMode = SmoothingMode.None;
+            dg.AntiAlias = AntiAlias;
 
             e.Graphics.FillRectangle(Brushes.White, control.ClientRectangle);
 

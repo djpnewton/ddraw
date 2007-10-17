@@ -834,4 +834,30 @@ namespace DDraw
                 f.AfterResize();
         }
     }
+
+    public class CompositedExampleFigure : RectbaseFigure
+    {
+        /* An example figure that show how one can use the CompositingMode
+         * to do a decent alpha blend.
+         * However this is a bit slower and does not blend the edges of the 
+         * bitmap with the canvas when AntiAlias is turned on.
+         * 
+         * Needs more work/thinking...
+         */
+
+        protected override void PaintBody(DGraphics dg)
+        {
+            if (Width > 0 && Height > 0)
+            {
+                DBitmap bmp = GraphicsHelper.MakeBitmap(Width, Height);
+                DGraphics bmpGfx = GraphicsHelper.MakeGraphics(bmp);
+                bmpGfx.AntiAlias = dg.AntiAlias;
+                bmpGfx.CompositingMode = DCompositingMode.SourceCopy;
+                bmpGfx.FillRect(0, 0, Width, Height, DColor.Blue, Alpha);
+                bmpGfx.FillRect(0, 0, 2 * Width / 3, 2 * Height / 3, DColor.Red, Alpha);
+                bmpGfx.FillRect(Width / 3, Height / 3, Width, Height, DColor.Green, Alpha);
+                dg.DrawBitmap(bmp, Rect, Alpha);
+            }
+        }
+    }
 }

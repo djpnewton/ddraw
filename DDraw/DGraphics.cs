@@ -7,18 +7,18 @@ using DDraw.WinForms;
 
 namespace DDraw
 {
-    public enum GraphicsSystem { WinForms };
+    public enum DGraphicsSystem { WinForms };
 
     public static class GraphicsHelper
     {
-        public static GraphicsSystem GraphicsSystem = GraphicsSystem.WinForms;
+        public static DGraphicsSystem GraphicsSystem = DGraphicsSystem.WinForms;
 
         public static DBitmap MakeBitmap(double width, double height)
         {
             switch (GraphicsSystem)
             {
-                case GraphicsSystem.WinForms:
-                    return new WFBitmap((int)Math.Ceiling(width), (int)Math.Ceiling(height));
+                case DGraphicsSystem.WinForms:
+                    return new WFBitmap((int)Math.Ceiling(width + 1), (int)Math.Ceiling(height + 1));
                 default:
                     return null;
             }
@@ -28,7 +28,7 @@ namespace DDraw
         {
             switch (GraphicsSystem)
             {
-                case GraphicsSystem.WinForms:
+                case DGraphicsSystem.WinForms:
                     return new WFGraphics(bmp);
                 default:
                     return null;
@@ -38,25 +38,29 @@ namespace DDraw
 
     public abstract class DBitmap
     {
-        protected IntPtr handle;
-        public IntPtr Handle
+        protected object nativeBmp;
+        public object NativeBmp
         {
-            get { return handle; }
+            get { return nativeBmp; }
+        }
+
+        public DBitmap()
+        {
         }
 
         public DBitmap(int width, int height)
         {
-            handle = MakeBitmap(width, height);
+            nativeBmp = MakeBitmap(width, height);
         }
 
         public DBitmap(string filename)
         {
-            handle = LoadBitmap(filename);
+            nativeBmp = LoadBitmap(filename);
         }
 
         public DBitmap(Stream s)
         {
-            handle = LoadBitmap(s);
+            nativeBmp = LoadBitmap(s);
         }
 
         ~DBitmap()
@@ -64,9 +68,9 @@ namespace DDraw
             DisposeBitmap();
         }
 
-        protected abstract IntPtr MakeBitmap(int width, int height);
-        protected abstract IntPtr LoadBitmap(string filename);
-        protected abstract IntPtr LoadBitmap(Stream s);
+        protected abstract object MakeBitmap(int width, int height);
+        protected abstract object LoadBitmap(string filename);
+        protected abstract object LoadBitmap(Stream s);
         protected abstract void DisposeBitmap();
         public abstract int Width
         {
@@ -84,10 +88,15 @@ namespace DDraw
         public abstract DPoint MeasureText(string text, string fontName, double fontSize);
     }
 
-    public enum DCompostingMode { SourceOver, SourceCopy };
+    public enum DCompositingMode { SourceOver, SourceCopy };
 
     public abstract class DGraphics
     {
+        public static void Init(DGraphicsSystem gs)
+        {
+            GraphicsHelper.GraphicsSystem = gs;
+        }
+
         // Abstract Drawing Methods //
 
         abstract public void FillRect(double x, double y, double width, double height, DColor color, double alpha);
@@ -123,7 +132,12 @@ namespace DDraw
         abstract public void Rotate(double angle, DPoint center);
         abstract public void ResetTransform();
 
-        abstract public DCompostingMode CompostingMode
+        abstract public DCompositingMode CompositingMode
+        {
+            get;
+            set;
+        }
+        abstract public bool AntiAlias
         {
             get;
             set;
