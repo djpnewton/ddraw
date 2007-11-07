@@ -4,10 +4,11 @@ using System.Text;
 using System.IO;
 
 using DDraw.WinForms;
+using DDraw.GTK;
 
 namespace DDraw
 {
-    public enum DGraphicsSystem { WinForms };
+    public enum DGraphicsSystem { WinForms, GTK };
 
     public static class GraphicsHelper
     {
@@ -19,6 +20,8 @@ namespace DDraw
             {
                 case DGraphicsSystem.WinForms:
                     return new WFBitmap((int)Math.Ceiling(width + 1), (int)Math.Ceiling(height + 1));
+                case DGraphicsSystem.GTK:
+                	return new GTKBitmap((int)Math.Ceiling(width + 1), (int)Math.Ceiling(height + 1));
                 default:
                     return null;
             }
@@ -30,6 +33,8 @@ namespace DDraw
             {
                 case DGraphicsSystem.WinForms:
                     return new WFGraphics(bmp);
+                case DGraphicsSystem.GTK:
+                	return new GTKGraphics(bmp);
                 default:
                     return null;
             }

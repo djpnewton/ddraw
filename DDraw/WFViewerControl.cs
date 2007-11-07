@@ -6,7 +6,7 @@ using System.Data;
 using System.Text;
 using System.Windows.Forms;
 
-namespace DDraw
+namespace DDraw.WinForms
 {
     public class WFViewerControl : Panel
     {

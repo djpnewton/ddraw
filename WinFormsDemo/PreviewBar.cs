@@ -7,6 +7,7 @@ using System.Text;
 using System.Windows.Forms;
 
 using DDraw;
+using DDraw.WinForms;
 
 namespace WinFormsDemo
 {

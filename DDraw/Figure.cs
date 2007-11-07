@@ -285,7 +285,7 @@ namespace DDraw
                 dg.DrawLine(p1, p2, DColor.Black, DPenStyle.Dot);
                 dg.FillEllipse(r, DColor.Blue);
                 dg.DrawEllipse(r, DColor.Black);
-                //dv.DrawRect(GetEncompassingRect(), DColor.Black);
+			 //dg.DrawRect(GetEncompassingRect(), DColor.Black);
             }
         }
 

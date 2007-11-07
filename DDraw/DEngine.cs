@@ -33,6 +33,15 @@ namespace DDraw
         }
 
         public event DEditModeChangedHandler EditModeChanged;
+        
+        public DAuthorProperties()
+        {
+        	Fill = DColor.Red;
+        	Stroke = DColor.Blue;
+        	StrokeWidth = 1;
+        	Alpha = 1;
+        	FontName = "Arial";
+        }
 
         public DAuthorProperties(DColor fill, DColor stroke, double strokeWidth, double alpha, string fontName)
         {

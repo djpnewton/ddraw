@@ -56,7 +56,7 @@ namespace WinFormsDemo
             this.colorDialog1 = new System.Windows.Forms.ColorDialog();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.wfvcEditor = new DDraw.WFViewerControl();
+            this.wfvcEditor = new DDraw.WinForms.WFViewerControl();
             this.previewBar1 = new WinFormsDemo.PreviewBar();
             this.pnlPreviews.SuspendLayout();
             this.tsEditorMode.SuspendLayout();
@@ -398,7 +398,7 @@ namespace WinFormsDemo
 
         #endregion
 
-        private DDraw.WFViewerControl wfvcEditor;
+        private DDraw.WinForms.WFViewerControl wfvcEditor;
         private System.Windows.Forms.Panel pnlPreviews;
         private System.Windows.Forms.ToolStrip tsEditorMode;
         private System.Windows.Forms.ToolStripContainer toolStripContainer1;
