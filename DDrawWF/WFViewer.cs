@@ -11,7 +11,7 @@ namespace DDraw.WinForms
     {
         WFViewerControl control;
         Cursor RotateCursor;
-        HiPerfTimer timer;
+		System.Diagnostics.Stopwatch stopWatch;
 
         public WFViewer(WFViewerControl c)
         {
@@ -24,7 +24,7 @@ namespace DDraw.WinForms
 
             RotateCursor = new Cursor(Resource1.RotateIcon.GetHicon());
 
-            timer = new HiPerfTimer();
+            stopWatch = new System.Diagnostics.Stopwatch();
         }
 
         ~WFViewer()
@@ -34,7 +34,7 @@ namespace DDraw.WinForms
 
         void control_Paint(object sender, PaintEventArgs e)
         {
-            timer.Start();
+			stopWatch.Start();
 
             dg = new WFGraphics(e.Graphics);
             dg.AntiAlias = AntiAlias;
@@ -43,8 +43,9 @@ namespace DDraw.WinForms
 
             DoNeedRepaint();
 
-            timer.Stop();
-            DoDebugMessage("control_Paint duration: " + timer.Duration.ToString());
+            stopWatch.Stop();
+			DoDebugMessage("control_Paint duration: " + stopWatch.ElapsedMilliseconds.ToString());
+			stopWatch.Reset();
         }
 
         void control_MouseDown(object sender, MouseEventArgs e)
