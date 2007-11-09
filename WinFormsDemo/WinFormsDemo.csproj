@@ -111,6 +111,10 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\DDrawWF\DDrawWF.csproj">
+      <Project>{5A55F6B3-6748-402C-B910-C8543B97BE73}</Project>
+      <Name>DDrawWF</Name>
+    </ProjectReference>
     <ProjectReference Include="..\DDraw\DDraw.csproj">
       <Project>{483D8236-B660-429C-A441-19FF82EA3867}</Project>
       <Name>DDraw</Name>

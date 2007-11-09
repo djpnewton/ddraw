@@ -1,11 +1,12 @@
-﻿
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ProjectGuid>{0BF38223-DDE3-4B99-8734-2C4A9D545B2D}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <RootNamespace>
-    </RootNamespace>
+    <RootNamespace>GTKDemo</RootNamespace>
+    <OutputType>WinExe</OutputType>
+    <StartupObject>
+    </StartupObject>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <OutputType>Exe</OutputType>
@@ -51,6 +52,10 @@
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
   <ItemGroup>
+    <ProjectReference Include="..\DDrawGTK\DDrawGTK.csproj">
+      <Project>{E6DF6534-6F58-49D0-AE7B-0A288000D9F1}</Project>
+      <Name>DDrawGTK</Name>
+    </ProjectReference>
     <ProjectReference Include="..\DDraw\DDraw.csproj">
       <Project>{483D8236-B660-429C-A441-19FF82EA3867}</Project>
       <Name>DDraw</Name>

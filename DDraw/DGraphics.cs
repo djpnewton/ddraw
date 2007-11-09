@@ -3,41 +3,29 @@ using System.Collections.Generic;
 using System.Text;
 using System.IO;
 
-using DDraw.WinForms;
-using DDraw.GTK;
-
 namespace DDraw
 {
-    public enum DGraphicsSystem { WinForms, GTK };
-
     public static class GraphicsHelper
     {
-        public static DGraphicsSystem GraphicsSystem = DGraphicsSystem.WinForms;
+        static Type _bitmapClass;
+        static Type _graphicsClass;
 
         public static DBitmap MakeBitmap(double width, double height)
         {
-            switch (GraphicsSystem)
-            {
-                case DGraphicsSystem.WinForms:
-                    return new WFBitmap((int)Math.Ceiling(width + 1), (int)Math.Ceiling(height + 1));
-                case DGraphicsSystem.GTK:
-                	return new GTKBitmap((int)Math.Ceiling(width + 1), (int)Math.Ceiling(height + 1));
-                default:
-                    return null;
-            }
+            return (DBitmap)Activator.CreateInstance(_bitmapClass, new object[] { (int)Math.Ceiling(width + 1), (int)Math.Ceiling(height + 1) });
         }
 
         public static DGraphics MakeGraphics(DBitmap bmp)
         {
-            switch (GraphicsSystem)
-            {
-                case DGraphicsSystem.WinForms:
-                    return new WFGraphics(bmp);
-                case DGraphicsSystem.GTK:
-                	return new GTKGraphics(bmp);
-                default:
-                    return null;
-            }
+            return (DGraphics)Activator.CreateInstance(_graphicsClass, new object[] { bmp });
+        }
+
+        public static void Init(Type bitmapClass, Type graphicsClass)
+        {
+            // bitmapClass needs to be a desendant of DBitmap
+            _bitmapClass = bitmapClass;
+            // graphicsClass needs to be a desendant of DGraphics
+            _graphicsClass = graphicsClass;
         }
     }
 
@@ -97,9 +85,9 @@ namespace DDraw
 
     public abstract class DGraphics
     {
-        public static void Init(DGraphicsSystem gs)
+        public static void Init(Type bitmapClass, Type graphicsClass)
         {
-            GraphicsHelper.GraphicsSystem = gs;
+            GraphicsHelper.Init(bitmapClass, graphicsClass);
         }
 
         // Abstract Drawing Methods //

@@ -92,6 +92,11 @@ namespace DDraw.WinForms
 
     public class WFGraphics : DGraphics
     {
+        public static void Init()
+        {
+            GraphicsHelper.Init(typeof(WFBitmap), typeof(WFGraphics));
+        }
+
         Graphics g;
 
         public WFGraphics(Graphics g)

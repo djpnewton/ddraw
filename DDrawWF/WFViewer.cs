@@ -22,7 +22,7 @@ namespace DDraw.WinForms
             control.MouseUp += new MouseEventHandler(control_MouseUp);
             control.SizeChanged += new EventHandler(control_SizeChanged);
 
-            RotateCursor = new Cursor(Res.Resource.RotateIcon.GetHicon());
+            RotateCursor = new Cursor(Resource1.RotateIcon.GetHicon());
 
             timer = new HiPerfTimer();
         }

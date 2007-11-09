@@ -44,7 +44,7 @@ namespace WinFormsDemo
         {
             InitializeComponent();
             // Initialze DGraphics
-            DGraphics.Init(DGraphicsSystem.WinForms);
+            WFGraphics.Init();
             // create author properties
             dap = new DAuthorProperties(DColor.Blue, DColor.Red, 3, 1, "Arial");
             dap.EditModeChanged += new DEditModeChangedHandler(dap_EditModeChanged);

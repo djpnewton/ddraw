@@ -20,6 +20,9 @@ namespace GTKDemo
 		{
 			Box b = new VBox();
 			Add(b);
+
+            // Initialze DGraphics
+            GTKGraphics.Init();
 			
 			GTKViewerControl dvc = new GTKViewerControl();
 			b.Add(dvc);
