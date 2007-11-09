@@ -2,7 +2,9 @@ using System;
 using System.IO;
 using Cairo;
 
-namespace DDrawGTK
+using DDraw;
+
+namespace DDraw.GTK
 {
     public class GTKBitmap : DBitmap
     {

@@ -1,7 +1,7 @@
 using System;
 using Gtk;
 
-namespace DDrawGTK
+namespace DDraw.GTK
 {
     public class GTKViewer : DViewer
     {
