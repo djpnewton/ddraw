@@ -54,6 +54,15 @@ namespace DDraw
             set;
         }
     }
+	
+	public interface IBitmapable
+	{
+		DBitmap Bitmap
+		{
+			get;
+			set;
+		}
+	}
 
     public interface ITextable
     {
@@ -595,14 +604,19 @@ namespace DDraw
         #endregion
     }
 
-    public class ImageFigure : RectbaseFigure
+    public class ImageFigure : RectbaseFigure, IBitmapable
     {
-        public DBitmap Bitmap = null;
+		DBitmap bitmap = null;
+        public DBitmap Bitmap
+		{
+			get { return bitmap; }
+			set { bitmap = value; }
+		}
 
         public ImageFigure(DRect rect, double rotation, DBitmap bitmap)
             : base(rect, rotation)
         {
-            Bitmap = bitmap;
+            this.bitmap = bitmap;
         }
 
         protected override void PaintBody(DGraphics dg)
@@ -868,7 +882,7 @@ namespace DDraw
                 /*
                 if (f is IStrokeable)
                     r2 = StrokeHelper.RectIncludingStrokeWidth(r2, ((IStrokeable)f).StrokeWidth);
-                 */
+                */
                 r = r.Union(r2);
             }
             return r;

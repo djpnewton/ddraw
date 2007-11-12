@@ -10,6 +10,11 @@ namespace DDraw
         public byte G;
         public byte B;
         public byte A;
+        
+        public bool Equals(DColor color)
+        {
+            return R == color.R && G == color.G && B == color.B && A == color.A;
+        }
 
         public DColor(byte red, byte green, byte blue, byte alpha)
         {

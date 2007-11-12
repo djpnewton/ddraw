@@ -60,6 +60,11 @@ namespace DDraw
         {
             DisposeBitmap();
         }
+        
+        public bool Equals(DBitmap bitmap)
+        {
+            return nativeBmp == bitmap.NativeBmp;
+        }
 
         protected abstract object MakeBitmap(int width, int height);
         protected abstract object LoadBitmap(string filename);

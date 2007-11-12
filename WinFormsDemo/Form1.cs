@@ -28,6 +28,7 @@ namespace WinFormsDemo
             // DEngine events
             de.DebugMessage += new DebugMessageHandler(DebugMessage);
             de.SelectedFiguresChanged += new SelectedFiguresHandler(de_SelectedFiguresChanged);
+            de.UndoRedoMgr.UndoRedoChanged += new UndoRedoChangedDelegate(UndoRedoMgr_UndoRedoChanged);
         }
 
         private void SetCurrentDe(DEngine de)
@@ -117,6 +118,12 @@ namespace WinFormsDemo
         void de_SelectedFiguresChanged()
         {
             InitPropertyControls();
+        }
+
+        void UndoRedoMgr_UndoRedoChanged(bool commitAction)
+        {
+            undoToolStripMenuItem.Enabled = de.UndoRedoMgr.CanUndo;
+            redoToolStripMenuItem.Enabled = de.UndoRedoMgr.CanRedo;
         }
 
         private void InitPropertyControls()
@@ -327,9 +334,9 @@ namespace WinFormsDemo
                 de.GroupFigures(figs);
         }
 
-
         private void UpdateSelectedFigures(Control control)
         {
+            de.UndoRedoMgr.Start("Change Property"); // TODO: make this work better with the slider controls
             Figure[] figs = de.SelectedFigures;
             foreach (Figure f in figs)
             {
@@ -347,6 +354,7 @@ namespace WinFormsDemo
                 if (control == cbFont && f is ITextable)
                     ((ITextable)f).FontName = (string)cbFont.SelectedItem;     
             }
+            de.UndoRedoMgr.Commit();
             dvEditor.Update();
         }
 
@@ -408,6 +416,16 @@ namespace WinFormsDemo
         {
             AboutBox f = new AboutBox();
             f.ShowDialog();
+        }
+
+        private void undoToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            de.UndoRedoMgr.Undo();
+        }
+
+        private void redoToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            de.UndoRedoMgr.Redo();
         }
     }
 }

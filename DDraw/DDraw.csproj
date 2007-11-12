@@ -54,6 +54,7 @@
     <Compile Include="Figure.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="DTypes.cs" />
+    <Compile Include="UndoRedo.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Todo.txt" />

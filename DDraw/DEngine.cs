@@ -91,6 +91,11 @@ namespace DDraw
         DHitTest mouseHitTest;
 
         DAuthorProperties authorProps;
+        UndoRedoManager undoRedoMgr;
+        public UndoRedoManager UndoRedoMgr
+        {
+            get { return undoRedoMgr; }
+        }
 
         public event DebugMessageHandler DebugMessage;
         public event SelectedFiguresHandler SelectedFiguresChanged;
@@ -100,14 +105,23 @@ namespace DDraw
             authorProps = ap;
             authorProps.EditModeChanged += new DEditModeChangedHandler(authorProps_EditModeChanged);
             selectionRect = new SelectionFigure(new DRect(), 0);
+            undoRedoMgr = new UndoRedoManager(figures);
+            undoRedoMgr.UndoRedoChanged += new UndoRedoChangedDelegate(undoRedoMgr_UndoRedoChanged);
         }
 
         void authorProps_EditModeChanged()
         {
-            ClearSelectedFiguresList();
-            DoSelectedFiguresChanged();
-            foreach (DViewer dv in viewers)
-                dv.Update();
+            ClearSelected();
+            UpdateViewers();
+        }
+
+        void undoRedoMgr_UndoRedoChanged(bool commitAction)
+        {
+            if (!commitAction)
+            {
+                ClearSelected();
+                UpdateViewers();
+            }
         }
 
         void dv_NeedRepaint(DViewer dv)
@@ -256,6 +270,8 @@ namespace DDraw
             switch (authorProps.EditMode)
             {
                 case DEditMode.Select:
+                    undoRedoMgr.Start("Select Operation");
+
                     Figure f = HitTestFigures(pt, out mouseHitTest);
                     // update selected figures
                     if (f != null)
@@ -294,6 +310,7 @@ namespace DDraw
                     }
                     break;
                 case DEditMode.DrawPolyline:
+                    undoRedoMgr.Start("Add Polyline");
                     // create DPoints object
                     DPoints pts = new DPoints();
                     pts.Add(pt);
@@ -304,6 +321,7 @@ namespace DDraw
                     figures.Add(currentFigure);
                     break;
                 case DEditMode.DrawRect:
+                    undoRedoMgr.Start("Add Rect");
                     // create RectFigure
                     currentFigure = new RectFigure(new DRect(pt.X, pt.Y, 0, 0), 0);
                     authorProps.ApplyPropertiesToFigure(currentFigure);
@@ -313,6 +331,7 @@ namespace DDraw
                     dragPt = pt;
                     break;
                 case DEditMode.DrawEllipse:
+                    undoRedoMgr.Start("Add Ellipse");
                     // create EllipseFigure
                     currentFigure = new EllipseFigure(new DRect(pt.X, pt.Y, 0, 0), 0);
                     authorProps.ApplyPropertiesToFigure(currentFigure);
@@ -590,6 +609,7 @@ namespace DDraw
                 case DEditMode.DrawEllipse:
                     goto case DEditMode.DrawRect;
             }
+            undoRedoMgr.Commit();
         }
 
         // Other //

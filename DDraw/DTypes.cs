@@ -187,6 +187,12 @@ namespace DDraw
             bool bottomIn = rect.Bottom >= Y && rect.Bottom <= Bottom;
             return (xIn && yIn) || (xIn && bottomIn) || (yIn && rightIn) || (bottomIn && rightIn);
         }
+        
+        public bool Equals(DRect rect)
+        {
+            return (X == rect.X && Y == rect.Y & Width == rect.Width && Height == rect.Height);
+        }
+
 
         public DRect(double x, double y, double width, double height)
         {
