@@ -18,6 +18,7 @@ namespace DDraw
 		public string Text;
 		public string FontName;
 		public double FontSize;
+        public FigureProperties[] ChildFigureProps;
 	}
 	
 	enum FigureChangeType { Removed, Added, PropertyChanged };		
@@ -116,6 +117,14 @@ namespace DDraw
 				fp.FontName = ((ITextable)f).FontName;
 				fp.FontSize = ((ITextable)f).FontSize;
 			}
+            if (f is IChildFigureable)
+            {
+                IChildFigureable icf = (IChildFigureable)f;
+                FigureProperties[] childFigProps = new FigureProperties[icf.ChildFigures.Length];
+                for (int i = 0; i < icf.ChildFigures.Length; i++)
+                    childFigProps[i] = CreateFigureProps(icf.ChildFigures[i], i);
+                fp.ChildFigureProps = childFigProps;
+            }
             return fp;			
 		}
 		
@@ -127,7 +136,7 @@ namespace DDraw
 			int i = 0;
 			foreach (Figure f in figures)
 			{
-                figureProps.Add(CreateFigureProps(f, i));
+	            figureProps.Add(CreateFigureProps(f, i));
 				i += 1;				
 			}
 		}
@@ -179,12 +188,21 @@ namespace DDraw
                 if (fp.FontSize != ((ITextable)f).FontSize)
                     return false;
             }
+            if (f is IChildFigureable)
+            {
+                foreach (FigureProperties cfp in fp.ChildFigureProps)
+                    if (!FigureMatchesProps(cfp))
+                        return false;
+            }
             return true;               
         }
 
         void ApplyFigureProps(Figure f, FigureProperties fp)
         {
-            f.Rect = fp.Rect;
+            f.X = fp.Rect.X;
+            f.Y = fp.Rect.Y;
+            f.Width = fp.Rect.Width;
+            f.Height = fp.Rect.Height;
             f.Rotation = fp.Rotation;
             if (f is IFillable)
                 ((IFillable)f).Fill = fp.Fill;
@@ -203,13 +221,18 @@ namespace DDraw
                 ((ITextable)f).FontName = fp.FontName;
                 ((ITextable)f).FontSize = fp.FontSize;
             }
+            if (f is IChildFigureable)
+            {
+                foreach (FigureProperties cfp in fp.ChildFigureProps)
+                    ApplyFigureProps(cfp.Figure, cfp);
+            }
         }
 
         UndoFrame Snapshot(string name)
         {
             // record all the figures state
             List<FigureChange> fcs = new List<FigureChange>();
-            if (figureProps.Count > figures.Count)
+            if (figureProps.Count != figures.Count)
             {
                 // find all removed figures
                 foreach (FigureProperties fp in figureProps)
@@ -218,9 +241,6 @@ namespace DDraw
                         fcs.Add(new FigureChange(fp.Figure, FigureChangeType.Removed, fp));
                     // TODO: change other listPositions now?
                 }
-            }
-            else if (figureProps.Count < figures.Count)
-            {
                 // find add added figures
                 int i = 0;
                 foreach (Figure f in figures)
@@ -268,6 +288,7 @@ namespace DDraw
                         break;
                     case FigureChangeType.Removed:
                         figures.Insert(fc.FigProps.ListPosition, fc.Figure);
+                        ApplyFigureProps(fc.Figure, fc.FigProps);
                         break;
                     case FigureChangeType.PropertyChanged:
                         ApplyFigureProps(fc.Figure, fc.FigProps);

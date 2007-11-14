@@ -29,6 +29,8 @@ namespace WinFormsDemo
             de.DebugMessage += new DebugMessageHandler(DebugMessage);
             de.SelectedFiguresChanged += new SelectedFiguresHandler(de_SelectedFiguresChanged);
             de.UndoRedoMgr.UndoRedoChanged += new UndoRedoChangedDelegate(UndoRedoMgr_UndoRedoChanged);
+
+            SetCurrentDe(de);
         }
 
         private void SetCurrentDe(DEngine de)
@@ -39,6 +41,7 @@ namespace WinFormsDemo
             dvEditor.Update();
             this.de = de;
             de_SelectedFiguresChanged();
+            UndoRedoMgr_UndoRedoChanged(false);
         }
 
         public Form1()
@@ -123,7 +126,15 @@ namespace WinFormsDemo
         void UndoRedoMgr_UndoRedoChanged(bool commitAction)
         {
             undoToolStripMenuItem.Enabled = de.UndoRedoMgr.CanUndo;
+            if (undoToolStripMenuItem.Enabled)
+                undoToolStripMenuItem.Text = string.Format("Undo \"{0}\"", de.UndoRedoMgr.UndoName);
+            else
+                undoToolStripMenuItem.Text = "Undo";
             redoToolStripMenuItem.Enabled = de.UndoRedoMgr.CanRedo;
+            if (redoToolStripMenuItem.Enabled)
+                redoToolStripMenuItem.Text = string.Format("Redo \"{0}\"", de.UndoRedoMgr.RedoName);
+            else
+                redoToolStripMenuItem.Text = "Redo";
         }
 
         private void InitPropertyControls()
@@ -396,7 +407,9 @@ namespace WinFormsDemo
             {
                 de.ClearSelected();
                 WFBitmap bmp = new WFBitmap(ofd.FileName);
+				de.UndoRedoMgr.Start("Add Image");
                 de.AddFigure(new ImageFigure(new DRect(10, 10, bmp.Width, bmp.Height), 0, bmp));
+				de.UndoRedoMgr.Commit();
                 de.UpdateViewers();
             }
         }
@@ -407,7 +420,9 @@ namespace WinFormsDemo
             if (tf.ShowDialog() == DialogResult.OK)
             {
                 de.ClearSelected();
+				de.UndoRedoMgr.Start("Add Text");
                 de.AddFigure(new TextFigure(new DPoint(10, 10), tf.TextEntered, new WFTextExtent(), 0));
+				de.UndoRedoMgr.Commit();
                 de.UpdateViewers();
             }
         }

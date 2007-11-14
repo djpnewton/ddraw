@@ -83,6 +83,14 @@ namespace DDraw
         }
     }
 
+    public interface IChildFigureable
+    {
+        Figure[] ChildFigures
+        {
+            get;
+        }
+    }
+
     public interface ISelectable
     {
         bool Selected
@@ -717,7 +725,7 @@ namespace DDraw
         #endregion
     }
 
-    public class GroupFigure : RectbaseFigure
+    public class GroupFigure : RectbaseFigure, IChildFigureable
     {
         public override double X
         {
@@ -725,7 +733,7 @@ namespace DDraw
             set
             {
                 double dX = value - X;
-                foreach (Figure f in figures)
+                foreach (Figure f in childFigs)
                     f.X += dX;
             }
         }
@@ -736,7 +744,7 @@ namespace DDraw
             set
             {
                 double dY = value - Y;
-                foreach (Figure f in figures)
+                foreach (Figure f in childFigs)
                     f.Y += dY;
             }
         }
@@ -748,7 +756,7 @@ namespace DDraw
             {
                 double sx = value / Width;
                 double x = X;
-                foreach (Figure f in figures)
+                foreach (Figure f in childFigs)
                 {
                     f.X += ((f.X - x) * sx) - (f.X - x); 
                     f.Width *= sx;
@@ -763,7 +771,7 @@ namespace DDraw
             {
                 double sy = value / Height;
                 double y = Y;
-                foreach (Figure f in figures)
+                foreach (Figure f in childFigs)
                 {
                     f.Y += ((f.Y - y) * sy) - (f.Y - y);
                     f.Height *= sy;
@@ -791,23 +799,23 @@ namespace DDraw
 
         public bool UseRealAlpha = true;
 
-        Figure[] figures;
-        public Figure[] Figures
+        Figure[] childFigs;
+        public Figure[] ChildFigures
         {
-            get { return figures; }
+            get { return childFigs; }
         }
 
         public GroupFigure(Figure[] figs)
         {
             System.Diagnostics.Debug.Assert(figs != null, "figures is not assigned");
             System.Diagnostics.Debug.Assert(figs.Length > 1, "figures.Length is less than 2");
-            figures = figs;
+            childFigs = figs;
         }
 
         protected override DHitTest _HitTest(DPoint pt)
         {
             DHitTest ht;
-            foreach (Figure f in figures)
+            foreach (Figure f in childFigs)
             {
                 ht = f.HitTest(pt);
                 if (ht == DHitTest.Body)
@@ -826,13 +834,13 @@ namespace DDraw
                     DGraphics bmpGfx = GraphicsHelper.MakeGraphics(bmp);
                     bmpGfx.AntiAlias = dg.AntiAlias;
                     bmpGfx.Translate(new DPoint(-X, -Y));
-                    foreach (Figure f in figures)
+                    foreach (Figure f in childFigs)
                         f.Paint(bmpGfx, false);
                     dg.DrawBitmap(bmp, Rect, Alpha);
                 }
             }
             else
-                foreach(Figure f in figures)
+                foreach(Figure f in childFigs)
                     f.Paint(dg, false);
         }
 
@@ -845,7 +853,7 @@ namespace DDraw
                 else
                 {
                     List<IAlphaBlendable> figuresWithAlpha = new List<IAlphaBlendable>();
-                    foreach (Figure f in figures)
+                    foreach (Figure f in childFigs)
                         if (f is IAlphaBlendable)
                             figuresWithAlpha.Add((IAlphaBlendable)f);
                     if (figuresWithAlpha.Count > 0)
@@ -865,7 +873,7 @@ namespace DDraw
                     base.Alpha = value;
                 else
                 {
-                    foreach (Figure f in figures)
+                    foreach (Figure f in childFigs)
                         if (f is IAlphaBlendable)
                             ((IAlphaBlendable)f).Alpha = value;
                 }
@@ -874,8 +882,8 @@ namespace DDraw
 
         DRect GetBoundingBox()
         {
-            DRect r = DGeom.BoundingBoxOfRotatedRect(figures[0].Rect, figures[0].Rotation);
-            foreach (Figure f in figures)
+            DRect r = DGeom.BoundingBoxOfRotatedRect(childFigs[0].Rect, childFigs[0].Rotation);
+            foreach (Figure f in childFigs)
             {
                 DRect r2 = DGeom.BoundingBoxOfRotatedRect(f.Rect, f.Rotation);
                 // TODO: figure out why this screws things up
@@ -890,13 +898,13 @@ namespace DDraw
 
         public override void BeforeResize()
         {
-            foreach (Figure f in figures)
+            foreach (Figure f in childFigs)
                 f.BeforeResize();
         }
 
         public override void AfterResize()
         {
-            foreach (Figure f in figures)
+            foreach (Figure f in childFigs)
                 f.AfterResize();
         }
     }

@@ -96,6 +96,13 @@ namespace DDraw
         {
             get { return undoRedoMgr; }
         }
+		
+        bool autoUndoRecord = true;
+        public bool AutoUndoRecord
+        {
+            get { return autoUndoRecord; }
+            set { autoUndoRecord = value; }
+        }
 
         public event DebugMessageHandler DebugMessage;
         public event SelectedFiguresHandler SelectedFiguresChanged;
@@ -189,6 +196,9 @@ namespace DDraw
 
         public void GroupFigures(Figure[] figs)
         {
+            // init undoRedo frame
+            if (autoUndoRecord)
+                undoRedoMgr.Start("Group");
             // make group
             GroupFigure gf = new GroupFigure(figs);
             figures.Add(gf);
@@ -201,13 +211,19 @@ namespace DDraw
                 figures.Remove(f);
             // update all viewers
             UpdateViewers();
+            // commit changes to undoRedoMgr
+            if (autoUndoRecord)
+                undoRedoMgr.Commit();
         }
 
         public void UngroupFigure(GroupFigure gf)
         {
+            // init undoRedo frame
+            if (autoUndoRecord)
+                undoRedoMgr.Start("Ungroup");
             // apply group properties (rotation etc) to child figures
             DPoint gcpt = gf.Rect.Center;
-            foreach (Figure f in gf.Figures)
+            foreach (Figure f in gf.ChildFigures)
             {
                 // rotation
                 DPoint fcpt = f.Rect.Center;
@@ -221,7 +237,7 @@ namespace DDraw
             }
             // add group figures to figure list and selected list
             ClearSelected();
-            foreach (Figure f in gf.Figures)
+            foreach (Figure f in gf.ChildFigures)
             {
                 figures.Add(f);
                 AddToSelected(f);
@@ -231,6 +247,9 @@ namespace DDraw
             figures.Remove(gf);
             // update all viewers
             UpdateViewers();
+            // commit changes to undoRedoMgr
+            if (autoUndoRecord)
+                undoRedoMgr.Commit();           
         }
 
         // Helper Functions //
@@ -270,7 +289,8 @@ namespace DDraw
             switch (authorProps.EditMode)
             {
                 case DEditMode.Select:
-                    undoRedoMgr.Start("Select Operation");
+                    if (autoUndoRecord)
+                        undoRedoMgr.Start("Select Operation");
 
                     Figure f = HitTestFigures(pt, out mouseHitTest);
                     // update selected figures
@@ -310,7 +330,8 @@ namespace DDraw
                     }
                     break;
                 case DEditMode.DrawPolyline:
-                    undoRedoMgr.Start("Add Polyline");
+                    if (autoUndoRecord)
+                        undoRedoMgr.Start("Add Polyline");
                     // create DPoints object
                     DPoints pts = new DPoints();
                     pts.Add(pt);
@@ -321,7 +342,8 @@ namespace DDraw
                     figures.Add(currentFigure);
                     break;
                 case DEditMode.DrawRect:
-                    undoRedoMgr.Start("Add Rect");
+                    if (autoUndoRecord)
+                        undoRedoMgr.Start("Add Rect");
                     // create RectFigure
                     currentFigure = new RectFigure(new DRect(pt.X, pt.Y, 0, 0), 0);
                     authorProps.ApplyPropertiesToFigure(currentFigure);
@@ -331,7 +353,8 @@ namespace DDraw
                     dragPt = pt;
                     break;
                 case DEditMode.DrawEllipse:
-                    undoRedoMgr.Start("Add Ellipse");
+                    if (autoUndoRecord)
+                        undoRedoMgr.Start("Add Ellipse");
                     // create EllipseFigure
                     currentFigure = new EllipseFigure(new DRect(pt.X, pt.Y, 0, 0), 0);
                     authorProps.ApplyPropertiesToFigure(currentFigure);
@@ -609,7 +632,8 @@ namespace DDraw
                 case DEditMode.DrawEllipse:
                     goto case DEditMode.DrawRect;
             }
-            undoRedoMgr.Commit();
+            if (autoUndoRecord)
+                undoRedoMgr.Commit();
         }
 
         // Other //
