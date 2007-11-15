@@ -37,11 +37,24 @@ namespace DDraw.GTK
             
             a.RetVal = true;
         }
+
+        DMouseButton MouseButtonFromGTKEvent(uint button)
+        {
+            switch (button)
+            {
+                case 1:
+                    return DMouseButton.Right;
+                case 2:
+                    return DMouseButton.Middle;
+                default:
+                    return DMouseButton.Left;
+            }
+        }
         
         void control_ButtonPress(object sender, ButtonPressEventArgs a)
         {
             if (EditFigures)
-                DoMouseDown(new DPoint(a.Event.X, a.Event.Y));
+                DoMouseDown(MouseButtonFromGTKEvent(a.Event.Button), new DPoint(a.Event.X, a.Event.Y));
         }
         
         void control_MotionNotify(object sender, MotionNotifyEventArgs a)
@@ -53,7 +66,7 @@ namespace DDraw.GTK
         void control_ButtonRelease(object sender, ButtonReleaseEventArgs a)
         {
             if (EditFigures)
-                DoMouseUp(new DPoint(a.Event.X, a.Event.Y));
+                DoMouseUp(MouseButtonFromGTKEvent(a.Event.Button), new DPoint(a.Event.X, a.Event.Y));
         }
         
         void control_SizeAllocated(object sender, SizeAllocatedArgs a)

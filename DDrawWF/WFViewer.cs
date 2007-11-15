@@ -48,10 +48,20 @@ namespace DDraw.WinForms
 			stopWatch.Reset();
         }
 
+        DMouseButton MouseButtonFromWFEvent(MouseButtons btns)
+        {
+            switch (btns)
+            {
+                case MouseButtons.Right: return DMouseButton.Right;
+                case MouseButtons.Middle: return DMouseButton.Middle;
+                default: return DMouseButton.Left;
+            }
+        }
+
         void control_MouseDown(object sender, MouseEventArgs e)
         {
             if (EditFigures)
-                DoMouseDown(new DPoint(e.X, e.Y));
+                DoMouseDown(MouseButtonFromWFEvent(e.Button), new DPoint(e.X, e.Y));
         }
 
         void control_MouseMove(object sender, MouseEventArgs e)
@@ -63,7 +73,7 @@ namespace DDraw.WinForms
         void control_MouseUp(object sender, MouseEventArgs e)
         {
             if (EditFigures)
-                DoMouseUp(new DPoint(e.X, e.Y));
+                DoMouseUp(MouseButtonFromWFEvent(e.Button), new DPoint(e.X, e.Y));
         }
 
         void control_SizeChanged(object sender, EventArgs e)

@@ -5,7 +5,8 @@ using System.Text;
 namespace DDraw
 {
     public delegate void DPaintEventHandler(DViewer dv);
-    public delegate void DMouseEventHandler(DViewer dv, DPoint pt);
+    public delegate void DMouseButtonEventHandler(DViewer dv, DMouseButton btn, DPoint pt);
+    public delegate void DMouseMoveEventHandler(DViewer dv, DPoint pt);
 
     abstract public class DViewer
     {
@@ -37,9 +38,9 @@ namespace DDraw
         public double ScaleY = 1;
 
         public event DPaintEventHandler NeedRepaint;
-        public event DMouseEventHandler MouseDown;
-        public event DMouseEventHandler MouseMove;
-        public event DMouseEventHandler MouseUp;
+        public event DMouseButtonEventHandler MouseDown;
+        public event DMouseMoveEventHandler MouseMove;
+        public event DMouseButtonEventHandler MouseUp;
         public event DebugMessageHandler DebugMessage;
 
         public DViewer()
@@ -53,10 +54,10 @@ namespace DDraw
                 NeedRepaint(this);
         }
 
-        protected void DoMouseDown(DPoint pt)
+        protected void DoMouseDown(DMouseButton btn, DPoint pt)
         {
             if (MouseDown != null)
-                MouseDown(this, pt);
+                MouseDown(this, btn, pt);
         }
 
         protected void DoMouseMove(DPoint pt)
@@ -65,10 +66,10 @@ namespace DDraw
                 MouseMove(this, pt);
         }
 
-        protected void DoMouseUp(DPoint pt)
+        protected void DoMouseUp(DMouseButton btn, DPoint pt)
         {
             if (MouseUp != null)
-                MouseUp(this, pt);
+                MouseUp(this, btn, pt);
         }
 
         public void Paint(List<Figure> figures, bool drawSelectionRect, Figure selectionRect)

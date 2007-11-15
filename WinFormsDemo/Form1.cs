@@ -29,6 +29,7 @@ namespace WinFormsDemo
             de.DebugMessage += new DebugMessageHandler(DebugMessage);
             de.SelectedFiguresChanged += new SelectedFiguresHandler(de_SelectedFiguresChanged);
             de.UndoRedoMgr.UndoRedoChanged += new UndoRedoChangedDelegate(UndoRedoMgr_UndoRedoChanged);
+            de.ContextClick += new ContextClickHandler(de_ContextClick);
 
             SetCurrentDe(de);
         }
@@ -137,6 +138,23 @@ namespace WinFormsDemo
                 redoToolStripMenuItem.Text = "Redo";
         }
 
+        void de_ContextClick(DEngine de, Figure clickedFigure, DPoint pt)
+        {
+            if (clickedFigure != null)
+            {
+                // update group menu item
+                groupToolStripMenuItem.Enabled = true;
+                Figure[] figs = de.SelectedFigures;
+                if (figs.Length == 1 && figs[0] is GroupFigure)
+                    groupToolStripMenuItem.Text = "Ungroup";
+                else if (figs.Length > 1)
+                    groupToolStripMenuItem.Text = "Group";
+                else
+                    groupToolStripMenuItem.Enabled = false;
+                cmsFigure.Show(wfvcEditor, new Point((int)pt.X, (int)pt.Y));
+            }
+        }
+
         private void InitPropertyControls()
         {
             // set default (blank) values for property controls
@@ -145,14 +163,12 @@ namespace WinFormsDemo
             tbStrokeWidth.Value = tbStrokeWidth.Minimum;
             tbAlpha.Value = tbAlpha.Minimum;
             cbFont.SelectedIndex = -1;
-            btnGroup.Text = "Group";
             // deselect controls
             btnFill.Enabled = false;
             btnStroke.Enabled = false;
             tbStrokeWidth.Enabled = false;
             tbAlpha.Enabled = false;
             cbFont.Enabled = false;
-            btnGroup.Enabled = false;
             // update controls based on the EditMode of DEngine
             switch (dap.EditMode)
             {
@@ -215,18 +231,6 @@ namespace WinFormsDemo
                     if (tbAlpha.Enabled)
                         tbAlpha.Value = (int)(dap.Alpha * tbAlpha.Maximum);
                     break;
-            }
-            // update group button
-            Figure[] figss = de.SelectedFigures;
-            if (figss.Length == 1 && figss[0] is GroupFigure)
-            {
-                btnGroup.Enabled = true;
-                btnGroup.Text = "Ungroup";
-            }
-            else if (figss.Length > 1)
-            {
-                btnGroup.Enabled = true;
-                btnGroup.Text = "Group";
             }
         }
 
@@ -336,15 +340,6 @@ namespace WinFormsDemo
             }
         }
 
-        private void btnGroup_Click(object sender, EventArgs e)
-        {
-            Figure[] figs = de.SelectedFigures;
-            if (figs.Length == 1 && figs[0] is GroupFigure)
-                de.UngroupFigure((GroupFigure)figs[0]);
-            else if (figs.Length > 1)
-                de.GroupFigures(figs);
-        }
-
         private void UpdateSelectedFigures(Control control)
         {
             de.UndoRedoMgr.Start("Change Property"); // TODO: make this work better with the slider controls
@@ -441,6 +436,15 @@ namespace WinFormsDemo
         private void redoToolStripMenuItem_Click(object sender, EventArgs e)
         {
             de.UndoRedoMgr.Redo();
+        }
+
+        private void groupToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Figure[] figs = de.SelectedFigures;
+            if (figs.Length == 1 && figs[0] is GroupFigure)
+                de.UngroupFigure((GroupFigure)figs[0]);
+            else if (figs.Length > 1)
+                de.GroupFigures(figs);
         }
     }
 }
