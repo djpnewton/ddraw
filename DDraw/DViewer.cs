@@ -78,9 +78,14 @@ namespace DDraw
 
             // paint figures
             foreach (Figure figure in figures)
-                figure.Paint(dg, editFigures);
-            if (drawSelectionRect && editFigures)
-                selectionRect.Paint(dg, editFigures);
+                figure.Paint(dg);
+            if (editFigures)
+            {
+                foreach (Figure figure in figures)
+                    figure.PaintSelectionChrome(dg);
+                if (drawSelectionRect)
+                    selectionRect.Paint(dg);
+            }
         }
 
         // Abstract Methods //

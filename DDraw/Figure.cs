@@ -245,13 +245,16 @@ namespace DDraw
 
         protected abstract DHitTest _HitTest(DPoint pt);
 
-        public void Paint(DGraphics dg, bool editFigures)
+        void ApplyTransforms(DGraphics dg)
+        {
+            dg.Rotate(Rotation, Rect.Center);
+        }
+
+        public void Paint(DGraphics dg)
         {
             DMatrix m = dg.SaveTransform();
-            dg.Rotate(Rotation, Rect.Center);
+            ApplyTransforms(dg);
             PaintBody(dg);
-            if (editFigures)
-                PaintSelectionChrome(dg);
             dg.LoadTransform(m);
         }
 
@@ -286,6 +289,10 @@ namespace DDraw
         {
             if (Selected)
             {
+                // save current transform
+                DMatrix m = dg.SaveTransform();
+                // apply transform
+                ApplyTransforms(dg);
                 // draw selection rectangle
                 DRect r = GetSelectRect();
                 dg.DrawRect(r, DColor.White);
@@ -302,7 +309,10 @@ namespace DDraw
                 dg.DrawLine(p1, p2, DColor.Black, DPenStyle.Dot);
                 dg.FillEllipse(r, DColor.Blue);
                 dg.DrawEllipse(r, DColor.Black);
-			 //dg.DrawRect(GetEncompassingRect(), DColor.Black);
+			    //dg.DrawRect(GetEncompassingRect(), DColor.Black);
+                // load previous transform
+                dg.LoadTransform(m);
+
             }
         }
 
@@ -835,13 +845,13 @@ namespace DDraw
                     bmpGfx.AntiAlias = dg.AntiAlias;
                     bmpGfx.Translate(new DPoint(-X, -Y));
                     foreach (Figure f in childFigs)
-                        f.Paint(bmpGfx, false);
+                        f.Paint(bmpGfx);
                     dg.DrawBitmap(bmp, Rect, Alpha);
                 }
             }
             else
                 foreach(Figure f in childFigs)
-                    f.Paint(dg, false);
+                    f.Paint(dg);
         }
 
         public override double Alpha

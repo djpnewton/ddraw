@@ -260,6 +260,15 @@ namespace DDraw
         Figure HitTestFigures(DPoint pt, out DHitTest hitTest)
         {
             hitTest = DHitTest.None;
+            // first hittest for selection chrome
+            for (int i = figures.Count - 1; i >= 0; i--)
+            {
+                Figure f = figures[i];
+                hitTest = f.HitTest(pt);
+                if (hitTest != DHitTest.None && hitTest != DHitTest.Body)
+                    return f;
+            }
+            // now hittest for any part of the figure
             for (int i = figures.Count - 1; i >= 0; i--)
             {
                 Figure f = figures[i];
