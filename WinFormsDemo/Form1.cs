@@ -87,7 +87,6 @@ namespace WinFormsDemo
             // text figure
             f = new TextFigure(new DPoint(100, 200), "hello dan", new WFTextExtent(), 0);
             de.AddFigure(f);
-            TextFigure tf = (TextFigure)f;
             // compositing figure
             f = new CompositedExampleFigure();
             f.Rect = new DRect(20, 150, 50, 50);

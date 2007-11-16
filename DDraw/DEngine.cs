@@ -283,7 +283,7 @@ namespace DDraw
         {
             // init undoRedo frame
             if (autoUndoRecord)
-                undoRedoMgr.Start("Bring to Back");
+                undoRedoMgr.Start("Bring to Front");
             // do bring to front
             OrderFigures(figs);
             foreach (Figure f in figs)
