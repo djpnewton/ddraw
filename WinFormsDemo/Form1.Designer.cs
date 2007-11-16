@@ -31,7 +31,6 @@ namespace WinFormsDemo
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.pnlPreviews = new System.Windows.Forms.Panel();
-            this.previewBar1 = new WinFormsDemo.PreviewBar();
             this.tsEditorMode = new System.Windows.Forms.ToolStrip();
             this.btnAntiAlias = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
@@ -42,7 +41,6 @@ namespace WinFormsDemo
             this.toolStripContainer1 = new System.Windows.Forms.ToolStripContainer();
             this.pnlMain = new System.Windows.Forms.Panel();
             this.pnlViewer = new System.Windows.Forms.Panel();
-            this.wfvcEditor = new DDraw.WinForms.WFViewerControl();
             this.pnlFigureProps = new System.Windows.Forms.Panel();
             this.cbFont = new System.Windows.Forms.ComboBox();
             this.tbStrokeWidth = new System.Windows.Forms.TrackBar();
@@ -63,6 +61,13 @@ namespace WinFormsDemo
             this.colorDialog1 = new System.Windows.Forms.ColorDialog();
             this.cmsFigure = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.groupToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            this.sendToBackToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.bringToFrontToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.sendBackwardToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.bringForwardToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.wfvcEditor = new DDraw.WinForms.WFViewerControl();
+            this.previewBar1 = new WinFormsDemo.PreviewBar();
             this.pnlPreviews.SuspendLayout();
             this.tsEditorMode.SuspendLayout();
             this.toolStripContainer1.ContentPanel.SuspendLayout();
@@ -86,17 +91,6 @@ namespace WinFormsDemo
             this.pnlPreviews.Name = "pnlPreviews";
             this.pnlPreviews.Size = new System.Drawing.Size(81, 244);
             this.pnlPreviews.TabIndex = 9;
-            // 
-            // previewBar1
-            // 
-            this.previewBar1.AutoScroll = true;
-            this.previewBar1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.previewBar1.Location = new System.Drawing.Point(0, 0);
-            this.previewBar1.Name = "previewBar1";
-            this.previewBar1.Size = new System.Drawing.Size(81, 244);
-            this.previewBar1.TabIndex = 0;
-            this.previewBar1.PreviewSelected += new WinFormsDemo.PreviewSelectedHandler(this.previewBar1_PreviewSelected);
-            this.previewBar1.PreviewAdd += new System.EventHandler(this.previewBar1_PreviewAdd);
             // 
             // tsEditorMode
             // 
@@ -208,14 +202,6 @@ namespace WinFormsDemo
             this.pnlViewer.Name = "pnlViewer";
             this.pnlViewer.Size = new System.Drawing.Size(439, 244);
             this.pnlViewer.TabIndex = 10;
-            // 
-            // wfvcEditor
-            // 
-            this.wfvcEditor.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.wfvcEditor.Location = new System.Drawing.Point(0, 0);
-            this.wfvcEditor.Name = "wfvcEditor";
-            this.wfvcEditor.Size = new System.Drawing.Size(358, 244);
-            this.wfvcEditor.TabIndex = 0;
             // 
             // pnlFigureProps
             // 
@@ -383,16 +369,73 @@ namespace WinFormsDemo
             // cmsFigure
             // 
             this.cmsFigure.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.groupToolStripMenuItem});
+            this.groupToolStripMenuItem,
+            this.toolStripSeparator2,
+            this.sendToBackToolStripMenuItem,
+            this.bringToFrontToolStripMenuItem,
+            this.sendBackwardToolStripMenuItem,
+            this.bringForwardToolStripMenuItem});
             this.cmsFigure.Name = "cmsFigure";
-            this.cmsFigure.Size = new System.Drawing.Size(115, 26);
+            this.cmsFigure.Size = new System.Drawing.Size(159, 142);
             // 
             // groupToolStripMenuItem
             // 
             this.groupToolStripMenuItem.Name = "groupToolStripMenuItem";
-            this.groupToolStripMenuItem.Size = new System.Drawing.Size(114, 22);
+            this.groupToolStripMenuItem.Size = new System.Drawing.Size(158, 22);
             this.groupToolStripMenuItem.Text = "Group";
             this.groupToolStripMenuItem.Click += new System.EventHandler(this.groupToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator2
+            // 
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(155, 6);
+            // 
+            // sendToBackToolStripMenuItem
+            // 
+            this.sendToBackToolStripMenuItem.Name = "sendToBackToolStripMenuItem";
+            this.sendToBackToolStripMenuItem.Size = new System.Drawing.Size(158, 22);
+            this.sendToBackToolStripMenuItem.Text = "Send to Back";
+            this.sendToBackToolStripMenuItem.Click += new System.EventHandler(this.orderToolStripMenuItem_Click);
+            // 
+            // bringToFrontToolStripMenuItem
+            // 
+            this.bringToFrontToolStripMenuItem.Name = "bringToFrontToolStripMenuItem";
+            this.bringToFrontToolStripMenuItem.Size = new System.Drawing.Size(158, 22);
+            this.bringToFrontToolStripMenuItem.Text = "Bring to Front";
+            this.bringToFrontToolStripMenuItem.Click += new System.EventHandler(this.orderToolStripMenuItem_Click);
+            // 
+            // sendBackwardToolStripMenuItem
+            // 
+            this.sendBackwardToolStripMenuItem.Name = "sendBackwardToolStripMenuItem";
+            this.sendBackwardToolStripMenuItem.Size = new System.Drawing.Size(158, 22);
+            this.sendBackwardToolStripMenuItem.Text = "Send Backward";
+            this.sendBackwardToolStripMenuItem.Click += new System.EventHandler(this.orderToolStripMenuItem_Click);
+            // 
+            // bringForwardToolStripMenuItem
+            // 
+            this.bringForwardToolStripMenuItem.Name = "bringForwardToolStripMenuItem";
+            this.bringForwardToolStripMenuItem.Size = new System.Drawing.Size(158, 22);
+            this.bringForwardToolStripMenuItem.Text = "Bring Forward";
+            this.bringForwardToolStripMenuItem.Click += new System.EventHandler(this.orderToolStripMenuItem_Click);
+            // 
+            // wfvcEditor
+            // 
+            this.wfvcEditor.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.wfvcEditor.Location = new System.Drawing.Point(0, 0);
+            this.wfvcEditor.Name = "wfvcEditor";
+            this.wfvcEditor.Size = new System.Drawing.Size(358, 244);
+            this.wfvcEditor.TabIndex = 0;
+            // 
+            // previewBar1
+            // 
+            this.previewBar1.AutoScroll = true;
+            this.previewBar1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.previewBar1.Location = new System.Drawing.Point(0, 0);
+            this.previewBar1.Name = "previewBar1";
+            this.previewBar1.Size = new System.Drawing.Size(81, 244);
+            this.previewBar1.TabIndex = 0;
+            this.previewBar1.PreviewSelected += new WinFormsDemo.PreviewSelectedHandler(this.previewBar1_PreviewSelected);
+            this.previewBar1.PreviewAdd += new System.EventHandler(this.previewBar1_PreviewAdd);
             // 
             // Form1
             // 
@@ -463,6 +506,11 @@ namespace WinFormsDemo
         private System.Windows.Forms.ToolStripMenuItem redoToolStripMenuItem;
         private System.Windows.Forms.ContextMenuStrip cmsFigure;
         private System.Windows.Forms.ToolStripMenuItem groupToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
+        private System.Windows.Forms.ToolStripMenuItem sendToBackToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem bringToFrontToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem sendBackwardToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem bringForwardToolStripMenuItem;
 
     }
 }

@@ -122,6 +122,7 @@ namespace WinFormsDemo
         void de_SelectedFiguresChanged()
         {
             InitPropertyControls();
+            InitMenus();
         }
 
         void UndoRedoMgr_UndoRedoChanged(bool commitAction)
@@ -141,18 +142,7 @@ namespace WinFormsDemo
         void de_ContextClick(DEngine de, Figure clickedFigure, DPoint pt)
         {
             if (clickedFigure != null)
-            {
-                // update group menu item
-                groupToolStripMenuItem.Enabled = true;
-                Figure[] figs = de.SelectedFigures;
-                if (figs.Length == 1 && figs[0] is GroupFigure)
-                    groupToolStripMenuItem.Text = "Ungroup";
-                else if (figs.Length > 1)
-                    groupToolStripMenuItem.Text = "Group";
-                else
-                    groupToolStripMenuItem.Enabled = false;
                 cmsFigure.Show(wfvcEditor, new Point((int)pt.X, (int)pt.Y));
-            }
         }
 
         private void InitPropertyControls()
@@ -232,6 +222,24 @@ namespace WinFormsDemo
                         tbAlpha.Value = (int)(dap.Alpha * tbAlpha.Maximum);
                     break;
             }
+        }
+
+        void InitMenus()
+        {
+            Figure[] figs = de.SelectedFigures;
+            // update group menu item
+            groupToolStripMenuItem.Enabled = true;
+            if (figs.Length == 1 && figs[0] is GroupFigure)
+                groupToolStripMenuItem.Text = "Ungroup";
+            else if (figs.Length > 1)
+                groupToolStripMenuItem.Text = "Group";
+            else
+                groupToolStripMenuItem.Enabled = false;
+            // update order menu items
+            sendToBackToolStripMenuItem.Enabled = de.CanSendBackward(figs);
+            bringToFrontToolStripMenuItem.Enabled = de.CanBringForward(figs);
+            sendBackwardToolStripMenuItem.Enabled = de.CanSendBackward(figs);
+            bringForwardToolStripMenuItem.Enabled = de.CanBringForward(figs);
         }
 
         void dap_EditModeChanged()
@@ -445,6 +453,18 @@ namespace WinFormsDemo
                 de.UngroupFigure((GroupFigure)figs[0]);
             else if (figs.Length > 1)
                 de.GroupFigures(figs);
+        }
+
+        private void orderToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (sender == sendToBackToolStripMenuItem)
+                de.SendToBack(de.SelectedFigures);
+            else if (sender == bringToFrontToolStripMenuItem)
+                de.BringToFront(de.SelectedFigures);
+            else if (sender == sendBackwardToolStripMenuItem)
+                de.SendBackward(de.SelectedFigures);
+            else if (sender == bringForwardToolStripMenuItem)
+                de.BringForward(de.SelectedFigures);
         }
     }
 }

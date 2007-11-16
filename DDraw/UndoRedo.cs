@@ -21,19 +21,19 @@ namespace DDraw
         public FigureProperties[] ChildFigureProps;
 	}
 	
-	enum FigureChangeType { Removed, Added, PropertyChanged };		
+	enum FigureChangeType { Removed, Added, PropertyChanged, Moved };		
 	
 	struct FigureChange
 	{
 		public Figure Figure;
-		public FigureChangeType FigureChangeType;
+		public FigureChangeType Type;
 		public FigureProperties FigProps;
 		
 		public FigureChange(Figure figure, FigureChangeType figureChangeType,
 			FigureProperties figProps)
 		{
 			Figure = figure;
-			FigureChangeType = figureChangeType;
+			Type = figureChangeType;
 			FigProps = figProps;
 		}
 	}
@@ -239,7 +239,6 @@ namespace DDraw
                 {
                     if (!figures.Contains(fp.Figure))
                         fcs.Add(new FigureChange(fp.Figure, FigureChangeType.Removed, fp));
-                    // TODO: change other listPositions now?
                 }
                 // find add added figures
                 int i = 0;
@@ -247,20 +246,19 @@ namespace DDraw
                 {
                     if (!ContainsFigure(figureProps, f))
                         fcs.Add(new FigureChange(f, FigureChangeType.Added, CreateFigureProps(f, i)));
-                    // TODO: change other listPositions now?
                     i += 1;
                 }
             }
             else
             {
+                // find all figures with changed listposition
+                foreach (FigureProperties fp in figureProps)
+                    if (fp.Figure != figures[fp.ListPosition])
+                        fcs.Add(new FigureChange(fp.Figure, FigureChangeType.Moved, fp));
                 // find all changed figures
                 foreach (FigureProperties fp in figureProps)
-                {
-                    System.Diagnostics.Debug.Assert(fp.Figure == figures[fp.ListPosition],
-                        "ERROR: Whoops, we messed up the figure ListPosition");
                     if (!FigureMatchesProps(fp))
                         fcs.Add(new FigureChange(fp.Figure, FigureChangeType.PropertyChanged, fp));
-                }
             }
             return new UndoFrame(name, fcs);
         }
@@ -281,7 +279,7 @@ namespace DDraw
         {
             // apply undo frame changes
             foreach (FigureChange fc in uf.FigureChanges)
-                switch (fc.FigureChangeType)
+                switch (fc.Type)
                 {
                     case FigureChangeType.Added:
                         figures.Remove(fc.Figure);
@@ -292,6 +290,10 @@ namespace DDraw
                         break;
                     case FigureChangeType.PropertyChanged:
                         ApplyFigureProps(fc.Figure, fc.FigProps);
+                        break;
+                    case FigureChangeType.Moved:
+                        figures.Remove(fc.Figure);
+                        figures.Insert(fc.FigProps.ListPosition, fc.Figure);
                         break;
                 }
         }
@@ -306,18 +308,21 @@ namespace DDraw
 
         FigureChange Invert(FigureChange fc)
         {
-            switch (fc.FigureChangeType)
+            switch (fc.Type)
             {
                 case FigureChangeType.Added:
-                    fc.FigureChangeType = FigureChangeType.Removed;
+                    fc.Type = FigureChangeType.Removed;
                     return fc;
                 case FigureChangeType.Removed:
-                    fc.FigureChangeType = FigureChangeType.Added;
+                    fc.Type = FigureChangeType.Added;
+                    return fc;
+                case FigureChangeType.Moved:
+                    fc.FigProps.ListPosition = figures.IndexOf(fc.Figure);
                     return fc;
                 default:
                     FigureChange res = new FigureChange();
                     res.Figure = fc.Figure;
-                    res.FigureChangeType = fc.FigureChangeType;
+                    res.Type = fc.Type;
                     res.FigProps = CreateFigureProps(fc.Figure, fc.FigProps.ListPosition);
                     return res;
             }

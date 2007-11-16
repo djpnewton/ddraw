@@ -255,6 +255,126 @@ namespace DDraw
                 undoRedoMgr.Commit();           
         }
 
+        public void SendToBack(Figure[] figs)
+        {
+            // init undoRedo frame
+            if (autoUndoRecord)
+                undoRedoMgr.Start("Send to Back");
+            // do send to back
+            OrderFigures(figs);
+            for (int i = figs.Length - 1; i >= 0; i--)
+            {
+                Figure f = figs[i];
+                if (figures.Contains(f))
+                {
+                    figures.Remove(f);
+                    figures.Insert(0, f);
+                }
+            }
+            // update all
+            DoSelectedFiguresChanged();
+            UpdateViewers();
+            // commit changes to undoRedoMgr
+            if (autoUndoRecord)
+                undoRedoMgr.Commit(); 
+        }
+
+        public void BringToFront(Figure[] figs)
+        {
+            // init undoRedo frame
+            if (autoUndoRecord)
+                undoRedoMgr.Start("Bring to Back");
+            // do bring to front
+            OrderFigures(figs);
+            foreach (Figure f in figs)
+                if (figures.Contains(f))
+                {
+                    figures.Remove(f);
+                    figures.Add(f);
+                }
+            // update
+            DoSelectedFiguresChanged();
+            UpdateViewers();
+            // commit changes to undoRedoMgr
+            if (autoUndoRecord)
+                undoRedoMgr.Commit(); 
+        }
+
+        public void SendBackward(Figure[] figs)
+        {            
+            // init undoRedo frame
+            if (autoUndoRecord)
+                undoRedoMgr.Start("Send Backward");
+            // do send backward
+            OrderFigures(figs);
+            foreach (Figure f in figs)
+                if (figures.Contains(f))
+                {
+                    int idx = figures.IndexOf(f);
+                    if (idx > 0 && !Contains(figs, figures[idx - 1]))
+                    {
+                        figures.Remove(f);
+                        figures.Insert(idx - 1, f);
+                    }
+                }
+            // update
+            DoSelectedFiguresChanged();
+            UpdateViewers();
+            // commit changes to undoRedoMgr
+            if (autoUndoRecord)
+                undoRedoMgr.Commit(); 
+        }
+
+        public bool CanSendBackward(Figure[] figs)
+        {
+            foreach (Figure f in figs)
+            {
+                int idx = figures.IndexOf(f);
+                if (idx > 0 && !Contains(figs, figures[idx - 1]))
+                    return true;
+            }
+            return false;
+        }
+
+        public void BringForward(Figure[] figs)
+        {
+            // init undoRedo frame
+            if (autoUndoRecord)
+                undoRedoMgr.Start("Bring Forward");
+            // do bring forward
+            OrderFigures(figs);
+            for (int i = figs.Length - 1; i >= 0; i--)
+            {
+                Figure f = figs[i];
+                if (figures.Contains(f))
+                {
+                    int idx = figures.IndexOf(f);
+                    if (idx < figures.Count - 1 && !Contains(figs, figures[idx + 1]))
+                    {
+                        figures.Remove(f);
+                        figures.Insert(idx + 1, f);
+                    }
+                }
+            }
+            // update
+            DoSelectedFiguresChanged();
+            UpdateViewers();
+            // commit changes to undoRedoMgr
+            if (autoUndoRecord)
+                undoRedoMgr.Commit(); 
+        }
+
+        public bool CanBringForward(Figure[] figs)
+        {
+            foreach (Figure f in figs)
+            {
+                int idx = figures.IndexOf(f);
+                if (idx < figures.Count - 1 && !Contains(figs, figures[idx + 1]))
+                    return true;
+            }
+            return false;
+        }
+
         // Helper Functions //
 
         Figure HitTestFigures(DPoint pt, out DHitTest hitTest)
@@ -307,6 +427,24 @@ namespace DDraw
             }
             return f;
         }
+
+        Figure[] OrderFigures(Figure[] figs)
+        {
+            int[] idx = new int[figs.Length];
+            for(int i = 0; i < figs.Length; i++)
+                idx[i] = figures.IndexOf(figs[i]);
+            Array.Sort(idx, figs);
+            return figs;
+        }
+
+        bool Contains(Figure[] figs, Figure f)
+        {
+            foreach (Figure f2 in figs)
+                if (f == f2)
+                    return true;
+            return false;
+        }
+
 
         // Mouse Functions //
 
