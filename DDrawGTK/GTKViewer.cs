@@ -6,7 +6,6 @@ namespace DDraw.GTK
     public class GTKViewer : DViewer
     {
         GTKViewerControl control;
-        //Cursor RotateCursor;
 
         public GTKViewer(GTKViewerControl c)
         {
@@ -16,10 +15,6 @@ namespace DDraw.GTK
             control.MotionNotifyEvent += new MotionNotifyEventHandler(control_MotionNotify);
             control.ButtonReleaseEvent += new ButtonReleaseEventHandler(control_ButtonRelease);
             control.SizeAllocated += new SizeAllocatedHandler(control_SizeAllocated);
-            /*
-
-
-            RotateCursor = new Cursor(Res.Resource.RotateIcon.GetHicon());*/
         }
         
         void control_Expose(object sender, ExposeEventArgs a)
@@ -42,7 +37,7 @@ namespace DDraw.GTK
         {
             switch (button)
             {
-                case 1:
+                case 3:
                     return DMouseButton.Right;
                 case 2:
                     return DMouseButton.Middle;
