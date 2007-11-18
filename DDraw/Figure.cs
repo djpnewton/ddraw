@@ -840,13 +840,14 @@ namespace DDraw
             {
                 if (Width > 0 && Height > 0)
                 {
-                    DBitmap bmp = GraphicsHelper.MakeBitmap(Width, Height);
+                    DRect rS = GetSelectRect();
+                    DBitmap bmp = GraphicsHelper.MakeBitmap(rS.Width, rS.Height);
                     DGraphics bmpGfx = GraphicsHelper.MakeGraphics(bmp);
                     bmpGfx.AntiAlias = dg.AntiAlias;
-                    bmpGfx.Translate(new DPoint(-X, -Y));
+                    bmpGfx.Translate(new DPoint(-rS.X , -rS.Y));
                     foreach (Figure f in childFigs)
                         f.Paint(bmpGfx);
-                    dg.DrawBitmap(bmp, Rect, Alpha);
+                    dg.DrawBitmap(bmp, rS, Alpha);
                 }
             }
             else
@@ -896,16 +897,22 @@ namespace DDraw
             foreach (Figure f in childFigs)
             {
                 DRect r2 = DGeom.BoundingBoxOfRotatedRect(f.Rect, f.Rotation);
-                // TODO: figure out why this screws things up
-                /*
-                if (f is IStrokeable)
-                    r2 = StrokeHelper.RectIncludingStrokeWidth(r2, ((IStrokeable)f).StrokeWidth);
-                */
                 r = r.Union(r2);
             }
             return r;
         }
-
+        
+        public override DRect GetSelectRect()
+        {
+            DRect r = DGeom.BoundingBoxOfRotatedRect(childFigs[0].Rect, childFigs[0].Rotation);
+            foreach (Figure f in childFigs)
+            {
+                DRect r2 = DGeom.BoundingBoxOfRotatedRect(f.GetSelectRect(), f.Rotation);               
+                r = r.Union(r2);
+            }
+            return r;
+        }
+        
         public override void BeforeResize()
         {
             foreach (Figure f in childFigs)
