@@ -53,7 +53,10 @@ namespace DDraw.GTK
             if (EditFigures)
             {
                 if (a.Event.Type == Gdk.EventType.ButtonPress)
+                {
                     DoMouseDown(MouseButtonFromGTKEvent(a.Event.Button), new DPoint(a.Event.X, a.Event.Y));
+                    control.GrabFocus();
+                }
                 else if (a.Event.Type == Gdk.EventType.TwoButtonPress)
                     DoDoubleClick(new DPoint(a.Event.X, a.Event.Y));
             }
@@ -73,18 +76,21 @@ namespace DDraw.GTK
 
         DKey EventKeyToDKey(Gdk.EventKey ek)
         {
-            return new DKey(ek.HardwareKeycode,
-                ((int)ek.State & (int)Gdk.ModifierType.ShiftMask) == 1,
-                ((int)ek.State & (int)Gdk.ModifierType.ControlMask) == 1,
-                ((int)ek.State & (int)Gdk.ModifierType.MetaMask) == 1);
+            return new DKey((int)ek.KeyValue,
+                (ek.State & Gdk.ModifierType.ShiftMask) != 0,
+                (ek.State & Gdk.ModifierType.ControlMask) != 0,
+                (ek.State & Gdk.ModifierType.Mod1Mask) != 0);
         }
 
         void control_KeyPressEvent(object o, KeyPressEventArgs args)
         {
             if (EditFigures)
             {
-                DoKeyDown(EventKeyToDKey(args.Event));
-                DoKeyPress((char)args.Event.HardwareKeycode);
+                DKey k = EventKeyToDKey(args.Event);
+                DoKeyDown(k);
+                // TODO: figure out whether we should call this (not on modifier keys etc)
+                // (char)Gdk.Keyval.ToUnicode((uint)args.Event.Key)?
+                DoKeyPress((char)args.Event.KeyValue);
             }
         }
 

@@ -7,6 +7,7 @@ namespace DDraw.GTK
     {
         public GTKViewerControl()
         {
+            CanFocus = true;
             Events = Gdk.EventMask.AllEventsMask;
         }
     }

@@ -14,10 +14,10 @@ namespace DDraw
 
     public struct DKey
     {
-        int Code;
-        bool Shift;
-        bool Ctrl;
-        bool Alt;
+        public int Code;
+        public bool Shift;
+        public bool Ctrl;
+        public bool Alt;
 
         public DKey(int code, bool shift, bool ctrl, bool alt)
         {
