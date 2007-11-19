@@ -94,7 +94,7 @@ namespace DDraw.WinForms
     {
         public static void Init()
         {
-            GraphicsHelper.Init(typeof(WFBitmap), typeof(WFGraphics));
+            GraphicsHelper.Init(typeof(WFBitmap), typeof(WFGraphics), typeof(WFTextExtent));
         }
 
         Graphics g;

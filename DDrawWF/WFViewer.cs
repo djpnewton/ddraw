@@ -11,6 +11,7 @@ namespace DDraw.WinForms
     {
         WFViewerControl control;
         Cursor RotateCursor;
+        Point mousePt;
 		System.Diagnostics.Stopwatch stopWatch;
 
         public WFViewer(WFViewerControl c)
@@ -20,6 +21,10 @@ namespace DDraw.WinForms
             control.MouseDown += new MouseEventHandler(control_MouseDown);
             control.MouseMove += new MouseEventHandler(control_MouseMove);
             control.MouseUp += new MouseEventHandler(control_MouseUp);
+            control.DoubleClick += new EventHandler(control_DoubleClick);
+            control.KeyDown += new KeyEventHandler(control_KeyDown);
+            control.KeyPress += new KeyPressEventHandler(control_KeyPress);
+            control.KeyUp += new KeyEventHandler(control_KeyUp);
             control.SizeChanged += new EventHandler(control_SizeChanged);
 
             RotateCursor = new Cursor(Resource1.RotateIcon.GetHicon());
@@ -61,11 +66,15 @@ namespace DDraw.WinForms
         void control_MouseDown(object sender, MouseEventArgs e)
         {
             if (EditFigures)
+            {
                 DoMouseDown(MouseButtonFromWFEvent(e.Button), new DPoint(e.X, e.Y));
+                control.Focus();
+            }
         }
 
         void control_MouseMove(object sender, MouseEventArgs e)
         {
+            mousePt = e.Location;
             if (EditFigures)
                 DoMouseMove(new DPoint(e.X, e.Y));
         }
@@ -74,6 +83,35 @@ namespace DDraw.WinForms
         {
             if (EditFigures)
                 DoMouseUp(MouseButtonFromWFEvent(e.Button), new DPoint(e.X, e.Y));
+        }
+
+        void control_DoubleClick(object sender, EventArgs e)
+        {
+            if (EditFigures)
+                DoDoubleClick(new DPoint(mousePt.X, mousePt.Y));
+        }
+
+        DKey KeyFromWFEvent(KeyEventArgs e)
+        {
+            return new DKey(e.KeyValue, e.Shift, e.Control, e.Alt);
+        }
+
+        void control_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (EditFigures)
+                DoKeyDown(KeyFromWFEvent(e));
+        }
+
+        void control_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (EditFigures)
+                DoKeyPress(e.KeyChar);
+        }
+
+        void control_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (EditFigures)
+                DoKeyUp(KeyFromWFEvent(e));
         }
 
         void control_SizeChanged(object sender, EventArgs e)
@@ -122,6 +160,9 @@ namespace DDraw.WinForms
                     break;
                 case DCursor.Crosshair:
                     control.Cursor = Cursors.Cross;
+                    break;
+                case DCursor.IBeam:
+                    control.Cursor = Cursors.IBeam;
                     break;
             }
         }

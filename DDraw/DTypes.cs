@@ -6,11 +6,27 @@ namespace DDraw
 {
     public enum DPenStyle { Solid, Dash, Dot };
 
-    public enum DCursor { Default, MoveAll, MoveNS, MoveWE, MoveNESW, MoveNWSE, Rotate, Crosshair };
+    public enum DCursor { Default, MoveAll, MoveNS, MoveWE, MoveNESW, MoveNWSE, Rotate, Crosshair, IBeam };
 
     public enum DHitTest { None, Body, SelectRect, Resize, Rotate };
 
     public enum DMouseButton { Left, Right, Middle };
+
+    public struct DKey
+    {
+        int Code;
+        bool Shift;
+        bool Ctrl;
+        bool Alt;
+
+        public DKey(int code, bool shift, bool ctrl, bool alt)
+        {
+            Code = code;
+            Shift = shift;
+            Ctrl = ctrl;
+            Alt = alt;
+        }
+    }
 
     public struct DMatrix
     {

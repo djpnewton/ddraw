@@ -85,7 +85,7 @@ namespace WinFormsDemo
             de.AddFigure(f);
             ms.Dispose();
             // text figure
-            f = new TextFigure(new DPoint(100, 200), "hello dan", new WFTextExtent(), 0);
+            f = new TextFigure(new DPoint(100, 200), "hello dan", GraphicsHelper.TextExtent, 0);
             de.AddFigure(f);
             // compositing figure
             f = new CompositedExampleFigure();
@@ -146,6 +146,8 @@ namespace WinFormsDemo
 
         private void InitPropertyControls()
         {
+            // disable events
+            cbFont.SelectedIndexChanged -= cbFont_SelectedIndexChanged;
             // set default (blank) values for property controls
             btnFill.BackColor = Color.Empty;
             btnStroke.BackColor = Color.Empty;
@@ -196,20 +198,16 @@ namespace WinFormsDemo
                         if (f is IAlphaBlendable)
                             tbAlpha.Value = (int)(((IAlphaBlendable)f).Alpha * tbAlpha.Maximum);
                         if (f is ITextable)
-                            foreach (string item in cbFont.Items)
-                                if (item == ((ITextable)f).FontName)
-                                {
-                                    cbFont.SelectedItem = item;
-                                    break;
-                                }
+                            cbFont.SelectedItem = ((ITextable)f).FontName;
                     }
                     break;
                 default:
                     // enable relavant controls
-                    btnFill.Enabled = dap.EditMode == DEditMode.DrawRect || dap.EditMode == DEditMode.DrawEllipse;
+                    btnFill.Enabled = dap.EditMode == DEditMode.DrawRect || dap.EditMode == DEditMode.DrawEllipse || dap.EditMode == DEditMode.DrawText;
                     btnStroke.Enabled = dap.EditMode == DEditMode.DrawPolyline || dap.EditMode == DEditMode.DrawRect || dap.EditMode == DEditMode.DrawEllipse;
                     tbStrokeWidth.Enabled = btnStroke.Enabled;
-                    tbAlpha.Enabled = true;
+                    tbAlpha.Enabled = btnFill.Enabled || btnStroke.Enabled;
+                    cbFont.Enabled = dap.EditMode == DEditMode.DrawText;
                     // update values to match dap
                     if (btnFill.Enabled)
                         btnFill.BackColor = MakeColor(dap.Fill);
@@ -219,8 +217,12 @@ namespace WinFormsDemo
                         tbStrokeWidth.Value = (int)dap.StrokeWidth;
                     if (tbAlpha.Enabled)
                         tbAlpha.Value = (int)(dap.Alpha * tbAlpha.Maximum);
+                    if (cbFont.Enabled)
+                        cbFont.SelectedItem = dap.FontName;
                     break;
             }
+            // re-enable events
+            cbFont.SelectedIndexChanged += cbFont_SelectedIndexChanged;
         }
 
         void InitMenus()
@@ -243,10 +245,11 @@ namespace WinFormsDemo
 
         void dap_EditModeChanged()
         {
-            btnSelect.Checked = dap.EditMode == DEditMode.Select;
+            btnSelect.Checked = dap.EditMode == DEditMode.Select || dap.EditMode == DEditMode.TextEdit;
             btnPen.Checked = dap.EditMode == DEditMode.DrawPolyline;
             btnRect.Checked = dap.EditMode == DEditMode.DrawRect;
             btnEllipse.Checked = dap.EditMode == DEditMode.DrawEllipse;
+            btnText.Checked = dap.EditMode == DEditMode.DrawText;
             InitPropertyControls();
         }
 
@@ -391,6 +394,11 @@ namespace WinFormsDemo
             dap.EditMode = DEditMode.DrawEllipse;
         }
 
+        private void btnText_Click(object sender, EventArgs e)
+        {
+            dap.EditMode = DEditMode.DrawText;
+        }
+
         private void previewBar1_PreviewSelected(Preview p)
         {
             SetCurrentDe(p.DEngine);
@@ -423,7 +431,7 @@ namespace WinFormsDemo
             {
                 de.ClearSelected();
 				de.UndoRedoMgr.Start("Add Text");
-                de.AddFigure(new TextFigure(new DPoint(10, 10), tf.TextEntered, new WFTextExtent(), 0));
+                de.AddFigure(new TextFigure(new DPoint(10, 10), tf.TextEntered, GraphicsHelper.TextExtent, 0));
 				de.UndoRedoMgr.Commit();
                 de.UpdateViewers();
             }

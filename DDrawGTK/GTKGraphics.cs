@@ -92,7 +92,7 @@ namespace DDraw.GTK
     {
         public static void Init()
         {
-            GraphicsHelper.Init(typeof(GTKBitmap), typeof(GTKGraphics));
+            GraphicsHelper.Init(typeof(GTKBitmap), typeof(GTKGraphics), typeof(GTKTextExtent));
         }
 
         Context cr;

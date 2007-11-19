@@ -66,6 +66,7 @@ namespace WinFormsDemo
             this.bringToFrontToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.sendBackwardToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.bringForwardToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.btnText = new System.Windows.Forms.ToolStripButton();
             this.wfvcEditor = new DDraw.WinForms.WFViewerControl();
             this.previewBar1 = new WinFormsDemo.PreviewBar();
             this.pnlPreviews.SuspendLayout();
@@ -101,10 +102,11 @@ namespace WinFormsDemo
             this.btnSelect,
             this.btnPen,
             this.btnRect,
-            this.btnEllipse});
+            this.btnEllipse,
+            this.btnText});
             this.tsEditorMode.Location = new System.Drawing.Point(3, 24);
             this.tsEditorMode.Name = "tsEditorMode";
-            this.tsEditorMode.Size = new System.Drawing.Size(162, 25);
+            this.tsEditorMode.Size = new System.Drawing.Size(185, 25);
             this.tsEditorMode.TabIndex = 0;
             this.tsEditorMode.Text = "toolStrip1";
             // 
@@ -376,7 +378,7 @@ namespace WinFormsDemo
             this.sendBackwardToolStripMenuItem,
             this.bringForwardToolStripMenuItem});
             this.cmsFigure.Name = "cmsFigure";
-            this.cmsFigure.Size = new System.Drawing.Size(159, 142);
+            this.cmsFigure.Size = new System.Drawing.Size(159, 120);
             // 
             // groupToolStripMenuItem
             // 
@@ -417,6 +419,16 @@ namespace WinFormsDemo
             this.bringForwardToolStripMenuItem.Size = new System.Drawing.Size(158, 22);
             this.bringForwardToolStripMenuItem.Text = "Bring Forward";
             this.bringForwardToolStripMenuItem.Click += new System.EventHandler(this.orderToolStripMenuItem_Click);
+            // 
+            // btnText
+            // 
+            this.btnText.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.btnText.Image = ((System.Drawing.Image)(resources.GetObject("btnText.Image")));
+            this.btnText.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnText.Name = "btnText";
+            this.btnText.Size = new System.Drawing.Size(23, 22);
+            this.btnText.Text = "Text";
+            this.btnText.Click += new System.EventHandler(this.btnText_Click);
             // 
             // wfvcEditor
             // 
@@ -511,6 +523,7 @@ namespace WinFormsDemo
         private System.Windows.Forms.ToolStripMenuItem bringToFrontToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem sendBackwardToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem bringForwardToolStripMenuItem;
+        private System.Windows.Forms.ToolStripButton btnText;
 
     }
 }

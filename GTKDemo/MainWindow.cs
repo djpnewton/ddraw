@@ -42,7 +42,7 @@ namespace GTKDemo
 			rf.Alpha = 0.7;
 			rf.Fill = new DColor(80, 80, 80);
 			de.AddFigure(rf);
-			de.AddFigure(new TextFigure(new DPoint(150, 30), "hello", new GTKTextExtent(), 0));
+			de.AddFigure(new TextFigure(new DPoint(150, 30), "hello", GraphicsHelper.TextExtent, 0));
 
 			dv.EditFigures = true;
 			dap.EditMode = DEditMode.Select;

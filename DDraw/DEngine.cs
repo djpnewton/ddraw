@@ -4,7 +4,7 @@ using System.Text;
 
 namespace DDraw
 {
-    public enum DEditMode { None, Select, DrawPolyline, DrawRect, DrawEllipse };
+    public enum DEditMode { None, Select, DrawPolyline, DrawRect, DrawEllipse, DrawText, TextEdit };
     public delegate void DEditModeChangedHandler();
     public delegate void DebugMessageHandler(string msg);
     public delegate void SelectedFiguresHandler();
@@ -121,6 +121,7 @@ namespace DDraw
 
         void authorProps_EditModeChanged()
         {
+            ClearCurrentFigure();
             ClearSelected();
             UpdateViewers();
         }
@@ -157,6 +158,26 @@ namespace DDraw
                     dvOther.Update();
         }
 
+        void dv_DoubleClick(DViewer dv, DPoint pt)
+        {
+            DoubleClick(dv, pt);
+        }
+
+        void dv_KeyDown(DViewer dv, DKey k)
+        {
+            //TODO
+        }
+
+        void dv_KeyPress(DViewer dv, char k)
+        {
+            KeyPress(dv, k);
+        }
+
+        void dv_KeyUp(DViewer dv, DKey k)
+        {
+            //TODO
+        }
+
         // Public Functions //
 
         public void AddFigure(Figure f)
@@ -170,6 +191,10 @@ namespace DDraw
             dv.MouseDown += new DMouseButtonEventHandler(dv_MouseDown);
             dv.MouseMove += new DMouseMoveEventHandler(dv_MouseMove);
             dv.MouseUp += new DMouseButtonEventHandler(dv_MouseUp);
+            dv.DoubleClick += new DMouseMoveEventHandler(dv_DoubleClick);
+            dv.KeyDown += new DKeyEventHandler(dv_KeyDown);
+            dv.KeyPress += new DKeyPressEventHandler(dv_KeyPress);
+            dv.KeyUp += new DKeyEventHandler(dv_KeyUp);
             viewers.Add(dv);
         }
 
@@ -182,6 +207,10 @@ namespace DDraw
                 dv.MouseDown -= dv_MouseDown;
                 dv.MouseMove -= dv_MouseMove;
                 dv.MouseUp -= dv_MouseUp;
+                dv.DoubleClick -= dv_DoubleClick;
+                dv.KeyDown -= dv_KeyDown;
+                dv.KeyPress -= dv_KeyPress;
+                dv.KeyUp -= dv_KeyUp;
             }
         }
 
@@ -446,6 +475,29 @@ namespace DDraw
         }
 
 
+        void ClearCurrentFigure()
+        {
+            if (currentFigure != null)
+            {
+                // remove current figure if it was not sized by a mouse drag
+                if (currentFigure.Width == 0 || currentFigure.Height == 0)
+                    figures.Remove(currentFigure);
+                if (authorProps.EditMode != DEditMode.TextEdit)
+                {
+                    // replace text edit figure with the textfigure
+                    if (currentFigure is TextEditFigure)
+                    {
+                        TextFigure tf = ((TextEditFigure)currentFigure).TextFigure;
+                        if (tf.Text != null && tf.Text.Length > 0)
+                            figures.Insert(figures.IndexOf(currentFigure), tf);
+                        figures.Remove(currentFigure);
+                    }
+                    // null currentfigure
+                    currentFigure = null;
+                }
+            }
+        }
+
         // Mouse Functions //
 
         protected void MouseDown(DViewer dv, DMouseButton btn, DPoint pt)
@@ -525,6 +577,20 @@ namespace DDraw
                         // store drag pt for reference on mousemove event)
                         dragPt = pt;
                         break;
+                    case DEditMode.DrawText:
+                        ClearCurrentFigure();
+                        if (autoUndoRecord)
+                            undoRedoMgr.Start("Add Text");
+                        // create TextFigure
+                        currentFigure = new TextEditFigure(pt, new TextFigure(pt, "", GraphicsHelper.TextExtent, 0));
+                        authorProps.ApplyPropertiesToFigure(((TextEditFigure)currentFigure).TextFigure);
+                        // add to list of figures
+                        figures.Add(currentFigure);
+                        break;
+                    case DEditMode.TextEdit:
+                        // go to select mode
+                        authorProps.EditMode = DEditMode.Select;
+                        goto case DEditMode.Select;
                 }
                 // update drawing
                 dv.Update();
@@ -759,6 +825,12 @@ namespace DDraw
                     break;
                 case DEditMode.DrawEllipse:
                     goto case DEditMode.DrawRect;
+                case DEditMode.DrawText:
+                    // set cursor to text
+                    dv.SetCursor(DCursor.IBeam);
+                    break;
+                case DEditMode.TextEdit:
+                    goto case DEditMode.Select;
             }
         }
 
@@ -787,15 +859,17 @@ namespace DDraw
                         }
                         break;
                     case DEditMode.DrawPolyline:
-                        if (((PolylineFigure)currentFigure).Points.Count <= 1)
-                            figures.Remove(currentFigure);
+                        ClearCurrentFigure();
                         break;
                     case DEditMode.DrawRect:
-                        if (currentFigure.Rect.Width == 0 || currentFigure.Height == 0)
-                            figures.Remove(currentFigure);
+                        ClearCurrentFigure();
                         break;
                     case DEditMode.DrawEllipse:
                         goto case DEditMode.DrawRect;
+                    case DEditMode.DrawText:
+                        // go to text edit mode
+                        authorProps.EditMode = DEditMode.TextEdit;
+                        break;
                 }
                 if (autoUndoRecord)
                     undoRedoMgr.Commit();
@@ -811,6 +885,57 @@ namespace DDraw
                     if (ContextClick != null)
                         ContextClick(this, f, pt);
                 }
+            }
+        }
+
+        protected void KeyPress(DViewer dv, char k)
+        {
+            if (authorProps.EditMode == DEditMode.TextEdit)
+            {
+                if (currentFigure != null && currentFigure is ITextable)
+                {
+                    ITextable tf = (ITextable)currentFigure;
+                    switch (k)
+                    {
+                        case '\b': // backspace
+                            if (tf.Text.Length > 0)
+                            {
+                                DRect r = currentFigure.Rect;
+                                tf.Text = tf.Text.Substring(0, tf.Text.Length - 1);
+                                dv.Update(r);
+                            }
+                            break;
+                        case '\r': // enter
+                            authorProps.EditMode = DEditMode.Select;
+                            break;
+                        case (char)27: // esc
+                            goto case '\r';
+                        default:
+                            tf.Text = string.Concat(tf.Text, k);
+                            dv.Update(currentFigure.Rect);
+                            break;
+                    }
+                    
+                }
+            }
+        }
+
+        protected void DoubleClick(DViewer dv, DPoint pt)
+        {
+            switch (authorProps.EditMode)
+            {
+                case DEditMode.Select:
+                    DHitTest ht;
+                    Figure f = HitTestFigures(pt, out ht);
+                    if (f is TextFigure)
+                    {
+                        authorProps.EditMode = DEditMode.TextEdit;
+                        currentFigure = new TextEditFigure((TextFigure)f);
+                        figures.Insert(figures.IndexOf(f), currentFigure);
+                        figures.Remove(f);
+                        dv.Update(currentFigure.Rect);
+                    }
+                    break;
             }
         }
 

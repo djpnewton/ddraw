@@ -9,6 +9,8 @@ namespace DDraw
     {
         static Type _bitmapClass;
         static Type _graphicsClass;
+        static Type _textExtentClass;
+        static DTextExtent te = null;
 
         public static DBitmap MakeBitmap(double width, double height)
         {
@@ -20,12 +22,24 @@ namespace DDraw
             return (DGraphics)Activator.CreateInstance(_graphicsClass, new object[] { bmp });
         }
 
-        public static void Init(Type bitmapClass, Type graphicsClass)
+        public static DTextExtent TextExtent
+        {
+            get
+            {
+                if (te == null)
+                    te = (DTextExtent)Activator.CreateInstance(_textExtentClass);
+                return te;
+            }
+        }
+
+        public static void Init(Type bitmapClass, Type graphicsClass, Type textExtentClass)
         {
             // bitmapClass needs to be a desendant of DBitmap
             _bitmapClass = bitmapClass;
             // graphicsClass needs to be a desendant of DGraphics
             _graphicsClass = graphicsClass;
+            // textExtentClass needs to be a desendant of DTextExtent
+            _textExtentClass = textExtentClass;
         }
     }
 
@@ -90,9 +104,9 @@ namespace DDraw
 
     public abstract class DGraphics
     {
-        public static void Init(Type bitmapClass, Type graphicsClass)
+        public static void Init(Type bitmapClass, Type graphicsClass, Type textExtentClass)
         {
-            GraphicsHelper.Init(bitmapClass, graphicsClass);
+            GraphicsHelper.Init(bitmapClass, graphicsClass, textExtentClass);
         }
 
         // Abstract Drawing Methods //

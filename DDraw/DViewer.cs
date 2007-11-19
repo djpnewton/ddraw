@@ -7,6 +7,8 @@ namespace DDraw
     public delegate void DPaintEventHandler(DViewer dv);
     public delegate void DMouseButtonEventHandler(DViewer dv, DMouseButton btn, DPoint pt);
     public delegate void DMouseMoveEventHandler(DViewer dv, DPoint pt);
+    public delegate void DKeyEventHandler(DViewer dv, DKey k);
+    public delegate void DKeyPressEventHandler(DViewer dv, char k);
 
     abstract public class DViewer
     {
@@ -41,6 +43,10 @@ namespace DDraw
         public event DMouseButtonEventHandler MouseDown;
         public event DMouseMoveEventHandler MouseMove;
         public event DMouseButtonEventHandler MouseUp;
+        public event DMouseMoveEventHandler DoubleClick;
+        public event DKeyEventHandler KeyDown;
+        public event DKeyPressEventHandler KeyPress;
+        public event DKeyEventHandler KeyUp;
         public event DebugMessageHandler DebugMessage;
 
         public DViewer()
@@ -70,6 +76,30 @@ namespace DDraw
         {
             if (MouseUp != null)
                 MouseUp(this, btn, pt);
+        }
+
+        protected void DoDoubleClick(DPoint pt)
+        {
+            if (DoubleClick != null)
+                DoubleClick(this, pt);
+        }
+
+        protected void DoKeyDown(DKey k)
+        {
+            if (KeyDown != null)
+                KeyDown(this, k);
+        }
+
+        protected void DoKeyPress(char k)
+        {
+            if (KeyPress != null)
+                KeyPress(this, k);
+        }
+
+        protected void DoKeyUp(DKey k)
+        {
+            if (KeyUp != null)
+                KeyUp(this, k);
         }
 
         public void Paint(List<Figure> figures, bool drawSelectionRect, Figure selectionRect)

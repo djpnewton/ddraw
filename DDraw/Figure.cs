@@ -735,6 +735,100 @@ namespace DDraw
         #endregion
     }
 
+    public class TextEditFigure : RectbaseFigure, ITextable
+    {
+        const int border = 2;
+        const int hborder = 1;
+
+        TextFigure tf;
+        public TextFigure TextFigure
+        {
+            get { return tf; }
+        }
+
+        void _SizeToText()
+        {
+            Width = tf.Width + border * 2;
+            Height = tf.Height + border * 2;
+        }
+
+        void SizeToText()
+        {
+            if (tf.Text == null || tf.Text.Length == 0)
+            {
+                tf.Text = ".";
+                _SizeToText();
+                tf.Text = "";
+            }
+            else
+                _SizeToText();
+        }
+
+        public string Text
+        {
+            get { return tf.Text; }
+            set
+            {
+                tf.Text = value;
+                SizeToText();
+            }
+        }
+
+        public string FontName
+        {
+            get { return tf.FontName; }
+            set
+            {
+                tf.FontName = value;
+                SizeToText();
+            }
+        }
+
+        public double FontSize
+        {
+            get { return tf.FontSize; }
+            set
+            {
+                tf.FontSize = value;
+                SizeToText();
+            }
+        }
+
+        public TextEditFigure(TextFigure tf)
+        {
+            this.tf = tf;
+            TopLeft = tf.TopLeft.Offset(-border, -border);
+            SizeToText();
+        }
+
+        public TextEditFigure(DPoint pt, TextFigure tf)
+        {
+            this.tf = tf;
+            tf.TopLeft = pt.Offset(border, border);
+            TopLeft = pt;
+            SizeToText();
+        }
+
+        protected override void PaintBody(DGraphics dg)
+        {
+            // paint border
+            DRect r = Rect;
+            r = r.Offset(hborder, hborder);
+            r = r.Inflate(-border, -border);
+            dg.FillRect(r.X, r.Y, r.Width, r.Height, DColor.White, 1);
+            dg.DrawRect(r.X, r.Y, r.Width, r.Height, DColor.Black, 1, border);
+            dg.DrawRect(r.X, r.Y, r.Width, r.Height, DColor.White, 1, border, DPenStyle.Dot);
+            // paint text
+            double alpha = tf.Alpha;
+            tf.Alpha = 1;
+            double rot = tf.Rotation;
+            tf.Rotation = 0;
+            tf.Paint(dg);
+            tf.Alpha = alpha;
+            tf.Rotation = rot;
+        }
+    }
+
     public class GroupFigure : RectbaseFigure, IChildFigureable
     {
         public override double X

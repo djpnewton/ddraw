@@ -14,9 +14,11 @@ namespace DDraw.GTK
             control.ButtonPressEvent += new ButtonPressEventHandler(control_ButtonPress);
             control.MotionNotifyEvent += new MotionNotifyEventHandler(control_MotionNotify);
             control.ButtonReleaseEvent += new ButtonReleaseEventHandler(control_ButtonRelease);
+            control.KeyPressEvent += new KeyPressEventHandler(control_KeyPressEvent);
+            control.KeyReleaseEvent += new KeyReleaseEventHandler(control_KeyReleaseEvent);
             control.SizeAllocated += new SizeAllocatedHandler(control_SizeAllocated);
         }
-        
+
         void control_Expose(object sender, ExposeEventArgs a)
         {
             Cairo.Context cr = Gdk.CairoHelper.Create(a.Event.Window);
@@ -49,7 +51,12 @@ namespace DDraw.GTK
         void control_ButtonPress(object sender, ButtonPressEventArgs a)
         {
             if (EditFigures)
-                DoMouseDown(MouseButtonFromGTKEvent(a.Event.Button), new DPoint(a.Event.X, a.Event.Y));
+            {
+                if (a.Event.Type == Gdk.EventType.ButtonPress)
+                    DoMouseDown(MouseButtonFromGTKEvent(a.Event.Button), new DPoint(a.Event.X, a.Event.Y));
+                else if (a.Event.Type == Gdk.EventType.TwoButtonPress)
+                    DoDoubleClick(new DPoint(a.Event.X, a.Event.Y));
+            }
         }
         
         void control_MotionNotify(object sender, MotionNotifyEventArgs a)
@@ -63,7 +70,30 @@ namespace DDraw.GTK
             if (EditFigures)
                 DoMouseUp(MouseButtonFromGTKEvent(a.Event.Button), new DPoint(a.Event.X, a.Event.Y));
         }
-        
+
+        DKey EventKeyToDKey(Gdk.EventKey ek)
+        {
+            return new DKey(ek.HardwareKeycode,
+                ((int)ek.State & (int)Gdk.ModifierType.ShiftMask) == 1,
+                ((int)ek.State & (int)Gdk.ModifierType.ControlMask) == 1,
+                ((int)ek.State & (int)Gdk.ModifierType.MetaMask) == 1);
+        }
+
+        void control_KeyPressEvent(object o, KeyPressEventArgs args)
+        {
+            if (EditFigures)
+            {
+                DoKeyDown(EventKeyToDKey(args.Event));
+                DoKeyPress((char)args.Event.HardwareKeycode);
+            }
+        }
+
+        void control_KeyReleaseEvent(object o, KeyReleaseEventArgs args)
+        {
+            if (EditFigures)
+                DoKeyUp(EventKeyToDKey(args.Event));
+        }
+
         void control_SizeAllocated(object sender, SizeAllocatedArgs a)
         {
         }
@@ -109,6 +139,9 @@ namespace DDraw.GTK
                     break;
                 case DCursor.Crosshair:
                     control.GdkWindow.Cursor = new Gdk.Cursor(Gdk.CursorType.Crosshair);
+                    break;
+                case DCursor.IBeam:
+                    control.GdkWindow.Cursor = new Gdk.Cursor(Gdk.CursorType.Xterm);
                     break;
             }
         }
