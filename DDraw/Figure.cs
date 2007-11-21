@@ -71,6 +71,10 @@ namespace DDraw
             get;
             set;
         }
+        bool HasText
+        {
+            get;
+        }
         string FontName
         {
             get;
@@ -684,6 +688,11 @@ namespace DDraw
             }
         }
 
+        public bool HasText
+        {
+            get { return text != null && text.Length > 0; }
+        }
+
         public override double Width
         {
             get
@@ -722,7 +731,7 @@ namespace DDraw
 
         protected override void PaintBody(DGraphics dg)
         {
-            dg.DrawText(Text, fontName, fontSize, Rect, fill, Alpha);
+            dg.DrawText(Text, fontName, fontSize, Rect.TopLeft, fill, Alpha);
         }
 
         #region IFillable Members
@@ -737,8 +746,7 @@ namespace DDraw
 
     public class TextEditFigure : RectbaseFigure, ITextable
     {
-        const int border = 2;
-        const int hborder = 1;
+        const int border = 6;
 
         TextFigure tf;
         public TextFigure TextFigure
@@ -746,78 +754,71 @@ namespace DDraw
             get { return tf; }
         }
 
-        void _SizeToText()
-        {
-            Width = tf.Width + border * 2;
-            Height = tf.Height + border * 2;
-        }
-
-        void SizeToText()
-        {
-            if (tf.Text == null || tf.Text.Length == 0)
-            {
-                tf.Text = ".";
-                _SizeToText();
-                tf.Text = "";
-            }
-            else
-                _SizeToText();
-        }
-
         public string Text
         {
             get { return tf.Text; }
-            set
-            {
-                tf.Text = value;
-                SizeToText();
-            }
+            set { tf.Text = value; }
+        }
+
+        public bool HasText
+        {
+            get { return tf.HasText; }
         }
 
         public string FontName
         {
             get { return tf.FontName; }
-            set
-            {
-                tf.FontName = value;
-                SizeToText();
-            }
+            set { tf.FontName = value; }
         }
 
         public double FontSize
         {
             get { return tf.FontSize; }
             set
-            {
-                tf.FontSize = value;
-                SizeToText();
-            }
+            { tf.FontSize = value; }
+        }
+
+        public override double X
+        {
+            get { return tf.Left - border; }
+            set { tf.Left = value + border; }
+        }
+
+        public override double Y
+        {
+            get { return tf.Top - border; }
+            set { tf.Top = value + border; }
+        }
+
+        public override double Width
+        {
+            get { return tf.Width + border + border; }
+            set { tf.Width = value - border - border; }
+        }
+
+        public override double Height
+        {
+            get { return tf.Height + border + border; }
+            set { tf.Height = value - border - border; }
         }
 
         public TextEditFigure(TextFigure tf)
         {
             this.tf = tf;
-            TopLeft = tf.TopLeft.Offset(-border, -border);
-            SizeToText();
         }
 
         public TextEditFigure(DPoint pt, TextFigure tf)
         {
             this.tf = tf;
-            tf.TopLeft = pt.Offset(border, border);
             TopLeft = pt;
-            SizeToText();
         }
 
         protected override void PaintBody(DGraphics dg)
         {
             // paint border
             DRect r = Rect;
-            r = r.Offset(hborder, hborder);
-            r = r.Inflate(-border, -border);
-            dg.FillRect(r.X, r.Y, r.Width, r.Height, DColor.White, 1);
-            dg.DrawRect(r.X, r.Y, r.Width, r.Height, DColor.Black, 1, border);
-            dg.DrawRect(r.X, r.Y, r.Width, r.Height, DColor.White, 1, border, DPenStyle.Dot);
+            dg.FillRect(r.X, r.Y, r.Width, r.Height, DColor.Black, 1, DFillStyle.ForwardDiagonalHatch);
+            dg.FillRect(tf.X, tf.Y, tf.Width, tf.Height, DColor.White, 1);
             // paint text
             double alpha = tf.Alpha;
             tf.Alpha = 1;

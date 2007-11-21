@@ -6,6 +6,8 @@ namespace DDraw
 {
     public enum DPenStyle { Solid, Dash, Dot };
 
+    public enum DFillStyle { Solid, ForwardDiagonalHatch };
+
     public enum DCursor { Default, MoveAll, MoveNS, MoveWE, MoveNESW, MoveNWSE, Rotate, Crosshair, IBeam };
 
     public enum DHitTest { None, Body, SelectRect, Resize, Rotate };

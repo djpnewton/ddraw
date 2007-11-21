@@ -112,6 +112,7 @@ namespace DDraw
         // Abstract Drawing Methods //
 
         abstract public void FillRect(double x, double y, double width, double height, DColor color, double alpha);
+        abstract public void FillRect(double x, double y, double width, double height, DColor color, double alpha, DFillStyle fillStyle);
         abstract public void DrawRect(double x, double y, double width, double height, DColor color);
         abstract public void DrawRect(double x, double y, double width, double height, DColor color, double alpha, double strokeWidth);
         abstract public void DrawRect(double x, double y, double width, double height, DColor color, double alpha, double strokeWidth, DPenStyle penStyle);
@@ -135,8 +136,8 @@ namespace DDraw
         abstract public void DrawBitmap(DBitmap bitmap, DPoint pt);
         abstract public void DrawBitmap(DBitmap bitmap, DRect rect);
         abstract public void DrawBitmap(DBitmap bitmap, DRect rect, double alpha);
-        abstract public void DrawText(string text, string fontName, double fontSize, DRect rect, DColor color);
-        abstract public void DrawText(string text, string fontName, double fontSize, DRect rect, DColor color, double alpha);
+        abstract public void DrawText(string text, string fontName, double fontSize, DPoint pt, DColor color);
+        abstract public void DrawText(string text, string fontName, double fontSize, DPoint pt, DColor color, double alpha);
 
         abstract public DMatrix SaveTransform();
         abstract public void LoadTransform(DMatrix matrix);

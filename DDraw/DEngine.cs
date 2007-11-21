@@ -487,9 +487,8 @@ namespace DDraw
                     // replace text edit figure with the textfigure
                     if (currentFigure is TextEditFigure)
                     {
-                        TextFigure tf = ((TextEditFigure)currentFigure).TextFigure;
-                        if (tf.Text != null && tf.Text.Length > 0)
-                            figures.Insert(figures.IndexOf(currentFigure), tf);
+                        if (((TextEditFigure)currentFigure).HasText)
+                            figures.Insert(figures.IndexOf(currentFigure), ((TextEditFigure)currentFigure).TextFigure);
                         figures.Remove(currentFigure);
                     }
                     // null currentfigure
@@ -509,10 +508,33 @@ namespace DDraw
                 switch (authorProps.EditMode)
                 {
                     case DEditMode.Select:
+                        // find and select clicked figure
+                        Figure f = HitTestSelect(pt, out mouseHitTest);
+                        // special case for TextEdit mode
+                        if (authorProps.EditMode == DEditMode.TextEdit)
+                        {
+                            // select the TextFigure from the TextEditFigure
+                            TextEditFigure tef = (TextEditFigure)currentFigure;
+                            authorProps.EditMode = DEditMode.Select;
+                            if (f == tef)
+                            {
+                                if (tef.HasText)
+                                {
+                                    f = tef.TextFigure;
+                                    ClearSelectedFiguresList();
+                                    AddToSelected(f);
+                                    DoSelectedFiguresChanged();
+                                }
+                                else
+                                {
+                                    f = null;
+                                    mouseHitTest = DHitTest.None;
+                                }
+                            }
+                        }
+                        // now record state for undo/redo manager
                         if (autoUndoRecord)
                             undoRedoMgr.Start("Select Operation");
-
-                        Figure f = HitTestSelect(pt, out mouseHitTest);
                         // update selected figures
                         if (f != null)
                         {
@@ -589,7 +611,6 @@ namespace DDraw
                         break;
                     case DEditMode.TextEdit:
                         // go to select mode
-                        authorProps.EditMode = DEditMode.Select;
                         goto case DEditMode.Select;
                 }
                 // update drawing
@@ -898,7 +919,7 @@ namespace DDraw
                     switch (k)
                     {
                         case '\b': // backspace
-                            if (tf.Text.Length > 0)
+                            if (tf.HasText)
                             {
                                 DRect r = currentFigure.Rect;
                                 tf.Text = tf.Text.Substring(0, tf.Text.Length - 1);

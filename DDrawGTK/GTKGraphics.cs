@@ -71,20 +71,22 @@ namespace DDraw.GTK
     
     public class GTKTextExtent : DTextExtent
     {
-        Context cr;
-        
-        public GTKTextExtent()
-        {
-            // TODO: make this better???
-            cr = new Context(new ImageSurface(Format.ARGB32, 10, 10));            
-        }
-        
         public override DPoint MeasureText(string text, string fontName, double fontSize)
         {
+            Surface surf = new ImageSurface(Format.ARGB32, 10, 10);
+            Context cr = new Context(surf);
             cr.SelectFontFace(fontName, FontSlant.Normal, FontWeight.Normal);
             cr.SetFontSize(fontSize);
             TextExtents te = cr.TextExtents(text);
-            return new DPoint(te.Width, te.Height);
+            double w = te.Width;
+            double h = te.Height;
+            FontExtents fe = cr.FontExtents;
+            if (w < fe.MaxXAdvance)
+                w = fe.MaxXAdvance;
+            if (h < fe.Ascent)
+                h = fe.Ascent;
+            surf.Destroy();
+            return new DPoint(w + fe.Descent * 2, h + fe.Descent * 1.5);
         }
     }
     
@@ -118,7 +120,30 @@ namespace DDraw.GTK
         {
             return new Color(color.R / 255f, color.G / 255f, color.B / 255f, color.A / 255f * alpha);
         }
-        
+
+        void SetPattern(Context cr, DColor color, double alpha, DFillStyle fillStyle)
+        {
+            switch (fillStyle)
+            {
+                case DFillStyle.ForwardDiagonalHatch:
+                    Surface patSurf = cr.Target.CreateSimilar(Content.ColorAlpha, 7, 7);
+                    Context patCr = new Context(patSurf);
+                    patCr.Color = MakeColor(color, alpha);
+                    patCr.LineWidth = 1;
+                    patCr.MoveTo(0, 0);
+                    patCr.LineTo(7, 7);
+                    patCr.Stroke();
+                    SurfacePattern pat = new SurfacePattern(patSurf);
+                    pat.Extend = Cairo.Extend.Repeat;
+                    cr.Pattern = pat;
+                    patSurf.Destroy();
+                    break;
+                default:
+                    cr.Color = MakeColor(color, alpha);
+                    break;
+            }
+        }
+
         void CairoPenStyle(Context cr, DPenStyle penStyle)
         {
             switch (penStyle)
@@ -152,14 +177,18 @@ namespace DDraw.GTK
         Matrix MakeMatrix(DMatrix matrix)
         {
             return new Matrix(matrix.A, matrix.B, matrix.C, matrix.D, matrix.E, matrix.F);
-
         }
                
         // Drawing Functions //
 
         public override void FillRect(double x, double y, double width, double height, DColor color, double alpha)
         {
-            cr.Color = MakeColor(color, alpha);
+            FillRect(x, y, width, height, color, alpha, DFillStyle.Solid);
+        }
+
+        public override void FillRect(double x, double y, double width, double height, DColor color, double alpha, DFillStyle fillStyle)
+        {
+            SetPattern(cr, color, alpha, fillStyle);
             cr.Rectangle(x, y, width, height);
             cr.Fill();
         }
@@ -315,20 +344,21 @@ namespace DDraw.GTK
             cr.PaintWithAlpha(alpha);
             cr.Restore();
         }
-        
-        public override void DrawText(string text, string fontName, double fontSize, DRect rect, DColor color)
+
+        public override void DrawText(string text, string fontName, double fontSize, DPoint pt, DColor color)
         {
-            DrawText(text, fontName, fontSize, rect, color, 1);
+            DrawText(text, fontName, fontSize, pt, color, 1);
         }
 
-        public override void DrawText(string text, string fontName, double fontSize, DRect rect, DColor color, double alpha)
+        public override void DrawText(string text, string fontName, double fontSize, DPoint pt, DColor color, double alpha)
         {
             cr.SelectFontFace(fontName, FontSlant.Normal, FontWeight.Normal);
             cr.SetFontSize(fontSize);
             cr.Color = MakeColor(color, alpha);
             TextExtents te = cr.TextExtents(text);
-            cr.MoveTo(rect.X - te.XBearing, rect.Y - te.YBearing);
-            cr.ShowText(text);            
+            FontExtents fe = cr.FontExtents;
+            cr.MoveTo(pt.X - te.XBearing + fe.Descent, pt.Y - te.YBearing + fe.Descent);
+            cr.ShowText(text);
         }
         
         public override DMatrix SaveTransform()

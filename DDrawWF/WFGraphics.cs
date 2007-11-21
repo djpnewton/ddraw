@@ -121,6 +121,17 @@ namespace DDraw.WinForms
             return Color.FromArgb((int)(color.A * alpha), color.R, color.G, color.B);
         }
 
+        Brush MakeBrush(DFillStyle fillStyle, DColor color, double alpha)
+        {
+            switch (fillStyle)
+            {
+                case DFillStyle.ForwardDiagonalHatch:
+                    return new HatchBrush(HatchStyle.ForwardDiagonal, MakeColor(color, alpha), Color.FromArgb(0, Color.Red));
+                default:
+                    return new SolidBrush(MakeColor(color, alpha)); ;
+            }
+        }
+
         Rectangle MakeRect(double x, double y, double width, double height)
         {
             return new Rectangle(Convert.ToInt32(x), Convert.ToInt32(y), Convert.ToInt32(width), Convert.ToInt32(height));
@@ -178,6 +189,11 @@ namespace DDraw.WinForms
         public override void FillRect(double x, double y, double width, double height, DColor color, double alpha)
         {
             g.FillRectangle(new SolidBrush(MakeColor(color, alpha)), (float)x, (float)y, (float)width, (float)height);
+        }
+
+        public override void FillRect(double x, double y, double width, double height, DColor color, double alpha, DFillStyle fillStyle)
+        {
+            g.FillRectangle(MakeBrush(fillStyle, color, alpha), (float)x, (float)y, (float)width, (float)height);
         }
 
         public override void DrawRect(double x, double y, double width, double height, DColor color, double alpha, double strokeWidth, DPenStyle penStyle)
@@ -318,14 +334,14 @@ namespace DDraw.WinForms
                 0, 0, bmp.Width, bmp.Height, GraphicsUnit.Pixel, MakeImageAttributesWithAlpha(alpha));
         }
 
-        public override void DrawText(string text, string fontName, double fontSize, DRect rect, DColor color)
+        public override void DrawText(string text, string fontName, double fontSize, DPoint pt, DColor color)
         {
-            g.DrawString(text, new Font(fontName, (float)fontSize), new SolidBrush(MakeColor(color)), new PointF((float)rect.X, (float)rect.Y));
+            g.DrawString(text, new Font(fontName, (float)fontSize), new SolidBrush(MakeColor(color)), new PointF((float)pt.X, (float)pt.Y));
         }
 
-        public override void DrawText(string text, string fontName, double fontSize, DRect rect, DColor color, double alpha)
+        public override void DrawText(string text, string fontName, double fontSize, DPoint pt, DColor color, double alpha)
         {
-            g.DrawString(text, new Font(fontName, (float)fontSize), new SolidBrush(MakeColor(color, alpha)), new PointF((float)rect.X, (float)rect.Y));
+            g.DrawString(text, new Font(fontName, (float)fontSize), new SolidBrush(MakeColor(color, alpha)), new PointF((float)pt.X, (float)pt.Y));
         }
 
         public override DMatrix SaveTransform()
