@@ -30,6 +30,7 @@ namespace WinFormsDemo
             de.SelectedFiguresChanged += new SelectedFiguresHandler(de_SelectedFiguresChanged);
             de.UndoRedoMgr.UndoRedoChanged += new UndoRedoChangedDelegate(UndoRedoMgr_UndoRedoChanged);
             de.ContextClick += new ContextClickHandler(de_ContextClick);
+            de.StateChanged += new DEngine.DEngineStateChangedHandler(de_StateChanged);
 
             SetCurrentDe(de);
         }
@@ -37,7 +38,10 @@ namespace WinFormsDemo
         private void SetCurrentDe(DEngine de)
         {
             if (this.de != null)
+            {
                 this.de.RemoveViewer(dvEditor);
+                de.State = this.de.State;
+            }
             de.AddViewer(dvEditor);
             dvEditor.Update();
             this.de = de;
@@ -52,7 +56,6 @@ namespace WinFormsDemo
             WFGraphics.Init();
             // create author properties
             dap = new DAuthorProperties(DColor.Blue, DColor.Red, 3, 1, "Arial");
-            dap.EditModeChanged += new DEditModeChangedHandler(dap_EditModeChanged);
             // edit viewer
             dvEditor = new WFViewer(wfvcEditor);
             dvEditor.EditFigures = true;
@@ -160,12 +163,10 @@ namespace WinFormsDemo
             tbStrokeWidth.Enabled = false;
             tbAlpha.Enabled = false;
             cbFont.Enabled = false;
-            // update controls based on the EditMode of DEngine
-            switch (dap.EditMode)
+            // update controls based on the state of DEngine
+            switch (de.State)
             {
-                case DEditMode.None:
-                    break;
-                case DEditMode.Select:
+                case DEngineState.Select:
                     // get selected figures
                     Figure[] figs = de.SelectedFigures;
                     // test to enable property controls
@@ -203,11 +204,11 @@ namespace WinFormsDemo
                     break;
                 default:
                     // enable relavant controls
-                    btnFill.Enabled = dap.EditMode == DEditMode.DrawRect || dap.EditMode == DEditMode.DrawEllipse || dap.EditMode == DEditMode.DrawText;
-                    btnStroke.Enabled = dap.EditMode == DEditMode.DrawPolyline || dap.EditMode == DEditMode.DrawRect || dap.EditMode == DEditMode.DrawEllipse;
+                    btnFill.Enabled = de.State == DEngineState.DrawRect || de.State == DEngineState.DrawEllipse || de.State == DEngineState.DrawText;
+                    btnStroke.Enabled = de.State == DEngineState.DrawPolyline || de.State == DEngineState.DrawRect || de.State == DEngineState.DrawEllipse;
                     tbStrokeWidth.Enabled = btnStroke.Enabled;
                     tbAlpha.Enabled = btnFill.Enabled || btnStroke.Enabled;
-                    cbFont.Enabled = dap.EditMode == DEditMode.DrawText;
+                    cbFont.Enabled = de.State == DEngineState.DrawText;
                     // update values to match dap
                     if (btnFill.Enabled)
                         btnFill.BackColor = MakeColor(dap.Fill);
@@ -243,13 +244,13 @@ namespace WinFormsDemo
             bringForwardToolStripMenuItem.Enabled = de.CanBringForward(figs);
         }
 
-        void dap_EditModeChanged()
+        void de_StateChanged()
         {
-            btnSelect.Checked = dap.EditMode == DEditMode.Select || dap.EditMode == DEditMode.TextEdit;
-            btnPen.Checked = dap.EditMode == DEditMode.DrawPolyline;
-            btnRect.Checked = dap.EditMode == DEditMode.DrawRect;
-            btnEllipse.Checked = dap.EditMode == DEditMode.DrawEllipse;
-            btnText.Checked = dap.EditMode == DEditMode.DrawText;
+            btnSelect.Checked = de.State == DEngineState.Select;
+            btnPen.Checked = de.State == DEngineState.DrawPolyline;
+            btnRect.Checked = de.State == DEngineState.DrawRect;
+            btnEllipse.Checked = de.State == DEngineState.DrawEllipse;
+            btnText.Checked = de.State == DEngineState.DrawText;
             InitPropertyControls();
         }
 
@@ -270,11 +271,9 @@ namespace WinFormsDemo
             if (colorDialog1.ShowDialog() == DialogResult.OK)
             {
                 btnFill.BackColor = colorDialog1.Color;
-                switch (dap.EditMode)
+                switch (de.State)
                 {
-                    case DEditMode.None:
-                        break;
-                    case DEditMode.Select:
+                    case DEngineState.Select:
                         UpdateSelectedFigures(btnFill);
                         break;
                     default:
@@ -290,11 +289,9 @@ namespace WinFormsDemo
             if (colorDialog1.ShowDialog() == DialogResult.OK)
             {
                 btnStroke.BackColor = colorDialog1.Color;
-                switch (dap.EditMode)
+                switch (de.State)
                 {
-                    case DEditMode.None:
-                        break;
-                    case DEditMode.Select:
+                    case DEngineState.Select:
                         UpdateSelectedFigures(btnStroke);
                         break;
                     default:
@@ -307,11 +304,9 @@ namespace WinFormsDemo
         private void tbAlpha_Scroll(object sender, EventArgs e)
         {
             UpdateSelectedFigures(tbAlpha);
-            switch (dap.EditMode)
+            switch (de.State)
             {
-                case DEditMode.None:
-                    break;
-                case DEditMode.Select:
+                case DEngineState.Select:
                     UpdateSelectedFigures(tbAlpha);
                     break;
                 default:
@@ -322,11 +317,9 @@ namespace WinFormsDemo
 
         private void tsStrokeWidth_Scroll(object sender, EventArgs e)
         {
-            switch (dap.EditMode)
+            switch (de.State)
             {
-                case DEditMode.None:
-                    break;
-                case DEditMode.Select:
+                case DEngineState.Select:
                     UpdateSelectedFigures(tbStrokeWidth);
                     break;
                 default:
@@ -337,11 +330,9 @@ namespace WinFormsDemo
 
         private void cbFont_SelectedIndexChanged(object sender, EventArgs e)
         {
-            switch (dap.EditMode)
+            switch (de.State)
             {
-                case DEditMode.None:
-                    break;
-                case DEditMode.Select:
+                case DEngineState.Select:
                     UpdateSelectedFigures(cbFont);
                     break;
                 default:
@@ -376,27 +367,27 @@ namespace WinFormsDemo
 
         private void btnSelect_Click(object sender, EventArgs e)
         {
-            dap.EditMode = DEditMode.Select;
+            de.State = DEngineState.Select;
         }
 
         private void btnPen_Click(object sender, EventArgs e)
         {
-            dap.EditMode = DEditMode.DrawPolyline;
+            de.State = DEngineState.DrawPolyline;
         }
 
         private void btnRect_Click(object sender, EventArgs e)
         {
-            dap.EditMode = DEditMode.DrawRect;
+            de.State = DEngineState.DrawRect;
         }
 
         private void btnEllipse_Click(object sender, EventArgs e)
         {
-            dap.EditMode = DEditMode.DrawEllipse;
+            de.State = DEngineState.DrawEllipse;
         }
 
         private void btnText_Click(object sender, EventArgs e)
         {
-            dap.EditMode = DEditMode.DrawText;
+            de.State = DEngineState.DrawText;
         }
 
         private void previewBar1_PreviewSelected(Preview p)
@@ -441,6 +432,12 @@ namespace WinFormsDemo
         {
             AboutBox f = new AboutBox();
             f.ShowDialog();
+        }
+
+        private void editToolStripMenuItem_DropDownOpened(object sender, EventArgs e)
+        {
+            if (de.State == DEngineState.TextEdit)
+                de.State = DEngineState.Select;
         }
 
         private void undoToolStripMenuItem_Click(object sender, EventArgs e)

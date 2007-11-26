@@ -45,7 +45,7 @@ namespace GTKDemo
 			de.AddFigure(new TextFigure(new DPoint(150, 30), "hello", GraphicsHelper.TextExtent, 0));
 
 			dv.EditFigures = true;
-			dap.EditMode = DEditMode.Select;
+			de.State = DEngineState.Select;
 			
 			
 			Resize(400, 300);

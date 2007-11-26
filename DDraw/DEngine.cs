@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
+using qf4net;
+
 namespace DDraw
 {
-    public enum DEditMode { None, Select, DrawPolyline, DrawRect, DrawEllipse, DrawText, TextEdit };
-    public delegate void DEditModeChangedHandler();
     public delegate void DebugMessageHandler(string msg);
     public delegate void SelectedFiguresHandler();
 
@@ -16,23 +16,6 @@ namespace DDraw
         public double StrokeWidth;
         public double Alpha;
         public string FontName;
-
-        DEditMode editMode = DEditMode.None;
-        public DEditMode EditMode
-        {
-            get { return editMode; }
-            set
-            {
-                if (value != editMode)
-                {
-                    editMode = value;
-                    if (EditModeChanged != null)
-                        EditModeChanged();
-                }
-            }
-        }
-
-        public event DEditModeChangedHandler EditModeChanged;
         
         public DAuthorProperties()
         {
@@ -70,7 +53,7 @@ namespace DDraw
 
     public delegate void ContextClickHandler(DEngine de, Figure clickedFigure, DPoint pt);
 
-    public class DEngine
+    public partial class DEngine
     {
         protected List<Figure> figures = new List<Figure>();
         List<DViewer> viewers = new List<DViewer>();
@@ -113,17 +96,12 @@ namespace DDraw
         public DEngine(DAuthorProperties ap)
         {
             authorProps = ap;
-            authorProps.EditModeChanged += new DEditModeChangedHandler(authorProps_EditModeChanged);
             selectionRect = new SelectionFigure(new DRect(), 0);
             undoRedoMgr = new UndoRedoManager(figures);
             undoRedoMgr.UndoRedoChanged += new UndoRedoChangedDelegate(undoRedoMgr_UndoRedoChanged);
-        }
 
-        void authorProps_EditModeChanged()
-        {
-            ClearCurrentFigure();
-            ClearSelected();
-            UpdateViewers();
+            // QHsm Init
+            Init();
         }
 
         void undoRedoMgr_UndoRedoChanged(bool commitAction)
@@ -142,17 +120,17 @@ namespace DDraw
 
         void dv_MouseDown(DViewer dv, DMouseButton btn, DPoint pt)
         {
-            MouseDown(dv, btn, pt);
+            Dispatch(new QMouseEvent((int)DEngineSignals.MouseDown, dv, btn, pt));
         }
 
         void dv_MouseMove(DViewer dv, DPoint pt)
         {
-            MouseMove(dv, pt);
+            Dispatch(new QMouseEvent((int)DEngineSignals.MouseMove, dv, DMouseButton.NotApplicable, pt));
         }
 
         void dv_MouseUp(DViewer dv, DMouseButton btn, DPoint pt)
         {
-            MouseUp(dv, btn, pt);
+            Dispatch(new QMouseEvent((int)DEngineSignals.MouseUp, dv, btn, pt));
             foreach (DViewer dvOther in viewers)
                 if (dvOther != dv)
                     dvOther.Update();
@@ -160,22 +138,22 @@ namespace DDraw
 
         void dv_DoubleClick(DViewer dv, DPoint pt)
         {
-            DoubleClick(dv, pt);
+            Dispatch(new QMouseEvent((int)DEngineSignals.DoubleClick, dv, DMouseButton.NotApplicable, pt));
         }
 
         void dv_KeyDown(DViewer dv, DKey k)
         {
-            //TODO
+            Dispatch(new QKeyEvent((int)DEngineSignals.KeyDown, dv, k));
         }
 
         void dv_KeyPress(DViewer dv, char k)
         {
-            KeyPress(dv, k);
+            Dispatch(new QKeyPressEvent((int)DEngineSignals.KeyPress, dv, k));
         }
 
         void dv_KeyUp(DViewer dv, DKey k)
         {
-            //TODO
+            Dispatch(new QKeyEvent((int)DEngineSignals.KeyUp, dv, k));
         }
 
         // Public Functions //
@@ -482,141 +460,12 @@ namespace DDraw
                 // remove current figure if it was not sized by a mouse drag
                 if (currentFigure.Width == 0 || currentFigure.Height == 0)
                     figures.Remove(currentFigure);
-                if (authorProps.EditMode != DEditMode.TextEdit)
-                {
-                    // replace text edit figure with the textfigure
-                    if (currentFigure is TextEditFigure)
-                    {
-                        if (((TextEditFigure)currentFigure).HasText)
-                            figures.Insert(figures.IndexOf(currentFigure), ((TextEditFigure)currentFigure).TextFigure);
-                        figures.Remove(currentFigure);
-                    }
-                    // null currentfigure
-                    currentFigure = null;
-                }
+                // null currentfigure
+                currentFigure = null;
             }
         }
 
         // Mouse Functions //
-
-        protected void MouseDown(DViewer dv, DMouseButton btn, DPoint pt)
-        {
-            if (btn == DMouseButton.Left)
-            {
-                // store mouse state
-                mouseDown = true;
-                switch (authorProps.EditMode)
-                {
-                    case DEditMode.Select:
-                        // find and select clicked figure
-                        Figure f = HitTestSelect(pt, out mouseHitTest);
-                        // special case for TextEdit mode
-                        if (authorProps.EditMode == DEditMode.TextEdit)
-                        {
-                            // select the TextFigure from the TextEditFigure
-                            TextEditFigure tef = (TextEditFigure)currentFigure;
-                            authorProps.EditMode = DEditMode.Select;
-                            if (f == tef)
-                            {
-                                if (tef.HasText)
-                                {
-                                    f = tef.TextFigure;
-                                    ClearSelectedFiguresList();
-                                    AddToSelected(f);
-                                    DoSelectedFiguresChanged();
-                                }
-                                else
-                                {
-                                    f = null;
-                                    mouseHitTest = DHitTest.None;
-                                }
-                            }
-                        }
-                        // now record state for undo/redo manager
-                        if (autoUndoRecord)
-                            undoRedoMgr.Start("Select Operation");
-                        // update selected figures
-                        if (f != null)
-                        {
-                            // set drag infomation
-                            currentFigure = f;
-                            switch (mouseHitTest)
-                            {
-                                case DHitTest.Body:
-                                    dragPt = pt;
-                                    break;
-                                case DHitTest.SelectRect:
-                                    goto case DHitTest.Body;
-                                case DHitTest.Resize:
-                                    dragPt = new DPoint(0, 0);
-                                    dragPt = CalcSizeDelta(f.RotatePointToFigure(pt), f);
-                                    break;
-                                case DHitTest.Rotate:
-                                    dragRot = GetRotationOfPointComparedToFigure(f, pt) - f.Rotation;
-                                    if (dragRot > Math.PI)
-                                        dragRot = dragRot - (Math.PI * 2);
-                                    break;
-                            }
-                        }
-                        else
-                        {
-                            ClearSelectedFiguresList();
-                            DoSelectedFiguresChanged();
-                            dragPt = pt; // mouseHitTest = DHitTest.None
-                        }
-                        break;
-                    case DEditMode.DrawPolyline:
-                        if (autoUndoRecord)
-                            undoRedoMgr.Start("Add Polyline");
-                        // create DPoints object
-                        DPoints pts = new DPoints();
-                        pts.Add(pt);
-                        // create PolylineFigure
-                        currentFigure = new PolylineFigure(pts);
-                        authorProps.ApplyPropertiesToFigure(currentFigure);
-                        // add to list of figures
-                        figures.Add(currentFigure);
-                        break;
-                    case DEditMode.DrawRect:
-                        if (autoUndoRecord)
-                            undoRedoMgr.Start("Add Rect");
-                        // create RectFigure
-                        currentFigure = new RectFigure(new DRect(pt.X, pt.Y, 0, 0), 0);
-                        authorProps.ApplyPropertiesToFigure(currentFigure);
-                        // add to list of figures
-                        figures.Add(currentFigure);
-                        // store drag pt for reference on mousemove event)
-                        dragPt = pt;
-                        break;
-                    case DEditMode.DrawEllipse:
-                        if (autoUndoRecord)
-                            undoRedoMgr.Start("Add Ellipse");
-                        // create EllipseFigure
-                        currentFigure = new EllipseFigure(new DRect(pt.X, pt.Y, 0, 0), 0);
-                        authorProps.ApplyPropertiesToFigure(currentFigure);
-                        // add to list of figures
-                        figures.Add(currentFigure);
-                        // store drag pt for reference on mousemove event)
-                        dragPt = pt;
-                        break;
-                    case DEditMode.DrawText:
-                        ClearCurrentFigure();
-                        if (autoUndoRecord)
-                            undoRedoMgr.Start("Add Text");
-                        // create TextFigure
-                        currentFigure = new TextEditFigure(pt, new TextFigure(pt, "", GraphicsHelper.TextExtent, 0));
-                        authorProps.ApplyPropertiesToFigure(((TextEditFigure)currentFigure).TextFigure);
-                        // add to list of figures
-                        figures.Add(currentFigure);
-                        break;
-                    case DEditMode.TextEdit:
-                        // go to select mode
-                        goto case DEditMode.Select;
-                }
-                // update drawing
-                dv.Update();
-            }
-        }
 
         DPoint CalcDragDelta(DPoint pt)
         {
@@ -675,290 +524,6 @@ namespace DDraw
         }
 
         protected const int MIN_SIZE = 5;
-
-        protected void MouseMove(DViewer dv, DPoint pt)
-        {
-            switch (authorProps.EditMode)
-            {
-                case DEditMode.Select:
-                    if (mouseDown)
-                    {
-                        // rectangular area to update with paint event
-                        DRect updateRect = new DRect();
-                        // move selected figures
-                        switch (mouseHitTest)
-                        {
-                            case DHitTest.None:
-                                // initial update rect
-                                updateRect = selectionRect.Rect;
-                                // drag select figure
-                                selectionRect.TopLeft = dragPt;
-                                selectionRect.BottomRight = pt;
-                                if (selectionRect.Width < 0)
-                                {
-                                    selectionRect.X += selectionRect.Width;
-                                    selectionRect.Width = -selectionRect.Width;
-                                }
-                                if (selectionRect.Height < 0)
-                                {
-                                    selectionRect.Y += selectionRect.Height;
-                                    selectionRect.Height = -selectionRect.Height;
-                                }
-                                drawSelectionRect = true;
-                                // final update rect
-                                updateRect = updateRect.Union(selectionRect.Rect);
-                                break;
-                            case DHitTest.Body:
-                                System.Diagnostics.Trace.Assert(currentFigure != null, "currentFigure is null");
-                                // initial update rect
-                                updateRect = GetBoundingBox(currentFigure);
-                                foreach (Figure f in selectedFigures)
-                                    updateRect = updateRect.Union(GetBoundingBox(f));
-                                // apply x/y delta to figures
-                                DPoint dPos = CalcDragDelta(pt);
-                                foreach (Figure f in selectedFigures)
-                                {
-                                    f.X += dPos.X;
-                                    f.Y += dPos.Y;
-                                }
-                                // store drag pt for reference later (eg. next mousemove event)
-                                dragPt = pt;
-                                // final update rect
-                                foreach (Figure f in selectedFigures)
-                                    updateRect = updateRect.Union(GetBoundingBox(f));
-                                break;
-                            case DHitTest.SelectRect:
-                                goto case DHitTest.Body;
-                            case DHitTest.Resize:
-                                System.Diagnostics.Trace.Assert(currentFigure != null, "currentFigure is null");
-                                // alert figure we are going to resize it
-                                currentFigure.BeforeResize();
-                                // inital update rect
-                                updateRect = GetBoundingBox(currentFigure);
-                                // translate point onto the same rotated plane as the figure
-                                pt = currentFigure.RotatePointToFigure(pt);
-                                // apply width/height delta to figure
-                                DPoint dSize = CalcSizeDelta(pt, currentFigure);
-                                if (currentFigure.Width + dSize.X < MIN_SIZE)
-                                {
-                                    dSize.X = MIN_SIZE - currentFigure.Width;
-                                    if (currentFigure.LockAspectRatio)
-                                        dSize.Y = (currentFigure.Height / currentFigure.Width) * dSize.X;
-                                }
-                                if (currentFigure.Height + dSize.Y < MIN_SIZE)
-                                {
-                                    dSize.Y = MIN_SIZE - currentFigure.Height;
-                                    if (currentFigure.LockAspectRatio)
-                                        dSize.X = (currentFigure.Width / currentFigure.Height) * dSize.Y;
-                                }
-                                currentFigure.Width += dSize.X;
-                                currentFigure.Height += dSize.Y;
-                                // apply x/y delta to figure to account for rotation
-                                dPos = CalcPosDeltaFromAngle(currentFigure.Rotation, dSize);
-                                currentFigure.X += dPos.X;
-                                currentFigure.Y += dPos.Y;
-                                // final update rect
-                                updateRect = updateRect.Union(GetBoundingBox(currentFigure));
-                                // alert figure we have finished resizing
-                                currentFigure.AfterResize();
-                                // debug message
-                                DoDebugMessage(string.Format("{0} {1}", dSize.X, dSize.Y));
-                                break;
-                            case DHitTest.Rotate:
-                                System.Diagnostics.Trace.Assert(currentFigure != null, "currentFigure is null");
-                                // initial update rect
-                                updateRect = GetBoundingBox(currentFigure);
-                                // apply rotation to figure
-                                currentFigure.Rotation = GetRotationOfPointComparedToFigure(currentFigure, pt) - dragRot;
-                                // final update rect
-                                updateRect = updateRect.Union(GetBoundingBox(currentFigure));
-                                // debug message
-                                DoDebugMessage((currentFigure.Rotation * 180 / Math.PI).ToString());
-                                break;
-                        }
-                        // update drawing
-                        dv.Update(updateRect);
-                    }
-                    else
-                    {
-                        // set cursor
-                        DHitTest hitTest;
-                        HitTestFigures(pt, out hitTest);
-                        switch (hitTest)
-                        {
-                            case DHitTest.None:
-                                dv.SetCursor(DCursor.Default);
-                                break;
-                            case DHitTest.Body:
-                                dv.SetCursor(DCursor.MoveAll);
-                                break;
-                            case DHitTest.SelectRect:
-                                goto case DHitTest.Body;
-                            case DHitTest.Resize:
-                                dv.SetCursor(DCursor.MoveNWSE);
-                                break;
-                            case DHitTest.Rotate:
-                                dv.SetCursor(DCursor.Rotate);
-                                break;
-                        }
-                    }
-                    break;
-                case DEditMode.DrawPolyline:
-                    // set cursor to draw
-                    dv.SetCursor(DCursor.Crosshair);
-                    if (mouseDown)
-                    {
-                        // initial update rect
-                        DRect updateRect = currentFigure.GetSelectRect();
-                        // add point
-                        DPoints pts = ((PolylineFigure)currentFigure).Points;
-                        pts.Add(pt);
-                        ((PolylineFigure)currentFigure).Points = pts;
-                        // update drawing
-                        dv.Update(updateRect.Union(currentFigure.GetSelectRect()));
-                    }
-                    break;
-                case DEditMode.DrawRect:
-                    // set cursor to draw
-                    dv.SetCursor(DCursor.Crosshair);
-                    if (mouseDown)
-                    {
-                        // initial update rect
-                        DRect updateRect = currentFigure.GetSelectRect();
-                        // change dimensions
-                        if (pt.X >= dragPt.X)
-                            ((RectFigure)currentFigure).Right = pt.X;
-                        else
-                        {
-                            ((RectFigure)currentFigure).Left = pt.X;
-                            ((RectFigure)currentFigure).Right = dragPt.X;
-                        }
-                        if (pt.Y >= dragPt.Y)
-                            ((RectFigure)currentFigure).Bottom = pt.Y;
-                        else
-                        {
-                            ((RectFigure)currentFigure).Top = pt.Y;
-                            ((RectFigure)currentFigure).Bottom = dragPt.Y;
-                        }
-                        // update drawing
-                        dv.Update(updateRect.Union(currentFigure.GetSelectRect()));
-                    }
-                    break;
-                case DEditMode.DrawEllipse:
-                    goto case DEditMode.DrawRect;
-                case DEditMode.DrawText:
-                    // set cursor to text
-                    dv.SetCursor(DCursor.IBeam);
-                    break;
-                case DEditMode.TextEdit:
-                    goto case DEditMode.Select;
-            }
-        }
-
-        protected void MouseUp(DViewer dv, DMouseButton btn, DPoint pt)
-        {
-            if (btn == DMouseButton.Left)
-            {
-                mouseDown = false;
-                switch (authorProps.EditMode)
-                {
-                    case DEditMode.Select:
-                        currentFigure = null;
-                        if (drawSelectionRect)
-                        {
-                            DRect updateRect = selectionRect.Rect;
-                            foreach (Figure f in figures)
-                                if (selectionRect.Contains(f))
-                                {
-                                    AddToSelected(f);
-                                    updateRect = updateRect.Union(GetBoundingBox(f));
-                                }
-                            DoSelectedFiguresChanged();
-                            drawSelectionRect = false;
-                            // update drawing
-                            dv.Update(updateRect);
-                        }
-                        break;
-                    case DEditMode.DrawPolyline:
-                        ClearCurrentFigure();
-                        break;
-                    case DEditMode.DrawRect:
-                        ClearCurrentFigure();
-                        break;
-                    case DEditMode.DrawEllipse:
-                        goto case DEditMode.DrawRect;
-                    case DEditMode.DrawText:
-                        // go to text edit mode
-                        authorProps.EditMode = DEditMode.TextEdit;
-                        break;
-                }
-                if (autoUndoRecord)
-                    undoRedoMgr.Commit();
-            }
-            else if (btn == DMouseButton.Right)
-            {
-                if (authorProps.EditMode == DEditMode.Select)
-                {
-                    DHitTest hitTest;
-                    Figure f = HitTestSelect(pt, out hitTest);
-                    dv.SetCursor(DCursor.Default);
-                    dv.Update();
-                    if (ContextClick != null)
-                        ContextClick(this, f, pt);
-                }
-            }
-        }
-
-        protected void KeyPress(DViewer dv, char k)
-        {
-            if (authorProps.EditMode == DEditMode.TextEdit)
-            {
-                if (currentFigure != null && currentFigure is ITextable)
-                {
-                    ITextable tf = (ITextable)currentFigure;
-                    switch (k)
-                    {
-                        case '\b': // backspace
-                            if (tf.HasText)
-                            {
-                                DRect r = currentFigure.Rect;
-                                tf.Text = tf.Text.Substring(0, tf.Text.Length - 1);
-                                dv.Update(r);
-                            }
-                            break;
-                        case '\r': // enter
-                            authorProps.EditMode = DEditMode.Select;
-                            break;
-                        case (char)27: // esc
-                            goto case '\r';
-                        default:
-                            tf.Text = string.Concat(tf.Text, k);
-                            dv.Update(currentFigure.Rect);
-                            break;
-                    }
-                    
-                }
-            }
-        }
-
-        protected void DoubleClick(DViewer dv, DPoint pt)
-        {
-            switch (authorProps.EditMode)
-            {
-                case DEditMode.Select:
-                    DHitTest ht;
-                    Figure f = HitTestFigures(pt, out ht);
-                    if (f is TextFigure)
-                    {
-                        authorProps.EditMode = DEditMode.TextEdit;
-                        currentFigure = new TextEditFigure((TextFigure)f);
-                        figures.Insert(figures.IndexOf(f), currentFigure);
-                        figures.Remove(f);
-                        dv.Update(currentFigure.Rect);
-                    }
-                    break;
-            }
-        }
 
         // Other //
 

@@ -63,7 +63,7 @@ namespace DDraw
 	
 	public class UndoRedoManager
 	{
-		string undoName;
+		string undoName = null;
 		Stack<UndoFrame> undos = new Stack<UndoFrame>();
 		Stack<UndoFrame> redos = new Stack<UndoFrame>();
 		List<Figure> figures;
@@ -130,16 +130,19 @@ namespace DDraw
 		
 		public void Start(string name)
 		{
-			undoName = name;
-			// store current figures state
-			figureProps.Clear();
-			int i = 0;
-			foreach (Figure f in figures)
-			{
-	            figureProps.Add(CreateFigureProps(f, i));
-				i += 1;				
-			}
-		}
+            if (undoName == null)
+            {
+                // store current figures state
+                figureProps.Clear();
+                int i = 0;
+                foreach (Figure f in figures)
+                {
+                    figureProps.Add(CreateFigureProps(f, i));
+                    i += 1;
+                }
+            }
+            undoName = name;
+        }
         
         bool ContainsFigure(List<FigureProperties> figureProps, Figure f)
         {
@@ -217,9 +220,9 @@ namespace DDraw
                 ((IBitmapable)f).Bitmap = fp.Bitmap;
             if (f is ITextable)
             {
+                ((ITextable)f).FontSize = fp.FontSize;
                 ((ITextable)f).Text = fp.Text;
                 ((ITextable)f).FontName = fp.FontName;
-                ((ITextable)f).FontSize = fp.FontSize;
             }
             if (f is IChildFigureable)
             {
@@ -265,6 +268,7 @@ namespace DDraw
 		
 		public void Commit()
 		{
+            System.Diagnostics.Debug.Assert(undoName != null, "ERROR: Start has not been called");
             UndoFrame uf = Snapshot(undoName);
             if (uf.FigureChanges.Count > 0)
             {
@@ -273,6 +277,7 @@ namespace DDraw
                 redos.Clear();
                 DoUndoRedoChanged(true);
             }
+            undoName = null;
 		}
 
         void ApplyUndoFrame(UndoFrame uf)

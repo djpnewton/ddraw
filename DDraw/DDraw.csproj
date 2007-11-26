@@ -1,5 +1,4 @@
-﻿
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -40,6 +39,10 @@
     <RootNamespace>DDraw</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="qf4net, Version=1.1.17.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\libs\qf4net.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
@@ -47,6 +50,7 @@
   <ItemGroup>
     <Compile Include="DColor.cs" />
     <Compile Include="DDraw.cs" />
+    <Compile Include="DEngineHsm.cs" />
     <Compile Include="DGeom.cs" />
     <Compile Include="DEngine.cs" />
     <Compile Include="DGraphics.cs" />

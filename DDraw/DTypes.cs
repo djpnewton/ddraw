@@ -12,7 +12,7 @@ namespace DDraw
 
     public enum DHitTest { None, Body, SelectRect, Resize, Rotate };
 
-    public enum DMouseButton { Left, Right, Middle };
+    public enum DMouseButton { Left, Right, Middle, NotApplicable };
 
     public struct DKey
     {

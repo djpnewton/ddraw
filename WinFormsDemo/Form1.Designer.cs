@@ -31,6 +31,7 @@ namespace WinFormsDemo
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.pnlPreviews = new System.Windows.Forms.Panel();
+            this.previewBar1 = new WinFormsDemo.PreviewBar();
             this.tsEditorMode = new System.Windows.Forms.ToolStrip();
             this.btnAntiAlias = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
@@ -38,9 +39,11 @@ namespace WinFormsDemo
             this.btnPen = new System.Windows.Forms.ToolStripButton();
             this.btnRect = new System.Windows.Forms.ToolStripButton();
             this.btnEllipse = new System.Windows.Forms.ToolStripButton();
+            this.btnText = new System.Windows.Forms.ToolStripButton();
             this.toolStripContainer1 = new System.Windows.Forms.ToolStripContainer();
             this.pnlMain = new System.Windows.Forms.Panel();
             this.pnlViewer = new System.Windows.Forms.Panel();
+            this.wfvcEditor = new DDraw.WinForms.WFViewerControl();
             this.pnlFigureProps = new System.Windows.Forms.Panel();
             this.cbFont = new System.Windows.Forms.ComboBox();
             this.tbStrokeWidth = new System.Windows.Forms.TrackBar();
@@ -66,9 +69,6 @@ namespace WinFormsDemo
             this.bringToFrontToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.sendBackwardToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.bringForwardToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.btnText = new System.Windows.Forms.ToolStripButton();
-            this.wfvcEditor = new DDraw.WinForms.WFViewerControl();
-            this.previewBar1 = new WinFormsDemo.PreviewBar();
             this.pnlPreviews.SuspendLayout();
             this.tsEditorMode.SuspendLayout();
             this.toolStripContainer1.ContentPanel.SuspendLayout();
@@ -92,6 +92,17 @@ namespace WinFormsDemo
             this.pnlPreviews.Name = "pnlPreviews";
             this.pnlPreviews.Size = new System.Drawing.Size(81, 244);
             this.pnlPreviews.TabIndex = 9;
+            // 
+            // previewBar1
+            // 
+            this.previewBar1.AutoScroll = true;
+            this.previewBar1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.previewBar1.Location = new System.Drawing.Point(0, 0);
+            this.previewBar1.Name = "previewBar1";
+            this.previewBar1.Size = new System.Drawing.Size(81, 244);
+            this.previewBar1.TabIndex = 0;
+            this.previewBar1.PreviewSelected += new WinFormsDemo.PreviewSelectedHandler(this.previewBar1_PreviewSelected);
+            this.previewBar1.PreviewAdd += new System.EventHandler(this.previewBar1_PreviewAdd);
             // 
             // tsEditorMode
             // 
@@ -165,6 +176,16 @@ namespace WinFormsDemo
             this.btnEllipse.Text = "Ellipse";
             this.btnEllipse.Click += new System.EventHandler(this.btnEllipse_Click);
             // 
+            // btnText
+            // 
+            this.btnText.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.btnText.Image = ((System.Drawing.Image)(resources.GetObject("btnText.Image")));
+            this.btnText.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnText.Name = "btnText";
+            this.btnText.Size = new System.Drawing.Size(23, 22);
+            this.btnText.Text = "Text";
+            this.btnText.Click += new System.EventHandler(this.btnText_Click);
+            // 
             // toolStripContainer1
             // 
             // 
@@ -204,6 +225,14 @@ namespace WinFormsDemo
             this.pnlViewer.Name = "pnlViewer";
             this.pnlViewer.Size = new System.Drawing.Size(439, 244);
             this.pnlViewer.TabIndex = 10;
+            // 
+            // wfvcEditor
+            // 
+            this.wfvcEditor.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.wfvcEditor.Location = new System.Drawing.Point(0, 0);
+            this.wfvcEditor.Name = "wfvcEditor";
+            this.wfvcEditor.Size = new System.Drawing.Size(358, 244);
+            this.wfvcEditor.TabIndex = 0;
             // 
             // pnlFigureProps
             // 
@@ -315,18 +344,19 @@ namespace WinFormsDemo
             this.editToolStripMenuItem.Name = "editToolStripMenuItem";
             this.editToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
             this.editToolStripMenuItem.Text = "Edit";
+            this.editToolStripMenuItem.DropDownOpened += new System.EventHandler(this.editToolStripMenuItem_DropDownOpened);
             // 
             // undoToolStripMenuItem
             // 
             this.undoToolStripMenuItem.Name = "undoToolStripMenuItem";
-            this.undoToolStripMenuItem.Size = new System.Drawing.Size(110, 22);
+            this.undoToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.undoToolStripMenuItem.Text = "Undo";
             this.undoToolStripMenuItem.Click += new System.EventHandler(this.undoToolStripMenuItem_Click);
             // 
             // redoToolStripMenuItem
             // 
             this.redoToolStripMenuItem.Name = "redoToolStripMenuItem";
-            this.redoToolStripMenuItem.Size = new System.Drawing.Size(110, 22);
+            this.redoToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.redoToolStripMenuItem.Text = "Redo";
             this.redoToolStripMenuItem.Click += new System.EventHandler(this.redoToolStripMenuItem_Click);
             // 
@@ -419,35 +449,6 @@ namespace WinFormsDemo
             this.bringForwardToolStripMenuItem.Size = new System.Drawing.Size(158, 22);
             this.bringForwardToolStripMenuItem.Text = "Bring Forward";
             this.bringForwardToolStripMenuItem.Click += new System.EventHandler(this.orderToolStripMenuItem_Click);
-            // 
-            // btnText
-            // 
-            this.btnText.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.btnText.Image = ((System.Drawing.Image)(resources.GetObject("btnText.Image")));
-            this.btnText.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btnText.Name = "btnText";
-            this.btnText.Size = new System.Drawing.Size(23, 22);
-            this.btnText.Text = "Text";
-            this.btnText.Click += new System.EventHandler(this.btnText_Click);
-            // 
-            // wfvcEditor
-            // 
-            this.wfvcEditor.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.wfvcEditor.Location = new System.Drawing.Point(0, 0);
-            this.wfvcEditor.Name = "wfvcEditor";
-            this.wfvcEditor.Size = new System.Drawing.Size(358, 244);
-            this.wfvcEditor.TabIndex = 0;
-            // 
-            // previewBar1
-            // 
-            this.previewBar1.AutoScroll = true;
-            this.previewBar1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.previewBar1.Location = new System.Drawing.Point(0, 0);
-            this.previewBar1.Name = "previewBar1";
-            this.previewBar1.Size = new System.Drawing.Size(81, 244);
-            this.previewBar1.TabIndex = 0;
-            this.previewBar1.PreviewSelected += new WinFormsDemo.PreviewSelectedHandler(this.previewBar1_PreviewSelected);
-            this.previewBar1.PreviewAdd += new System.EventHandler(this.previewBar1_PreviewAdd);
             // 
             // Form1
             // 
