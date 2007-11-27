@@ -3,9 +3,9 @@ using Gtk;
 
 namespace DDraw.GTK
 {
-    public class GTKViewerControl : DrawingArea
+    public class GTKViewerControl : Layout
     {
-        public GTKViewerControl()
+        public GTKViewerControl() : base(null, null)
         {
             CanFocus = true;
             Events = Gdk.EventMask.AllEventsMask;

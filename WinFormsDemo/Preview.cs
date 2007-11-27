@@ -80,6 +80,7 @@ namespace WinFormsDemo
 
             this.de = de;
             dv = new WFViewer(viewerControl);
+            dv.Preview = true;
             de.AddViewer(dv);
         }
 

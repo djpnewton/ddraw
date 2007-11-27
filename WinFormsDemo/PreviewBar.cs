@@ -25,7 +25,7 @@ namespace WinFormsDemo
             InitializeComponent();
         }
 
-        public void AddPreview(DEngine de, WFViewerControl vc)
+        public Preview AddPreview(DEngine de, DViewer dv)
         {
             Preview p = new Preview(de);
             p.Width = ClientSize.Width;
@@ -37,8 +37,8 @@ namespace WinFormsDemo
             p.Parent = this;
             p.Click += new EventHandler(p_Click);
             previews.Add(p);
-            ScalePreviewToViewerControl(p, vc);
             InvokeOnClick(p, new EventArgs());
+            return p;
         }
 
         void p_Click(object sender, EventArgs e)
@@ -46,19 +46,6 @@ namespace WinFormsDemo
             ((Preview)sender).Selected = true;
             if (PreviewSelected != null)
                 PreviewSelected((Preview)sender);
-        }
-
-        void ScalePreviewToViewerControl(Preview p, WFViewerControl vc)
-        {
-            p.DViewer.ScaleX = (float)p.ViewerControl.Width / vc.Width;
-            p.DViewer.ScaleY = (float)p.ViewerControl.Height / vc.Height;
-            p.DViewer.Update();
-        }
-
-        public void ScalePreviewsToViewerControl(WFViewerControl vc)
-        {
-            foreach (Preview p in previews)
-                ScalePreviewToViewerControl(p, vc);
         }
 
         private void btnAdd_Click(object sender, EventArgs e)

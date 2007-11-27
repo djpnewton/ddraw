@@ -13,6 +13,70 @@ namespace DDraw.WinForms
         Cursor RotateCursor;
         Point mousePt;
 		System.Diagnostics.Stopwatch stopWatch;
+        
+        void UpdateAutoScroll()
+        {
+            if (Preview)
+                control.AutoScrollMinSize = new Size(0, 0);
+            else
+                control.AutoScrollMinSize = new Size(PgSzX + MARGIN * 2, PgSzY + MARGIN * 2);
+            Update();
+        }
+        
+        bool preview = false;
+        public override bool Preview {
+            get { return preview; }
+            set 
+            {
+                preview = value;
+                UpdateAutoScroll();
+            }
+        }
+
+        DPoint pageSize;
+        public override void SetPageSize(DPoint pageSize)
+        {
+            this.pageSize = pageSize;
+            UpdateAutoScroll();
+        }
+        protected override DPoint PageSize {
+            get { return pageSize; }
+        }
+
+        
+        int HortScroll
+        {
+            get 
+            { 
+                if (control.HorizontalScroll.Visible) return control.HorizontalScroll.Value;
+                else return 0;
+            }
+        }
+        int VertScroll
+        {
+            get 
+            {
+                if (control.VerticalScroll.Visible) return control.VerticalScroll.Value;
+                else return 0;
+            }
+        }
+        
+        int OffsetX
+        {
+            get 
+            {
+                if (control.Width > PgSzX + MARGIN * 2) return (control.Width - PgSzX) / 2;
+                else return MARGIN;
+            }
+        }   
+        int OffsetY
+        {
+            get 
+            {
+                if (control.Height > PgSzY + MARGIN * 2) return (control.Height - PgSzY) / 2;
+                else return MARGIN;
+            }
+        }   
 
         public WFViewer(WFViewerControl c)
         {
@@ -26,6 +90,7 @@ namespace DDraw.WinForms
             control.KeyPress += new KeyPressEventHandler(control_KeyPress);
             control.KeyUp += new KeyEventHandler(control_KeyUp);
             control.SizeChanged += new EventHandler(control_SizeChanged);
+            control.Scroll += new ScrollEventHandler(control_Scroll);
 
             RotateCursor = new Cursor(Resource1.RotateIcon.GetHicon());
 
@@ -43,8 +108,19 @@ namespace DDraw.WinForms
 
             dg = new WFGraphics(e.Graphics);
             dg.AntiAlias = AntiAlias;
-
-            e.Graphics.FillRectangle(Brushes.White, control.ClientRectangle);
+                
+            if (preview)
+            {
+                e.Graphics.FillRectangle(Brushes.White, control.ClientRectangle);
+                e.Graphics.ScaleTransform(control.Width / (float)pageSize.X, control.Height / (float)pageSize.Y);
+            }
+            else
+            {
+                e.Graphics.FillRectangle(Brushes.LightGray, control.ClientRectangle);
+                e.Graphics.TranslateTransform(-HortScroll + OffsetX, -VertScroll + OffsetY);
+                e.Graphics.FillRectangle(Brushes.Black, SHADOW_OFFSET, SHADOW_OFFSET, (float)pageSize.X, (float)pageSize.Y);
+                e.Graphics.FillRectangle(Brushes.White, 0, 0, (float)pageSize.X, (float)pageSize.Y);
+            }
 
             DoNeedRepaint();
 
@@ -62,12 +138,17 @@ namespace DDraw.WinForms
                 default: return DMouseButton.Left;
             }
         }
-
+        
+        DPoint MousePt(double x, double y)
+        {
+            return new DPoint(x + HortScroll - OffsetX, y + VertScroll - OffsetY);
+        }
+            
         void control_MouseDown(object sender, MouseEventArgs e)
         {
             if (EditFigures)
             {
-                DoMouseDown(MouseButtonFromWFEvent(e.Button), new DPoint(e.X, e.Y));
+                DoMouseDown(MouseButtonFromWFEvent(e.Button), MousePt(e.X, e.Y));
                 control.Focus();
             }
         }
@@ -76,19 +157,19 @@ namespace DDraw.WinForms
         {
             mousePt = e.Location;
             if (EditFigures)
-                DoMouseMove(new DPoint(e.X, e.Y));
+                DoMouseMove(MousePt(e.X, e.Y));
         }
 
         void control_MouseUp(object sender, MouseEventArgs e)
         {
             if (EditFigures)
-                DoMouseUp(MouseButtonFromWFEvent(e.Button), new DPoint(e.X, e.Y));
+                DoMouseUp(MouseButtonFromWFEvent(e.Button), MousePt(e.X, e.Y));
         }
 
         void control_DoubleClick(object sender, EventArgs e)
         {
             if (EditFigures)
-                DoDoubleClick(new DPoint(mousePt.X, mousePt.Y));
+                DoDoubleClick(MousePt(mousePt.X, mousePt.Y));
         }
 
         DKey KeyFromWFEvent(KeyEventArgs e)
@@ -116,7 +197,12 @@ namespace DDraw.WinForms
 
         void control_SizeChanged(object sender, EventArgs e)
         {
-
+            Update();
+        }
+        
+        void control_Scroll(object sender, ScrollEventArgs e)
+        {
+            Update();
         }
 
         // Implemented Abstract Methods
@@ -128,7 +214,9 @@ namespace DDraw.WinForms
 
         public override void Update(DRect rect)
         {
-            Rectangle r = new Rectangle((int)(rect.X), (int)(rect.Y), (int)(rect.Width), (int)(rect.Height));
+            Rectangle r = new Rectangle((int)(rect.X) - HortScroll + OffsetX,
+                                        (int)(rect.Y) - VertScroll + OffsetY, 
+                                        (int)(rect.Width), (int)(rect.Height));
             r.Inflate(1, 1);
             control.Invalidate(r);
         }

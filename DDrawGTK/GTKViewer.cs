@@ -6,6 +6,65 @@ namespace DDraw.GTK
     public class GTKViewer : DViewer
     {
         GTKViewerControl control;
+        
+        void UpdateAutoScroll()
+        {
+            if (Preview)
+                control.SetSize(0, 0);
+            else
+                control.SetSize((uint)(PgSzX + MARGIN * 2), (uint)(PgSzY + MARGIN * 2));
+            Update();
+        }
+        
+        bool preview = false;
+        public override bool Preview {
+            get { return preview; }
+            set 
+            { 
+                preview = value;
+                UpdateAutoScroll();
+            }
+        }
+
+        DPoint pageSize;
+        public override void SetPageSize(DPoint pageSize)
+        {
+            this.pageSize = pageSize;
+            UpdateAutoScroll();
+        }
+        protected override DPoint PageSize {
+            get { return pageSize; }
+        }
+        
+        int HortScroll
+        {
+            get { return (int)Math.Round(control.Hadjustment.Value); }
+        }
+        int VertScroll
+        {
+            get { return (int)Math.Round(control.Vadjustment.Value); }
+        }
+        
+        int OffsetX
+        {
+            get 
+            {
+                int width, height;
+                control.BinWindow.GetSize(out width, out height);
+                if (width > PgSzX + MARGIN * 2) return (width - PgSzX) / 2;
+                else return MARGIN;
+            }
+        }   
+        int OffsetY
+        {
+            get 
+            {
+                int width, height;
+                control.BinWindow.GetSize(out width, out height);
+                if (height > PgSzY + MARGIN * 2) return (height - PgSzY) / 2;
+                else return MARGIN;
+            }
+        }  
 
         public GTKViewer(GTKViewerControl c)
         {
@@ -17,18 +76,41 @@ namespace DDraw.GTK
             control.KeyPressEvent += new KeyPressEventHandler(control_KeyPressEvent);
             control.KeyReleaseEvent += new KeyReleaseEventHandler(control_KeyReleaseEvent);
             control.SizeAllocated += new SizeAllocatedHandler(control_SizeAllocated);
+            control.ScrollEvent += new ScrollEventHandler(control_ScrollEvent);
         }
 
         void control_Expose(object sender, ExposeEventArgs a)
         {
+            // return if window is not BinWindow (Gtk.Layout has two windows)
+            if (a.Event.Window != control.BinWindow)
+                return;
+            
             Cairo.Context cr = Gdk.CairoHelper.Create(a.Event.Window);
                         
             dg = new GTKGraphics(cr);
             dg.AntiAlias = AntiAlias;
-
-            cr.Color = new Cairo.Color(1, 1, 1);
-            Gdk.CairoHelper.Rectangle(cr, a.Event.Area);
-            cr.Fill();
+            
+            if (preview)
+            {
+                cr.Color = new Cairo.Color(1, 1, 1);
+                Gdk.CairoHelper.Rectangle(cr, a.Event.Area);
+                cr.Fill();
+                cr.Scale(control.Width / (float)pageSize.X, control.Height / (float)pageSize.Y);
+            }
+            else
+            {
+                cr.Color = new Cairo.Color(0.75, 0.75, 0.75); // light gray?
+                Gdk.CairoHelper.Rectangle(cr, a.Event.Area);
+                cr.Fill();
+                cr.Translate(OffsetX, OffsetY);
+                cr.Color = new Cairo.Color(0, 0, 0); // black
+                cr.Rectangle(SHADOW_OFFSET, SHADOW_OFFSET, pageSize.X, pageSize.Y);
+                cr.Fill();
+                cr.Color = new Cairo.Color(1, 1, 1); // white
+                cr.Rectangle(0, 0, pageSize.X, pageSize.Y);
+                cr.Fill();
+                DoDebugMessage((control.Width > PgSzX + MARGIN * 2).ToString());
+            }
 
             DoNeedRepaint();
             
@@ -48,30 +130,35 @@ namespace DDraw.GTK
             }
         }
         
+        DPoint MousePt(double x, double y)
+        {
+            return new DPoint(x - OffsetX, y - OffsetY);
+        }
+        
         void control_ButtonPress(object sender, ButtonPressEventArgs a)
         {
             if (EditFigures)
             {
                 if (a.Event.Type == Gdk.EventType.ButtonPress)
                 {
-                    DoMouseDown(MouseButtonFromGTKEvent(a.Event.Button), new DPoint(a.Event.X, a.Event.Y));
+                    DoMouseDown(MouseButtonFromGTKEvent(a.Event.Button), MousePt(a.Event.X, a.Event.Y));
                     control.GrabFocus();
                 }
                 else if (a.Event.Type == Gdk.EventType.TwoButtonPress)
-                    DoDoubleClick(new DPoint(a.Event.X, a.Event.Y));
+                    DoDoubleClick(MousePt(a.Event.X, a.Event.Y));
             }
         }
         
         void control_MotionNotify(object sender, MotionNotifyEventArgs a)
         {
             if (EditFigures)
-                DoMouseMove(new DPoint(a.Event.X, a.Event.Y));
+                DoMouseMove(MousePt(a.Event.X, a.Event.Y));
         }
         
         void control_ButtonRelease(object sender, ButtonReleaseEventArgs a)
         {
             if (EditFigures)
-                DoMouseUp(MouseButtonFromGTKEvent(a.Event.Button), new DPoint(a.Event.X, a.Event.Y));
+                DoMouseUp(MouseButtonFromGTKEvent(a.Event.Button), MousePt(a.Event.X, a.Event.Y));
         }
 
         DKey EventKeyToDKey(Gdk.EventKey ek)
@@ -120,6 +207,12 @@ namespace DDraw.GTK
 
         void control_SizeAllocated(object sender, SizeAllocatedArgs a)
         {
+            Update();
+        }
+        
+        void control_ScrollEvent(object sender, ScrollEventArgs a)
+        {
+            Update();
         }
         
         // Implemented Abstract Methods
@@ -133,7 +226,8 @@ namespace DDraw.GTK
         {
             rect = rect.Offset(-1, -1);
             rect = rect.Inflate(2, 2);
-            control.QueueDrawArea((int)rect.X, (int)rect.Y, (int)rect.Width, (int)rect.Height);
+            control.QueueDrawArea((int)rect.X - HortScroll + OffsetX, (int)rect.Y - VertScroll + OffsetY,
+                                  (int)rect.Width, (int)rect.Height);
         }
 
         public override void SetCursor(DCursor cursor)

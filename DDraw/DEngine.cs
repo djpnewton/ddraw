@@ -88,6 +88,18 @@ namespace DDraw
             get { return autoUndoRecord; }
             set { autoUndoRecord = value; }
         }
+        
+        DPoint pageSize = new DPoint(500, 400);
+        public DPoint PageSize
+        {
+            get { return pageSize; }
+            set
+            {
+                pageSize = value;
+                foreach (DViewer dv in viewers)
+                    dv.SetPageSize(pageSize);
+            }
+        }            
 
         public event DebugMessageHandler DebugMessage;
         public event SelectedFiguresHandler SelectedFiguresChanged;
@@ -165,6 +177,7 @@ namespace DDraw
 
         public void AddViewer(DViewer dv)
         {
+            dv.SetPageSize(pageSize);
             dv.NeedRepaint += new DPaintEventHandler(dv_NeedRepaint);
             dv.MouseDown += new DMouseButtonEventHandler(dv_MouseDown);
             dv.MouseMove += new DMouseMoveEventHandler(dv_MouseMove);

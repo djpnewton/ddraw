@@ -35,9 +35,29 @@ namespace DDraw
                 Update();
             }
         }
+        
+        abstract public bool Preview
+        {
+            get;
+            set;
+        }
 
-        public double ScaleX = 1;
-        public double ScaleY = 1;
+        protected const int SHADOW_OFFSET = 5;
+        protected const int MARGIN = SHADOW_OFFSET * 2;
+        abstract public void SetPageSize(DPoint pageSize);
+        abstract protected DPoint PageSize
+        {
+            get;
+        }
+        protected int PgSzX
+        {
+            get { return (int)Math.Round(PageSize.X); }
+        }
+        
+        protected int PgSzY
+        {
+            get { return (int)Math.Round(PageSize.Y); }
+        }
 
         public event DPaintEventHandler NeedRepaint;
         public event DMouseButtonEventHandler MouseDown;
@@ -104,8 +124,6 @@ namespace DDraw
 
         public void Paint(List<Figure> figures, bool drawSelectionRect, Figure selectionRect)
         {
-            dg.Scale(ScaleX, ScaleY);
-
             // paint figures
             foreach (Figure figure in figures)
                 figure.Paint(dg);

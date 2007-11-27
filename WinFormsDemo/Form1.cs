@@ -24,7 +24,7 @@ namespace WinFormsDemo
         void CreateDEngine()
         {
             DEngine de = new DEngine(dap);
-            previewBar1.AddPreview(de, wfvcEditor);
+            previewBar1.AddPreview(de, dvEditor);
             // DEngine events
             de.DebugMessage += new DebugMessageHandler(DebugMessage);
             de.SelectedFiguresChanged += new SelectedFiguresHandler(de_SelectedFiguresChanged);
@@ -252,11 +252,6 @@ namespace WinFormsDemo
             btnEllipse.Checked = de.State == DEngineState.DrawEllipse;
             btnText.Checked = de.State == DEngineState.DrawText;
             InitPropertyControls();
-        }
-
-        private void Form1_SizeChanged(object sender, EventArgs e)
-        {
-            previewBar1.ScalePreviewsToViewerControl(wfvcEditor);
         }
 
         private void btnAntiAlias_Click(object sender, EventArgs e)
