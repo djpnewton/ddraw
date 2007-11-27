@@ -109,7 +109,6 @@ namespace DDraw.GTK
                 cr.Color = new Cairo.Color(1, 1, 1); // white
                 cr.Rectangle(0, 0, pageSize.X, pageSize.Y);
                 cr.Fill();
-                DoDebugMessage((control.Width > PgSzX + MARGIN * 2).ToString());
             }
 
             DoNeedRepaint();
