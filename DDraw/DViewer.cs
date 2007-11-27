@@ -59,6 +59,15 @@ namespace DDraw
             get { return (int)Math.Round(PageSize.Y); }
         }
 
+        abstract protected int HortScroll { get; }
+        abstract protected int VertScroll { get; }
+        abstract protected int OffsetX { get; }
+        abstract protected int OffsetY { get; }
+        public DPoint EngineToClient(DPoint pt)
+        {
+            return pt.Offset(-HortScroll + OffsetX, -VertScroll + OffsetY);
+        }
+
         public event DPaintEventHandler NeedRepaint;
         public event DMouseButtonEventHandler MouseDown;
         public event DMouseMoveEventHandler MouseMove;

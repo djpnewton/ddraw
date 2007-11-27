@@ -36,16 +36,15 @@ namespace DDraw.GTK
             get { return pageSize; }
         }
         
-        int HortScroll
+        protected override int HortScroll
         {
             get { return (int)Math.Round(control.Hadjustment.Value); }
         }
-        int VertScroll
+        protected override int VertScroll
         {
             get { return (int)Math.Round(control.Vadjustment.Value); }
         }
-        
-        int OffsetX
+        protected override int OffsetX
         {
             get 
             {
@@ -54,8 +53,8 @@ namespace DDraw.GTK
                 if (width > PgSzX + MARGIN * 2) return (width - PgSzX) / 2;
                 else return MARGIN;
             }
-        }   
-        int OffsetY
+        }
+        protected override int OffsetY
         {
             get 
             {
@@ -64,7 +63,7 @@ namespace DDraw.GTK
                 if (height > PgSzY + MARGIN * 2) return (height - PgSzY) / 2;
                 else return MARGIN;
             }
-        }  
+        }
 
         public GTKViewer(GTKViewerControl c)
         {

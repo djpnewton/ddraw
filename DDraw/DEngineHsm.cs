@@ -369,7 +369,7 @@ namespace DDraw
                 dv.SetCursor(DCursor.Default);
                 dv.Update();
                 if (ContextClick != null)
-                    ContextClick(this, f, pt);
+                    ContextClick(this, f, dv.EngineToClient(pt));
             }
         }
 

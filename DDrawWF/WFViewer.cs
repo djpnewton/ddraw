@@ -43,8 +43,8 @@ namespace DDraw.WinForms
             get { return pageSize; }
         }
 
-        
-        int HortScroll
+
+        protected override int HortScroll
         {
             get 
             { 
@@ -52,7 +52,7 @@ namespace DDraw.WinForms
                 else return 0;
             }
         }
-        int VertScroll
+        protected override int VertScroll
         {
             get 
             {
@@ -60,23 +60,22 @@ namespace DDraw.WinForms
                 else return 0;
             }
         }
-        
-        int OffsetX
+        protected override int OffsetX
         {
             get 
             {
                 if (control.Width > PgSzX + MARGIN * 2) return (control.Width - PgSzX) / 2;
                 else return MARGIN;
             }
-        }   
-        int OffsetY
+        }
+        protected override int OffsetY
         {
             get 
             {
                 if (control.Height > PgSzY + MARGIN * 2) return (control.Height - PgSzY) / 2;
                 else return MARGIN;
             }
-        }   
+        }
 
         public WFViewer(WFViewerControl c)
         {
