@@ -65,6 +65,29 @@ namespace DDraw.GTK
             }
         }
 
+        protected override int Width
+        {
+            get
+            {
+                int width, height;
+                control.BinWindow.GetSize(out width, out height);
+                return width;
+            }
+        }
+        protected override int Height
+        {
+            get
+            {
+                int width, height;
+                control.BinWindow.GetSize(out width, out height);
+                return height;
+            }
+        }
+        protected override DPoint CanvasOffset()
+        {
+            return new DPoint(OffsetX, OffsetY);
+        }
+
         public GTKViewer(GTKViewerControl c)
         {
             control = c;
@@ -83,35 +106,16 @@ namespace DDraw.GTK
             // return if window is not BinWindow (Gtk.Layout has two windows)
             if (a.Event.Window != control.BinWindow)
                 return;
-            
+            // create DGraphics object for the paint routine
             Cairo.Context cr = Gdk.CairoHelper.Create(a.Event.Window);
-                        
             dg = new GTKGraphics(cr);
-            dg.AntiAlias = AntiAlias;
-            
-            if (preview)
-            {
-                cr.Color = new Cairo.Color(1, 1, 1);
-                Gdk.CairoHelper.Rectangle(cr, a.Event.Area);
-                cr.Fill();
-                cr.Scale(control.Width / (float)pageSize.X, control.Height / (float)pageSize.Y);
-            }
-            else
-            {
-                cr.Color = new Cairo.Color(0.75, 0.75, 0.75); // light gray?
-                Gdk.CairoHelper.Rectangle(cr, a.Event.Area);
-                cr.Fill();
-                cr.Translate(OffsetX, OffsetY);
-                cr.Color = new Cairo.Color(0, 0, 0); // black
-                cr.Rectangle(SHADOW_OFFSET, SHADOW_OFFSET, pageSize.X, pageSize.Y);
-                cr.Fill();
-                cr.Color = new Cairo.Color(1, 1, 1); // white
-                cr.Rectangle(0, 0, pageSize.X, pageSize.Y);
-                cr.Fill();
-            }
-
+            // call paint events
             DoNeedRepaint();
-            
+            // free graphics resources
+            ((IDisposable)cr).Dispose();
+            cr = null;
+            dg = null;
+            // dealt withh Expose event
             a.RetVal = true;
         }
 

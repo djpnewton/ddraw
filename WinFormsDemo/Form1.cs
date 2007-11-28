@@ -503,7 +503,6 @@ namespace WinFormsDemo
                 f.PageSize = de.PageSize;
                 if (f.ShowDialog() == DialogResult.OK)
                     de.PageSize = f.PageSize;
-                //de.PageFormat = PageFormat.Custom;
             }
         }
     }

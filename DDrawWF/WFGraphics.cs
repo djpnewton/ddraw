@@ -60,7 +60,7 @@ namespace DDraw.WinForms
             return newBmp;
         }
 
-        protected override void DisposeBitmap()
+        public override void Dispose()
         {
             ((Bitmap)nativeBmp).Dispose();
         }
@@ -405,6 +405,11 @@ namespace DDraw.WinForms
                 else
                     g.SmoothingMode = SmoothingMode.None;
             }
+        }
+
+        public override void Dispose()
+        {
+            g.Dispose();
         }
     }
 }

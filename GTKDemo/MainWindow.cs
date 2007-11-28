@@ -49,6 +49,7 @@ namespace GTKDemo
 			de.AddViewer(dv);
 			de.State = DEngineState.Select;
 			de.DebugMessage += new DebugMessageHandler(DebugMessage);
+            de.ContextClick += new ContextClickHandler(de_ContextClick);
 			// add figures
 			de.AddFigure(new EllipseFigure(new DRect(20, 30, 100, 100), 0));
 			RectFigure rf = new RectFigure(new DRect(10, 20, 100, 100), 0);
@@ -59,6 +60,15 @@ namespace GTKDemo
             // resize window			
 			Resize(400, 300);
 		}
+
+        void de_ContextClick(DEngine de, Figure clickedFigure, DPoint pt)
+        {
+            Menu pop = new Menu();
+            MenuItem mi = new MenuItem("Test");
+            pop.Append(mi);
+            pop.Popup();
+            pop.ShowAll();
+        }
 		
 		void DebugMessage(string msg)
 		{

@@ -77,6 +77,19 @@ namespace DDraw.WinForms
             }
         }
 
+        protected override int Width
+        {
+            get { return control.Width; }
+        }
+        protected override int Height
+        {
+            get { return control.Height; }
+        }
+        protected override DPoint CanvasOffset()
+        {
+            return new DPoint(-HortScroll + OffsetX, -VertScroll + OffsetY);
+        }
+
         public WFViewer(WFViewerControl c)
         {
             control = c;
@@ -103,26 +116,15 @@ namespace DDraw.WinForms
 
         void control_Paint(object sender, PaintEventArgs e)
         {
+            // start stopwatch
 			stopWatch.Start();
-
+            // create DGraphics object for the paint routine
             dg = new WFGraphics(e.Graphics);
-            dg.AntiAlias = AntiAlias;
-                
-            if (preview)
-            {
-                e.Graphics.FillRectangle(Brushes.White, control.ClientRectangle);
-                e.Graphics.ScaleTransform(control.Width / (float)pageSize.X, control.Height / (float)pageSize.Y);
-            }
-            else
-            {
-                e.Graphics.FillRectangle(Brushes.LightGray, control.ClientRectangle);
-                e.Graphics.TranslateTransform(-HortScroll + OffsetX, -VertScroll + OffsetY);
-                e.Graphics.FillRectangle(Brushes.Black, SHADOW_OFFSET, SHADOW_OFFSET, (float)pageSize.X, (float)pageSize.Y);
-                e.Graphics.FillRectangle(Brushes.White, 0, 0, (float)pageSize.X, (float)pageSize.Y);
-            }
-
+            // call paint events
             DoNeedRepaint();
-
+            // clear DGraphics
+            dg = null; // no need to dispose (we did not create the base GDI graphics object)
+            // stop stopwatch and report duration
             stopWatch.Stop();
 			DoDebugMessage("control_Paint duration: " + stopWatch.ElapsedMilliseconds.ToString());
 			stopWatch.Reset();

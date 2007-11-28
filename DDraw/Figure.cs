@@ -943,6 +943,8 @@ namespace DDraw
                     foreach (Figure f in childFigs)
                         f.Paint(bmpGfx);
                     dg.DrawBitmap(bmp, rS, Alpha);
+                    bmpGfx.Dispose();
+                    bmp.Dispose();
                 }
             }
             else
@@ -1043,6 +1045,8 @@ namespace DDraw
                 bmpGfx.FillRect(1, 1, 2 * Width / 3, 2 * Height / 3, DColor.Red, Alpha);
                 bmpGfx.FillRect(Width / 3, Height / 3, 2 * Width / 3 - 1, 2 * Height / 3 - 1, DColor.Green, Alpha);
                 dg.DrawBitmap(bmp, Rect, Alpha);
+                bmpGfx.Dispose();
+                bmp.Dispose();
             }
         }
     }

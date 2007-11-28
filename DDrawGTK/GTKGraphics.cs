@@ -48,7 +48,7 @@ namespace DDraw.GTK
             return PixBufToImageSurface(new Gdk.Pixbuf(filename));
         }
         
-        protected override void DisposeBitmap ()
+        public override void Dispose ()
         {
             surface.Destroy();
         }
@@ -86,6 +86,7 @@ namespace DDraw.GTK
             if (h < fe.Ascent)
                 h = fe.Ascent;
             surf.Destroy();
+            ((IDisposable)cr).Dispose();
             return new DPoint(w + fe.Descent * 2, h + fe.Descent * 1.5);
         }
     }
@@ -421,6 +422,11 @@ namespace DDraw.GTK
                 else
                     cr.Antialias = Cairo.Antialias.None;
             }
+        }
+
+        public override void Dispose()
+        {
+            ((IDisposable)cr).Dispose();
         }
     }
 }

@@ -68,6 +68,10 @@ namespace DDraw
             return pt.Offset(-HortScroll + OffsetX, -VertScroll + OffsetY);
         }
 
+        abstract protected int Width { get; }
+        abstract protected int Height { get; }
+        abstract protected DPoint CanvasOffset();
+
         public event DPaintEventHandler NeedRepaint;
         public event DMouseButtonEventHandler MouseDown;
         public event DMouseMoveEventHandler MouseMove;
@@ -133,6 +137,21 @@ namespace DDraw
 
         public void Paint(List<Figure> figures, bool drawSelectionRect, Figure selectionRect)
         {
+            // set antialias value
+            dg.AntiAlias = AntiAlias;
+            // draw backround and transform canvas accordind to the pagesize
+            if (Preview)
+            {
+                dg.FillRect(0, 0, Width, Height, DColor.White, 1); // draw white canvas
+                dg.Scale(Width / PageSize.X, Height / PageSize.Y); // scale to width & height as this is a preview viewer
+            }
+            else
+            {
+                dg.FillRect(0, 0, Width, Height, new DColor(200, 200, 200), 1); // gray background
+                dg.Translate(CanvasOffset()); // center drawing
+                dg.FillRect(SHADOW_OFFSET, SHADOW_OFFSET, PageSize.X, PageSize.Y, DColor.Black, 1); // draw black canvas shadow
+                dg.FillRect(0, 0, PageSize.X, PageSize.Y, DColor.White, 1); // draw white canvas
+            }
             // paint figures
             foreach (Figure figure in figures)
                 figure.Paint(dg);

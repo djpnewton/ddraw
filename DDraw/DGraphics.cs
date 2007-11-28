@@ -72,7 +72,7 @@ namespace DDraw
 
         ~DBitmap()
         {
-            DisposeBitmap();
+            Dispose();
         }
         
         public bool Equals(DBitmap bitmap)
@@ -83,7 +83,7 @@ namespace DDraw
         protected abstract object MakeBitmap(int width, int height);
         protected abstract object LoadBitmap(string filename);
         protected abstract object LoadBitmap(Stream s);
-        protected abstract void DisposeBitmap();
+        public abstract void Dispose();
         public abstract int Width
         {
             get;
@@ -156,5 +156,7 @@ namespace DDraw
             get;
             set;
         }
+
+        public abstract void Dispose();
     }
 }
