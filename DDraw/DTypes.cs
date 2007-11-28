@@ -232,4 +232,68 @@ namespace DDraw
             Bottom = bottom;
         }
     }
+
+    public enum PageFormat { A4, A5, Letter, Custom };
+
+    public static class PageTools
+    {
+        // TODO: find these out cross platform
+        const int DpiX = 96;
+        const int DpiY = 96;
+
+        const int A4W = 210, A4H = 297;
+        const int A5W = 148, A5H = 210;
+        const int LtW = 216, LtH = 279;
+
+        const float MMPerInch = 25.4f;
+
+        public static DPoint FormatToSizeMM(PageFormat pf)
+        {
+            switch (pf)
+            {
+                case PageFormat.A4:
+                    return new DPoint(A4W, A4H);
+                case PageFormat.A5:
+                    return new DPoint(A5W, A5H);
+                case PageFormat.Letter:
+                    return new DPoint(LtW, LtH);
+                default:
+                    System.Diagnostics.Debug.Assert(false, "ERROR: PageFormat.Custom has no size");
+                    return new DPoint(A4W, A4H);
+            }
+        }
+
+        public static DPoint FormatToSize(PageFormat pf)
+        {
+            DPoint szMM = FormatToSizeMM(pf);
+            return new DPoint(szMM.X * DpiX / MMPerInch, szMM.Y * DpiY / MMPerInch);
+        }
+
+        public static PageFormat SizeMMToFormat(DPoint pgSzMM)
+        {
+            if ((int)pgSzMM.X == A4W && (int)pgSzMM.Y == A4H)
+                return PageFormat.A4;
+            else if ((int)pgSzMM.X == A5W && (int)pgSzMM.Y == A5H)
+                return PageFormat.A5;
+            else if ((int)pgSzMM.X == LtW && (int)pgSzMM.Y == LtH)
+                return PageFormat.Letter;
+            else
+                return PageFormat.Custom;
+        }
+
+        public static PageFormat SizeToFormat(DPoint pgSz)
+        {
+            return SizeMMToFormat(SizetoSizeMM(pgSz));
+        }
+
+        public static DPoint SizeMMtoSize(DPoint pgSzMM)
+        {
+            return new DPoint(pgSzMM.X * DpiX / MMPerInch, pgSzMM.Y * DpiY / MMPerInch);
+        }
+
+        public static DPoint SizetoSizeMM(DPoint pgSz)
+        {
+            return new DPoint(pgSz.X * MMPerInch / DpiX, pgSz.Y * MMPerInch / DpiY);
+        }
+    }
 }

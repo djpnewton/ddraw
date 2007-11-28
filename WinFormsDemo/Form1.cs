@@ -145,6 +145,29 @@ namespace WinFormsDemo
         {
             if (clickedFigure != null)
                 cmsFigure.Show(wfvcEditor, new Point((int)pt.X, (int)pt.Y));
+            else
+            {
+                a4ToolStripMenuItem.Checked = false;
+                a5ToolStripMenuItem.Checked = false;
+                letterToolStripMenuItem.Checked = false;
+                customToolStripMenuItem.Checked = false;
+                switch (de.PageFormat)
+                {
+                    case PageFormat.A4:
+                        a4ToolStripMenuItem.Checked = true;
+                        break;
+                    case PageFormat.A5:
+                        a5ToolStripMenuItem.Checked = true;
+                        break;
+                    case PageFormat.Letter:
+                        letterToolStripMenuItem.Checked = true;
+                        break;
+                    case PageFormat.Custom:
+                        customToolStripMenuItem.Checked = true;
+                        break;
+                }
+                cmsBackground.Show(wfvcEditor, new Point((int)pt.X, (int)pt.Y));
+            }
         }
 
         private void InitPropertyControls()
@@ -464,6 +487,24 @@ namespace WinFormsDemo
                 de.SendBackward(de.SelectedFigures);
             else if (sender == bringForwardToolStripMenuItem)
                 de.BringForward(de.SelectedFigures);
+        }
+
+        private void PageSizeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (sender == a4ToolStripMenuItem)
+                de.PageFormat = PageFormat.A4;
+            else if (sender == a5ToolStripMenuItem)
+                de.PageFormat = PageFormat.A5;
+            else if (sender == letterToolStripMenuItem)
+                de.PageFormat = PageFormat.Letter;
+            else if (sender == customToolStripMenuItem)
+            {
+                CustomPageSizeForm f = new CustomPageSizeForm();
+                f.PageSize = de.PageSize;
+                if (f.ShowDialog() == DialogResult.OK)
+                    de.PageSize = f.PageSize;
+                //de.PageFormat = PageFormat.Custom;
+            }
         }
     }
 }

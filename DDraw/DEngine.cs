@@ -99,7 +99,16 @@ namespace DDraw
                 foreach (DViewer dv in viewers)
                     dv.SetPageSize(pageSize);
             }
-        }            
+        }       
+        public PageFormat PageFormat
+        {
+            get { return PageTools.SizeToFormat(pageSize); }
+            set 
+            {
+                if (value != PageFormat.Custom)
+                    PageSize = PageTools.FormatToSize(value); 
+            }
+        }
 
         public event DebugMessageHandler DebugMessage;
         public event SelectedFiguresHandler SelectedFiguresChanged;

@@ -46,6 +46,12 @@
     <Compile Include="AboutBox.Designer.cs">
       <DependentUpon>AboutBox.cs</DependentUpon>
     </Compile>
+    <Compile Include="CustomPageSizeForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="CustomPageSizeForm.Designer.cs">
+      <DependentUpon>CustomPageSizeForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -72,6 +78,10 @@
     <EmbeddedResource Include="AboutBox.resx">
       <SubType>Designer</SubType>
       <DependentUpon>AboutBox.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CustomPageSizeForm.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>CustomPageSizeForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Form1.resx">
       <SubType>Designer</SubType>
