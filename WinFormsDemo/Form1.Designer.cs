@@ -31,6 +31,7 @@ namespace WinFormsDemo
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.pnlPreviews = new System.Windows.Forms.Panel();
+            this.previewBar1 = new WinFormsDemo.PreviewBar();
             this.tsEditorMode = new System.Windows.Forms.ToolStrip();
             this.btnAntiAlias = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
@@ -42,12 +43,8 @@ namespace WinFormsDemo
             this.toolStripContainer1 = new System.Windows.Forms.ToolStripContainer();
             this.pnlMain = new System.Windows.Forms.Panel();
             this.pnlViewer = new System.Windows.Forms.Panel();
+            this.wfvcEditor = new DDraw.WinForms.WFViewerControl();
             this.pnlFigureProps = new System.Windows.Forms.Panel();
-            this.cbFont = new System.Windows.Forms.ComboBox();
-            this.tbStrokeWidth = new System.Windows.Forms.TrackBar();
-            this.tbAlpha = new System.Windows.Forms.TrackBar();
-            this.btnStroke = new System.Windows.Forms.Button();
-            this.btnFill = new System.Windows.Forms.Button();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.lbInfo = new System.Windows.Forms.ToolStripStatusLabel();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
@@ -59,6 +56,12 @@ namespace WinFormsDemo
             this.textToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.tsFigureProps = new System.Windows.Forms.ToolStrip();
+            this.btnFill = new WinFormsDemo.ToolStripColorButton();
+            this.btnStroke = new WinFormsDemo.ToolStripColorButton();
+            this.btnStrokeWidth = new WinFormsDemo.ToolStripStrokeWidthButton();
+            this.btnAlpha = new WinFormsDemo.ToolStripAlphaButton();
+            this.cbFontName = new WinFormsDemo.ToolStripFontNameChooser();
             this.colorDialog1 = new System.Windows.Forms.ColorDialog();
             this.cmsFigure = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.groupToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -73,8 +76,6 @@ namespace WinFormsDemo
             this.a5ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.letterToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.customToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.wfvcEditor = new DDraw.WinForms.WFViewerControl();
-            this.previewBar1 = new WinFormsDemo.PreviewBar();
             this.pnlPreviews.SuspendLayout();
             this.tsEditorMode.SuspendLayout();
             this.toolStripContainer1.ContentPanel.SuspendLayout();
@@ -82,11 +83,9 @@ namespace WinFormsDemo
             this.toolStripContainer1.SuspendLayout();
             this.pnlMain.SuspendLayout();
             this.pnlViewer.SuspendLayout();
-            this.pnlFigureProps.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.tbStrokeWidth)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.tbAlpha)).BeginInit();
             this.statusStrip1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
+            this.tsFigureProps.SuspendLayout();
             this.cmsFigure.SuspendLayout();
             this.cmsBackground.SuspendLayout();
             this.SuspendLayout();
@@ -99,6 +98,17 @@ namespace WinFormsDemo
             this.pnlPreviews.Name = "pnlPreviews";
             this.pnlPreviews.Size = new System.Drawing.Size(81, 244);
             this.pnlPreviews.TabIndex = 9;
+            // 
+            // previewBar1
+            // 
+            this.previewBar1.AutoScroll = true;
+            this.previewBar1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.previewBar1.Location = new System.Drawing.Point(0, 0);
+            this.previewBar1.Name = "previewBar1";
+            this.previewBar1.Size = new System.Drawing.Size(81, 244);
+            this.previewBar1.TabIndex = 0;
+            this.previewBar1.PreviewSelected += new WinFormsDemo.PreviewSelectedHandler(this.previewBar1_PreviewSelected);
+            this.previewBar1.PreviewAdd += new System.EventHandler(this.previewBar1_PreviewAdd);
             // 
             // tsEditorMode
             // 
@@ -201,6 +211,7 @@ namespace WinFormsDemo
             // 
             this.toolStripContainer1.TopToolStripPanel.Controls.Add(this.menuStrip1);
             this.toolStripContainer1.TopToolStripPanel.Controls.Add(this.tsEditorMode);
+            this.toolStripContainer1.TopToolStripPanel.Controls.Add(this.tsFigureProps);
             // 
             // pnlMain
             // 
@@ -222,79 +233,21 @@ namespace WinFormsDemo
             this.pnlViewer.Size = new System.Drawing.Size(439, 244);
             this.pnlViewer.TabIndex = 10;
             // 
+            // wfvcEditor
+            // 
+            this.wfvcEditor.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.wfvcEditor.Location = new System.Drawing.Point(0, 0);
+            this.wfvcEditor.Name = "wfvcEditor";
+            this.wfvcEditor.Size = new System.Drawing.Size(358, 244);
+            this.wfvcEditor.TabIndex = 0;
+            // 
             // pnlFigureProps
             // 
-            this.pnlFigureProps.Controls.Add(this.cbFont);
-            this.pnlFigureProps.Controls.Add(this.tbStrokeWidth);
-            this.pnlFigureProps.Controls.Add(this.tbAlpha);
-            this.pnlFigureProps.Controls.Add(this.btnStroke);
-            this.pnlFigureProps.Controls.Add(this.btnFill);
             this.pnlFigureProps.Dock = System.Windows.Forms.DockStyle.Left;
             this.pnlFigureProps.Location = new System.Drawing.Point(0, 0);
             this.pnlFigureProps.Name = "pnlFigureProps";
             this.pnlFigureProps.Size = new System.Drawing.Size(101, 244);
             this.pnlFigureProps.TabIndex = 0;
-            // 
-            // cbFont
-            // 
-            this.cbFont.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
-            this.cbFont.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cbFont.FormattingEnabled = true;
-            this.cbFont.Location = new System.Drawing.Point(3, 163);
-            this.cbFont.Name = "cbFont";
-            this.cbFont.Size = new System.Drawing.Size(92, 21);
-            this.cbFont.TabIndex = 9;
-            this.cbFont.SelectedIndexChanged += new System.EventHandler(this.cbFont_SelectedIndexChanged);
-            // 
-            // tbStrokeWidth
-            // 
-            this.tbStrokeWidth.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
-            this.tbStrokeWidth.Location = new System.Drawing.Point(3, 61);
-            this.tbStrokeWidth.Minimum = 1;
-            this.tbStrokeWidth.Name = "tbStrokeWidth";
-            this.tbStrokeWidth.Size = new System.Drawing.Size(92, 45);
-            this.tbStrokeWidth.TabIndex = 10;
-            this.tbStrokeWidth.Value = 3;
-            this.tbStrokeWidth.Scroll += new System.EventHandler(this.tsStrokeWidth_Scroll);
-            // 
-            // tbAlpha
-            // 
-            this.tbAlpha.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
-            this.tbAlpha.Location = new System.Drawing.Point(3, 112);
-            this.tbAlpha.Maximum = 5;
-            this.tbAlpha.Minimum = 1;
-            this.tbAlpha.Name = "tbAlpha";
-            this.tbAlpha.Size = new System.Drawing.Size(92, 45);
-            this.tbAlpha.TabIndex = 9;
-            this.tbAlpha.Value = 3;
-            this.tbAlpha.Scroll += new System.EventHandler(this.tbAlpha_Scroll);
-            // 
-            // btnStroke
-            // 
-            this.btnStroke.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnStroke.Location = new System.Drawing.Point(3, 32);
-            this.btnStroke.Name = "btnStroke";
-            this.btnStroke.Size = new System.Drawing.Size(92, 23);
-            this.btnStroke.TabIndex = 9;
-            this.btnStroke.Text = "Stroke";
-            this.btnStroke.UseVisualStyleBackColor = true;
-            this.btnStroke.Click += new System.EventHandler(this.btnStroke_Click);
-            // 
-            // btnFill
-            // 
-            this.btnFill.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnFill.Location = new System.Drawing.Point(3, 3);
-            this.btnFill.Name = "btnFill";
-            this.btnFill.Size = new System.Drawing.Size(92, 23);
-            this.btnFill.TabIndex = 8;
-            this.btnFill.Text = "Fill";
-            this.btnFill.UseVisualStyleBackColor = true;
-            this.btnFill.Click += new System.EventHandler(this.btnFill_Click);
             // 
             // statusStrip1
             // 
@@ -386,6 +339,73 @@ namespace WinFormsDemo
             this.aboutToolStripMenuItem.Text = "About";
             this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
             // 
+            // tsFigureProps
+            // 
+            this.tsFigureProps.Dock = System.Windows.Forms.DockStyle.None;
+            this.tsFigureProps.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.btnFill,
+            this.btnStroke,
+            this.btnStrokeWidth,
+            this.btnAlpha,
+            this.cbFontName});
+            this.tsFigureProps.Location = new System.Drawing.Point(188, 24);
+            this.tsFigureProps.Name = "tsFigureProps";
+            this.tsFigureProps.Size = new System.Drawing.Size(250, 25);
+            this.tsFigureProps.TabIndex = 2;
+            // 
+            // btnFill
+            // 
+            this.btnFill.Color = System.Drawing.Color.Empty;
+            this.btnFill.ColorType = WinFormsDemo.ColorType.Fill;
+            this.btnFill.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.None;
+            this.btnFill.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnFill.Name = "btnFill";
+            this.btnFill.Size = new System.Drawing.Size(23, 22);
+            this.btnFill.Text = "Fill";
+            this.btnFill.Click += new System.EventHandler(this.btnFill_Click);
+            // 
+            // btnStroke
+            // 
+            this.btnStroke.Color = System.Drawing.Color.Empty;
+            this.btnStroke.ColorType = WinFormsDemo.ColorType.Stroke;
+            this.btnStroke.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.None;
+            this.btnStroke.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnStroke.Name = "btnStroke";
+            this.btnStroke.Size = new System.Drawing.Size(23, 22);
+            this.btnStroke.Text = "Stroke";
+            this.btnStroke.Click += new System.EventHandler(this.btnStroke_Click);
+            // 
+            // btnStrokeWidth
+            // 
+            this.btnStrokeWidth.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.btnStrokeWidth.Image = ((System.Drawing.Image)(resources.GetObject("btnStrokeWidth.Image")));
+            this.btnStrokeWidth.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnStrokeWidth.Name = "btnStrokeWidth";
+            this.btnStrokeWidth.ShowDropDownArrow = false;
+            this.btnStrokeWidth.Size = new System.Drawing.Size(20, 22);
+            this.btnStrokeWidth.Text = "Stroke Width";
+            this.btnStrokeWidth.Value = 1;
+            this.btnStrokeWidth.StrokeWidthChanged += new WinFormsDemo.StrokeWidthChangedHandler(this.btnStrokeWidth_StrokeWidthChanged);
+            // 
+            // btnAlpha
+            // 
+            this.btnAlpha.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.btnAlpha.Image = ((System.Drawing.Image)(resources.GetObject("btnAlpha.Image")));
+            this.btnAlpha.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnAlpha.Name = "btnAlpha";
+            this.btnAlpha.ShowDropDownArrow = false;
+            this.btnAlpha.Size = new System.Drawing.Size(20, 22);
+            this.btnAlpha.Text = "Alpha";
+            this.btnAlpha.Value = 1;
+            this.btnAlpha.AlphaChanged += new WinFormsDemo.AlphaChangedHandler(this.btnAlpha_AlphaChanged);
+            // 
+            // cbFontName
+            // 
+            this.cbFontName.Name = "cbFontName";
+            this.cbFontName.Size = new System.Drawing.Size(121, 22);
+            this.cbFontName.Value = null;
+            this.cbFontName.FontNameChanged += new System.EventHandler(this.cbFontName_FontNameChanged);
+            // 
             // cmsFigure
             // 
             this.cmsFigure.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -443,7 +463,7 @@ namespace WinFormsDemo
             this.cmsBackground.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.pageSizeToolStripMenuItem});
             this.cmsBackground.Name = "cmsBackground";
-            this.cmsBackground.Size = new System.Drawing.Size(153, 48);
+            this.cmsBackground.Size = new System.Drawing.Size(132, 26);
             // 
             // pageSizeToolStripMenuItem
             // 
@@ -453,55 +473,36 @@ namespace WinFormsDemo
             this.letterToolStripMenuItem,
             this.customToolStripMenuItem});
             this.pageSizeToolStripMenuItem.Name = "pageSizeToolStripMenuItem";
-            this.pageSizeToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.pageSizeToolStripMenuItem.Size = new System.Drawing.Size(131, 22);
             this.pageSizeToolStripMenuItem.Text = "Page Size";
             // 
             // a4ToolStripMenuItem
             // 
             this.a4ToolStripMenuItem.Name = "a4ToolStripMenuItem";
-            this.a4ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.a4ToolStripMenuItem.Size = new System.Drawing.Size(121, 22);
             this.a4ToolStripMenuItem.Text = "A4";
             this.a4ToolStripMenuItem.Click += new System.EventHandler(this.PageSizeToolStripMenuItem_Click);
             // 
             // a5ToolStripMenuItem
             // 
             this.a5ToolStripMenuItem.Name = "a5ToolStripMenuItem";
-            this.a5ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.a5ToolStripMenuItem.Size = new System.Drawing.Size(121, 22);
             this.a5ToolStripMenuItem.Text = "A5";
             this.a5ToolStripMenuItem.Click += new System.EventHandler(this.PageSizeToolStripMenuItem_Click);
             // 
             // letterToolStripMenuItem
             // 
             this.letterToolStripMenuItem.Name = "letterToolStripMenuItem";
-            this.letterToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.letterToolStripMenuItem.Size = new System.Drawing.Size(121, 22);
             this.letterToolStripMenuItem.Text = "Letter";
             this.letterToolStripMenuItem.Click += new System.EventHandler(this.PageSizeToolStripMenuItem_Click);
             // 
             // customToolStripMenuItem
             // 
             this.customToolStripMenuItem.Name = "customToolStripMenuItem";
-            this.customToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.customToolStripMenuItem.Size = new System.Drawing.Size(121, 22);
             this.customToolStripMenuItem.Text = "Custom";
             this.customToolStripMenuItem.Click += new System.EventHandler(this.PageSizeToolStripMenuItem_Click);
-            // 
-            // wfvcEditor
-            // 
-            this.wfvcEditor.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.wfvcEditor.Location = new System.Drawing.Point(0, 0);
-            this.wfvcEditor.Name = "wfvcEditor";
-            this.wfvcEditor.Size = new System.Drawing.Size(358, 244);
-            this.wfvcEditor.TabIndex = 0;
-            // 
-            // previewBar1
-            // 
-            this.previewBar1.AutoScroll = true;
-            this.previewBar1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.previewBar1.Location = new System.Drawing.Point(0, 0);
-            this.previewBar1.Name = "previewBar1";
-            this.previewBar1.Size = new System.Drawing.Size(81, 244);
-            this.previewBar1.TabIndex = 0;
-            this.previewBar1.PreviewSelected += new WinFormsDemo.PreviewSelectedHandler(this.previewBar1_PreviewSelected);
-            this.previewBar1.PreviewAdd += new System.EventHandler(this.previewBar1_PreviewAdd);
             // 
             // Form1
             // 
@@ -523,14 +524,12 @@ namespace WinFormsDemo
             this.toolStripContainer1.PerformLayout();
             this.pnlMain.ResumeLayout(false);
             this.pnlViewer.ResumeLayout(false);
-            this.pnlFigureProps.ResumeLayout(false);
-            this.pnlFigureProps.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.tbStrokeWidth)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.tbAlpha)).EndInit();
             this.statusStrip1.ResumeLayout(false);
             this.statusStrip1.PerformLayout();
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
+            this.tsFigureProps.ResumeLayout(false);
+            this.tsFigureProps.PerformLayout();
             this.cmsFigure.ResumeLayout(false);
             this.cmsBackground.ResumeLayout(false);
             this.ResumeLayout(false);
@@ -550,12 +549,7 @@ namespace WinFormsDemo
         private System.Windows.Forms.Panel pnlMain;
         private System.Windows.Forms.ToolStripStatusLabel lbInfo;
         private System.Windows.Forms.Panel pnlFigureProps;
-        private System.Windows.Forms.Button btnStroke;
-        private System.Windows.Forms.Button btnFill;
         private System.Windows.Forms.ColorDialog colorDialog1;
-        private System.Windows.Forms.TrackBar tbAlpha;
-        private System.Windows.Forms.TrackBar tbStrokeWidth;
-        private System.Windows.Forms.ComboBox cbFont;
         private System.Windows.Forms.ToolStripButton btnSelect;
         private System.Windows.Forms.ToolStripButton btnPen;
         private PreviewBar previewBar1;
@@ -584,7 +578,12 @@ namespace WinFormsDemo
         private System.Windows.Forms.ToolStripMenuItem a5ToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem letterToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem customToolStripMenuItem;
-
+        private System.Windows.Forms.ToolStrip tsFigureProps;
+        private ToolStripColorButton btnFill;
+        private ToolStripColorButton btnStroke;
+        private ToolStripStrokeWidthButton btnStrokeWidth;
+        private ToolStripAlphaButton btnAlpha;
+        private ToolStripFontNameChooser cbFontName;
     }
 }
 

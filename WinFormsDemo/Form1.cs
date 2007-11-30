@@ -95,15 +95,7 @@ namespace WinFormsDemo
             f.Rect = new DRect(20, 150, 50, 50);
             de.AddFigure(f);
             // Init controls
-            InitcbFont();
             InitPropertyControls();
-        }
-
-        private void InitcbFont()
-        {
-            InstalledFontCollection ifc = new InstalledFontCollection();
-            foreach (FontFamily ff in ifc.Families)
-                cbFont.Items.Add(ff.Name);
         }
 
         void DebugMessage(string msg)
@@ -173,19 +165,19 @@ namespace WinFormsDemo
         private void InitPropertyControls()
         {
             // disable events
-            cbFont.SelectedIndexChanged -= cbFont_SelectedIndexChanged;
+            cbFontName.FontNameChanged -= cbFontName_FontNameChanged;
             // set default (blank) values for property controls
-            btnFill.BackColor = Color.Empty;
-            btnStroke.BackColor = Color.Empty;
-            tbStrokeWidth.Value = tbStrokeWidth.Minimum;
-            tbAlpha.Value = tbAlpha.Minimum;
-            cbFont.SelectedIndex = -1;
+            btnFill.Color = Color.Empty;
+            btnStroke.Color = Color.Empty;
+            btnStrokeWidth.Value = 1;
+            btnAlpha.Value = 1;
+            cbFontName.Value = "";
             // deselect controls
             btnFill.Enabled = false;
             btnStroke.Enabled = false;
-            tbStrokeWidth.Enabled = false;
-            tbAlpha.Enabled = false;
-            cbFont.Enabled = false;
+            btnStrokeWidth.Enabled = false;
+            btnAlpha.Enabled = false;
+            cbFontName.Enabled = false;
             // update controls based on the state of DEngine
             switch (de.State)
             {
@@ -200,53 +192,53 @@ namespace WinFormsDemo
                         if (f is IStrokeable)
                         {
                             btnStroke.Enabled = true;
-                            tbStrokeWidth.Enabled = true;
+                            btnStrokeWidth.Enabled = true;
                         }
                     foreach (Figure f in figs)
                         if (f is IAlphaBlendable)
-                            tbAlpha.Enabled = true;
+                            btnAlpha.Enabled = true;
                     foreach (Figure f in figs)
                         if (f is ITextable)
-                            cbFont.Enabled = true;
+                            cbFontName.Enabled = true;
                     // set property controls to match selected figure
                     if (figs.Length == 1)
                     {
                         Figure f = figs[0];
                         if (f is IFillable)
-                            btnFill.BackColor = MakeColor(((IFillable)f).Fill);
+                            btnFill.Color = MakeColor(((IFillable)f).Fill);
                         if (f is IStrokeable)
                         {
-                            btnStroke.BackColor = MakeColor(((IStrokeable)f).Stroke);
-                            tbStrokeWidth.Value = (int)(((IStrokeable)f).StrokeWidth);
+                            btnStroke.Color = MakeColor(((IStrokeable)f).Stroke);
+                            btnStrokeWidth.Value = (int)(((IStrokeable)f).StrokeWidth);
                         }
                         if (f is IAlphaBlendable)
-                            tbAlpha.Value = (int)(((IAlphaBlendable)f).Alpha * tbAlpha.Maximum);
+                            btnAlpha.Value = ((IAlphaBlendable)f).Alpha;
                         if (f is ITextable)
-                            cbFont.SelectedItem = ((ITextable)f).FontName;
+                            cbFontName.Value = ((ITextable)f).FontName;
                     }
                     break;
                 default:
                     // enable relavant controls
                     btnFill.Enabled = de.State == DEngineState.DrawRect || de.State == DEngineState.DrawEllipse || de.State == DEngineState.DrawText;
                     btnStroke.Enabled = de.State == DEngineState.DrawPolyline || de.State == DEngineState.DrawRect || de.State == DEngineState.DrawEllipse;
-                    tbStrokeWidth.Enabled = btnStroke.Enabled;
-                    tbAlpha.Enabled = btnFill.Enabled || btnStroke.Enabled;
-                    cbFont.Enabled = de.State == DEngineState.DrawText;
+                    btnStrokeWidth.Enabled = btnStroke.Enabled;
+                    btnAlpha.Enabled = btnFill.Enabled || btnStroke.Enabled;
+                    cbFontName.Enabled = de.State == DEngineState.DrawText;
                     // update values to match dap
                     if (btnFill.Enabled)
-                        btnFill.BackColor = MakeColor(dap.Fill);
+                        btnFill.Color = MakeColor(dap.Fill);
                     if (btnStroke.Enabled)
-                        btnStroke.BackColor = MakeColor(dap.Stroke);
-                    if (tbStrokeWidth.Enabled)
-                        tbStrokeWidth.Value = (int)dap.StrokeWidth;
-                    if (tbAlpha.Enabled)
-                        tbAlpha.Value = (int)(dap.Alpha * tbAlpha.Maximum);
-                    if (cbFont.Enabled)
-                        cbFont.SelectedItem = dap.FontName;
+                        btnStroke.Color = MakeColor(dap.Stroke);
+                    if (btnStrokeWidth.Enabled)
+                        btnStrokeWidth.Value = (int)dap.StrokeWidth;
+                    if (btnAlpha.Enabled)
+                        btnAlpha.Value = dap.Alpha;
+                    if (cbFontName.Enabled)
+                        cbFontName.Value = dap.FontName;
                     break;
             }
             // re-enable events
-            cbFont.SelectedIndexChanged += cbFont_SelectedIndexChanged;
+            cbFontName.FontNameChanged += cbFontName_FontNameChanged;
         }
 
         void InitMenus()
@@ -285,17 +277,17 @@ namespace WinFormsDemo
 
         private void btnFill_Click(object sender, EventArgs e)
         {
-            colorDialog1.Color = btnFill.BackColor;
+            colorDialog1.Color = btnFill.Color;
             if (colorDialog1.ShowDialog() == DialogResult.OK)
             {
-                btnFill.BackColor = colorDialog1.Color;
+                btnFill.Color = colorDialog1.Color;
                 switch (de.State)
                 {
                     case DEngineState.Select:
                         UpdateSelectedFigures(btnFill);
                         break;
                     default:
-                        dap.Fill = MakeColor(btnFill.BackColor);
+                        dap.Fill = MakeColor(btnFill.Color);
                         break;
                 }
             }
@@ -303,81 +295,81 @@ namespace WinFormsDemo
 
         private void btnStroke_Click(object sender, EventArgs e)
         {
-            colorDialog1.Color = btnStroke.BackColor;
+            colorDialog1.Color = btnStroke.Color;
             if (colorDialog1.ShowDialog() == DialogResult.OK)
             {
-                btnStroke.BackColor = colorDialog1.Color;
+                btnStroke.Color = colorDialog1.Color;
                 switch (de.State)
                 {
                     case DEngineState.Select:
                         UpdateSelectedFigures(btnStroke);
                         break;
                     default:
-                        dap.Stroke = MakeColor(btnStroke.BackColor);
+                        dap.Stroke = MakeColor(btnStroke.Color);
                         break;
                 }
             }
         }
 
-        private void tbAlpha_Scroll(object sender, EventArgs e)
+        private void btnAlpha_AlphaChanged(object sender, double alpha)
         {
-            UpdateSelectedFigures(tbAlpha);
+            UpdateSelectedFigures(btnAlpha);
             switch (de.State)
             {
                 case DEngineState.Select:
-                    UpdateSelectedFigures(tbAlpha);
+                    UpdateSelectedFigures(btnAlpha);
                     break;
                 default:
-                    dap.Alpha = tbAlpha.Value / (float)tbAlpha.Maximum;
+                    dap.Alpha = btnAlpha.Value;
                     break;
             }
         }
 
-        private void tsStrokeWidth_Scroll(object sender, EventArgs e)
+        private void btnStrokeWidth_StrokeWidthChanged(object sender, int strokeWidth)
         {
             switch (de.State)
             {
                 case DEngineState.Select:
-                    UpdateSelectedFigures(tbStrokeWidth);
+                    UpdateSelectedFigures(btnStrokeWidth);
                     break;
                 default:
-                    dap.StrokeWidth = tbStrokeWidth.Value;
+                    dap.StrokeWidth = btnStrokeWidth.Value;
                     break;
             }
         }
 
-        private void cbFont_SelectedIndexChanged(object sender, EventArgs e)
+        private void cbFontName_FontNameChanged(object sender, EventArgs e)
         {
             switch (de.State)
             {
                 case DEngineState.Select:
-                    UpdateSelectedFigures(cbFont);
+                    UpdateSelectedFigures(cbFontName);
                     break;
                 default:
-                    dap.FontName = (string)cbFont.SelectedItem;
+                    dap.FontName = cbFontName.Value;
                     break;
             }
         }
 
-        private void UpdateSelectedFigures(Control control)
+        private void UpdateSelectedFigures(object sender)
         {
             de.UndoRedoMgr.Start("Change Property"); // TODO: make this work better with the slider controls
             Figure[] figs = de.SelectedFigures;
             foreach (Figure f in figs)
             {
-                if (control == btnFill && f is IFillable)
-                    ((IFillable)f).Fill = MakeColor(btnFill.BackColor);
+                if (sender == btnFill && f is IFillable)
+                    ((IFillable)f).Fill = MakeColor(btnFill.Color);
                 if (f is IStrokeable)
                 {
-                    if (control == btnStroke)
-                        ((IStrokeable)f).Stroke = MakeColor(btnStroke.BackColor);
-                    if (control == tbStrokeWidth)
-                        ((IStrokeable)f).StrokeWidth = tbStrokeWidth.Value;
+                    if (sender == btnStroke)
+                        ((IStrokeable)f).Stroke = MakeColor(btnStroke.Color);
+                    if (sender == btnStrokeWidth)
+                        ((IStrokeable)f).StrokeWidth = btnStrokeWidth.Value;
                 }
-                if (control == tbAlpha && f is IAlphaBlendable)
-                    ((IAlphaBlendable)f).Alpha = tbAlpha.Value / (float)tbAlpha.Maximum;
-                if (control == cbFont && f is ITextable)
-                    ((ITextable)f).FontName = (string)cbFont.SelectedItem;     
+                if (sender == btnAlpha && f is IAlphaBlendable)
+                    ((IAlphaBlendable)f).Alpha = btnAlpha.Value;
+                if (sender == cbFontName && f is ITextable)
+                    ((ITextable)f).FontName = cbFontName.Value;     
             }
             de.UndoRedoMgr.Commit();
             dvEditor.Update();
