@@ -44,7 +44,6 @@ namespace WinFormsDemo
             this.pnlMain = new System.Windows.Forms.Panel();
             this.pnlViewer = new System.Windows.Forms.Panel();
             this.wfvcEditor = new DDraw.WinForms.WFViewerControl();
-            this.pnlFigureProps = new System.Windows.Forms.Panel();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.lbInfo = new System.Windows.Forms.ToolStripStatusLabel();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
@@ -94,9 +93,9 @@ namespace WinFormsDemo
             // 
             this.pnlPreviews.Controls.Add(this.previewBar1);
             this.pnlPreviews.Dock = System.Windows.Forms.DockStyle.Right;
-            this.pnlPreviews.Location = new System.Drawing.Point(358, 0);
+            this.pnlPreviews.Location = new System.Drawing.Point(459, 0);
             this.pnlPreviews.Name = "pnlPreviews";
-            this.pnlPreviews.Size = new System.Drawing.Size(81, 244);
+            this.pnlPreviews.Size = new System.Drawing.Size(81, 219);
             this.pnlPreviews.TabIndex = 9;
             // 
             // previewBar1
@@ -105,7 +104,7 @@ namespace WinFormsDemo
             this.previewBar1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.previewBar1.Location = new System.Drawing.Point(0, 0);
             this.previewBar1.Name = "previewBar1";
-            this.previewBar1.Size = new System.Drawing.Size(81, 244);
+            this.previewBar1.Size = new System.Drawing.Size(81, 219);
             this.previewBar1.TabIndex = 0;
             this.previewBar1.PreviewSelected += new WinFormsDemo.PreviewSelectedHandler(this.previewBar1_PreviewSelected);
             this.previewBar1.PreviewAdd += new System.EventHandler(this.previewBar1_PreviewAdd);
@@ -199,7 +198,7 @@ namespace WinFormsDemo
             // 
             this.toolStripContainer1.ContentPanel.Controls.Add(this.pnlMain);
             this.toolStripContainer1.ContentPanel.Controls.Add(this.statusStrip1);
-            this.toolStripContainer1.ContentPanel.Size = new System.Drawing.Size(540, 266);
+            this.toolStripContainer1.ContentPanel.Size = new System.Drawing.Size(540, 241);
             this.toolStripContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.toolStripContainer1.Location = new System.Drawing.Point(0, 0);
             this.toolStripContainer1.Name = "toolStripContainer1";
@@ -216,11 +215,10 @@ namespace WinFormsDemo
             // pnlMain
             // 
             this.pnlMain.Controls.Add(this.pnlViewer);
-            this.pnlMain.Controls.Add(this.pnlFigureProps);
             this.pnlMain.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pnlMain.Location = new System.Drawing.Point(0, 0);
             this.pnlMain.Name = "pnlMain";
-            this.pnlMain.Size = new System.Drawing.Size(540, 244);
+            this.pnlMain.Size = new System.Drawing.Size(540, 219);
             this.pnlMain.TabIndex = 0;
             // 
             // pnlViewer
@@ -228,9 +226,9 @@ namespace WinFormsDemo
             this.pnlViewer.Controls.Add(this.wfvcEditor);
             this.pnlViewer.Controls.Add(this.pnlPreviews);
             this.pnlViewer.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pnlViewer.Location = new System.Drawing.Point(101, 0);
+            this.pnlViewer.Location = new System.Drawing.Point(0, 0);
             this.pnlViewer.Name = "pnlViewer";
-            this.pnlViewer.Size = new System.Drawing.Size(439, 244);
+            this.pnlViewer.Size = new System.Drawing.Size(540, 219);
             this.pnlViewer.TabIndex = 10;
             // 
             // wfvcEditor
@@ -238,22 +236,14 @@ namespace WinFormsDemo
             this.wfvcEditor.Dock = System.Windows.Forms.DockStyle.Fill;
             this.wfvcEditor.Location = new System.Drawing.Point(0, 0);
             this.wfvcEditor.Name = "wfvcEditor";
-            this.wfvcEditor.Size = new System.Drawing.Size(358, 244);
+            this.wfvcEditor.Size = new System.Drawing.Size(459, 219);
             this.wfvcEditor.TabIndex = 0;
-            // 
-            // pnlFigureProps
-            // 
-            this.pnlFigureProps.Dock = System.Windows.Forms.DockStyle.Left;
-            this.pnlFigureProps.Location = new System.Drawing.Point(0, 0);
-            this.pnlFigureProps.Name = "pnlFigureProps";
-            this.pnlFigureProps.Size = new System.Drawing.Size(101, 244);
-            this.pnlFigureProps.TabIndex = 0;
             // 
             // statusStrip1
             // 
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.lbInfo});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 244);
+            this.statusStrip1.Location = new System.Drawing.Point(0, 219);
             this.statusStrip1.Name = "statusStrip1";
             this.statusStrip1.Size = new System.Drawing.Size(540, 22);
             this.statusStrip1.TabIndex = 11;
@@ -348,9 +338,9 @@ namespace WinFormsDemo
             this.btnStrokeWidth,
             this.btnAlpha,
             this.cbFontName});
-            this.tsFigureProps.Location = new System.Drawing.Point(188, 24);
+            this.tsFigureProps.Location = new System.Drawing.Point(3, 49);
             this.tsFigureProps.Name = "tsFigureProps";
-            this.tsFigureProps.Size = new System.Drawing.Size(250, 25);
+            this.tsFigureProps.Size = new System.Drawing.Size(219, 25);
             this.tsFigureProps.TabIndex = 2;
             // 
             // btnFill
@@ -548,7 +538,6 @@ namespace WinFormsDemo
         private System.Windows.Forms.StatusStrip statusStrip1;
         private System.Windows.Forms.Panel pnlMain;
         private System.Windows.Forms.ToolStripStatusLabel lbInfo;
-        private System.Windows.Forms.Panel pnlFigureProps;
         private System.Windows.Forms.ColorDialog colorDialog1;
         private System.Windows.Forms.ToolStripButton btnSelect;
         private System.Windows.Forms.ToolStripButton btnPen;
