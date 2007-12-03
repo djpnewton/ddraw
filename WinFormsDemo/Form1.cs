@@ -162,6 +162,101 @@ namespace WinFormsDemo
             }
         }
 
+        Color GetFillMatch(Figure[] figs)
+        {
+            Color fill = Color.Empty;
+            foreach (Figure f in figs)
+                if (f is IFillable)
+                {
+                    fill = MakeColor(((IFillable)f).Fill);
+                    break;
+                }
+            if (fill != Color.Empty)
+                foreach (Figure f in figs)
+                    if (f is IFillable)
+                    {
+                        if (fill != MakeColor(((IFillable)f).Fill))
+                            return Color.Empty;
+                    }
+            return fill;
+        }
+
+        Color GetStrokeMatch(Figure[] figs)
+        {
+            Color stroke = Color.Empty;
+            foreach (Figure f in figs)
+                if (f is IStrokeable)
+                {
+                    stroke = MakeColor(((IStrokeable)f).Stroke);
+                    break;
+                }
+            if (stroke != Color.Empty)
+                foreach (Figure f in figs)
+                    if (f is IStrokeable)
+                    {
+                        if (stroke != MakeColor(((IStrokeable)f).Stroke))
+                            return Color.Empty;
+                    }
+            return stroke;
+        }
+
+        double GetStrokeWidthMatch(Figure[] figs)
+        {
+            double strokeWidth = ToolStripStrokeWidthButton.Empty;
+            foreach (Figure f in figs)
+                if (f is IStrokeable)
+                {
+                    strokeWidth = ((IStrokeable)f).StrokeWidth;
+                    break;
+                }
+            if (strokeWidth != ToolStripStrokeWidthButton.Empty)
+                foreach (Figure f in figs)
+                    if (f is IStrokeable)
+                    {
+                        if (strokeWidth != ((IStrokeable)f).StrokeWidth)
+                            return ToolStripStrokeWidthButton.Empty;
+                    }
+            return strokeWidth;
+        }
+
+        double GetAlphaMatch(Figure[] figs)
+        {
+            double alpha = ToolStripAlphaButton.Empty;
+            foreach (Figure f in figs)
+                if (f is IAlphaBlendable)
+                {
+                    alpha = ((IAlphaBlendable)f).Alpha;
+                    break;
+                }
+            if (alpha != ToolStripAlphaButton.Empty)
+                foreach (Figure f in figs)
+                    if (f is IAlphaBlendable)
+                    {
+                        if (alpha != ((IAlphaBlendable)f).Alpha)
+                            return ToolStripAlphaButton.Empty;
+                    }
+            return alpha;
+        }
+
+        string GetFontNameMatch(Figure[] figs)
+        {
+            string fontName = null;
+            foreach (Figure f in figs)
+                if (f is ITextable)
+                {
+                    fontName = ((ITextable)f).FontName;
+                    break;
+                }
+            if (fontName != null)
+                foreach (Figure f in figs)
+                    if (f is ITextable)
+                    {
+                        if (fontName != ((ITextable)f).FontName)
+                            return null;
+                    }
+            return fontName;
+        }
+
         private void InitPropertyControls()
         {
             // disable events
@@ -169,8 +264,8 @@ namespace WinFormsDemo
             // set default (blank) values for property controls
             btnFill.Color = Color.Empty;
             btnStroke.Color = Color.Empty;
-            btnStrokeWidth.Value = 1;
-            btnAlpha.Value = 1;
+            btnStrokeWidth.Value = ToolStripStrokeWidthButton.Empty;
+            btnAlpha.Value = ToolStripAlphaButton.Empty;
             cbFontName.Value = "";
             // deselect controls
             btnFill.Enabled = false;
@@ -200,21 +295,14 @@ namespace WinFormsDemo
                     foreach (Figure f in figs)
                         if (f is ITextable)
                             cbFontName.Enabled = true;
-                    // set property controls to match selected figure
-                    if (figs.Length == 1)
+                    // set property controls to match selected figure/s
+                    if (figs.Length > 0)
                     {
-                        Figure f = figs[0];
-                        if (f is IFillable)
-                            btnFill.Color = MakeColor(((IFillable)f).Fill);
-                        if (f is IStrokeable)
-                        {
-                            btnStroke.Color = MakeColor(((IStrokeable)f).Stroke);
-                            btnStrokeWidth.Value = (int)(((IStrokeable)f).StrokeWidth);
-                        }
-                        if (f is IAlphaBlendable)
-                            btnAlpha.Value = ((IAlphaBlendable)f).Alpha;
-                        if (f is ITextable)
-                            cbFontName.Value = ((ITextable)f).FontName;
+                        btnFill.Color = GetFillMatch(figs);
+                        btnStroke.Color = GetStrokeMatch(figs);
+                        btnStrokeWidth.Value = (int)Math.Round(GetStrokeWidthMatch(figs));
+                        btnAlpha.Value = GetAlphaMatch(figs);
+                        cbFontName.Value = GetFontNameMatch(figs);
                     }
                     break;
                 default:
