@@ -860,12 +860,15 @@ namespace DDraw
             get { return Right - X; }
             set
             {
-                double sx = value / Width;
-                double x = X;
+                double sx = value / originalRect.Width;
+                double dx = X - originalRect.X;
+                int i = 0;
                 foreach (Figure f in childFigs)
                 {
-                    f.X += ((f.X - x) * sx) - (f.X - x); 
-                    f.Width *= sx;
+                    DRect ocr = originalChildRects[i];
+                    f.X = originalRect.X + (sx * (ocr.X - originalRect.X)) + dx;
+                    f.Width = sx * ocr.Width;
+                    i++;
                 }
             }
         }
@@ -875,12 +878,15 @@ namespace DDraw
             get { return Bottom - Y; }
             set
             {
-                double sy = value / Height;
-                double y = Y;
+                double sy = value / originalRect.Height;
+                double dy = Y - originalRect.Y;
+                int i = 0;
                 foreach (Figure f in childFigs)
                 {
-                    f.Y += ((f.Y - y) * sy) - (f.Y - y);
-                    f.Height *= sy;
+                    DRect ocr = originalChildRects[i];
+                    f.Y = originalRect.Y + (sy * (ocr.Y - originalRect.Y)) + dy;
+                    f.Height = sy * ocr.Height;
+                    i++;
                 }
             }
         }
@@ -911,11 +917,23 @@ namespace DDraw
             get { return childFigs; }
         }
 
+        DRect[] originalChildRects;
+        DRect originalRect;
+
         public GroupFigure(Figure[] figs)
         {
-            System.Diagnostics.Debug.Assert(figs != null, "figures is not assigned");
-            System.Diagnostics.Debug.Assert(figs.Length > 1, "figures.Length is less than 2");
+            System.Diagnostics.Debug.Assert(figs != null, "figs is not assigned");
+            System.Diagnostics.Debug.Assert(figs.Length > 1, "figs.Length is less than 2");
             childFigs = figs;
+            // store starting dimensions for scaling later on
+            originalChildRects = new DRect[figs.Length];
+            int i = 0;
+            foreach (Figure f in figs)
+            {
+                originalChildRects[i] = f.Rect;
+                i++;
+            }
+            originalRect = Rect;
         }
 
         protected override DHitTest _HitTest(DPoint pt)
