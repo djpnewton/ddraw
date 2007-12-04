@@ -15,6 +15,9 @@ namespace GTKDemo
 	public class MainWindow : Window
 	{		
 		Label l;
+
+        DEngine de;
+        DViewer dv;
 		
 		public MainWindow(): base("MainWindow")
 		{          
@@ -42,10 +45,10 @@ namespace GTKDemo
             table.Attach(l, 0, 1, 2, 3, AttachOptions.Fill|AttachOptions.Shrink, 
                          AttachOptions.Fill|AttachOptions.Shrink, 0, 0);
 			// create DViewer and DEngine			
-			GTKViewer dv = new GTKViewer(dvc);
+			dv = new GTKViewer(dvc);
 			dv.EditFigures = true;
 			dv.DebugMessage += new DebugMessageHandler(DebugMessage);
-			DEngine de = new DEngine(new DAuthorProperties());
+			de = new DEngine(new DAuthorProperties());
 			de.AddViewer(dv);
 			de.State = DEngineState.Select;
 			de.DebugMessage += new DebugMessageHandler(DebugMessage);
@@ -64,10 +67,16 @@ namespace GTKDemo
         void de_ContextClick(DEngine de, Figure clickedFigure, DPoint pt)
         {
             Menu pop = new Menu();
-            MenuItem mi = new MenuItem("Test");
+            MenuItem mi = new MenuItem("Fit to Page");
+            mi.ButtonPressEvent += new ButtonPressEventHandler(mi_ButtonPressEvent);
             pop.Append(mi);
             pop.Popup();
             pop.ShowAll();
+        }
+
+        void mi_ButtonPressEvent(object o, ButtonPressEventArgs args)
+        {
+            dv.Zoom = Zoom.FitToPage;
         }
 		
 		void DebugMessage(string msg)

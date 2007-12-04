@@ -6,8 +6,8 @@ namespace DDraw.GTK
     public class GTKViewer : DViewer
     {
         GTKViewerControl control;
-        
-        void UpdateAutoScroll()
+
+        protected override void UpdateAutoScroll()
         {
             if (Preview)
                 control.SetSize(0, 0);
@@ -48,8 +48,7 @@ namespace DDraw.GTK
         {
             get 
             {
-                int width, height;
-                control.BinWindow.GetSize(out width, out height);
+                int width = control.Allocation.Width;
                 if (width > PgSzX + MARGIN * 2) return (width - PgSzX) / 2;
                 else return MARGIN;
             }
@@ -58,8 +57,7 @@ namespace DDraw.GTK
         {
             get 
             {
-                int width, height;
-                control.BinWindow.GetSize(out width, out height);
+                int height = control.Allocation.Height;
                 if (height > PgSzY + MARGIN * 2) return (height - PgSzY) / 2;
                 else return MARGIN;
             }
@@ -67,21 +65,11 @@ namespace DDraw.GTK
 
         protected override int Width
         {
-            get
-            {
-                int width, height;
-                control.BinWindow.GetSize(out width, out height);
-                return width;
-            }
+            get { return control.Allocation.Width; }
         }
         protected override int Height
         {
-            get
-            {
-                int width, height;
-                control.BinWindow.GetSize(out width, out height);
-                return height;
-            }
+            get { return control.Allocation.Height; }
         }
         protected override DPoint CanvasOffset()
         {
@@ -134,7 +122,7 @@ namespace DDraw.GTK
         
         DPoint MousePt(double x, double y)
         {
-            return new DPoint(x - OffsetX, y - OffsetY);
+            return new DPoint((x - OffsetX) * (1 / Scale), (y - OffsetY) * (1 / Scale));
         }
         
         void control_ButtonPress(object sender, ButtonPressEventArgs a)
@@ -209,6 +197,8 @@ namespace DDraw.GTK
 
         void control_SizeAllocated(object sender, SizeAllocatedArgs a)
         {
+            if (Zoom != Zoom.Custom)
+                Zoom = Zoom;
             Update();
         }
         
@@ -228,8 +218,9 @@ namespace DDraw.GTK
         {
             rect = rect.Offset(-1, -1);
             rect = rect.Inflate(2, 2);
-            control.QueueDrawArea((int)rect.X - HortScroll + OffsetX, (int)rect.Y - VertScroll + OffsetY,
-                                  (int)rect.Width, (int)rect.Height);
+            control.QueueDrawArea((int)((rect.X * Scale) - HortScroll + OffsetX),
+                                  (int)((rect.Y * Scale) - VertScroll + OffsetY),
+                                  (int)(rect.Width * Scale), (int)(rect.Height * Scale));
         }
 
         public override void SetCursor(DCursor cursor)

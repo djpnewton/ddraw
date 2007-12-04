@@ -131,6 +131,7 @@ namespace DDraw
         abstract public void DrawLine(DPoint pt1, DPoint pt2, DColor color, double alpha);
         abstract public void DrawLine(DPoint pt1, DPoint pt2, DColor color, DPenStyle penStyle);
         abstract public void DrawLine(DPoint pt1, DPoint pt2, DColor color, double alpha, DPenStyle penStyle);
+        abstract public void DrawLine(DPoint pt1, DPoint pt2, DColor color, double alpha, DPenStyle penStyle, double strokeWidth);
         abstract public void DrawPolyline(DPoints pts, DColor color);
         abstract public void DrawPolyline(DPoints pts, DColor color, double alpha, double strokeWidth);
         abstract public void DrawBitmap(DBitmap bitmap, DPoint pt);

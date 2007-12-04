@@ -297,8 +297,13 @@ namespace DDraw.GTK
 
         public override void DrawLine(DPoint pt1, DPoint pt2, DColor color, double alpha, DPenStyle penStyle)
         {
+            DrawLine(pt1, pt2, color, alpha, penStyle, 1);
+        }
+
+        public override void DrawLine(DPoint pt1, DPoint pt2, DColor color, double alpha, DPenStyle penStyle, double strokeWidth)
+        {
             cr.Color = MakeColor(color, alpha);
-            cr.LineWidth = 1;
+            cr.LineWidth = strokeWidth;
             CairoPenStyle(cr, penStyle);
             cr.MoveTo(pt1.X, pt1.Y);
             cr.LineTo(pt2.X, pt2.Y);

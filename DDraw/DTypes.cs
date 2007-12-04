@@ -235,6 +235,8 @@ namespace DDraw
 
     public enum PageFormat { A4, A5, Letter, Custom };
 
+    public enum Zoom { FitToPage, FitToWidth, Custom };
+
     public static class PageTools
     {
         // TODO: find these out cross platform

@@ -114,6 +114,8 @@ namespace DDraw
 
     public abstract class Figure: ISelectable
     {
+        public double Scale = 1;
+
         double x;
         public virtual double X
         {
@@ -299,8 +301,8 @@ namespace DDraw
                 ApplyTransforms(dg);
                 // draw selection rectangle
                 DRect r = GetSelectRect();
-                dg.DrawRect(r, DColor.White);
-                dg.DrawRect(r, DColor.Black, 1, DPenStyle.Dot);
+                dg.DrawRect(r.X, r.Y, r.Width, r.Height, DColor.White, 1, Scale);
+                dg.DrawRect(r.X, r.Y, r.Width, r.Height, DColor.Black, 1, Scale, DPenStyle.Dot);
                 // draw resize handle
                 r = GetResizeHandleRect();
                 dg.FillEllipse(r, DColor.Red);
@@ -308,33 +310,35 @@ namespace DDraw
                 // draw rotate handle
                 r = GetRotateHandleRect();
                 DPoint p1 = r.Center;
-                DPoint p2 = p1.Offset(0, 3 * HANDLE_SZ - S_INDENT);
-                dg.DrawLine(p1, p2, DColor.White);
-                dg.DrawLine(p1, p2, DColor.Black, DPenStyle.Dot);
+                DPoint p2 = p1.Offset(0, 3 * HANDLE_SZ * Scale - S_INDENT * Scale);
+                dg.DrawLine(p1, p2, DColor.White, 1, DPenStyle.Solid, Scale);
+                dg.DrawLine(p1, p2, DColor.Black, 1, DPenStyle.Dot, Scale);
                 dg.FillEllipse(r, DColor.Blue);
                 dg.DrawEllipse(r, DColor.Black);
 			    //dg.DrawRect(GetEncompassingRect(), DColor.Black);
                 // load previous transform
                 dg.LoadTransform(m);
-
             }
         }
 
         public virtual DRect GetSelectRect()
         {
-            return Rect.Offset(-S_INDENT, -S_INDENT).Inflate(S_INDENT + S_INDENT, S_INDENT + S_INDENT);
+            double i = S_INDENT * Scale;
+            return Rect.Offset(-i, -i).Inflate(i + i, i + i);
         }
 
         public virtual DRect GetResizeHandleRect()
         {
             DRect selectRect = GetSelectRect();
-            return new DRect(selectRect.Right - HANDLE_SZ, selectRect.Bottom - HANDLE_SZ, HANDLE_SZ + HANDLE_SZ, HANDLE_SZ + HANDLE_SZ);
+            double hs = HANDLE_SZ * Scale;
+            return new DRect(selectRect.Right - hs, selectRect.Bottom - hs, hs + hs, hs + hs);
         }
 
         public virtual DRect GetRotateHandleRect()
         {
             DRect selectRect = GetSelectRect();
-            return new DRect(selectRect.Center.X - HANDLE_SZ, selectRect.Y - HANDLE_SZ * 3, HANDLE_SZ + HANDLE_SZ, HANDLE_SZ + HANDLE_SZ);
+            double hs = HANDLE_SZ * Scale;
+            return new DRect(selectRect.Center.X - hs, selectRect.Y - hs * 3, hs + hs, hs + hs);
         }
 
         public virtual DRect GetEncompassingRect()
@@ -441,15 +445,12 @@ namespace DDraw
 
     public class SelectionFigure : RectFigure
     {
-        public SelectionFigure(DRect rect, double rotation)
-            : base(rect, rotation)
-        {
-        }
+        public SelectionFigure(DRect rect, double rotation) : base(rect, rotation) { }
 
         protected override void PaintBody(DGraphics dg)
         {
-            dg.DrawRect(X, Y, Width, Height, DColor.White, Alpha, StrokeWidth);
-            dg.DrawRect(X, Y, Width, Height, DColor.Black, Alpha, StrokeWidth, DPenStyle.Dot);
+            dg.DrawRect(X, Y, Width, Height, DColor.White, Alpha, StrokeWidth * Scale);
+            dg.DrawRect(X, Y, Width, Height, DColor.Black, Alpha, StrokeWidth * Scale, DPenStyle.Dot);
         }
     }
 

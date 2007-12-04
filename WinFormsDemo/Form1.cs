@@ -139,25 +139,15 @@ namespace WinFormsDemo
                 cmsFigure.Show(wfvcEditor, new Point((int)pt.X, (int)pt.Y));
             else
             {
-                a4ToolStripMenuItem.Checked = false;
-                a5ToolStripMenuItem.Checked = false;
-                letterToolStripMenuItem.Checked = false;
-                customToolStripMenuItem.Checked = false;
-                switch (de.PageFormat)
-                {
-                    case PageFormat.A4:
-                        a4ToolStripMenuItem.Checked = true;
-                        break;
-                    case PageFormat.A5:
-                        a5ToolStripMenuItem.Checked = true;
-                        break;
-                    case PageFormat.Letter:
-                        letterToolStripMenuItem.Checked = true;
-                        break;
-                    case PageFormat.Custom:
-                        customToolStripMenuItem.Checked = true;
-                        break;
-                }
+                a4ToolStripMenuItem.Checked = de.PageFormat == PageFormat.A4;
+                a5ToolStripMenuItem.Checked = de.PageFormat == PageFormat.A5;
+                letterToolStripMenuItem.Checked = de.PageFormat == PageFormat.Letter;
+                customToolStripMenuItem.Checked = de.PageFormat == PageFormat.Custom;
+                fitToPageToolStripMenuItem.Checked = dvEditor.Zoom == Zoom.FitToPage;
+                fitToWidthToolStripMenuItem.Checked = dvEditor.Zoom == Zoom.FitToWidth;
+                _050PcToolStripMenuItem.Checked = dvEditor.Scale == 0.5;
+                _100PcToolStripMenuItem.Checked = dvEditor.Scale == 1.0;
+                _150PcToolStripMenuItem.Checked = dvEditor.Scale == 1.5;
                 cmsBackground.Show(wfvcEditor, new Point((int)pt.X, (int)pt.Y));
             }
         }
@@ -584,6 +574,20 @@ namespace WinFormsDemo
                 if (f.ShowDialog() == DialogResult.OK)
                     de.PageSize = f.PageSize;
             }
+        }
+
+        private void ZoomToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (sender == fitToPageToolStripMenuItem)
+                dvEditor.Zoom = Zoom.FitToPage;
+            else if (sender == fitToWidthToolStripMenuItem)
+                dvEditor.Zoom = Zoom.FitToWidth;
+            else if (sender == _050PcToolStripMenuItem)
+                dvEditor.Scale = 0.5;
+            else if (sender == _100PcToolStripMenuItem)
+                dvEditor.Scale = 1.0;
+            else if (sender == _150PcToolStripMenuItem)
+                dvEditor.Scale = 1.5;
         }
     }
 }

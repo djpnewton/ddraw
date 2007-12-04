@@ -75,6 +75,12 @@ namespace WinFormsDemo
             this.a5ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.letterToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.customToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.zoomToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.fitToPageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.fitToWidthToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this._050PcToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this._100PcToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this._150PcToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.pnlPreviews.SuspendLayout();
             this.tsEditorMode.SuspendLayout();
             this.toolStripContainer1.ContentPanel.SuspendLayout();
@@ -451,9 +457,10 @@ namespace WinFormsDemo
             // cmsBackground
             // 
             this.cmsBackground.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.pageSizeToolStripMenuItem});
+            this.pageSizeToolStripMenuItem,
+            this.zoomToolStripMenuItem});
             this.cmsBackground.Name = "cmsBackground";
-            this.cmsBackground.Size = new System.Drawing.Size(132, 26);
+            this.cmsBackground.Size = new System.Drawing.Size(153, 70);
             // 
             // pageSizeToolStripMenuItem
             // 
@@ -463,7 +470,7 @@ namespace WinFormsDemo
             this.letterToolStripMenuItem,
             this.customToolStripMenuItem});
             this.pageSizeToolStripMenuItem.Name = "pageSizeToolStripMenuItem";
-            this.pageSizeToolStripMenuItem.Size = new System.Drawing.Size(131, 22);
+            this.pageSizeToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.pageSizeToolStripMenuItem.Text = "Page Size";
             // 
             // a4ToolStripMenuItem
@@ -493,6 +500,53 @@ namespace WinFormsDemo
             this.customToolStripMenuItem.Size = new System.Drawing.Size(121, 22);
             this.customToolStripMenuItem.Text = "Custom";
             this.customToolStripMenuItem.Click += new System.EventHandler(this.PageSizeToolStripMenuItem_Click);
+            // 
+            // zoomToolStripMenuItem
+            // 
+            this.zoomToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.fitToPageToolStripMenuItem,
+            this.fitToWidthToolStripMenuItem,
+            this._050PcToolStripMenuItem,
+            this._100PcToolStripMenuItem,
+            this._150PcToolStripMenuItem});
+            this.zoomToolStripMenuItem.Name = "zoomToolStripMenuItem";
+            this.zoomToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.zoomToolStripMenuItem.Text = "Zoom";
+            // 
+            // fitToPageToolStripMenuItem
+            // 
+            this.fitToPageToolStripMenuItem.Name = "fitToPageToolStripMenuItem";
+            this.fitToPageToolStripMenuItem.Size = new System.Drawing.Size(141, 22);
+            this.fitToPageToolStripMenuItem.Text = "Fit to Page";
+            this.fitToPageToolStripMenuItem.Click += new System.EventHandler(this.ZoomToolStripMenuItem_Click);
+            // 
+            // fitToWidthToolStripMenuItem
+            // 
+            this.fitToWidthToolStripMenuItem.Name = "fitToWidthToolStripMenuItem";
+            this.fitToWidthToolStripMenuItem.Size = new System.Drawing.Size(141, 22);
+            this.fitToWidthToolStripMenuItem.Text = "Fit to Width";
+            this.fitToWidthToolStripMenuItem.Click += new System.EventHandler(this.ZoomToolStripMenuItem_Click);
+            // 
+            // _050PcToolStripMenuItem
+            // 
+            this._050PcToolStripMenuItem.Name = "_050PcToolStripMenuItem";
+            this._050PcToolStripMenuItem.Size = new System.Drawing.Size(141, 22);
+            this._050PcToolStripMenuItem.Text = "50%";
+            this._050PcToolStripMenuItem.Click += new System.EventHandler(this.ZoomToolStripMenuItem_Click);
+            // 
+            // _100PcToolStripMenuItem
+            // 
+            this._100PcToolStripMenuItem.Name = "_100PcToolStripMenuItem";
+            this._100PcToolStripMenuItem.Size = new System.Drawing.Size(141, 22);
+            this._100PcToolStripMenuItem.Text = "100%";
+            this._100PcToolStripMenuItem.Click += new System.EventHandler(this.ZoomToolStripMenuItem_Click);
+            // 
+            // _150PcToolStripMenuItem
+            // 
+            this._150PcToolStripMenuItem.Name = "_150PcToolStripMenuItem";
+            this._150PcToolStripMenuItem.Size = new System.Drawing.Size(141, 22);
+            this._150PcToolStripMenuItem.Text = "150%";
+            this._150PcToolStripMenuItem.Click += new System.EventHandler(this.ZoomToolStripMenuItem_Click);
             // 
             // Form1
             // 
@@ -573,6 +627,12 @@ namespace WinFormsDemo
         private ToolStripStrokeWidthButton btnStrokeWidth;
         private ToolStripAlphaButton btnAlpha;
         private ToolStripFontNameChooser cbFontName;
+        private System.Windows.Forms.ToolStripMenuItem zoomToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem fitToPageToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem fitToWidthToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem _050PcToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem _100PcToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem _150PcToolStripMenuItem;
     }
 }
 

@@ -286,6 +286,11 @@ namespace DDraw.WinForms
             g.DrawLine(MakePen(MakeColor(color, alpha), penStyle), (float)pt1.X, (float)pt1.Y, (float)pt2.X, (float)pt2.Y);
         }
 
+        public override void DrawLine(DPoint pt1, DPoint pt2, DColor color, double alpha, DPenStyle penStyle, double strokeWidth)
+        {
+            g.DrawLine(MakePen(MakeColor(color, alpha), strokeWidth, penStyle), (float)pt1.X, (float)pt1.Y, (float)pt2.X, (float)pt2.Y);
+        }
+
         public override void DrawPolyline(DPoints pts, DColor color)
         {
             DrawPolyline(pts, color, 1, 1);

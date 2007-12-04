@@ -35,6 +35,44 @@ namespace DDraw
                 Update();
             }
         }
+
+        double scale = 1;
+        public virtual double Scale
+        {
+            get { return scale; }
+            set
+            {
+                scale = value;
+                zoom = Zoom.Custom;
+                UpdateAutoScroll();
+            }
+        }
+        Zoom zoom = Zoom.Custom;
+        public Zoom Zoom
+        {
+            get { return zoom; }
+            set 
+            { 
+                switch (value)
+                {
+                    case Zoom.FitToPage:
+                        if (PageSize.X / Width > PageSize.Y / Height)
+                            goto case Zoom.FitToWidth;
+                        else
+                            Scale = (Height - MARGIN * 2) / PageSize.Y;
+                        break;
+                    case Zoom.FitToWidth:
+                        Scale = (Width - MARGIN * 2)/ PageSize.X;
+                        break;
+                    case Zoom.Custom:
+                        System.Diagnostics.Debug.Assert(false, "ERROR: to use a custom zoom use the ZoomPercent property");
+                        break;
+                }
+                zoom = value;
+            }
+        }
+
+        abstract protected void UpdateAutoScroll();
         
         abstract public bool Preview
         {
@@ -51,12 +89,12 @@ namespace DDraw
         }
         protected int PgSzX
         {
-            get { return (int)Math.Round(PageSize.X); }
+            get { return (int)Math.Round(PageSize.X * scale); }
         }
         
         protected int PgSzY
         {
-            get { return (int)Math.Round(PageSize.Y); }
+            get { return (int)Math.Round(PageSize.Y * scale); }
         }
 
         abstract protected int HortScroll { get; }
@@ -65,6 +103,7 @@ namespace DDraw
         abstract protected int OffsetY { get; }
         public DPoint EngineToClient(DPoint pt)
         {
+            pt = new DPoint(pt.X * scale, pt.Y * scale); 
             return pt.Offset(-HortScroll + OffsetX, -VertScroll + OffsetY);
         }
 
@@ -135,7 +174,7 @@ namespace DDraw
                 KeyUp(this, k);
         }
 
-        public void Paint(List<Figure> figures, bool drawSelectionRect, Figure selectionRect)
+        public void Paint(List<Figure> figures, bool drawSelectionRect, SelectionFigure selectionRect)
         {
             // set antialias value
             dg.AntiAlias = AntiAlias;
@@ -149,6 +188,7 @@ namespace DDraw
             {
                 dg.FillRect(0, 0, Width, Height, new DColor(200, 200, 200), 1); // gray background
                 dg.Translate(CanvasOffset()); // center drawing
+                dg.Scale(scale, scale); // scale canvas
                 dg.FillRect(SHADOW_OFFSET, SHADOW_OFFSET, PageSize.X, PageSize.Y, DColor.Black, 1); // draw black canvas shadow
                 dg.FillRect(0, 0, PageSize.X, PageSize.Y, DColor.White, 1); // draw white canvas
             }
@@ -157,10 +197,17 @@ namespace DDraw
                 figure.Paint(dg);
             if (editFigures)
             {
+                double invScale = 1 / scale;
                 foreach (Figure figure in figures)
+                {
+                    figure.Scale = invScale;
                     figure.PaintSelectionChrome(dg);
+                }
                 if (drawSelectionRect)
+                {
+                    selectionRect.Scale = invScale;
                     selectionRect.Paint(dg);
+                }
             }
         }
 

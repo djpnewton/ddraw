@@ -335,6 +335,7 @@ namespace DDraw
                         dv.SetCursor(DCursor.Rotate);
                         break;
                 }
+                DoDebugMessage(string.Format("{0}, {1}", pt.X, pt.Y));
             }
         }
 

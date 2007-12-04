@@ -13,8 +13,8 @@ namespace DDraw.WinForms
         Cursor RotateCursor;
         Point mousePt;
 		System.Diagnostics.Stopwatch stopWatch;
-        
-        void UpdateAutoScroll()
+
+        protected override void UpdateAutoScroll()
         {
             if (Preview)
                 control.AutoScrollMinSize = new Size(0, 0);
@@ -142,7 +142,7 @@ namespace DDraw.WinForms
         
         DPoint MousePt(double x, double y)
         {
-            return new DPoint(x + HortScroll - OffsetX, y + VertScroll - OffsetY);
+            return new DPoint((x + HortScroll - OffsetX) * (1 / Scale), (y + VertScroll - OffsetY) * (1 / Scale));
         }
             
         void control_MouseDown(object sender, MouseEventArgs e)
@@ -198,6 +198,8 @@ namespace DDraw.WinForms
 
         void control_SizeChanged(object sender, EventArgs e)
         {
+            if (Zoom != Zoom.Custom)
+                Zoom = Zoom;
             Update();
         }
         
@@ -215,9 +217,9 @@ namespace DDraw.WinForms
 
         public override void Update(DRect rect)
         {
-            Rectangle r = new Rectangle((int)(rect.X) - HortScroll + OffsetX,
-                                        (int)(rect.Y) - VertScroll + OffsetY, 
-                                        (int)(rect.Width), (int)(rect.Height));
+            Rectangle r = new Rectangle((int)((rect.X * Scale) - HortScroll + OffsetX),
+                                        (int)((rect.Y * Scale) - VertScroll + OffsetY), 
+                                        (int)(rect.Width * Scale), (int)(rect.Height * Scale));
             r.Inflate(1, 1);
             control.Invalidate(r);
         }
