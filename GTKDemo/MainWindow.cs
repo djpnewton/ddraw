@@ -66,17 +66,86 @@ namespace GTKDemo
 
         void de_ContextClick(DEngine de, Figure clickedFigure, DPoint pt)
         {
+            // create popup
             Menu pop = new Menu();
-            MenuItem mi = new MenuItem("Fit to Page");
-            mi.ButtonPressEvent += new ButtonPressEventHandler(mi_ButtonPressEvent);
-            pop.Append(mi);
-            pop.Popup();
-            pop.ShowAll();
+            MenuItem mi;
+            if (clickedFigure == null)
+            {
+                // page zoom menu items
+                mi = new MenuItem("Fit to Page");
+                mi.ButtonPressEvent += new ButtonPressEventHandler(miFitToPage_ButtonPressEvent);
+                pop.Append(mi);
+                mi = new MenuItem("Fit to Width");
+                mi.ButtonPressEvent += new ButtonPressEventHandler(miFitToWidth_ButtonPressEvent);
+                pop.Append(mi);
+                mi = new MenuItem("50%");
+                mi.ButtonPressEvent += new ButtonPressEventHandler(mi050pc_ButtonPressEvent);
+                pop.Append(mi);
+                mi = new MenuItem("100%");
+                mi.ButtonPressEvent += new ButtonPressEventHandler(mi100pc_ButtonPressEvent);
+                pop.Append(mi);
+                mi = new MenuItem("150%");
+                mi.ButtonPressEvent += new ButtonPressEventHandler(mi150pc_ButtonPressEvent);
+                pop.Append(mi);
+            }
+            else
+            {
+                // group menu items
+                Figure[] figs = de.SelectedFigures;
+                if (figs.Length > 1)
+                {
+                    mi = new MenuItem("Group");
+                    mi.ButtonPressEvent += new ButtonPressEventHandler(miGroup_ButtonPressEvent);
+                    pop.Append(mi);
+                }
+                else if (figs.Length == 1 && figs[0] is GroupFigure)
+                {
+                    mi = new MenuItem("Ungroup");
+                    mi.ButtonPressEvent += new ButtonPressEventHandler(miUngroup_ButtonPressEvent);
+                    pop.Append(mi);
+                }
+            }
+            // show popup
+            if (pop.Children.Length > 0)
+            {
+                pop.Popup();
+                pop.ShowAll();
+            }
         }
-
-        void mi_ButtonPressEvent(object o, ButtonPressEventArgs args)
+                
+        void miFitToPage_ButtonPressEvent(object o, ButtonPressEventArgs args)
         {
             dv.Zoom = Zoom.FitToPage;
+        }
+		
+        void miFitToWidth_ButtonPressEvent(object o, ButtonPressEventArgs args)
+        {
+            dv.Zoom = Zoom.FitToWidth;
+        }
+		
+        void mi050pc_ButtonPressEvent(object o, ButtonPressEventArgs args)
+        {
+            dv.Scale = 0.5;
+        }
+		
+        void mi100pc_ButtonPressEvent(object o, ButtonPressEventArgs args)
+        {
+            dv.Scale = 1.0;
+        }
+		
+        void mi150pc_ButtonPressEvent(object o, ButtonPressEventArgs args)
+        {
+            dv.Scale = 1.5;
+        }
+		
+        void miGroup_ButtonPressEvent(object o, ButtonPressEventArgs args)
+        {
+            de.GroupFigures(de.SelectedFigures);
+        }
+            
+        void miUngroup_ButtonPressEvent(object o, ButtonPressEventArgs args)
+        {
+            de.UngroupFigure((GroupFigure)de.SelectedFigures[0]);
         }
 		
 		void DebugMessage(string msg)
