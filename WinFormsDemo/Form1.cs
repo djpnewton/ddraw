@@ -25,6 +25,7 @@ namespace WinFormsDemo
         {
             DEngine de = new DEngine(dap);
             previewBar1.AddPreview(de, dvEditor);
+            de.PageSize = new DPoint(500, 400);
             // DEngine events
             de.DebugMessage += new DebugMessageHandler(DebugMessage);
             de.SelectedFiguresChanged += new SelectedFiguresHandler(de_SelectedFiguresChanged);
@@ -43,6 +44,8 @@ namespace WinFormsDemo
                 de.State = this.de.State;
             }
             de.AddViewer(dvEditor);
+            if (dvEditor.Zoom != Zoom.Custom)
+                dvEditor.Zoom = dvEditor.Zoom; 
             dvEditor.Update();
             this.de = de;
             de_SelectedFiguresChanged();

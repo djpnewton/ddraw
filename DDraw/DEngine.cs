@@ -8,6 +8,8 @@ namespace DDraw
 {
     public delegate void DebugMessageHandler(string msg);
     public delegate void SelectedFiguresHandler();
+    public delegate void PageSizeChangedHandler(DEngine de, DPoint pageSize);
+    public delegate void ContextClickHandler(DEngine de, Figure clickedFigure, DPoint pt);
 
     public class DAuthorProperties
     {
@@ -50,8 +52,6 @@ namespace DDraw
                 ((ITextable)f).FontName = FontName;
         }
     }
-
-    public delegate void ContextClickHandler(DEngine de, Figure clickedFigure, DPoint pt);
 
     public partial class DEngine
     {
@@ -98,6 +98,8 @@ namespace DDraw
                 pageSize = value;
                 foreach (DViewer dv in viewers)
                     dv.SetPageSize(pageSize);
+                if (PageSizeChanged != null)
+                    PageSizeChanged(this, value);
             }
         }       
         public PageFormat PageFormat
@@ -113,6 +115,7 @@ namespace DDraw
         public event DebugMessageHandler DebugMessage;
         public event SelectedFiguresHandler SelectedFiguresChanged;
         public event ContextClickHandler ContextClick;
+        public event PageSizeChangedHandler PageSizeChanged;
 
         public DEngine(DAuthorProperties ap)
         {

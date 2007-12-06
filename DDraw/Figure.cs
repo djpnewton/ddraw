@@ -306,7 +306,7 @@ namespace DDraw
                 // draw resize handle
                 r = GetResizeHandleRect();
                 dg.FillEllipse(r, DColor.Red);
-                dg.DrawEllipse(r, DColor.Black);
+                dg.DrawEllipse(r.X, r.Y, r.Width, r.Height, DColor.Black, 1, Scale);
                 // draw rotate handle
                 r = GetRotateHandleRect();
                 DPoint p1 = r.Center;
@@ -314,8 +314,9 @@ namespace DDraw
                 dg.DrawLine(p1, p2, DColor.White, 1, DPenStyle.Solid, Scale);
                 dg.DrawLine(p1, p2, DColor.Black, 1, DPenStyle.Dot, Scale);
                 dg.FillEllipse(r, DColor.Blue);
-                dg.DrawEllipse(r, DColor.Black);
-			    //dg.DrawRect(GetEncompassingRect(), DColor.Black);
+                dg.DrawEllipse(r.X, r.Y, r.Width, r.Height, DColor.Black, 1, Scale);
+                //r = GetEncompassingRect();
+                //dg.DrawRect(r.X, r.Y, r.Width, r.Height, DColor.Black, 1, Scale);
                 // load previous transform
                 dg.LoadTransform(m);
             }

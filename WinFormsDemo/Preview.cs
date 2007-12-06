@@ -21,12 +21,12 @@ namespace WinFormsDemo
         }
         public bool Selected
         {
-            get { return BackColor == Color.Red; }
+            get { return viewerHolder.BackColor == Color.Red; }
             set
             {
                 if (value)
                 {
-                    BackColor = Color.Red;
+                    viewerHolder.BackColor = Color.Red;
                     // deselect other siblings
                     if (radioSelect)
                         foreach (Control c in Parent.Controls)
@@ -34,7 +34,7 @@ namespace WinFormsDemo
                                 ((Preview)c).Selected = false;
                 }
                 else
-                    BackColor = Color.Empty;
+                    viewerHolder.BackColor = Color.Empty;
             }
         }
 
@@ -54,39 +54,53 @@ namespace WinFormsDemo
         {
             get { return dv; }
         }
+        
+        const int MARGIN = 1;
+        Panel viewerHolder;
 
         public Preview(DEngine de)
         {
+            viewerHolder = new Panel();
+            viewerHolder.Location = new Point(0, 0);
+            viewerHolder.Size = Size;
+            viewerHolder.Click += new EventHandler(viewerControl_Click);
+            Controls.Add(viewerHolder);
+            // viewerControl
             viewerControl = new WFViewerControl();
-            SuspendLayout();
-            // 
-            // wfViewerControl
-            // 
-            viewerControl.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
-            viewerControl.Location = new System.Drawing.Point(3, 3);
-            viewerControl.Name = "wfViewerControl";
-            viewerControl.Size = new System.Drawing.Size(144, 144);
-            viewerControl.Click += new System.EventHandler(viewerControl_Click);
-            // 
+            viewerControl.Location = new Point(MARGIN, MARGIN);
+            viewerControl.Size = new Size(Width - MARGIN * 2, Height - MARGIN * 2);
+            viewerControl.Anchor = AnchorStyles.Left | AnchorStyles.Top | AnchorStyles.Right | AnchorStyles.Bottom;
+            viewerControl.Click += new EventHandler(viewerControl_Click);
+            viewerHolder.Controls.Add(viewerControl);
             // Preview
-            // 
-            AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            Controls.Add(viewerControl);
-            Name = "Preview";
-            ResumeLayout(false);
-
             this.de = de;
             dv = new WFViewer(viewerControl);
             dv.Preview = true;
+            de.PageSizeChanged += new PageSizeChangedHandler(de_PageSizeChanged);
             de.AddViewer(dv);
         }
 
         private void viewerControl_Click(object sender, EventArgs e)
         {
             InvokeOnClick(this, e);
+        }
+        
+        private void de_PageSizeChanged(DEngine de, DPoint pageSize)
+        {
+            if (pageSize.X / Width > pageSize.Y / Height)
+            {
+                viewerHolder.Left = 0;
+                viewerHolder.Width = Width;
+                viewerHolder.Height = (int)Math.Round(Height * ((Width / pageSize.X) / (Height / pageSize.Y)));
+                viewerHolder.Top = Height / 2 - viewerHolder.Height / 2; 
+            }
+            else
+            {
+                viewerHolder.Width = (int)Math.Round(Width * ((Height / pageSize.Y) / (Width / pageSize.X)));
+                viewerHolder.Left = Width / 2 - viewerHolder.Width / 2;
+                viewerHolder.Top = 0;
+                viewerHolder.Height = Height;
+            }
         }
     }
 }
