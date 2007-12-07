@@ -14,7 +14,7 @@ using DDraw.WinForms;
 
 namespace WinFormsDemo
 {
-    public partial class Form1 : Form
+    public partial class MainForm : Form
     {
         DAuthorProperties dap;
         DEngine de = null;
@@ -52,7 +52,7 @@ namespace WinFormsDemo
             UndoRedoMgr_UndoRedoChanged(false);
         }
 
-        public Form1()
+        public MainForm()
         {
             InitializeComponent();
             // Initialze DGraphics
@@ -506,19 +506,6 @@ namespace WinFormsDemo
             }
         }
 
-        private void textToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            TextForm tf = new TextForm();
-            if (tf.ShowDialog() == DialogResult.OK)
-            {
-                de.ClearSelected();
-				de.UndoRedoMgr.Start("Add Text");
-                de.AddFigure(new TextFigure(new DPoint(10, 10), tf.TextEntered, GraphicsHelper.TextExtent, 0));
-				de.UndoRedoMgr.Commit();
-                de.UpdateViewers();
-            }
-        }
-
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
         {
             AboutBox f = new AboutBox();
@@ -591,6 +578,16 @@ namespace WinFormsDemo
                 dvEditor.Scale = 1.0;
             else if (sender == _150PcToolStripMenuItem)
                 dvEditor.Scale = 1.5;
+        }
+
+        private void notImplemented_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show("Not yet implemented");
+        }
+
+        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Close();
         }
     }
 }
