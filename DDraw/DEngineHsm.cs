@@ -87,6 +87,9 @@ namespace DDraw
     {
         QState Main;
         QState Select;
+        QState SelectDefault;
+        QState SelectDragFigure;
+        QState SelectMouseMove;
         QState DrawPolyline;
         QState DrawRect;
         QState DrawEllipse;
@@ -99,7 +102,7 @@ namespace DDraw
         {
             get
             {
-                if (IsInState(Select))
+                if (IsInState(Select) || IsInState(SelectDefault) || IsInState(SelectDragFigure))
                     return DEngineState.Select;
                 if (IsInState(DrawPolyline))
                     return DEngineState.DrawPolyline;
@@ -169,16 +172,33 @@ namespace DDraw
             return this.TopState;
         }
 
-        void DoSelectMouseDown(DViewer dv, DMouseButton btn, DPoint pt)
+        QState DoSelect(IQEvent qevent)
+        {
+            switch (qevent.QSignal)
+            {
+                case (int)QSignals.Init:
+                    DoStateChanged();
+                    InitializeState(SelectDefault);
+                    return Main;
+                case (int)QSignals.Entry:
+                    // dont clear currentfigure and selected if we have transitioned from TextEdit state
+                    if (!IsInState(TextEdit))
+                    {
+                        ClearCurrentFigure();
+                        ClearSelected();
+                    }
+                    UpdateViewers();
+                    return null;
+            }
+            return this.Main;
+        }
+
+        void DoSelectDefaultMouseDown(DViewer dv, DMouseButton btn, DPoint pt)
         {
             if (btn == DMouseButton.Left)
             {
-                mouseDown = true;
                 // find and select clicked figure
                 Figure f = HitTestSelect(pt, out mouseHitTest);
-                // now record state for undo/redo manager
-                if (autoUndoRecord)
-                    undoRedoMgr.Start("Select Operation");
                 // update selected figures
                 if (f != null)
                 {
@@ -210,136 +230,166 @@ namespace DDraw
                 }
                 // update drawing
                 dv.Update();
+                // transition
+                TransitionTo(SelectDragFigure);
             }
         }
 
-        void DoSelectMouseMove(DViewer dv, DPoint pt)
+        void DoSelectDefaultMouseMove(DViewer dv, DPoint pt)
         {
-            if (mouseDown)
+            // set cursor
+            DHitTest hitTest;
+            HitTestFigures(pt, out hitTest);
+            switch (hitTest)
             {
-                // rectangular area to update with paint event
-                DRect updateRect = new DRect();
-                // move selected figures
-                switch (mouseHitTest)
-                {
-                    case DHitTest.None:
-                        // initial update rect
-                        updateRect = selectionRect.Rect;
-                        // drag select figure
-                        selectionRect.TopLeft = dragPt;
-                        selectionRect.BottomRight = pt;
-                        if (selectionRect.Width < 0)
-                        {
-                            selectionRect.X += selectionRect.Width;
-                            selectionRect.Width = -selectionRect.Width;
-                        }
-                        if (selectionRect.Height < 0)
-                        {
-                            selectionRect.Y += selectionRect.Height;
-                            selectionRect.Height = -selectionRect.Height;
-                        }
-                        drawSelectionRect = true;
-                        // final update rect
-                        updateRect = updateRect.Union(selectionRect.Rect);
-                        break;
-                    case DHitTest.Body:
-                        System.Diagnostics.Trace.Assert(currentFigure != null, "currentFigure is null");
-                        // initial update rect
-                        updateRect = GetBoundingBox(currentFigure);
-                        foreach (Figure f in selectedFigures)
-                            updateRect = updateRect.Union(GetBoundingBox(f));
-                        // apply x/y delta to figures
-                        DPoint dPos = CalcDragDelta(pt);
-                        foreach (Figure f in selectedFigures)
-                        {
-                            f.X += dPos.X;
-                            f.Y += dPos.Y;
-                        }
-                        // store drag pt for reference later (eg. next mousemove event)
-                        dragPt = pt;
-                        // final update rect
-                        foreach (Figure f in selectedFigures)
-                            updateRect = updateRect.Union(GetBoundingBox(f));
-                        break;
-                    case DHitTest.SelectRect:
-                        goto case DHitTest.Body;
-                    case DHitTest.Resize:
-                        System.Diagnostics.Trace.Assert(currentFigure != null, "currentFigure is null");
-                        // alert figure we are going to resize it
-                        currentFigure.BeforeResize();
-                        // inital update rect
-                        updateRect = GetBoundingBox(currentFigure);
-                        // translate point onto the same rotated plane as the figure
-                        pt = currentFigure.RotatePointToFigure(pt);
-                        // apply width/height delta to figure
-                        DPoint dSize = CalcSizeDelta(pt, currentFigure);
-                        if (currentFigure.Width + dSize.X < MIN_SIZE)
-                        {
-                            dSize.X = MIN_SIZE - currentFigure.Width;
-                            if (currentFigure.LockAspectRatio)
-                                dSize.Y = (currentFigure.Height / currentFigure.Width) * dSize.X;
-                        }
-                        if (currentFigure.Height + dSize.Y < MIN_SIZE)
-                        {
-                            dSize.Y = MIN_SIZE - currentFigure.Height;
-                            if (currentFigure.LockAspectRatio)
-                                dSize.X = (currentFigure.Width / currentFigure.Height) * dSize.Y;
-                        }
-                        currentFigure.Width += dSize.X;
-                        currentFigure.Height += dSize.Y;
-                        // apply x/y delta to figure to account for rotation
-                        dPos = CalcPosDeltaFromAngle(currentFigure.Rotation, dSize);
-                        currentFigure.X += dPos.X;
-                        currentFigure.Y += dPos.Y;
-                        // final update rect
-                        updateRect = updateRect.Union(GetBoundingBox(currentFigure));
-                        // alert figure we have finished resizing
-                        currentFigure.AfterResize();
-                        // debug message
-                        DoDebugMessage(string.Format("{0} {1}", dSize.X, dSize.Y));
-                        break;
-                    case DHitTest.Rotate:
-                        System.Diagnostics.Trace.Assert(currentFigure != null, "currentFigure is null");
-                        // initial update rect
-                        updateRect = GetBoundingBox(currentFigure);
-                        // apply rotation to figure
-                        currentFigure.Rotation = GetRotationOfPointComparedToFigure(currentFigure, pt) - dragRot;
-                        // final update rect
-                        updateRect = updateRect.Union(GetBoundingBox(currentFigure));
-                        // debug message
-                        DoDebugMessage((currentFigure.Rotation * 180 / Math.PI).ToString());
-                        break;
-                }
-                // update drawing
-                dv.Update(updateRect);
+                case DHitTest.None:
+                    dv.SetCursor(DCursor.Default);
+                    break;
+                case DHitTest.Body:
+                    dv.SetCursor(DCursor.MoveAll);
+                    break;
+                case DHitTest.SelectRect:
+                    goto case DHitTest.Body;
+                case DHitTest.Resize:
+                    dv.SetCursor(DCursor.MoveNWSE);
+                    break;
+                case DHitTest.Rotate:
+                    dv.SetCursor(DCursor.Rotate);
+                    break;
             }
-            else
+            DoDebugMessage(string.Format("{0}, {1}", pt.X, pt.Y));
+        }
+
+        void DoSelectDefaultMouseUp(DViewer dv, DMouseButton btn, DPoint pt)
+        {
+            if (btn == DMouseButton.Right)
             {
-                // set cursor
                 DHitTest hitTest;
-                HitTestFigures(pt, out hitTest);
-                switch (hitTest)
-                {
-                    case DHitTest.None:
-                        dv.SetCursor(DCursor.Default);
-                        break;
-                    case DHitTest.Body:
-                        dv.SetCursor(DCursor.MoveAll);
-                        break;
-                    case DHitTest.SelectRect:
-                        goto case DHitTest.Body;
-                    case DHitTest.Resize:
-                        dv.SetCursor(DCursor.MoveNWSE);
-                        break;
-                    case DHitTest.Rotate:
-                        dv.SetCursor(DCursor.Rotate);
-                        break;
-                }
-                DoDebugMessage(string.Format("{0}, {1}", pt.X, pt.Y));
+                Figure f = HitTestSelect(pt, out hitTest);
+                dv.SetCursor(DCursor.Default);
+                dv.Update();
+                if (ContextClick != null)
+                    ContextClick(this, f, dv.EngineToClient(pt));
             }
         }
 
-        void DoSelectMouseUp(DViewer dv, DMouseButton btn, DPoint pt)
+        QState DoSelectDefault(IQEvent qevent)
+        {
+            switch (qevent.QSignal)
+            {
+                case (int)DEngineSignals.MouseDown:
+                    DoSelectDefaultMouseDown(((QMouseEvent)qevent).Dv, ((QMouseEvent)qevent).Button, ((QMouseEvent)qevent).Pt);
+                    return null;
+                case (int)DEngineSignals.MouseMove:
+                    DoSelectDefaultMouseMove(((QMouseEvent)qevent).Dv, ((QMouseEvent)qevent).Pt);
+                    return null;
+                case (int)DEngineSignals.MouseUp:
+                    DoSelectDefaultMouseUp(((QMouseEvent)qevent).Dv, ((QMouseEvent)qevent).Button, ((QMouseEvent)qevent).Pt);
+                    return null;
+            }
+            return this.Select;
+        }
+
+        void DoSelectDragFigureMouseMove(DViewer dv, DPoint pt)
+        {
+            // rectangular area to update with paint event
+            DRect updateRect = new DRect();
+            // move selected figures
+            switch (mouseHitTest)
+            {
+                case DHitTest.None:
+                    // initial update rect
+                    updateRect = selectionRect.Rect;
+                    // drag select figure
+                    selectionRect.TopLeft = dragPt;
+                    selectionRect.BottomRight = pt;
+                    if (selectionRect.Width < 0)
+                    {
+                        selectionRect.X += selectionRect.Width;
+                        selectionRect.Width = -selectionRect.Width;
+                    }
+                    if (selectionRect.Height < 0)
+                    {
+                        selectionRect.Y += selectionRect.Height;
+                        selectionRect.Height = -selectionRect.Height;
+                    }
+                    drawSelectionRect = true;
+                    // final update rect
+                    updateRect = updateRect.Union(selectionRect.Rect);
+                    break;
+                case DHitTest.Body:
+                    System.Diagnostics.Trace.Assert(currentFigure != null, "currentFigure is null");
+                    // initial update rect
+                    updateRect = GetBoundingBox(currentFigure);
+                    foreach (Figure f in selectedFigures)
+                        updateRect = updateRect.Union(GetBoundingBox(f));
+                    // apply x/y delta to figures
+                    DPoint dPos = CalcDragDelta(pt);
+                    foreach (Figure f in selectedFigures)
+                    {
+                        f.X += dPos.X;
+                        f.Y += dPos.Y;
+                    }
+                    // store drag pt for reference later (eg. next mousemove event)
+                    dragPt = pt;
+                    // final update rect
+                    foreach (Figure f in selectedFigures)
+                        updateRect = updateRect.Union(GetBoundingBox(f));
+                    break;
+                case DHitTest.SelectRect:
+                    goto case DHitTest.Body;
+                case DHitTest.Resize:
+                    System.Diagnostics.Trace.Assert(currentFigure != null, "currentFigure is null");
+                    // alert figure we are going to resize it
+                    currentFigure.BeforeResize();
+                    // inital update rect
+                    updateRect = GetBoundingBox(currentFigure);
+                    // translate point onto the same rotated plane as the figure
+                    pt = currentFigure.RotatePointToFigure(pt);
+                    // apply width/height delta to figure
+                    DPoint dSize = CalcSizeDelta(pt, currentFigure);
+                    if (currentFigure.Width + dSize.X < MIN_SIZE)
+                    {
+                        dSize.X = MIN_SIZE - currentFigure.Width;
+                        if (currentFigure.LockAspectRatio)
+                            dSize.Y = (currentFigure.Height / currentFigure.Width) * dSize.X;
+                    }
+                    if (currentFigure.Height + dSize.Y < MIN_SIZE)
+                    {
+                        dSize.Y = MIN_SIZE - currentFigure.Height;
+                        if (currentFigure.LockAspectRatio)
+                            dSize.X = (currentFigure.Width / currentFigure.Height) * dSize.Y;
+                    }
+                    currentFigure.Width += dSize.X;
+                    currentFigure.Height += dSize.Y;
+                    // apply x/y delta to figure to account for rotation
+                    dPos = CalcPosDeltaFromAngle(currentFigure.Rotation, dSize);
+                    currentFigure.X += dPos.X;
+                    currentFigure.Y += dPos.Y;
+                    // final update rect
+                    updateRect = updateRect.Union(GetBoundingBox(currentFigure));
+                    // alert figure we have finished resizing
+                    currentFigure.AfterResize();
+                    // debug message
+                    DoDebugMessage(string.Format("{0} {1}", dSize.X, dSize.Y));
+                    break;
+                case DHitTest.Rotate:
+                    System.Diagnostics.Trace.Assert(currentFigure != null, "currentFigure is null");
+                    // initial update rect
+                    updateRect = GetBoundingBox(currentFigure);
+                    // apply rotation to figure
+                    currentFigure.Rotation = GetRotationOfPointComparedToFigure(currentFigure, pt) - dragRot;
+                    // final update rect
+                    updateRect = updateRect.Union(GetBoundingBox(currentFigure));
+                    // debug message
+                    DoDebugMessage((currentFigure.Rotation * 180 / Math.PI).ToString());
+                    break;
+            }
+            // update drawing
+            dv.Update(updateRect);
+        }
+
+        void DoSelectDragFigureMouseUp(DViewer dv, DMouseButton btn, DPoint pt)
         {
             if (btn == DMouseButton.Left)
             {
@@ -359,22 +409,12 @@ namespace DDraw
                     // update drawing
                     dv.Update(updateRect);
                 }
-                // commit undo changes
-                if (autoUndoRecord)
-                    undoRedoMgr.Commit();
-            }
-            else if (btn == DMouseButton.Right)
-            {
-                DHitTest hitTest;
-                Figure f = HitTestSelect(pt, out hitTest);
-                dv.SetCursor(DCursor.Default);
-                dv.Update();
-                if (ContextClick != null)
-                    ContextClick(this, f, dv.EngineToClient(pt));
+                // transition
+                TransitionTo(SelectDefault);
             }
         }
 
-        void DoSelectDoubleClick(DViewer dv, DPoint pt)
+        void DoSelectDragFigureDoubleClick(DViewer dv, DPoint pt)
         {
             DHitTest ht;
             Figure f = HitTestFigures(pt, out ht);
@@ -388,36 +428,31 @@ namespace DDraw
             }
         }
 
-        QState DoSelect(IQEvent qevent)
+        QState DoSelectDragFigure(IQEvent qevent)
         {
             switch (qevent.QSignal)
             {
-                case (int)QSignals.Init:
-                    DoStateChanged();
-                    return Main;
                 case (int)QSignals.Entry:
-                    // dont clear currentfigure and selected if we have transitioned from TextEdit state
-                    if (!IsInState(TextEdit))
-                    {
-                        ClearCurrentFigure();
-                        ClearSelected();
-                    }
-                    UpdateViewers();
-                    return null;
-                case (int)DEngineSignals.MouseDown:
-                    DoSelectMouseDown(((QMouseEvent)qevent).Dv, ((QMouseEvent)qevent).Button, ((QMouseEvent)qevent).Pt);
-                    return null;
+                    // record state for undo/redo manager
+                    if (autoUndoRecord)
+                        undoRedoMgr.Start("Select Operation");
+                    break;
+                case (int)QSignals.Exit:
+                    // commit undo changes
+                    if (autoUndoRecord)
+                        undoRedoMgr.Commit();
+                    break;
                 case (int)DEngineSignals.MouseMove:
-                    DoSelectMouseMove(((QMouseEvent)qevent).Dv, ((QMouseEvent)qevent).Pt);
+                    DoSelectDragFigureMouseMove(((QMouseEvent)qevent).Dv, ((QMouseEvent)qevent).Pt);
                     return null;
                 case (int)DEngineSignals.MouseUp:
-                    DoSelectMouseUp(((QMouseEvent)qevent).Dv, ((QMouseEvent)qevent).Button, ((QMouseEvent)qevent).Pt);
+                    DoSelectDragFigureMouseUp(((QMouseEvent)qevent).Dv, ((QMouseEvent)qevent).Button, ((QMouseEvent)qevent).Pt);
                     return null;
                 case (int)DEngineSignals.DoubleClick:
-                    DoSelectDoubleClick(((QMouseEvent)qevent).Dv, ((QMouseEvent)qevent).Pt);
+                    DoSelectDragFigureDoubleClick(((QMouseEvent)qevent).Dv, ((QMouseEvent)qevent).Pt);
                     return null;
             }
-            return this.Main;
+            return this.Select;
         }
 
         void DoDrawPolylineMouseDown(DViewer dv, DMouseButton btn, DPoint pt)
@@ -716,7 +751,7 @@ namespace DDraw
 
         void DoTextEditMouseMove(DViewer dv, DPoint pt)
         {
-            DoSelectMouseMove(dv, pt);
+            DoSelectDefaultMouseMove(dv, pt);
         }
 
         void DoTextEditKeyPress(DViewer dv, char k)
@@ -794,6 +829,8 @@ namespace DDraw
 		{
             Main = new QState(this.DoMain);
             Select = new QState(this.DoSelect);
+            SelectDefault = new QState(this.DoSelectDefault);
+            SelectDragFigure = new QState(this.DoSelectDragFigure);
             DrawPolyline = new QState(this.DoDrawPolyline);
             DrawRect = new QState(this.DoDrawRect);
             DrawEllipse = new QState(this.DoDrawEllipse);
