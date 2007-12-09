@@ -85,16 +85,18 @@ namespace DDraw
 
     public partial class DEngine : QHsm
     {
+        // state variables (showing state hierachy here)
         QState Main;
-        QState Select;
-        QState SelectDefault;
-        QState SelectDragFigure;
-        QState SelectMouseMove;
-        QState DrawPolyline;
-        QState DrawRect;
-        QState DrawEllipse;
-        QState DrawText;
-        QState TextEdit;
+            QState Select;
+                QState SelectDefault;
+                QState DragFigure;
+            QState DrawPolyline;
+                QState DrawPolyDefault;
+                QState DrawingPoly;
+            QState DrawRect;
+            QState DrawEllipse;
+            QState DrawText;
+            QState TextEdit;
 
         public delegate void DEngineStateChangedHandler();
         public event DEngineStateChangedHandler StateChanged;
@@ -102,7 +104,7 @@ namespace DDraw
         {
             get
             {
-                if (IsInState(Select) || IsInState(SelectDefault) || IsInState(SelectDragFigure))
+                if (IsInState(Select))
                     return DEngineState.Select;
                 if (IsInState(DrawPolyline))
                     return DEngineState.DrawPolyline;
@@ -231,7 +233,7 @@ namespace DDraw
                 // update drawing
                 dv.Update();
                 // transition
-                TransitionTo(SelectDragFigure);
+                TransitionTo(DragFigure);
             }
         }
 
@@ -290,7 +292,7 @@ namespace DDraw
             return this.Select;
         }
 
-        void DoSelectDragFigureMouseMove(DViewer dv, DPoint pt)
+        void DoDragFigureMouseMove(DViewer dv, DPoint pt)
         {
             // rectangular area to update with paint event
             DRect updateRect = new DRect();
@@ -389,7 +391,7 @@ namespace DDraw
             dv.Update(updateRect);
         }
 
-        void DoSelectDragFigureMouseUp(DViewer dv, DMouseButton btn, DPoint pt)
+        void DoDragFigureMouseUp(DViewer dv, DMouseButton btn, DPoint pt)
         {
             if (btn == DMouseButton.Left)
             {
@@ -414,7 +416,7 @@ namespace DDraw
             }
         }
 
-        void DoSelectDragFigureDoubleClick(DViewer dv, DPoint pt)
+        void DoDragFigureDoubleClick(DViewer dv, DPoint pt)
         {
             DHitTest ht;
             Figure f = HitTestFigures(pt, out ht);
@@ -428,7 +430,7 @@ namespace DDraw
             }
         }
 
-        QState DoSelectDragFigure(IQEvent qevent)
+        QState DoDragFigure(IQEvent qevent)
         {
             switch (qevent.QSignal)
             {
@@ -443,23 +445,39 @@ namespace DDraw
                         undoRedoMgr.Commit();
                     break;
                 case (int)DEngineSignals.MouseMove:
-                    DoSelectDragFigureMouseMove(((QMouseEvent)qevent).Dv, ((QMouseEvent)qevent).Pt);
+                    DoDragFigureMouseMove(((QMouseEvent)qevent).Dv, ((QMouseEvent)qevent).Pt);
                     return null;
                 case (int)DEngineSignals.MouseUp:
-                    DoSelectDragFigureMouseUp(((QMouseEvent)qevent).Dv, ((QMouseEvent)qevent).Button, ((QMouseEvent)qevent).Pt);
+                    DoDragFigureMouseUp(((QMouseEvent)qevent).Dv, ((QMouseEvent)qevent).Button, ((QMouseEvent)qevent).Pt);
                     return null;
                 case (int)DEngineSignals.DoubleClick:
-                    DoSelectDragFigureDoubleClick(((QMouseEvent)qevent).Dv, ((QMouseEvent)qevent).Pt);
+                    DoDragFigureDoubleClick(((QMouseEvent)qevent).Dv, ((QMouseEvent)qevent).Pt);
                     return null;
             }
             return this.Select;
         }
 
-        void DoDrawPolylineMouseDown(DViewer dv, DMouseButton btn, DPoint pt)
+        QState DoDrawPolyline(IQEvent qevent)
+        {
+            switch (qevent.QSignal)
+            {
+                case (int)QSignals.Init:
+                    DoStateChanged();
+                    InitializeState(DrawPolyDefault);
+                    return Main;
+                case (int)QSignals.Entry:
+                    ClearCurrentFigure();
+                    ClearSelected();
+                    UpdateViewers();
+                    return null;
+            }
+            return this.Main;
+        }
+
+        void DoDrawPolyDefaultMouseDown(DViewer dv, DMouseButton btn, DPoint pt)
         {
             if (btn == DMouseButton.Left)
             {
-                mouseDown = true;
                 if (autoUndoRecord)
                     undoRedoMgr.Start("Add Polyline");
                 // create DPoints object
@@ -470,60 +488,63 @@ namespace DDraw
                 authorProps.ApplyPropertiesToFigure(currentFigure);
                 // add to list of figures
                 figures.Add(currentFigure);
+                // transition
+                TransitionTo(DrawingPoly);
             }
         }
 
-        void DoDrawPolylineMouseMove(DViewer dv, DPoint pt)
+        void DoDrawPolyDefaultMouseMove(DViewer dv, DPoint pt)
         {
             // set cursor to draw
             dv.SetCursor(DCursor.Crosshair);
-            if (mouseDown)
-            {
-                // initial update rect
-                DRect updateRect = currentFigure.GetSelectRect();
-                // add point
-                DPoints pts = ((PolylineFigure)currentFigure).Points;
-                pts.Add(pt);
-                ((PolylineFigure)currentFigure).Points = pts;
-                // update drawing
-                dv.Update(updateRect.Union(currentFigure.GetSelectRect()));
-            }
         }
 
-        void DoDrawPolylineMouseUp(DViewer dv, DMouseButton btn, DPoint pt)
-        {
-            if (mouseDown)
-            {
-                mouseDown = false;
-                ClearCurrentFigure();
-                if (autoUndoRecord)
-                    undoRedoMgr.Commit();
-            }
-        }
-
-        QState DoDrawPolyline(IQEvent qevent)
+        QState DoDrawPolyDefault(IQEvent qevent)
         {
             switch (qevent.QSignal)
             {
-                case (int)QSignals.Init:
-                    DoStateChanged();
-                    return Main;
-                case (int)QSignals.Entry:
-                    ClearCurrentFigure();
-                    ClearSelected();
-                    UpdateViewers();
-                    return null;
                 case (int)DEngineSignals.MouseDown:
-                    DoDrawPolylineMouseDown(((QMouseEvent)qevent).Dv, ((QMouseEvent)qevent).Button, ((QMouseEvent)qevent).Pt);
+                    DoDrawPolyDefaultMouseDown(((QMouseEvent)qevent).Dv, ((QMouseEvent)qevent).Button, ((QMouseEvent)qevent).Pt);
                     return null;
                 case (int)DEngineSignals.MouseMove:
-                    DoDrawPolylineMouseMove(((QMouseEvent)qevent).Dv, ((QMouseEvent)qevent).Pt);
-                    return null;
-                case (int)DEngineSignals.MouseUp:
-                    DoDrawPolylineMouseUp(((QMouseEvent)qevent).Dv, ((QMouseEvent)qevent).Button, ((QMouseEvent)qevent).Pt);
+                    DoDrawPolyDefaultMouseMove(((QMouseEvent)qevent).Dv, ((QMouseEvent)qevent).Pt);
                     return null;
             }
-            return this.Main;
+            return this.DrawPolyline;
+        }
+
+        void DoDrawingPolyMouseMove(DViewer dv, DPoint pt)
+        {
+            // initial update rect
+            DRect updateRect = currentFigure.GetSelectRect();
+            // add point
+            DPoints pts = ((PolylineFigure)currentFigure).Points;
+            pts.Add(pt);
+            ((PolylineFigure)currentFigure).Points = pts;
+            // update drawing
+            dv.Update(updateRect.Union(currentFigure.GetSelectRect()));
+        }
+
+        void DoDrawingPolyMouseUp(DViewer dv, DMouseButton btn, DPoint pt)
+        {
+            if (autoUndoRecord)
+                undoRedoMgr.Commit();
+            // transition
+            TransitionTo(DrawPolyDefault);
+        }
+
+        QState DoDrawingPoly(IQEvent qevent)
+        {
+            switch (qevent.QSignal)
+            {
+                case (int)DEngineSignals.MouseMove:
+                    DoDrawingPolyMouseMove(((QMouseEvent)qevent).Dv, ((QMouseEvent)qevent).Pt);
+                    return null;
+                case (int)DEngineSignals.MouseUp:
+                    DoDrawingPolyMouseUp(((QMouseEvent)qevent).Dv, ((QMouseEvent)qevent).Button, ((QMouseEvent)qevent).Pt);
+                    return null;
+            }
+            return this.DrawPolyline;
         }
 
         void DoDrawRectMouseDown(DViewer dv, DMouseButton btn, DPoint pt)
@@ -830,8 +851,10 @@ namespace DDraw
             Main = new QState(this.DoMain);
             Select = new QState(this.DoSelect);
             SelectDefault = new QState(this.DoSelectDefault);
-            SelectDragFigure = new QState(this.DoSelectDragFigure);
+            DragFigure = new QState(this.DoDragFigure);
             DrawPolyline = new QState(this.DoDrawPolyline);
+            DrawPolyDefault = new QState(this.DoDrawPolyDefault);
+            DrawingPoly = new QState(this.DoDrawingPoly);
             DrawRect = new QState(this.DoDrawRect);
             DrawEllipse = new QState(this.DoDrawEllipse);
             DrawText = new QState(this.DoDrawText);
