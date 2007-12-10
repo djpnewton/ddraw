@@ -81,7 +81,7 @@ namespace DDraw
         }
     }
 
-    public enum DEngineState { Select, DrawPolyline, DrawRect, DrawEllipse, DrawText, TextEdit };
+    public enum DEngineState { Select, DrawPolyline, DrawRect, DrawEllipse, DrawText, TextEdit, FigureEdit };
 
     public partial class DEngine : QHsm
     {
@@ -103,7 +103,7 @@ namespace DDraw
             QState TextEdit;
             QState FigureEdit;
 
-        public delegate void DEngineStateChangedHandler();
+        public delegate void DEngineStateChangedHandler(DEngine de, DEngineState state);
         public event DEngineStateChangedHandler StateChanged;
         public DEngineState State
         {
@@ -121,6 +121,8 @@ namespace DDraw
                     return DEngineState.DrawText;
                 if (IsInState(TextEdit))
                     return DEngineState.TextEdit;
+                if (IsInState(FigureEdit))
+                    return DEngineState.FigureEdit;
                 System.Diagnostics.Debug.Assert(false, "Logic Error :(");
                 return DEngineState.Select;
             }
@@ -147,10 +149,10 @@ namespace DDraw
             }
         }
 
-        void DoStateChanged()
+        void DoStateChanged(DEngineState state)
         {
             if (StateChanged != null)
-                StateChanged();
+                StateChanged(this, state);
         }
 
         QState DoMain(IQEvent qevent)
@@ -184,10 +186,10 @@ namespace DDraw
             switch (qevent.QSignal)
             {
                 case (int)QSignals.Init:
-                    DoStateChanged();
                     InitializeState(SelectDefault);
                     return Main;
                 case (int)QSignals.Entry:
+                    DoStateChanged(DEngineState.Select);
                     // dont clear currentfigure and selected if we have transitioned from TextEdit state
                     if (!IsInState(TextEdit))
                     {
@@ -471,10 +473,10 @@ namespace DDraw
             switch (qevent.QSignal)
             {
                 case (int)QSignals.Init:
-                    DoStateChanged();
                     InitializeState(DrawPolyDefault);
                     return Main;
                 case (int)QSignals.Entry:
+                    DoStateChanged(DEngineState.DrawPolyline);
                     ClearCurrentFigure();
                     ClearSelected();
                     UpdateViewers();
@@ -561,10 +563,10 @@ namespace DDraw
             switch (qevent.QSignal)
             {
                 case (int)QSignals.Init:
-                    DoStateChanged();
                     InitializeState(DrawRectDefault);
                    return Main;
                 case (int)QSignals.Entry:
+                    DoStateChanged(DEngineState.DrawRect);
                     ClearCurrentFigure();
                     ClearSelected();
                     UpdateViewers();
@@ -661,10 +663,10 @@ namespace DDraw
             switch (qevent.QSignal)
             {
                 case (int)QSignals.Init:
-                    DoStateChanged();
                     InitializeState(DrawEllipseDefault);
                     return Main;
                 case (int)QSignals.Entry:
+                    DoStateChanged(DEngineState.DrawEllipse);
                     ClearCurrentFigure();
                     ClearSelected();
                     UpdateViewers();
@@ -772,9 +774,9 @@ namespace DDraw
             switch (qevent.QSignal)
             {
                 case (int)QSignals.Init:
-                    DoStateChanged();
                     return Main;
                 case (int)QSignals.Entry:
+                    DoStateChanged(DEngineState.DrawText);
                     ClearCurrentFigure();
                     ClearSelected();
                     UpdateViewers();
@@ -858,9 +860,9 @@ namespace DDraw
             switch (qevent.QSignal)
             {
                 case (int)QSignals.Init:
-                    DoStateChanged();
                     return Main;
                 case (int)QSignals.Entry:
+                    DoStateChanged(DEngineState.TextEdit);
                     // start undo record
                     if (autoUndoRecord)
                         undoRedoMgr.Start("Text Edit");
@@ -904,9 +906,9 @@ namespace DDraw
             switch (qevent.QSignal)
             {
                 case (int)QSignals.Init:
-                    DoStateChanged();
                     return Main;
                 case (int)QSignals.Entry:
+                    DoStateChanged(DEngineState.FigureEdit);
                     // start undo record
                     if (autoUndoRecord)
                         undoRedoMgr.Start("Figure Edit");

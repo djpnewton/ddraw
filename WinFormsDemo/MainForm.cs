@@ -344,13 +344,13 @@ namespace WinFormsDemo
             bringForwardToolStripMenuItem.Enabled = de.CanBringForward(figs);
         }
 
-        void de_StateChanged()
+        void de_StateChanged(DEngine de, DEngineState state)
         {
-            btnSelect.Checked = de.State == DEngineState.Select;
-            btnPen.Checked = de.State == DEngineState.DrawPolyline;
-            btnRect.Checked = de.State == DEngineState.DrawRect;
-            btnEllipse.Checked = de.State == DEngineState.DrawEllipse;
-            btnText.Checked = de.State == DEngineState.DrawText;
+            btnSelect.Checked = state == DEngineState.Select;
+            btnPen.Checked = state == DEngineState.DrawPolyline;
+            btnRect.Checked = state == DEngineState.DrawRect;
+            btnEllipse.Checked = state == DEngineState.DrawEllipse;
+            btnText.Checked = state == DEngineState.DrawText;
             InitPropertyControls();
         }
 

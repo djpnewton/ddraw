@@ -27,6 +27,15 @@ namespace DDraw
         bool editingFirstHand = false;
         double secondHandAngle = Math.PI / 4;
         bool editingSecondHand = false;
+
+        protected override DHitTest _HitTest(DPoint pt)
+        {
+            if (editing && DGeom.PointInRect(pt, GetClockRect()))
+                return DHitTest.Body;
+            else if (DGeom.PointInEllipse(pt, GetClockRect()))
+                return DHitTest.Body;
+            return DHitTest.None;
+        }
         
         public void StartEdit ()
         {
@@ -47,7 +56,7 @@ namespace DDraw
         {
             if (editing && HitTest(pt) == DHitTest.Body)
             {
-                DRect r = Rect;
+                DRect r = GetClockRect();
                 DPoint fhp = FirstHandPoint(r);
                 DPoint shp = SecondHandPoint(r);
                 if (DGeom.DistBetweenTwoPts(pt, fhp) <= DGeom.DistBetweenTwoPts(pt, shp))
@@ -60,7 +69,7 @@ namespace DDraw
                     editingSecondHand = true;
                     secondHandAngle = DGeom.AngleBetweenPoints(r.Center, pt);
                 }
-                dv.Update(Rect);                          
+                dv.Update(r);                          
             }
             else
                 DoEditFinished();
@@ -70,13 +79,13 @@ namespace DDraw
         {
             if (editingFirstHand)
             {
-                firstHandAngle = DGeom.AngleBetweenPoints(Rect.Center, pt);
-                dv.Update(Rect);
+                firstHandAngle = DGeom.AngleBetweenPoints(GetClockRect().Center, pt);
+                dv.Update(GetClockRect());
             }
             else if (editingSecondHand)
             {
-                secondHandAngle = DGeom.AngleBetweenPoints(Rect.Center, pt);
-                dv.Update(Rect);
+                secondHandAngle = DGeom.AngleBetweenPoints(GetClockRect().Center, pt);
+                dv.Update(GetClockRect());
             }
             else if (editing && HitTest(pt) == DHitTest.Body) 
                 dv.SetCursor(DCursor.Crosshair);
@@ -106,6 +115,17 @@ namespace DDraw
                     goto case '\r';
             }
         }
+
+        DRect GetClockRect()
+        {
+            DRect r = Rect;
+            if (r.Width == r.Height)
+                return r;
+            if (r.Width > r.Height)
+                return new DRect(r.X + r.Width / 2 - r.Height / 2, r.Y, r.Height, r.Height);
+            else
+                return new DRect(r.X, r.Y + r.Height / 2 - r.Width / 2, r.Width, r.Width);
+        }
             
         DPoint FirstHandPoint(DRect r)
         { 
@@ -118,15 +138,19 @@ namespace DDraw
         }
 
         protected override void PaintBody (DGraphics dg)
-        {   
-            DRect r = Rect;
+        {
+            DRect r = GetClockRect();
+            double alpha = Alpha;
             if (editing)
+            {
                 dg.FillRect(r.X, r.Y, r.Width, r.Height, DColor.Black, 1, DFillStyle.ForwardDiagonalHatch);
-            dg.FillEllipse(r, DColor.White, Alpha);
-            dg.DrawEllipse(r, DColor.Black, Alpha);
-            dg.DrawText("12", "Arial", 8, new DPoint(r.Center.X - 8, r.Y), DColor.Black);
-            dg.DrawLine(r.Center, FirstHandPoint(r), DColor.Red);
-            dg.DrawLine(r.Center, SecondHandPoint(r), DColor.Blue);
+                alpha = 1;
+            }
+            dg.FillEllipse(r, DColor.White, alpha);
+            dg.DrawEllipse(r, DColor.Black, alpha);
+            dg.DrawText("12", "Arial", 8, new DPoint(r.Center.X - 8, r.Y), DColor.Black, alpha);
+            dg.DrawLine(r.Center, FirstHandPoint(r), DColor.Red, alpha);
+            dg.DrawLine(r.Center, SecondHandPoint(r), DColor.Blue, alpha);
         }
         
         void DoEditFinished()
