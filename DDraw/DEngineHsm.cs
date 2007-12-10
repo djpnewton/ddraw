@@ -399,7 +399,6 @@ namespace DDraw
         {
             if (btn == DMouseButton.Left)
             {
-                mouseDown = false;
                 currentFigure = null;
                 if (drawSelectionRect)
                 {
@@ -806,10 +805,9 @@ namespace DDraw
                     }
                 }
                 // setup for select mouse move
-                mouseDown = true;
                 dragPt = pt;
                 // transition to select state
-                State = DEngineState.Select;
+                TransitionTo(DragFigure);
                 // select op started
                 if (autoUndoRecord)
                     undoRedoMgr.Start("Select Operation");
@@ -881,9 +879,6 @@ namespace DDraw
                     return null;
                 case (int)DEngineSignals.MouseMove:
                     DoTextEditMouseMove(((QMouseEvent)qevent).Dv, ((QMouseEvent)qevent).Pt);
-                    return null;
-                case (int)DEngineSignals.MouseUp:
-                    mouseDown = false;
                     return null;
                 case (int)DEngineSignals.KeyPress:
                     DoTextEditKeyPress(((QKeyPressEvent)qevent).Dv, ((QKeyPressEvent)qevent).Key);

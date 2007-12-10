@@ -198,8 +198,7 @@
      inkscape:label="states"
      inkscape:groupmode="layer"
      id="layer1"
-     style="opacity:1;display:inline"
-     sodipodi:insensitive="true">
+     style="opacity:1;display:inline">
     <g
        id="g6197"
        transform="translate(8.0587849,-188.03832)">
@@ -281,7 +280,7 @@
              sodipodi:role="line"
              id="tspan5949"
              x="765.58453"
-             y="460.02234">EditText</tspan></text>
+             y="460.02234">TextEdit</tspan></text>
         <text
            xml:space="preserve"
            style="font-size:12px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
@@ -289,20 +288,12 @@
            y="484.87021"
            id="text5951"><tspan
              sodipodi:role="line"
-             id="tspan5953"
              x="749.46692"
-             y="484.87021">MOUSEDOWN</tspan><tspan
+             y="484.87021"
+             id="tspan5957">MOUSEMOVE</tspan><tspan
              sodipodi:role="line"
              x="749.46692"
              y="499.87021"
-             id="tspan5955">MOUSEMOVE</tspan><tspan
-             sodipodi:role="line"
-             x="749.46692"
-             y="514.87021"
-             id="tspan5957">MOUSEUP</tspan><tspan
-             sodipodi:role="line"
-             x="749.46692"
-             y="529.87021"
              id="tspan11166">KEYPRESS</tspan></text>
       </g>
     </g>
@@ -1064,22 +1055,18 @@
     <text
        xml:space="preserve"
        style="font-size:11.99999714px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
-       x="468.68298"
-       y="152.35924"
+       x="450.91037"
+       y="165.47943"
        id="text2867"
        transform="matrix(0.8549896,0.5186451,-0.5186451,0.8549896,0,0)"><tspan
          sodipodi:role="line"
-         x="468.68298"
-         y="152.35924"
-         id="tspan2871">MOUSEUP</tspan><tspan
+         x="450.91037"
+         y="165.47943"
+         id="tspan2871">MOUSEDOWN [btn == Left]</tspan><tspan
          sodipodi:role="line"
-         x="468.68298"
-         y="167.35923"
-         id="tspan2875">KEYPRESS</tspan><tspan
-         sodipodi:role="line"
-         x="468.68298"
-         y="182.35923"
-         id="tspan2879">  [ key==ENTER||key==ESC]</tspan></text>
+         x="450.91037"
+         y="180.47943"
+         id="tspan2879">KEYPRESS [key==ENTER || key==ESC]</tspan></text>
     <text
        xml:space="preserve"
        style="font-size:12.00000191px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;display:inline;font-family:Bitstream Vera Sans"

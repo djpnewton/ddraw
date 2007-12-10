@@ -70,7 +70,6 @@ namespace DDraw
         Figure currentFigure = null;
         bool drawSelectionRect = false;
         SelectionFigure selectionRect;
-        bool mouseDown = false;
         DPoint dragPt;
         double dragRot;
         DHitTest mouseHitTest;
