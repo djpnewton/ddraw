@@ -96,11 +96,11 @@
      objecttolerance="10"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.97971429"
-     inkscape:cx="526.18109"
-     inkscape:cy="372.04724"
+     inkscape:zoom="1"
+     inkscape:cx="635.16732"
+     inkscape:cy="355.47025"
      inkscape:document-units="px"
-     inkscape:current-layer="layer3"
+     inkscape:current-layer="layer1"
      width="1052.3622px"
      height="744.09448px"
      inkscape:window-width="1280"
@@ -201,7 +201,7 @@
      style="opacity:1;display:inline">
     <g
        id="g6197"
-       transform="translate(8.0587849,-188.03832)">
+       transform="translate(9.0794906,-211.51455)">
       <rect
          ry="33.265614"
          y="239.43532"
@@ -255,7 +255,7 @@
     </g>
     <g
        id="g11168"
-       transform="translate(-311.11757,103.94056)">
+       transform="translate(-356.02863,-19.564834)">
       <g
          id="g2881">
         <rect
@@ -299,7 +299,7 @@
     </g>
     <g
        id="g6061"
-       transform="translate(1403.5149,198.44023)">
+       transform="translate(979.92202,197.41952)">
       <g
          id="g2790">
         <rect
@@ -805,13 +805,13 @@
              y="321.89285"
              x="-604.19586"
              height="220.19"
-             width="314.31305"
+             width="294.31305"
              id="rect6019"
              style="fill:#ffc200;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:2.42602825;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
           <path
              sodipodi:nodetypes="cc"
              id="path6021"
-             d="M -603.87018,349.41514 L -290.56833,350.28782"
+             d="M -603.87018,349.41514 L -310.56833,350.28782"
              style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
           <text
              id="text6023"
@@ -912,6 +912,86 @@
              y="368.2796" /></text>
       </g>
     </g>
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;marker-start:url(#Arrow1Lstart);stroke-opacity:1;display:inline"
+       d="M 721.30113,412.11093 C 685.28185,377.62472 411.01719,356.61552 330.21073,309.1285"
+       id="path2412"
+       sodipodi:nodetypes="cc" />
+    <text
+       xml:space="preserve"
+       style="font-size:11.99999714px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;display:inline;font-family:Bitstream Vera Sans"
+       x="506.15909"
+       y="262.04816"
+       id="text2414"
+       transform="matrix(0.9847812,0.1737986,-0.1737986,0.9847812,0,0)"><tspan
+         sodipodi:role="line"
+         x="506.15909"
+         y="262.04816"
+         id="tspan2418">DOUBLECLICK [fig is IEditable]</tspan></text>
+    <path
+       style="opacity:1;fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;marker-start:url(#Arrow1Lstart);stroke-opacity:1;display:inline"
+       d="M 304.0452,328.0857 C 343.64432,386.29421 637.20376,411.34429 677.9548,443.10327"
+       id="path2422"
+       sodipodi:nodetypes="cc" />
+    <text
+       xml:space="preserve"
+       style="font-size:11.99999714px;font-style:normal;font-weight:normal;opacity:1;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;display:inline;font-family:Bitstream Vera Sans"
+       x="510.76859"
+       y="273.39566"
+       id="text2424"
+       transform="matrix(0.9757222,0.2190118,-0.2190118,0.9757222,0,0)"><tspan
+         sodipodi:role="line"
+         x="510.76859"
+         y="273.39566"
+         id="tspan2426">FIGURE_EDITFINISHED</tspan></text>
+    <g
+       id="g2447">
+      <rect
+         ry="33.265614"
+         y="411.71597"
+         x="680.72656"
+         height="255.45403"
+         width="320.66989"
+         id="rect2390"
+         style="opacity:1;fill:#ffc200;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <path
+         sodipodi:nodetypes="cc"
+         id="path2392"
+         d="M 681.18358,440.37881 L 1001.3152,441.4349"
+         style="opacity:1;fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:2.28704667;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <text
+         id="text2394"
+         y="433.51962"
+         x="711.93207"
+         style="font-size:20px;font-style:normal;font-weight:normal;opacity:1;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+         xml:space="preserve"><tspan
+           y="433.51962"
+           x="711.93207"
+           id="tspan2396"
+           sodipodi:role="line">FigureEdit</tspan></text>
+      <text
+         id="text2437"
+         y="456.09448"
+         x="687"
+         style="font-size:12px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+         xml:space="preserve"><tspan
+           y="456.09448"
+           x="687"
+           id="tspan2439"
+           sodipodi:role="line">MOUSEDOWN</tspan><tspan
+           id="tspan2441"
+           y="471.09448"
+           x="687"
+           sodipodi:role="line">MOUSEMOVE</tspan><tspan
+           id="tspan2443"
+           y="486.09448"
+           x="687"
+           sodipodi:role="line">MOUSEUP</tspan><tspan
+           id="tspan2445"
+           y="501.09448"
+           x="687"
+           sodipodi:role="line">KEYPRESS</tspan></text>
+    </g>
   </g>
   <g
      inkscape:groupmode="layer"
@@ -940,7 +1020,7 @@
        sodipodi:nodetypes="cs" />
     <path
        style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;marker-start:url(#Arrow1Lstart);stroke-opacity:1;display:inline"
-       d="M 862.44996,700.2454 C 885.29267,729.25562 972.04842,723.6958 995.4292,733.00953"
+       d="M 438.85708,699.22469 C 461.69979,728.23491 548.45554,722.67509 571.83632,731.98882"
        id="path6091"
        sodipodi:nodetypes="cc" />
     <path
@@ -989,14 +1069,14 @@
     <text
        xml:space="preserve"
        style="font-size:12px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;display:inline;font-family:Bitstream Vera Sans"
-       x="963.39264"
-       y="623.35474"
+       x="541.69177"
+       y="663.35864"
        id="text6117"
-       transform="matrix(0.9953002,9.6837764e-2,-9.6837764e-2,0.9953002,0,0)"><tspan
+       transform="matrix(0.9953002,9.6837762e-2,-9.6837762e-2,0.9953002,0,0)"><tspan
          sodipodi:role="line"
          id="tspan6119"
-         x="963.39264"
-         y="623.35474">GUI_DRAWTEXT</tspan></text>
+         x="541.69177"
+         y="663.35864">GUI_DRAWTEXT</tspan></text>
     <text
        xml:space="preserve"
        style="font-size:12px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;display:inline;font-family:Bitstream Vera Sans"
@@ -1010,62 +1090,63 @@
          y="683.14142">GUI_DRAWRECT</tspan></text>
     <path
        style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;marker-start:url(#Arrow1Lstart);stroke-opacity:1;display:inline"
-       d="M 630.19093,547.08427 C 674.34783,533.46681 762.48909,518.10613 819.00595,573.15776"
+       d="M 594.46622,486.86263 C 627.39537,533.46681 626.73523,589.55553 596.4921,636.44152"
        id="path2784"
        sodipodi:nodetypes="cc" />
     <text
        xml:space="preserve"
        style="font-size:12px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
-       x="645.34918"
-       y="512.74548"
-       id="text2805"><tspan
+       x="480.80951"
+       y="-641.76801"
+       id="text2805"
+       transform="matrix(-3.0716842e-3,0.9999953,-0.9999953,-3.0716842e-3,0,0)"><tspan
          sodipodi:role="line"
          id="tspan2807"
-         x="645.34918"
-         y="512.74548">      MOUSEDOWN</tspan><tspan
+         x="480.80951"
+         y="-641.76801">      MOUSEDOWN</tspan><tspan
          sodipodi:role="line"
-         x="645.34918"
-         y="527.74548"
+         x="480.80951"
+         y="-626.76801"
          id="tspan2809">[btn==Left]/AddTextFigure()</tspan></text>
     <path
        style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;marker-start:url(#Arrow1Lstart);stroke-opacity:1;display:inline"
-       d="M 585.148,541.1332 C 511.75602,455.65312 375.68995,372.17381 294.88349,324.68679"
+       d="M 397.33814,420.68993 C 342.31886,384.20372 276.0542,357.19452 195.24774,309.7075"
        id="path2831"
        sodipodi:nodetypes="cc" />
     <text
        xml:space="preserve"
        style="font-size:12px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;display:inline;font-family:Bitstream Vera Sans"
-       x="568.21185"
-       y="93.454323"
+       x="362.2114"
+       y="201.14377"
        id="text2833"
-       transform="matrix(0.842739,0.5383223,-0.5383223,0.842739,0,0)"><tspan
+       transform="matrix(0.906301,0.4226329,-0.4226329,0.906301,0,0)"><tspan
          sodipodi:role="line"
          id="tspan2835"
-         x="568.21185"
-         y="93.454323">DOUBLECLICK</tspan><tspan
+         x="362.2114"
+         y="201.14377">DOUBLECLICK [fig is ITextable]</tspan><tspan
          sodipodi:role="line"
-         x="568.21185"
-         y="108.45432"
-         id="tspan3459">/AddTextFigure()</tspan></text>
+         x="362.2114"
+         y="216.14377"
+         id="tspan3459" /></text>
     <path
        style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;marker-start:url(#Arrow1Lstart);stroke-opacity:1;display:inline"
-       d="M 199.62042,324.01506 C 259.10898,405.04587 413.0425,444.25259 508.16811,540.07755"
+       d="M 94.487728,326.05647 C 158.05911,397.90093 363.02792,438.12836 387.72483,462.50392"
        id="path2839"
        sodipodi:nodetypes="cc" />
     <text
        xml:space="preserve"
        style="font-size:11.99999714px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
-       x="450.91037"
-       y="165.47943"
+       x="258.12845"
+       y="263.98221"
        id="text2867"
-       transform="matrix(0.8549896,0.5186451,-0.5186451,0.8549896,0,0)"><tspan
+       transform="matrix(0.9301846,0.3670921,-0.3670921,0.9301846,0,0)"><tspan
          sodipodi:role="line"
-         x="450.91037"
-         y="165.47943"
+         x="258.12845"
+         y="263.98221"
          id="tspan2871">MOUSEDOWN [btn == Left]</tspan><tspan
          sodipodi:role="line"
-         x="450.91037"
-         y="180.47943"
+         x="258.12845"
+         y="278.9822"
          id="tspan2879">KEYPRESS [key==ENTER || key==ESC]</tspan></text>
     <text
        xml:space="preserve"

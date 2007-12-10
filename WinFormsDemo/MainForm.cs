@@ -97,6 +97,10 @@ namespace WinFormsDemo
             f = new CompositedExampleFigure();
             f.Rect = new DRect(20, 150, 50, 50);
             de.AddFigure(f);
+            // clock (IEditable) figure
+            f = new ClockFigure();
+            f.Rect = new DRect(200, 200, 100, 100);
+            de.AddFigure(f);
             // Init controls
             InitPropertyControls();
         }

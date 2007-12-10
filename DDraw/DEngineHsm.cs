@@ -10,7 +10,7 @@ namespace DDraw
     {
         //enum values must start at UserSig value or greater
         GSelect = QSignals.UserSig, GDrawPolyline, GDrawRect, GDrawEllipse, GDrawText,
-        TextEdit,
+        TextEdit, FigureEdit,
         MouseDown, MouseMove, MouseUp, DoubleClick,
         KeyDown, KeyPress, KeyUp
     }
@@ -101,6 +101,7 @@ namespace DDraw
                 QState DrawingEllipse;
             QState DrawText;
             QState TextEdit;
+            QState FigureEdit;
 
         public delegate void DEngineStateChangedHandler();
         public event DEngineStateChangedHandler StateChanged;
@@ -430,6 +431,11 @@ namespace DDraw
                 figures.Remove(f);
                 dv.Update(currentFigure.Rect);
                 TransitionTo(TextEdit);
+            }
+            else if (f is IEditable)
+            {
+                currentFigure = f;
+                TransitionTo(FigureEdit);
             }
         }
 
@@ -886,6 +892,57 @@ namespace DDraw
             }
             return this.Main;
         }
+        
+        void currentFigure_EditFinished(IEditable sender)
+        {
+            // tranistion
+            TransitionTo(Select);
+        }
+        
+        QState DoFigureEdit(IQEvent qevent)
+        {
+            switch (qevent.QSignal)
+            {
+                case (int)QSignals.Init:
+                    DoStateChanged();
+                    return Main;
+                case (int)QSignals.Entry:
+                    // start undo record
+                    if (autoUndoRecord)
+                        undoRedoMgr.Start("Figure Edit");
+                    // set editing and connect to edit finished event
+                    ((IEditable)currentFigure).StartEdit();
+                    ((IEditable)currentFigure).EditFinished += new EditFinishedHandler(currentFigure_EditFinished);
+                    // update view
+                    ClearSelected();
+                    UpdateViewers();
+                    return null;
+                case (int)QSignals.Exit:
+                    // not editing any more
+                    ((IEditable)currentFigure).EndEdit();
+                    ((IEditable)currentFigure).EditFinished -= currentFigure_EditFinished;                
+                    // record figure edit to undo manager
+                    if (autoUndoRecord)
+                        undoRedoMgr.Commit();
+                    return null;
+                case (int)DEngineSignals.MouseDown:
+                    ((IEditable)currentFigure).MouseDown(((QMouseEvent)qevent).Dv, ((QMouseEvent)qevent).Button, ((QMouseEvent)qevent).Pt);
+                    return null;
+                case (int)DEngineSignals.MouseMove:
+                    ((IEditable)currentFigure).MouseMove(((QMouseEvent)qevent).Dv, ((QMouseEvent)qevent).Pt);
+                    return null;
+                case (int)DEngineSignals.MouseUp:
+                    ((IEditable)currentFigure).MouseUp(((QMouseEvent)qevent).Dv, ((QMouseEvent)qevent).Button, ((QMouseEvent)qevent).Pt);
+                    return null;
+                case (int)DEngineSignals.DoubleClick:
+                    ((IEditable)currentFigure).DoubleClick(((QMouseEvent)qevent).Dv, ((QMouseEvent)qevent).Pt);
+                    return null;
+                case (int)DEngineSignals.KeyPress:
+                    ((IEditable)currentFigure).KeyPress(((QKeyPressEvent)qevent).Dv, ((QKeyPressEvent)qevent).Key);
+                    return null;
+            }
+            return this.Main;
+        }
 
         protected override void InitializeStateMachine()
 		{
@@ -904,6 +961,7 @@ namespace DDraw
             DrawingEllipse = new QState(this.DoDrawingEllipse);
             DrawText = new QState(this.DoDrawText);
             TextEdit = new QState(this.DoTextEdit);
+            FigureEdit = new QState(this.DoFigureEdit);
 			InitializeState(Main); // initial transition			
 		}
     }
