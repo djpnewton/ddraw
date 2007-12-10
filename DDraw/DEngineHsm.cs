@@ -94,7 +94,11 @@ namespace DDraw
                 QState DrawPolyDefault;
                 QState DrawingPoly;
             QState DrawRect;
+                QState DrawRectDefault;
+                QState DrawingRect;
             QState DrawEllipse;
+                QState DrawEllipseDefault;
+                QState DrawingEllipse;
             QState DrawText;
             QState TextEdit;
 
@@ -547,12 +551,27 @@ namespace DDraw
             return this.DrawPolyline;
         }
 
-        void DoDrawRectMouseDown(DViewer dv, DMouseButton btn, DPoint pt)
+        QState DoDrawRect(IQEvent qevent)
+        {
+            switch (qevent.QSignal)
+            {
+                case (int)QSignals.Init:
+                    DoStateChanged();
+                    InitializeState(DrawRectDefault);
+                   return Main;
+                case (int)QSignals.Entry:
+                    ClearCurrentFigure();
+                    ClearSelected();
+                    UpdateViewers();
+                    return null;
+            }
+            return this.Main;
+        }
+        
+        void DoDrawRectDefaultMouseDown(DViewer dv, DMouseButton btn, DPoint pt)
         {
             if (btn == DMouseButton.Left)
             {
-                // store mouse state
-                mouseDown = true;
                 if (autoUndoRecord)
                     undoRedoMgr.Start("Add Rect");
                 // create RectFigure
@@ -562,78 +581,97 @@ namespace DDraw
                 figures.Add(currentFigure);
                 // store drag pt for reference on mousemove event)
                 dragPt = pt;
+                // transition
+                TransitionTo(DrawingRect);
             }
         }
 
-        void DoDrawRectMouseMove(DViewer dv, DPoint pt)
+        void DoDrawRectDefaultMouseMove(DViewer dv, DPoint pt)
         {
             // set cursor to draw
             dv.SetCursor(DCursor.Crosshair);
-            if (mouseDown)
-            {
-                // initial update rect
-                DRect updateRect = currentFigure.GetSelectRect();
-                // change dimensions
-                if (pt.X >= dragPt.X)
-                    ((RectFigure)currentFigure).Right = pt.X;
-                else
-                {
-                    ((RectFigure)currentFigure).Left = pt.X;
-                    ((RectFigure)currentFigure).Right = dragPt.X;
-                }
-                if (pt.Y >= dragPt.Y)
-                    ((RectFigure)currentFigure).Bottom = pt.Y;
-                else
-                {
-                    ((RectFigure)currentFigure).Top = pt.Y;
-                    ((RectFigure)currentFigure).Bottom = dragPt.Y;
-                }
-                // update drawing
-                dv.Update(updateRect.Union(currentFigure.GetSelectRect()));
-            }
         }
 
-        void DoDrawRectMouseUp(DViewer dv, DMouseButton btn, DPoint pt)
+        QState DoDrawRectDefault(IQEvent qevent)
         {
-            if (mouseDown)
+            switch (qevent.QSignal)
             {
-                mouseDown = false;
-                ClearCurrentFigure();
-                if (autoUndoRecord)
-                    undoRedoMgr.Commit();
+                case (int)DEngineSignals.MouseDown:
+                    DoDrawRectDefaultMouseDown(((QMouseEvent)qevent).Dv, ((QMouseEvent)qevent).Button, ((QMouseEvent)qevent).Pt);
+                    return null;
+                case (int)DEngineSignals.MouseMove:
+                    DoDrawRectDefaultMouseMove(((QMouseEvent)qevent).Dv, ((QMouseEvent)qevent).Pt);
+                    return null;
             }
+            return this.DrawRect;
         }
 
-        QState DoDrawRect(IQEvent qevent)
+        void DoDrawingRectMouseMove(DViewer dv, DPoint pt)
+        {
+            // initial update rect
+            DRect updateRect = currentFigure.GetSelectRect();
+            // change dimensions
+            if (pt.X >= dragPt.X)
+                ((RectFigure)currentFigure).Right = pt.X;
+            else
+            {
+                ((RectFigure)currentFigure).Left = pt.X;
+                ((RectFigure)currentFigure).Right = dragPt.X;
+            }
+            if (pt.Y >= dragPt.Y)
+                ((RectFigure)currentFigure).Bottom = pt.Y;
+            else
+            {
+                ((RectFigure)currentFigure).Top = pt.Y;
+                ((RectFigure)currentFigure).Bottom = dragPt.Y;
+            }
+            // update drawing
+            dv.Update(updateRect.Union(currentFigure.GetSelectRect()));
+        }
+
+        void DoDrawingRectMouseUp(DViewer dv, DMouseButton btn, DPoint pt)
+        {
+            if (autoUndoRecord)
+                undoRedoMgr.Commit();
+            // transition
+            TransitionTo(DrawRectDefault);
+        }
+        
+        QState DoDrawingRect(IQEvent qevent)
+        {
+            switch (qevent.QSignal)
+            {
+                case (int)DEngineSignals.MouseMove:
+                    DoDrawingRectMouseMove(((QMouseEvent)qevent).Dv, ((QMouseEvent)qevent).Pt);
+                    return null;
+                case (int)DEngineSignals.MouseUp:
+                    DoDrawingRectMouseUp(((QMouseEvent)qevent).Dv, ((QMouseEvent)qevent).Button, ((QMouseEvent)qevent).Pt);
+                    return null;
+            }
+            return this.DrawRect;
+        }
+
+        QState DoDrawEllipse(IQEvent qevent)
         {
             switch (qevent.QSignal)
             {
                 case (int)QSignals.Init:
                     DoStateChanged();
+                    InitializeState(DrawEllipseDefault);
                     return Main;
                 case (int)QSignals.Entry:
                     ClearCurrentFigure();
                     ClearSelected();
                     UpdateViewers();
                     return null;
-                case (int)DEngineSignals.MouseDown:
-                    DoDrawRectMouseDown(((QMouseEvent)qevent).Dv, ((QMouseEvent)qevent).Button, ((QMouseEvent)qevent).Pt);
-                    return null;
-                case (int)DEngineSignals.MouseMove:
-                    DoDrawRectMouseMove(((QMouseEvent)qevent).Dv, ((QMouseEvent)qevent).Pt);
-                    return null;
-                case (int)DEngineSignals.MouseUp:
-                    DoDrawRectMouseUp(((QMouseEvent)qevent).Dv, ((QMouseEvent)qevent).Button, ((QMouseEvent)qevent).Pt);
-                    return null;
             }
             return this.Main;
         }
-
-        void DoDrawEllipseMouseDown(DViewer dv, DMouseButton btn, DPoint pt)
+        
+        void DoDrawEllipseDefaultMouseDown(DViewer dv, DMouseButton btn, DPoint pt)
         {
             if (btn == DMouseButton.Left)
             {
-                mouseDown = true;
                 if (autoUndoRecord)
                     undoRedoMgr.Start("Add Ellipse");
                 // create EllipseFigure
@@ -643,48 +681,56 @@ namespace DDraw
                 figures.Add(currentFigure);
                 // store drag pt for reference on mousemove event)
                 dragPt = pt;
+                // transition
+                TransitionTo(DrawingEllipse);
             }
         }
 
-        void DoDrawEllipseMouseMove(DViewer dv, DPoint pt)
+        void DoDrawEllipseDefaultMouseMove(DViewer dv, DPoint pt)
         {
-            DoDrawRectMouseMove(dv, pt);
+            DoDrawRectDefaultMouseMove(dv, pt);
         }
-
-        void DoDrawEllipseMouseUp(DViewer dv, DMouseButton btn, DPoint pt)
-        {
-            if (mouseDown)
-            {
-                mouseDown = false;
-                ClearCurrentFigure();
-                if (autoUndoRecord)
-                    undoRedoMgr.Commit();
-            }
-        }
-
-        QState DoDrawEllipse(IQEvent qevent)
+        
+        QState DoDrawEllipseDefault(IQEvent qevent)
         {
             switch (qevent.QSignal)
             {
-                case (int)QSignals.Init:
-                    DoStateChanged();
-                    return Main;
-                case (int)QSignals.Entry:
-                    ClearCurrentFigure();
-                    ClearSelected();
-                    UpdateViewers();
-                    return null;
                 case (int)DEngineSignals.MouseDown:
-                    DoDrawEllipseMouseDown(((QMouseEvent)qevent).Dv, ((QMouseEvent)qevent).Button, ((QMouseEvent)qevent).Pt);
-                    return null;
+                    DoDrawEllipseDefaultMouseDown(((QMouseEvent)qevent).Dv, ((QMouseEvent)qevent).Button, ((QMouseEvent)qevent).Pt);
+                                       return null;
                 case (int)DEngineSignals.MouseMove:
-                    DoDrawEllipseMouseMove(((QMouseEvent)qevent).Dv, ((QMouseEvent)qevent).Pt);
-                    return null;
-                case (int)DEngineSignals.MouseUp:
-                    DoDrawEllipseMouseUp(((QMouseEvent)qevent).Dv, ((QMouseEvent)qevent).Button, ((QMouseEvent)qevent).Pt);
+                    DoDrawEllipseDefaultMouseMove(((QMouseEvent)qevent).Dv, ((QMouseEvent)qevent).Pt);
                     return null;
             }
-            return this.Main;
+            return this.DrawEllipse;
+        }
+
+
+        void DoDrawingEllipseMouseMove(DViewer dv, DPoint pt)
+        {
+            DoDrawingRectMouseMove(dv, pt);
+        }
+            
+        void DoDrawingEllipseMouseUp(DViewer dv, DMouseButton btn, DPoint pt)
+        {
+            if (autoUndoRecord)
+                undoRedoMgr.Commit();
+            // transition
+            TransitionTo(DrawEllipseDefault);
+        }
+
+        QState DoDrawingEllipse(IQEvent qevent)
+        {
+            switch (qevent.QSignal)
+            {
+                case (int)DEngineSignals.MouseMove:
+                    DoDrawingEllipseMouseMove(((QMouseEvent)qevent).Dv, ((QMouseEvent)qevent).Pt);
+                    return null;
+                case (int)DEngineSignals.MouseUp:
+                    DoDrawingEllipseMouseUp(((QMouseEvent)qevent).Dv, ((QMouseEvent)qevent).Button, ((QMouseEvent)qevent).Pt);
+                    return null;
+            }
+            return this.DrawEllipse;
         }
 
         void DoDrawTextMouseDown(DViewer dv, DMouseButton btn, DPoint pt)
@@ -856,7 +902,11 @@ namespace DDraw
             DrawPolyDefault = new QState(this.DoDrawPolyDefault);
             DrawingPoly = new QState(this.DoDrawingPoly);
             DrawRect = new QState(this.DoDrawRect);
+            DrawRectDefault = new QState(this.DoDrawRectDefault);
+            DrawingRect = new QState(this.DoDrawingRect);
             DrawEllipse = new QState(this.DoDrawEllipse);
+            DrawEllipseDefault = new QState(this.DoDrawEllipseDefault);
+            DrawingEllipse = new QState(this.DoDrawingEllipse);
             DrawText = new QState(this.DoDrawText);
             TextEdit = new QState(this.DoTextEdit);
 			InitializeState(Main); // initial transition			
