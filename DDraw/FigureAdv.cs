@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Collections;
 
 namespace DDraw
 {
@@ -10,6 +11,8 @@ namespace DDraw
     {
         void StartEdit();
         void EndEdit();
+        Hashtable GetAttributes();
+        void SetAttributes(Hashtable attrs);
         event EditFinishedHandler EditFinished; 
         void MouseDown(DViewer dv, DMouseButton btn, DPoint pt);
         void MouseMove(DViewer dv, DPoint pt);
@@ -48,6 +51,25 @@ namespace DDraw
         {
             editing = false;
             Rotation = origRotation;
+        }
+
+        const string FIRST_HAND_ANGLE = "firstHandAngle";
+        const string SECOND_HAND_ANGLE = "secondHandAngle";
+
+        public Hashtable GetAttributes()
+        {
+            Hashtable attrs = new Hashtable();
+            attrs.Add(FIRST_HAND_ANGLE, firstHandAngle);
+            attrs.Add(SECOND_HAND_ANGLE, secondHandAngle);
+            return attrs;
+        }
+
+        public void SetAttributes(Hashtable attrs)
+        {
+            if (attrs.Contains(FIRST_HAND_ANGLE))
+                firstHandAngle = (double)attrs[FIRST_HAND_ANGLE];
+            if (attrs.Contains(SECOND_HAND_ANGLE))
+                secondHandAngle = (double)attrs[SECOND_HAND_ANGLE];
         }
 
         public event EditFinishedHandler EditFinished;

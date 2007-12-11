@@ -19,6 +19,7 @@ namespace DDraw
 		public string FontName;
 		public double FontSize;
         public FigureProperties[] ChildFigureProps;
+        public Hashtable EditableAttributes;
 	}
 	
 	enum FigureChangeType { Removed, Added, PropertyChanged, Moved };		
@@ -125,6 +126,8 @@ namespace DDraw
                     childFigProps[i] = CreateFigureProps(icf.ChildFigures[i], i);
                 fp.ChildFigureProps = childFigProps;
             }
+            if (f is IEditable)
+                fp.EditableAttributes = ((IEditable)f).GetAttributes();
             return fp;			
 		}
 		
@@ -197,6 +200,15 @@ namespace DDraw
                     if (!FigureMatchesProps(cfp))
                         return false;
             }
+            if (f is IEditable)
+            {
+                Hashtable attrs = ((IEditable)f).GetAttributes();
+                if (fp.EditableAttributes.Count != attrs.Count)
+                    return false;
+                foreach (DictionaryEntry de in attrs)
+                    if (!attrs[de.Key].Equals(fp.EditableAttributes[de.Key]))
+                        return false;
+            }
             return true;               
         }
 
@@ -229,6 +241,8 @@ namespace DDraw
                 foreach (FigureProperties cfp in fp.ChildFigureProps)
                     ApplyFigureProps(cfp.Figure, cfp);
             }
+            if (f is IEditable)
+                ((IEditable)f).SetAttributes(fp.EditableAttributes);
         }
 
         UndoFrame Snapshot(string name)

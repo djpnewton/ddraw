@@ -518,7 +518,7 @@ namespace WinFormsDemo
 
         private void editToolStripMenuItem_DropDownOpened(object sender, EventArgs e)
         {
-            if (de.State == DEngineState.TextEdit)
+            if (de.State == DEngineState.TextEdit || de.State == DEngineState.FigureEdit)
                 de.State = DEngineState.Select;
         }
 
