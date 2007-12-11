@@ -457,10 +457,11 @@ namespace DDraw
 
     public class EllipseFigure : RectFigure
     {
-        public EllipseFigure(DRect rect, double rotation)
-            : base(rect, rotation)
-        {
-        }
+        public EllipseFigure()
+        { }
+
+        public EllipseFigure(DRect rect, double rotation) : base(rect, rotation)
+        { }
 
         protected override DHitTest _HitTest(DPoint pt)
         {

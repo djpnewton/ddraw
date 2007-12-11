@@ -102,7 +102,7 @@ namespace WinFormsDemo
             f.Rect = new DRect(200, 200, 100, 100);
             de.AddFigure(f);
             // Init controls
-            InitPropertyControls();
+            InitPropertyControls(de.State);
         }
 
         void DebugMessage(string msg)
@@ -122,7 +122,7 @@ namespace WinFormsDemo
 
         void de_SelectedFiguresChanged()
         {
-            InitPropertyControls();
+            InitPropertyControls(de.State);
             InitMenus();
         }
 
@@ -254,7 +254,7 @@ namespace WinFormsDemo
             return fontName;
         }
 
-        private void InitPropertyControls()
+        private void InitPropertyControls(DEngineState state)
         {
             // disable events
             cbFontName.FontNameChanged -= cbFontName_FontNameChanged;
@@ -271,7 +271,7 @@ namespace WinFormsDemo
             btnAlpha.Enabled = false;
             cbFontName.Enabled = false;
             // update controls based on the state of DEngine
-            switch (de.State)
+            switch (state)
             {
                 case DEngineState.Select:
                     // get selected figures
@@ -304,11 +304,11 @@ namespace WinFormsDemo
                     break;
                 default:
                     // enable relavant controls
-                    btnFill.Enabled = de.State == DEngineState.DrawRect || de.State == DEngineState.DrawEllipse || de.State == DEngineState.DrawText;
-                    btnStroke.Enabled = de.State == DEngineState.DrawPolyline || de.State == DEngineState.DrawRect || de.State == DEngineState.DrawEllipse;
+                    btnFill.Enabled = state == DEngineState.DrawText || (state == DEngineState.DrawFigure && typeof(IFillable).IsAssignableFrom(de.CurrentFigureClass));
+                    btnStroke.Enabled = state == DEngineState.DrawPolyline || (state == DEngineState.DrawFigure && typeof(IStrokeable).IsAssignableFrom(de.CurrentFigureClass));
                     btnStrokeWidth.Enabled = btnStroke.Enabled;
-                    btnAlpha.Enabled = btnFill.Enabled || btnStroke.Enabled;
-                    cbFontName.Enabled = de.State == DEngineState.DrawText;
+                    btnAlpha.Enabled = btnFill.Enabled || btnStroke.Enabled || (state == DEngineState.DrawFigure && typeof(IAlphaBlendable).IsAssignableFrom(de.CurrentFigureClass));
+                    cbFontName.Enabled = state == DEngineState.DrawText || (state == DEngineState.DrawFigure && typeof(ITextable).IsAssignableFrom(de.CurrentFigureClass));
                     // update values to match dap
                     if (btnFill.Enabled)
                         btnFill.Color = MakeColor(dap.Fill);
@@ -348,10 +348,11 @@ namespace WinFormsDemo
         {
             btnSelect.Checked = state == DEngineState.Select;
             btnPen.Checked = state == DEngineState.DrawPolyline;
-            btnRect.Checked = state == DEngineState.DrawRect;
-            btnEllipse.Checked = state == DEngineState.DrawEllipse;
+            btnRect.Checked = state == DEngineState.DrawFigure && de.CurrentFigureClass.Equals(typeof(RectFigure));
+            btnEllipse.Checked = state == DEngineState.DrawFigure && de.CurrentFigureClass.Equals(typeof(EllipseFigure));
             btnText.Checked = state == DEngineState.DrawText;
-            InitPropertyControls();
+            btnClock.Checked = state == DEngineState.DrawFigure && de.CurrentFigureClass.Equals(typeof(ClockFigure));
+            InitPropertyControls(state);
         }
 
         private void btnAntiAlias_Click(object sender, EventArgs e)
@@ -472,17 +473,22 @@ namespace WinFormsDemo
 
         private void btnRect_Click(object sender, EventArgs e)
         {
-            de.State = DEngineState.DrawRect;
+            de.Dispatch(new QGDrawFigureEvent((int)DEngineSignals.GDrawFigure, typeof(RectFigure)));
         }
 
         private void btnEllipse_Click(object sender, EventArgs e)
         {
-            de.State = DEngineState.DrawEllipse;
+            de.Dispatch(new QGDrawFigureEvent((int)DEngineSignals.GDrawFigure, typeof(EllipseFigure)));
         }
 
         private void btnText_Click(object sender, EventArgs e)
         {
             de.State = DEngineState.DrawText;
+        }
+
+        private void btnClock_Click(object sender, EventArgs e)
+        {
+            de.Dispatch(new QGDrawFigureEvent((int)DEngineSignals.GDrawFigure, typeof(ClockFigure)));
         }
 
         private void previewBar1_PreviewSelected(Preview p)
