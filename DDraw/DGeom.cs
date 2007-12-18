@@ -81,6 +81,23 @@ namespace DDraw
             return false;
         }
 
+        public static bool PointInPolygon(DPoint pt, DPoints polygon)
+        {
+            // see http://alienryderflex.com/polygon/
+            int i, j = polygon.Count - 1;
+            bool oddNodes = false;
+            for (i = 0; i < polygon.Count; i++)
+            {
+                if (polygon[i].Y < pt.Y && polygon[j].Y >= pt.Y || polygon[j].Y < pt.Y && polygon[i].Y >= pt.Y)
+                {
+                    if (polygon[i].X + (pt.Y - polygon[i].Y) / (polygon[j].Y - polygon[i].Y) * (polygon[j].X - polygon[i].X) < pt.X)
+                        oddNodes = !oddNodes;
+                }
+                j = i;
+            }
+            return oddNodes;
+        }
+
         public static DPoint IntersectionOfTwoLines(double m1, DPoint p1, double m2, DPoint p2)
         {
             // y - y0 = m(x - x0)

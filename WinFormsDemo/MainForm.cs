@@ -101,6 +101,10 @@ namespace WinFormsDemo
             f = new ClockFigure();
             f.Rect = new DRect(200, 200, 100, 100);
             de.AddFigure(f);
+            // triangle polygon
+            f = new TriangleFigure();
+            f.Rect = new DRect(100, 200, 100, 100);
+            de.AddFigure(f);
             // Init controls
             InitPropertyControls(de.State);
         }
@@ -352,6 +356,10 @@ namespace WinFormsDemo
             btnEllipse.Checked = de.CurrentFigClassIs(typeof(EllipseFigure));
             btnText.Checked = state == DEngineState.DrawText;
             btnClock.Checked = de.CurrentFigClassIs(typeof(ClockFigure));
+            btnTriangle.Checked = de.CurrentFigClassIs(typeof(TriangleFigure));
+            btnRATriangle.Checked = de.CurrentFigClassIs(typeof(RightAngleTriangleFigure));
+            btnDiamond.Checked = de.CurrentFigClassIs(typeof(DiamondFigure));
+            btnPentagon.Checked = de.CurrentFigClassIs(typeof(PentagonFigure));
             InitPropertyControls(state);
         }
 
@@ -489,6 +497,18 @@ namespace WinFormsDemo
         private void btnClock_Click(object sender, EventArgs e)
         {
             de.SetStateByFigureClass(typeof(ClockFigure));
+        }
+
+        private void btnPolygon_Click(object sender, EventArgs e)
+        {
+            if (sender == btnTriangle)
+                de.SetStateByFigureClass(typeof(TriangleFigure));
+            else if (sender == btnRATriangle)
+                de.SetStateByFigureClass(typeof(RightAngleTriangleFigure));
+            else if (sender == btnDiamond)
+                de.SetStateByFigureClass(typeof(DiamondFigure));
+            else if (sender == btnPentagon)
+                de.SetStateByFigureClass(typeof(PentagonFigure));
         }
 
         private void previewBar1_PreviewSelected(Preview p)

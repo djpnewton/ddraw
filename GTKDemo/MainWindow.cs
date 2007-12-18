@@ -68,6 +68,10 @@ namespace GTKDemo
             f = new ClockFigure();
             f.Rect = new DRect(200, 200, 100, 100);
             de.AddFigure(f);
+            // triangle figure
+            f = new TriangleFigure();
+            f.Rect = new DRect(200, 100, 100, 100);
+            de.AddFigure(f);
             // resize window			
 			Resize(400, 300);
 		}

@@ -83,6 +83,14 @@ namespace DDraw
             }
             return result;    
         }
+
+        public static DPoints FromArray(DPoint[] pts)
+        {
+            DPoints points = new DPoints();
+            foreach (DPoint pt in pts)
+                points.Add(pt);
+            return points;
+        }
     }
 
     public struct DRect

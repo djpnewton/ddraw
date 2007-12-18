@@ -328,6 +328,18 @@ namespace DDraw.GTK
                 cr.Stroke();
             }
         }
+
+        public override void FillPolygon(DPoints pts, DColor color, double alpha)
+        {
+            if (pts.Count > 1)
+            {
+                cr.Color = MakeColor(color, alpha);
+                cr.MoveTo(pts[0].X, pts[0].Y);
+                for (int i = 1; i < pts.Count; i++)
+                    cr.LineTo(pts[i].X, pts[i].Y);
+                cr.Fill();
+            }
+        }
         
         public override void DrawBitmap(DBitmap bitmap, DPoint pt)
         {

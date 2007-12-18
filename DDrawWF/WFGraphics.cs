@@ -307,6 +307,12 @@ namespace DDraw.WinForms
             }
         }
 
+        public override void FillPolygon(DPoints pts, DColor color, double alpha)
+        {
+            if (pts.Count > 1)
+                g.FillPolygon(MakeBrush(DFillStyle.Solid, color, alpha), MakePoints(pts));
+        }
+
         public override void DrawBitmap(DBitmap bitmap, DPoint pt)
         {
             g.DrawImage((Bitmap)bitmap.NativeBmp, new PointF((float)pt.X, (float)pt.Y));
