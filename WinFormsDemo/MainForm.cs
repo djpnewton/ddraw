@@ -304,11 +304,11 @@ namespace WinFormsDemo
                     break;
                 default:
                     // enable relavant controls
-                    btnFill.Enabled = state == DEngineState.DrawText || (state == DEngineState.DrawFigure && typeof(IFillable).IsAssignableFrom(de.CurrentFigureClass));
-                    btnStroke.Enabled = state == DEngineState.DrawPolyline || (state == DEngineState.DrawFigure && typeof(IStrokeable).IsAssignableFrom(de.CurrentFigureClass));
+                    btnFill.Enabled = de.CurrentFigClassImpls(typeof(IFillable));
+                    btnStroke.Enabled = de.CurrentFigClassImpls(typeof(IStrokeable));
                     btnStrokeWidth.Enabled = btnStroke.Enabled;
-                    btnAlpha.Enabled = btnFill.Enabled || btnStroke.Enabled || (state == DEngineState.DrawFigure && typeof(IAlphaBlendable).IsAssignableFrom(de.CurrentFigureClass));
-                    cbFontName.Enabled = state == DEngineState.DrawText || (state == DEngineState.DrawFigure && typeof(ITextable).IsAssignableFrom(de.CurrentFigureClass));
+                    btnAlpha.Enabled = de.CurrentFigClassImpls(typeof(IAlphaBlendable));
+                    cbFontName.Enabled = de.CurrentFigClassImpls(typeof(ITextable));
                     // update values to match dap
                     if (btnFill.Enabled)
                         btnFill.Color = MakeColor(dap.Fill);
@@ -347,11 +347,11 @@ namespace WinFormsDemo
         void de_StateChanged(DEngine de, DEngineState state)
         {
             btnSelect.Checked = state == DEngineState.Select;
-            btnPen.Checked = state == DEngineState.DrawPolyline;
-            btnRect.Checked = state == DEngineState.DrawFigure && de.CurrentFigureClass.Equals(typeof(RectFigure));
-            btnEllipse.Checked = state == DEngineState.DrawFigure && de.CurrentFigureClass.Equals(typeof(EllipseFigure));
+            btnPen.Checked = de.CurrentFigClassIs(typeof(PolylineFigure));
+            btnRect.Checked = de.CurrentFigClassIs(typeof(RectFigure));
+            btnEllipse.Checked = de.CurrentFigClassIs(typeof(EllipseFigure));
             btnText.Checked = state == DEngineState.DrawText;
-            btnClock.Checked = state == DEngineState.DrawFigure && de.CurrentFigureClass.Equals(typeof(ClockFigure));
+            btnClock.Checked = de.CurrentFigClassIs(typeof(ClockFigure));
             InitPropertyControls(state);
         }
 
@@ -468,27 +468,27 @@ namespace WinFormsDemo
 
         private void btnPen_Click(object sender, EventArgs e)
         {
-            de.State = DEngineState.DrawPolyline;
+            de.SetStateByFigureClass(typeof(PolylineFigure));
         }
 
         private void btnRect_Click(object sender, EventArgs e)
         {
-            de.Dispatch(new QGDrawFigureEvent((int)DEngineSignals.GDrawFigure, typeof(RectFigure)));
+            de.SetStateByFigureClass(typeof(RectFigure));
         }
 
         private void btnEllipse_Click(object sender, EventArgs e)
         {
-            de.Dispatch(new QGDrawFigureEvent((int)DEngineSignals.GDrawFigure, typeof(EllipseFigure)));
+            de.SetStateByFigureClass(typeof(EllipseFigure));
         }
 
         private void btnText_Click(object sender, EventArgs e)
         {
-            de.State = DEngineState.DrawText;
+            de.SetStateByFigureClass(typeof(TextFigure));
         }
 
         private void btnClock_Click(object sender, EventArgs e)
         {
-            de.Dispatch(new QGDrawFigureEvent((int)DEngineSignals.GDrawFigure, typeof(ClockFigure)));
+            de.SetStateByFigureClass(typeof(ClockFigure));
         }
 
         private void previewBar1_PreviewSelected(Preview p)
@@ -524,7 +524,7 @@ namespace WinFormsDemo
 
         private void editToolStripMenuItem_DropDownOpened(object sender, EventArgs e)
         {
-            if (de.State == DEngineState.TextEdit || de.State == DEngineState.FigureEdit)
+            if (de.State != DEngineState.Select)
                 de.State = DEngineState.Select;
         }
 

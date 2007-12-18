@@ -374,33 +374,48 @@ namespace DDraw
         #endregion
     }
 
-    public class RectFigure : Figure, IFillable, IStrokeable, IAlphaBlendable
+    public abstract class RectbaseFigure : Figure, IAlphaBlendable
     {
-        public RectFigure()
+        public RectbaseFigure()
+        { }
+
+        public RectbaseFigure(DRect rect, double rotation) : base(rect, rotation)
+        { }
+
+        protected override DHitTest _HitTest(DPoint pt)
         {
+            if (DGeom.PointInRect(pt, Rect))
+                return DHitTest.Body;
+            return DHitTest.None;
         }
 
-        public RectFigure(DRect rect, double rotation)
-            : base(rect, rotation)
+        #region IAlphaBlendable Members
+        double alpha = 1;
+        public virtual double Alpha
         {
+            get { return alpha; }
+            set { alpha = value; }
         }
+        #endregion
+    }
+
+    public class RectFigure : RectbaseFigure, IFillable, IStrokeable
+    {
+        public RectFigure()
+        { }
+
+        public RectFigure(DRect rect, double rotation) : base(rect, rotation)
+        { }
 
         public override DRect GetSelectRect()
         {
             return StrokeHelper.SelectRectIncludingStrokeWidth(base.GetSelectRect(), strokeWidth);
         }
 
-        protected override DHitTest _HitTest(DPoint pt)
-        {
-            if (DGeom.PointInRect(pt, RectInclStroke))
-                return DHitTest.Body;
-            return DHitTest.None;
-        }
-
         protected override void PaintBody(DGraphics dg)
         {
-            dg.FillRect(X, Y, Width, Height, fill, alpha);
-            dg.DrawRect(X, Y, Width, Height, stroke, alpha, strokeWidth);
+            dg.FillRect(X, Y, Width, Height, fill, Alpha);
+            dg.DrawRect(X, Y, Width, Height, stroke, Alpha, strokeWidth);
         }
 
         #region IFillable Members
@@ -431,15 +446,6 @@ namespace DDraw
             {
                 return StrokeHelper.RectIncludingStrokeWidth(Rect, strokeWidth);
             }
-        }
-        #endregion
-
-        #region IAlphaBlendable Members
-        double alpha = 1;
-        public double Alpha
-        {
-            get { return alpha; }
-            set { alpha = value; }
         }
         #endregion
     }
@@ -478,7 +484,7 @@ namespace DDraw
         }
     }
 
-    public class PolylineFigure : Figure, IStrokeable, IAlphaBlendable
+    public abstract class PolylinebaseFigure : Figure, IAlphaBlendable
     {
         DPoints points;
         public DPoints Points
@@ -535,10 +541,25 @@ namespace DDraw
             }
         }
 
-        public PolylineFigure(DPoints points) : base(new DRect(), 0)
+        #region IAlphaBlendable Members
+        double alpha = 1;
+        public double Alpha
+        {
+            get { return alpha; }
+            set { alpha = value; }
+        }
+        #endregion
+    }
+
+    public class PolylineFigure : PolylinebaseFigure, IStrokeable
+    {
+        public PolylineFigure(DPoints points)
         {
             Points = points;
         }
+
+        public PolylineFigure()
+        { }
 
         public override DRect GetSelectRect()
         {
@@ -547,21 +568,21 @@ namespace DDraw
 
         protected override DHitTest _HitTest(DPoint pt)
         {
-            if (DGeom.PointInPolyline(pt, points, strokeWidth / 2))
+            if (DGeom.PointInPolyline(pt, Points, strokeWidth / 2))
                 return DHitTest.Body;
             return DHitTest.None;
         }
 
         protected override void PaintBody(DGraphics dg)
         {
-            dg.DrawPolyline(points, stroke, alpha, strokeWidth);
+            dg.DrawPolyline(Points, stroke, Alpha, strokeWidth);
         }
 
         DPoint beforeResizeSize;
 
         public override void BeforeResize()
         {
-            beforeResizeSize = new DPoint(Width, Height);    
+            beforeResizeSize = new DPoint(Width, Height);
         }
 
         public override void AfterResize()
@@ -588,43 +609,6 @@ namespace DDraw
             {
                 return StrokeHelper.RectIncludingStrokeWidth(Rect, strokeWidth);
             }
-        }
-        #endregion
-
-        #region IAlphaBlendable Members
-        double alpha = 1;
-        public double Alpha
-        {
-            get { return alpha; }
-            set { alpha = value; }
-        }
-        #endregion
-    }
-
-    public abstract class RectbaseFigure : Figure, IAlphaBlendable
-    {
-        public RectbaseFigure()
-        {
-        }
-
-        public RectbaseFigure(DRect rect, double rotation)
-            : base(rect, rotation)
-        {
-        }
-
-        protected override DHitTest _HitTest(DPoint pt)
-        {
-            if (DGeom.PointInRect(pt, Rect))
-                return DHitTest.Body;
-            return DHitTest.None;
-        }
-
-        #region IAlphaBlendable Members
-        double alpha = 1;
-        public virtual double Alpha
-        {
-            get { return alpha; }
-            set { alpha = value; }
         }
         #endregion
     }

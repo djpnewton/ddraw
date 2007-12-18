@@ -9,7 +9,7 @@ namespace DDraw
     public enum DEngineSignals : int
     {
         //enum values must start at UserSig value or greater
-        GSelect = QSignals.UserSig, GDrawPolyline, GDrawText, GDrawFigure,
+        GSelect = QSignals.UserSig, GDrawPolyline, GDrawText, GDrawRect,
         TextEdit, FigureEdit,
         MouseDown, MouseMove, MouseUp, DoubleClick,
         KeyDown, KeyPress, KeyUp
@@ -95,14 +95,18 @@ namespace DDraw
         }
     }
 
-    public enum DEngineState { Select, DrawPolyline, DrawText, TextEdit, DrawFigure, FigureEdit };
+    public enum DEngineState { Select, DrawPolyline, DrawText, TextEdit, DrawRect, FigureEdit };
 
     public partial class DEngine : QHsm
     {
         Type currentFigureClass;
-        public Type CurrentFigureClass
+        public bool CurrentFigClassImpls(Type _interface)
         {
-            get { return currentFigureClass; }
+            return _interface.IsAssignableFrom(currentFigureClass);
+        }
+        public bool CurrentFigClassIs(Type _class)
+        {
+            return _class.Equals(currentFigureClass);
         }
 
         // state variables (showing state hierachy here)
@@ -115,9 +119,9 @@ namespace DDraw
                 QState DrawingPoly;
             QState DrawText;
             QState TextEdit;
-            QState DrawFigure;
-                QState DrawFigureDefault;
-                QState DrawingFigure;
+            QState DrawRect;
+                QState DrawRectDefault;
+                QState DrawingRect;
             QState FigureEdit;
 
         public delegate void DEngineStateChangedHandler(DEngine de, DEngineState state);
@@ -134,8 +138,8 @@ namespace DDraw
                     return DEngineState.DrawText;
                 if (IsInState(TextEdit))
                     return DEngineState.TextEdit;
-                if (IsInState(DrawFigure))
-                    return DEngineState.DrawFigure;
+                if (IsInState(DrawRect))
+                    return DEngineState.DrawRect;
                 if (IsInState(FigureEdit))
                     return DEngineState.FigureEdit;
                 System.Diagnostics.Debug.Assert(false, "Logic Error :(");
@@ -148,17 +152,23 @@ namespace DDraw
                     case DEngineState.Select:
                         Dispatch(new QEvent((int)DEngineSignals.GSelect));
                         break;
-                    case DEngineState.DrawPolyline:
-                        Dispatch(new QEvent((int)DEngineSignals.GDrawPolyline));
-                        break;
-                    case DEngineState.DrawText:
-                        Dispatch(new QEvent((int)DEngineSignals.GDrawText));
-                        break;
                     default:
                         System.Diagnostics.Debug.Assert(false, String.Format("Sorry, cant set directly to '{0}' :(", value));
                         break;
                 }
             }
+        }
+
+        public void SetStateByFigureClass(Type FigureClass)
+        {
+            if (FigureClass.Equals(typeof(TextFigure))) // do TextFigure first as it is inherits from RectbaseFigure
+                Dispatch(new QGDrawFigureEvent((int)DEngineSignals.GDrawText, FigureClass));
+            else if (FigureClass.IsSubclassOf(typeof(RectbaseFigure)))
+                Dispatch(new QGDrawFigureEvent((int)DEngineSignals.GDrawRect, FigureClass));
+            else if (FigureClass.IsSubclassOf(typeof(PolylinebaseFigure)))
+                Dispatch(new QGDrawFigureEvent((int)DEngineSignals.GDrawPolyline, FigureClass));
+            else
+                System.Diagnostics.Debug.Assert(false, String.Format("Sorry, cant set state using '{0}' :(", FigureClass.Name));
         }
 
         void DoStateChanged(DEngineState state)
@@ -178,14 +188,16 @@ namespace DDraw
                     TransitionTo(Select);
                     return null;
                 case (int)DEngineSignals.GDrawPolyline:
+                    currentFigureClass = ((QGDrawFigureEvent)qevent).FigureClass;
                     TransitionTo(DrawPolyline);
                     return null;
                 case (int)DEngineSignals.GDrawText:
+                    currentFigureClass = ((QGDrawFigureEvent)qevent).FigureClass;
                     TransitionTo(DrawText);
                     return null;
-                case (int)DEngineSignals.GDrawFigure:
+                case (int)DEngineSignals.GDrawRect:
                     currentFigureClass = ((QGDrawFigureEvent)qevent).FigureClass;
-                    TransitionTo(DrawFigure);
+                    TransitionTo(DrawRect);
                     return null;
             }
             return this.TopState;
@@ -199,6 +211,8 @@ namespace DDraw
                     InitializeState(SelectDefault);
                     return Main;
                 case (int)QSignals.Entry:
+                    // clear currentFigureClass
+                    currentFigureClass = null;
                     // dont clear currentfigure and selected if we have transitioned from TextEdit state
                     if (!IsInState(TextEdit))
                     {
@@ -438,10 +452,7 @@ namespace DDraw
             Figure f = HitTestFigures(pt, out ht);
             if (f is TextFigure)
             {
-                currentFigure = new TextEditFigure((TextFigure)f);
-                figures.Insert(figures.IndexOf(f), currentFigure);
-                figures.Remove(f);
-                dv.Update(currentFigure.Rect);
+                currentFigure = f;
                 TransitionTo(TextEdit);
             }
             else if (f is IEditable)
@@ -505,7 +516,8 @@ namespace DDraw
                 DPoints pts = new DPoints();
                 pts.Add(pt);
                 // create PolylineFigure
-                currentFigure = new PolylineFigure(pts);
+                currentFigure = (Figure)Activator.CreateInstance(currentFigureClass);
+                ((PolylineFigure)currentFigure).Points = pts;
                 authorProps.ApplyPropertiesToFigure(currentFigure);
                 // add to list of figures
                 figures.Add(currentFigure);
@@ -576,8 +588,8 @@ namespace DDraw
                 if (autoUndoRecord)
                     undoRedoMgr.Start("Add Text");
                 // create TextFigure
-                currentFigure = new TextEditFigure(pt, new TextFigure(pt, "", GraphicsHelper.TextExtent, 0));
-                authorProps.ApplyPropertiesToFigure(((TextEditFigure)currentFigure).TextFigure);
+                currentFigure = new TextFigure(pt, "", GraphicsHelper.TextExtent, 0);
+                authorProps.ApplyPropertiesToFigure((TextFigure)currentFigure);
                 // add to list of figures
                 figures.Add(currentFigure);
                 // update DViewer
@@ -693,6 +705,11 @@ namespace DDraw
                     // start undo record
                     if (autoUndoRecord)
                         undoRedoMgr.Start("Text Edit");
+                    // add TextEditFigure
+                    Figure tf = currentFigure;
+                    currentFigure = new TextEditFigure((TextFigure)tf);
+                    figures.Insert(figures.IndexOf(tf), currentFigure);
+                    figures.Remove(tf);
                     // update view
                     ClearSelected();
                     UpdateViewers();
@@ -723,24 +740,24 @@ namespace DDraw
             return this.Main;
         }
 
-        QState DoDrawFigure(IQEvent qevent)
+        QState DoDrawRect(IQEvent qevent)
         {
             switch (qevent.QSignal)
             {
                 case (int)QSignals.Init:
-                    InitializeState(DrawFigureDefault);
+                    InitializeState(DrawRectDefault);
                     return Main;
                 case (int)QSignals.Entry:
                     ClearCurrentFigure();
                     ClearSelected();
                     UpdateViewers();
-                    DoStateChanged(DEngineState.DrawFigure);
+                    DoStateChanged(DEngineState.DrawRect);
                     return null;
             }
             return this.Main;
         }
 
-        void DoDrawFigureDefaultMouseDown(DViewer dv, DMouseButton btn, DPoint pt)
+        void DoDrawRectDefaultMouseDown(DViewer dv, DMouseButton btn, DPoint pt)
         {
             if (btn == DMouseButton.Left)
             {
@@ -755,31 +772,31 @@ namespace DDraw
                 // store drag pt for reference on mousemove event)
                 dragPt = pt;
                 // transition
-                TransitionTo(DrawingFigure);
+                TransitionTo(DrawingRect);
             }
         }
 
-        void DoDrawFigureDefaultMouseMove(DViewer dv, DPoint pt)
+        void DoDrawRectDefaultMouseMove(DViewer dv, DPoint pt)
         {
             // set cursor to draw
             dv.SetCursor(DCursor.Crosshair);
         }
 
-        QState DoDrawFigureDefault(IQEvent qevent)
+        QState DoDrawRectDefault(IQEvent qevent)
         {
             switch (qevent.QSignal)
             {
                 case (int)DEngineSignals.MouseDown:
-                    DoDrawFigureDefaultMouseDown(((QMouseEvent)qevent).Dv, ((QMouseEvent)qevent).Button, ((QMouseEvent)qevent).Pt);
+                    DoDrawRectDefaultMouseDown(((QMouseEvent)qevent).Dv, ((QMouseEvent)qevent).Button, ((QMouseEvent)qevent).Pt);
                     return null;
                 case (int)DEngineSignals.MouseMove:
-                    DoDrawFigureDefaultMouseMove(((QMouseEvent)qevent).Dv, ((QMouseEvent)qevent).Pt);
+                    DoDrawRectDefaultMouseMove(((QMouseEvent)qevent).Dv, ((QMouseEvent)qevent).Pt);
                     return null;
             }
-            return this.DrawFigure;
+            return this.DrawRect;
         }
 
-        void DoDrawingFigureMouseMove(DViewer dv, DPoint pt)
+        void DoDrawingRectMouseMove(DViewer dv, DPoint pt)
         {
             // initial update rect
             DRect updateRect = currentFigure.GetSelectRect();
@@ -798,30 +815,40 @@ namespace DDraw
                 currentFigure.Top = pt.Y;
                 currentFigure.Bottom = dragPt.Y;
             }
+            // set selection rectangle
+            selectionRect.Rect = currentFigure.GetSelectRect();
             // update drawing
             dv.Update(updateRect.Union(currentFigure.GetSelectRect()));
         }
 
-        void DoDrawingFigureMouseUp(DViewer dv, DMouseButton btn, DPoint pt)
+        void DoDrawingRectMouseUp(DViewer dv, DMouseButton btn, DPoint pt)
         {
             if (autoUndoRecord)
                 undoRedoMgr.Commit();
             // transition
-            TransitionTo(DrawFigureDefault);
+            TransitionTo(DrawRectDefault);
+            // update drawing
+            dv.Update(selectionRect.Rect);
         }
 
-        QState DoDrawingFigure(IQEvent qevent)
+        QState DoDrawingRect(IQEvent qevent)
         {
             switch (qevent.QSignal)
             {
+                case (int)QSignals.Entry:
+                    drawSelectionRect = true;
+                    return null;
+                case (int)QSignals.Exit:
+                    drawSelectionRect = false;
+                    return null;
                 case (int)DEngineSignals.MouseMove:
-                    DoDrawingFigureMouseMove(((QMouseEvent)qevent).Dv, ((QMouseEvent)qevent).Pt);
+                    DoDrawingRectMouseMove(((QMouseEvent)qevent).Dv, ((QMouseEvent)qevent).Pt);
                     return null;
                 case (int)DEngineSignals.MouseUp:
-                    DoDrawingFigureMouseUp(((QMouseEvent)qevent).Dv, ((QMouseEvent)qevent).Button, ((QMouseEvent)qevent).Pt);
+                    DoDrawingRectMouseUp(((QMouseEvent)qevent).Dv, ((QMouseEvent)qevent).Button, ((QMouseEvent)qevent).Pt);
                     return null;
             }
-            return this.DrawFigure;
+            return this.DrawRect;
         }
         
         void currentFigure_EditFinished(IEditable sender)
@@ -886,9 +913,9 @@ namespace DDraw
             DrawingPoly = new QState(this.DoDrawingPoly);
             DrawText = new QState(this.DoDrawText);
             TextEdit = new QState(this.DoTextEdit);
-            DrawFigure = new QState(this.DoDrawFigure);
-            DrawFigureDefault = new QState(this.DoDrawFigureDefault);
-            DrawingFigure = new QState(this.DoDrawingFigure);
+            DrawRect = new QState(this.DoDrawRect);
+            DrawRectDefault = new QState(this.DoDrawRectDefault);
+            DrawingRect = new QState(this.DoDrawingRect);
             FigureEdit = new QState(this.DoFigureEdit);
 			InitializeState(Main); // initial transition			
 		}
