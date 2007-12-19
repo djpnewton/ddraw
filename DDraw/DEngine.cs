@@ -74,6 +74,13 @@ namespace DDraw
         double dragRot;
         DHitTest mouseHitTest;
 
+        bool figureLockAspectRatio = false;
+        public bool FigureLockAspectRatio
+        {
+            get { return figureLockAspectRatio; }
+            set { figureLockAspectRatio = value; }
+        }
+
         DAuthorProperties authorProps;
         UndoRedoManager undoRedoMgr;
         public UndoRedoManager UndoRedoMgr
@@ -498,7 +505,7 @@ namespace DDraw
 
         DPoint CalcSizeDelta(DPoint pt, Figure f)
         {
-            if (f.LockAspectRatio)
+            if (figureLockAspectRatio || f.LockAspectRatio)
             {
                 pt = pt.Offset(-dragPt.X, -dragPt.Y);
                 double m = f.Height / f.Width;

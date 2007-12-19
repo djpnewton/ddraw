@@ -31,6 +31,11 @@ namespace DDraw
         double secondHandAngle = Math.PI / 4;
         bool editingSecondHand = false;
 
+        public override bool LockAspectRatio
+        {
+            get { return true; }
+        }
+
         protected override DHitTest _HitTest(DPoint pt)
         {
             if (editing && DGeom.PointInRect(pt, GetClockRect()))

@@ -44,7 +44,7 @@
     <Compile Include="WFGraphics.cs" />
     <Compile Include="WFViewer.cs" />
     <Compile Include="WFViewerControl.cs">
-      <SubType>Component</SubType>
+      <SubType>UserControl</SubType>
     </Compile>
   </ItemGroup>
   <ItemGroup>

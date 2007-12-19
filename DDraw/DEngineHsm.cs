@@ -384,13 +384,13 @@ namespace DDraw
                     if (currentFigure.Width + dSize.X < MIN_SIZE)
                     {
                         dSize.X = MIN_SIZE - currentFigure.Width;
-                        if (currentFigure.LockAspectRatio)
+                        if (figureLockAspectRatio || currentFigure.LockAspectRatio)
                             dSize.Y = (currentFigure.Height / currentFigure.Width) * dSize.X;
                     }
                     if (currentFigure.Height + dSize.Y < MIN_SIZE)
                     {
                         dSize.Y = MIN_SIZE - currentFigure.Height;
-                        if (currentFigure.LockAspectRatio)
+                        if (figureLockAspectRatio || currentFigure.LockAspectRatio)
                             dSize.X = (currentFigure.Width / currentFigure.Height) * dSize.Y;
                     }
                     currentFigure.Width += dSize.X;
@@ -808,12 +808,23 @@ namespace DDraw
                 currentFigure.Left = pt.X;
                 currentFigure.Right = dragPt.X;
             }
-            if (pt.Y >= dragPt.Y)
-                currentFigure.Bottom = pt.Y;
+            if (figureLockAspectRatio || currentFigure.LockAspectRatio)
+            {
+                currentFigure.Height = currentFigure.Width;
+                if (pt.Y >= dragPt.Y)
+                    currentFigure.Top = dragPt.Y;
+                else
+                    currentFigure.Top = dragPt.Y - currentFigure.Height;
+            }
             else
             {
-                currentFigure.Top = pt.Y;
-                currentFigure.Bottom = dragPt.Y;
+                if (pt.Y >= dragPt.Y)
+                    currentFigure.Bottom = pt.Y;
+                else
+                {
+                    currentFigure.Top = pt.Y;
+                    currentFigure.Bottom = dragPt.Y;
+                }
             }
             // set selection rectangle
             selectionRect.Rect = currentFigure.GetSelectRect();

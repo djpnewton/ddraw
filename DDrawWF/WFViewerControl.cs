@@ -8,7 +8,7 @@ using System.Windows.Forms;
 
 namespace DDraw.WinForms
 {
-    public class WFViewerControl : Panel
+    public class WFViewerControl : UserControl
     {
         public WFViewerControl()
         {
