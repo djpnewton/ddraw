@@ -411,7 +411,14 @@ namespace DDraw
                     // initial update rect
                     updateRect = GetBoundingBox(currentFigure);
                     // apply rotation to figure
-                    currentFigure.Rotation = GetRotationOfPointComparedToFigure(currentFigure, pt) - dragRot;
+                    double newRot = GetRotationOfPointComparedToFigure(currentFigure, pt) - dragRot;
+                    double r = newRot % figureSnapAngle;
+                    if (r < figureSnapRange)
+                        currentFigure.Rotation = newRot - r;
+                    else if (r > figureSnapAngle - figureSnapRange)
+                        currentFigure.Rotation = newRot + figureSnapAngle - r;
+                    else
+                        currentFigure.Rotation = newRot;
                     // final update rect
                     updateRect = updateRect.Union(GetBoundingBox(currentFigure));
                     // debug message

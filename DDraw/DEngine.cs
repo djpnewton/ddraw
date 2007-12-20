@@ -81,6 +81,9 @@ namespace DDraw
             set { figureLockAspectRatio = value; }
         }
 
+        const double figureSnapAngle = Math.PI / 4;        // 45 degrees
+        const double figureSnapRange = Math.PI / (4 * 18); // 2.5  degrees (each way)
+
         DAuthorProperties authorProps;
         UndoRedoManager undoRedoMgr;
         public UndoRedoManager UndoRedoMgr

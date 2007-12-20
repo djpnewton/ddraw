@@ -189,22 +189,11 @@ namespace DDraw
                 height = value.Height;
             }
         }
-        const double snapAngle = Math.PI / 4;       // 45 degrees
-        const double snapRange = Math.PI / (4 * 9); // 5  degrees
         double rotation;
         public double Rotation
         {
             get { return rotation; }
-            set
-            {
-                double r = value % snapAngle;
-                if (r < snapRange)
-                    rotation = value - r;
-                else if (r > snapAngle - snapRange)
-                    rotation = value + snapAngle - r;
-                else
-                    rotation = value;
-            }
+            set { rotation = value; }
         }
 
         bool lockAspectRatio = false;
