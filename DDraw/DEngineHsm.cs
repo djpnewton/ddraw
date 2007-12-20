@@ -246,7 +246,8 @@ namespace DDraw
                             goto case DHitTest.Body;
                         case DHitTest.Resize:
                             dragPt = new DPoint(0, 0);
-                            dragPt = CalcSizeDelta(f.RotatePointToFigure(pt), f);
+                            dragPt = CalcSizeDelta(f.RotatePointToFigure(pt), f, LockingAspectRatio || f.LockAspectRatio);
+                            lockInitialAspectRatio = true;
                             break;
                         case DHitTest.Rotate:
                             dragRot = GetRotationOfPointComparedToFigure(f, pt) - f.Rotation;
@@ -380,17 +381,27 @@ namespace DDraw
                     // translate point onto the same rotated plane as the figure
                     pt = currentFigure.RotatePointToFigure(pt);
                     // apply width/height delta to figure
-                    DPoint dSize = CalcSizeDelta(pt, currentFigure);
+                    DPoint dSize = CalcSizeDelta(pt, currentFigure, LockingAspectRatio || currentFigure.LockAspectRatio);
+                    if (lockInitialAspectRatio && !(figureLockAspectRatio || currentFigure.LockAspectRatio))
+                    {
+                        DPoint dSizeUnlocked = CalcSizeDelta(pt, currentFigure, false);
+                        if (Math.Abs(dSizeUnlocked.X - dSize.X) >= unlockInitalAspectRatioThreshold ||
+                            Math.Abs(dSizeUnlocked.Y - dSize.Y) >= unlockInitalAspectRatioThreshold)
+                        {
+                            lockInitialAspectRatio = false;
+                            dSize = dSizeUnlocked;
+                        }
+                    }
                     if (currentFigure.Width + dSize.X < MIN_SIZE)
                     {
                         dSize.X = MIN_SIZE - currentFigure.Width;
-                        if (figureLockAspectRatio || currentFigure.LockAspectRatio)
+                        if (LockingAspectRatio || currentFigure.LockAspectRatio)
                             dSize.Y = (currentFigure.Height / currentFigure.Width) * dSize.X;
                     }
                     if (currentFigure.Height + dSize.Y < MIN_SIZE)
                     {
                         dSize.Y = MIN_SIZE - currentFigure.Height;
-                        if (figureLockAspectRatio || currentFigure.LockAspectRatio)
+                        if (LockingAspectRatio || currentFigure.LockAspectRatio)
                             dSize.X = (currentFigure.Width / currentFigure.Height) * dSize.Y;
                     }
                     currentFigure.Width += dSize.X;

@@ -74,11 +74,19 @@ namespace DDraw
         double dragRot;
         DHitTest mouseHitTest;
 
+        bool lockInitialAspectRatio = false;
+        double unlockInitalAspectRatioThreshold = 50;
+
         bool figureLockAspectRatio = false;
         public bool FigureLockAspectRatio
         {
             get { return figureLockAspectRatio; }
             set { figureLockAspectRatio = value; }
+        }
+
+        public bool LockingAspectRatio
+        {
+            get { return lockInitialAspectRatio || figureLockAspectRatio; }
         }
 
         const double figureSnapAngle = Math.PI / 4;        // 45 degrees
@@ -506,9 +514,9 @@ namespace DDraw
             return new DPoint(pt.X - dragPt.X, pt.Y - dragPt.Y);
         }
 
-        DPoint CalcSizeDelta(DPoint pt, Figure f)
+        DPoint CalcSizeDelta(DPoint pt, Figure f, bool lockAspectRatio)
         {
-            if (figureLockAspectRatio || f.LockAspectRatio)
+            if (lockAspectRatio)
             {
                 pt = pt.Offset(-dragPt.X, -dragPt.Y);
                 double m = f.Height / f.Width;
