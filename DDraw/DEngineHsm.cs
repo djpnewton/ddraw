@@ -102,11 +102,17 @@ namespace DDraw
         Type currentFigureClass;
         public bool CurrentFigClassImpls(Type _interface)
         {
-            return _interface.IsAssignableFrom(currentFigureClass);
+            if (currentFigureClass != null)
+                return _interface.IsAssignableFrom(currentFigureClass);
+            else
+                return false;
         }
         public bool CurrentFigClassIs(Type _class)
         {
-            return _class.Equals(currentFigureClass);
+            if (currentFigureClass != null)
+                return _class.Equals(currentFigureClass);
+            else
+                return false;
         }
 
         // state variables (showing state hierachy here)
