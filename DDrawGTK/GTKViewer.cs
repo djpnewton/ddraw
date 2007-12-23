@@ -216,8 +216,10 @@ namespace DDraw.GTK
 
         public override void Update(DRect rect)
         {
+            // modify rect to cover weirdness of the renderer, antialiasing and cast to int
             rect = rect.Offset(-1, -1);
-            rect = rect.Inflate(2, 2);
+            rect = rect.Inflate(3, 3);
+            // update rect
             control.QueueDrawArea((int)((rect.X * Scale) - HortScroll + OffsetX),
                                   (int)((rect.Y * Scale) - VertScroll + OffsetY),
                                   (int)(rect.Width * Scale), (int)(rect.Height * Scale));

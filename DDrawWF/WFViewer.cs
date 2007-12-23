@@ -220,7 +220,7 @@ namespace DDraw.WinForms
             Rectangle r = new Rectangle((int)((rect.X * Scale) - HortScroll + OffsetX),
                                         (int)((rect.Y * Scale) - VertScroll + OffsetY), 
                                         (int)(rect.Width * Scale), (int)(rect.Height * Scale));
-            r.Inflate(1, 1);
+            r.Inflate(3, 3); // one for cast to int, one for antialiasing and one for GDI+
             control.Invalidate(r);
         }
 
