@@ -613,6 +613,14 @@ namespace DDraw
             double hs = HANDLE_SZ * Scale;
             return new DRect(pt2.X - hs, pt2.Y - hs, hs + hs, hs + hs);
         }
+        
+        public override DRect GetEncompassingRect()
+        {
+            if (Selected)
+                return GetPt1HandleRect().Union(GetPt2HandleRect());
+            else
+                return Rect;
+        }
 
         public override void PaintSelectionChrome(DGraphics dg)
         {
