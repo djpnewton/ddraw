@@ -72,6 +72,8 @@ namespace GTKDemo
             f = new TriangleFigure();
             f.Rect = new DRect(200, 100, 100, 100);
             de.AddFigure(f);
+            // line figure
+            de.AddFigure(new LineFigure(new DPoint(100, 100), new DPoint(200, 200)));
             // resize window			
 			Resize(400, 300);
 		}

@@ -72,11 +72,16 @@ namespace DDraw
             return res <= 1;
         }
 
-        public static bool PointInPolyline(DPoint pt, DPoints polyline, double width)
+        public static bool PointInLine(DPoint pt, DPoint linePt1, DPoint linePt2, double width)
         {
             DPoint p;
+            return DistBetweenPtAndLine(pt, linePt1, linePt2, out p) <= width;
+        }
+
+        public static bool PointInPolyline(DPoint pt, DPoints polyline, double width)
+        {
             for (int i = 1; i < polyline.Count; i++)
-                if (DistBetweenPtAndLine(pt, polyline[i - 1], polyline[i], out p) <= width)
+                if (PointInLine(pt, polyline[i - 1], polyline[i], width))
                     return true;
             return false;
         }

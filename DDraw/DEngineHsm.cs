@@ -9,7 +9,7 @@ namespace DDraw
     public enum DEngineSignals : int
     {
         //enum values must start at UserSig value or greater
-        GSelect = QSignals.UserSig, GDrawPolyline, GDrawText, GDrawRect,
+        GSelect = QSignals.UserSig, GDrawLine, GDrawText, GDrawRect,
         TextEdit, FigureEdit,
         MouseDown, MouseMove, MouseUp, DoubleClick,
         KeyDown, KeyPress, KeyUp
@@ -95,7 +95,7 @@ namespace DDraw
         }
     }
 
-    public enum DEngineState { Select, DrawPolyline, DrawText, TextEdit, DrawRect, FigureEdit };
+    public enum DEngineState { Select, DrawLine, DrawText, TextEdit, DrawRect, FigureEdit };
 
     public partial class DEngine : QHsm
     {
@@ -120,9 +120,9 @@ namespace DDraw
             QState Select;
                 QState SelectDefault;
                 QState DragFigure;
-            QState DrawPolyline;
-                QState DrawPolyDefault;
-                QState DrawingPoly;
+            QState DrawLine;
+                QState DrawLineDefault;
+                QState DrawingLine;
             QState DrawText;
             QState TextEdit;
             QState DrawRect;
@@ -138,8 +138,8 @@ namespace DDraw
             {
                 if (IsInState(Select))
                     return DEngineState.Select;
-                if (IsInState(DrawPolyline))
-                    return DEngineState.DrawPolyline;
+                if (IsInState(DrawLine))
+                    return DEngineState.DrawLine;
                 if (IsInState(DrawText))
                     return DEngineState.DrawText;
                 if (IsInState(TextEdit))
@@ -171,8 +171,8 @@ namespace DDraw
                 Dispatch(new QGDrawFigureEvent((int)DEngineSignals.GDrawText, FigureClass));
             else if (FigureClass.IsSubclassOf(typeof(RectbaseFigure)))
                 Dispatch(new QGDrawFigureEvent((int)DEngineSignals.GDrawRect, FigureClass));
-            else if (FigureClass.IsSubclassOf(typeof(PolylinebaseFigure)))
-                Dispatch(new QGDrawFigureEvent((int)DEngineSignals.GDrawPolyline, FigureClass));
+            else if (FigureClass.IsSubclassOf(typeof(LinebaseFigure)))
+                Dispatch(new QGDrawFigureEvent((int)DEngineSignals.GDrawLine, FigureClass));
             else
                 System.Diagnostics.Debug.Assert(false, String.Format("Sorry, cant set state using '{0}' :(", FigureClass.Name));
         }
@@ -193,9 +193,9 @@ namespace DDraw
                 case (int)DEngineSignals.GSelect:
                     TransitionTo(Select);
                     return null;
-                case (int)DEngineSignals.GDrawPolyline:
+                case (int)DEngineSignals.GDrawLine:
                     currentFigureClass = ((QGDrawFigureEvent)qevent).FigureClass;
-                    TransitionTo(DrawPolyline);
+                    TransitionTo(DrawLine);
                     return null;
                 case (int)DEngineSignals.GDrawText:
                     currentFigureClass = ((QGDrawFigureEvent)qevent).FigureClass;
@@ -255,6 +255,11 @@ namespace DDraw
                             dragPt = CalcSizeDelta(f.RotatePointToFigure(pt), f, LockingAspectRatio || f.LockAspectRatio);
                             lockInitialAspectRatio = true;
                             break;
+                        case DHitTest.ReposLinePt1:
+                            dragPt = pt;
+                            break;
+                        case DHitTest.ReposLinePt2:
+                            goto case DHitTest.ReposLinePt1;
                         case DHitTest.Rotate:
                             dragRot = GetRotationOfPointComparedToFigure(f, pt) - f.Rotation;
                             if (dragRot > Math.PI)
@@ -293,6 +298,10 @@ namespace DDraw
                 case DHitTest.Resize:
                     dv.SetCursor(DCursor.MoveNWSE);
                     break;
+                case DHitTest.ReposLinePt1:
+                    goto case DHitTest.Resize;
+                case DHitTest.ReposLinePt2:
+                    goto case DHitTest.Resize;
                 case DHitTest.Rotate:
                     dv.SetCursor(DCursor.Rotate);
                     break;
@@ -423,6 +432,32 @@ namespace DDraw
                     // debug message
                     DoDebugMessage(string.Format("{0} {1}", dSize.X, dSize.Y));
                     break;
+                case DHitTest.ReposLinePt1:
+                    System.Diagnostics.Trace.Assert(currentFigure != null, "currentFigure is null");
+                    // alert figure we are going to resize it
+                    currentFigure.BeforeResize();
+                    // inital update rect
+                    updateRect = GetBoundingBox(currentFigure);
+                    // resize
+                    LineSegmentbaseFigure lf = (LineSegmentbaseFigure)currentFigure;
+                    if (mouseHitTest == DHitTest.ReposLinePt1)
+                    {
+                        lf.pt1.X += pt.X - dragPt.X;
+                        lf.pt1.Y += pt.Y - dragPt.Y;
+                    }
+                    else if (mouseHitTest == DHitTest.ReposLinePt2)
+                    {
+                        lf.pt2.X += pt.X - dragPt.X;
+                        lf.pt2.Y += pt.Y - dragPt.Y;
+                    }
+                    dragPt = pt;
+                    // final update rect
+                    updateRect = updateRect.Union(GetBoundingBox(currentFigure));
+                    // alert figure we have finished resizing
+                    currentFigure.AfterResize();
+                    break;
+                case DHitTest.ReposLinePt2:
+                    goto case DHitTest.ReposLinePt1;
                 case DHitTest.Rotate:
                     System.Diagnostics.Trace.Assert(currentFigure != null, "currentFigure is null");
                     // initial update rect
@@ -513,95 +548,90 @@ namespace DDraw
             return this.Select;
         }
 
-        QState DoDrawPolyline(IQEvent qevent)
+        QState DoDrawLine(IQEvent qevent)
         {
             switch (qevent.QSignal)
             {
                 case (int)QSignals.Init:
-                    InitializeState(DrawPolyDefault);
+                    InitializeState(DrawLineDefault);
                     return Main;
                 case (int)QSignals.Entry:
                     ClearCurrentFigure();
                     ClearSelected();
                     UpdateViewers();
-                    DoStateChanged(DEngineState.DrawPolyline);
+                    DoStateChanged(DEngineState.DrawLine);
                     return null;
             }
             return this.Main;
         }
 
-        void DoDrawPolyDefaultMouseDown(DViewer dv, DMouseButton btn, DPoint pt)
+        void DoDrawLineDefaultMouseDown(DViewer dv, DMouseButton btn, DPoint pt)
         {
             if (btn == DMouseButton.Left)
             {
                 if (autoUndoRecord)
-                    undoRedoMgr.Start("Add Polyline");
-                // create DPoints object
-                DPoints pts = new DPoints();
-                pts.Add(pt);
-                // create PolylineFigure
+                    undoRedoMgr.Start("Add Line");
+                // create line figure
                 currentFigure = (Figure)Activator.CreateInstance(currentFigureClass);
-                ((PolylineFigure)currentFigure).Points = pts;
+                ((LinebaseFigure)currentFigure).AddPoint(pt);
                 authorProps.ApplyPropertiesToFigure(currentFigure);
                 // add to list of figures
                 figures.Add(currentFigure);
                 // transition
-                TransitionTo(DrawingPoly);
+                TransitionTo(DrawingLine);
             }
         }
 
-        void DoDrawPolyDefaultMouseMove(DViewer dv, DPoint pt)
+        void DoDrawLineDefaultMouseMove(DViewer dv, DPoint pt)
         {
             // set cursor to draw
             dv.SetCursor(DCursor.Crosshair);
         }
 
-        QState DoDrawPolyDefault(IQEvent qevent)
+        QState DoDrawLineDefault(IQEvent qevent)
         {
             switch (qevent.QSignal)
             {
                 case (int)DEngineSignals.MouseDown:
-                    DoDrawPolyDefaultMouseDown(((QMouseEvent)qevent).Dv, ((QMouseEvent)qevent).Button, ((QMouseEvent)qevent).Pt);
+                    DoDrawLineDefaultMouseDown(((QMouseEvent)qevent).Dv, ((QMouseEvent)qevent).Button, ((QMouseEvent)qevent).Pt);
                     return null;
                 case (int)DEngineSignals.MouseMove:
-                    DoDrawPolyDefaultMouseMove(((QMouseEvent)qevent).Dv, ((QMouseEvent)qevent).Pt);
+                    DoDrawLineDefaultMouseMove(((QMouseEvent)qevent).Dv, ((QMouseEvent)qevent).Pt);
                     return null;
             }
-            return this.DrawPolyline;
+            return this.DrawLine;
         }
 
-        void DoDrawingPolyMouseMove(DViewer dv, DPoint pt)
+        void DoDrawingLineMouseMove(DViewer dv, DPoint pt)
         {
             // initial update rect
             DRect updateRect = currentFigure.GetSelectRect();
             // add point
-            DPoints pts = ((PolylineFigure)currentFigure).Points;
-            pts.Add(pt);
-            ((PolylineFigure)currentFigure).Points = pts;
+            ((LinebaseFigure)currentFigure).AddPoint(pt);
             // update drawing
             dv.Update(updateRect.Union(currentFigure.GetSelectRect()));
         }
 
-        void DoDrawingPolyMouseUp(DViewer dv, DMouseButton btn, DPoint pt)
+        void DoDrawingLineMouseUp(DViewer dv, DMouseButton btn, DPoint pt)
         {
             if (autoUndoRecord)
                 undoRedoMgr.Commit();
             // transition
-            TransitionTo(DrawPolyDefault);
+            TransitionTo(DrawLineDefault);
         }
 
-        QState DoDrawingPoly(IQEvent qevent)
+        QState DoDrawingLine(IQEvent qevent)
         {
             switch (qevent.QSignal)
             {
                 case (int)DEngineSignals.MouseMove:
-                    DoDrawingPolyMouseMove(((QMouseEvent)qevent).Dv, ((QMouseEvent)qevent).Pt);
+                    DoDrawingLineMouseMove(((QMouseEvent)qevent).Dv, ((QMouseEvent)qevent).Pt);
                     return null;
                 case (int)DEngineSignals.MouseUp:
-                    DoDrawingPolyMouseUp(((QMouseEvent)qevent).Dv, ((QMouseEvent)qevent).Button, ((QMouseEvent)qevent).Pt);
+                    DoDrawingLineMouseUp(((QMouseEvent)qevent).Dv, ((QMouseEvent)qevent).Button, ((QMouseEvent)qevent).Pt);
                     return null;
             }
-            return this.DrawPolyline;
+            return this.DrawLine;
         }
 
         void DoDrawTextMouseDown(DViewer dv, DMouseButton btn, DPoint pt)
@@ -943,9 +973,9 @@ namespace DDraw
             Select = new QState(this.DoSelect);
             SelectDefault = new QState(this.DoSelectDefault);
             DragFigure = new QState(this.DoDragFigure);
-            DrawPolyline = new QState(this.DoDrawPolyline);
-            DrawPolyDefault = new QState(this.DoDrawPolyDefault);
-            DrawingPoly = new QState(this.DoDrawingPoly);
+            DrawLine = new QState(this.DoDrawLine);
+            DrawLineDefault = new QState(this.DoDrawLineDefault);
+            DrawingLine = new QState(this.DoDrawingLine);
             DrawText = new QState(this.DoDrawText);
             TextEdit = new QState(this.DoTextEdit);
             DrawRect = new QState(this.DoDrawRect);

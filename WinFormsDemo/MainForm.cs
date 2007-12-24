@@ -105,6 +105,8 @@ namespace WinFormsDemo
             f = new TriangleFigure();
             f.Rect = new DRect(100, 200, 100, 100);
             de.AddFigure(f);
+            // line figure
+            de.AddFigure(new LineFigure(new DPoint(100, 100), new DPoint(200, 200)));
             // Init controls
             InitPropertyControls(de.State);
         }
@@ -509,6 +511,11 @@ namespace WinFormsDemo
                 de.SetStateByFigureClass(typeof(DiamondFigure));
             else if (sender == btnPentagon)
                 de.SetStateByFigureClass(typeof(PentagonFigure));
+        }
+
+        private void btnLine_Click(object sender, EventArgs e)
+        {
+            de.SetStateByFigureClass(typeof(LineFigure));
         }
 
         private void previewBar1_PreviewSelected(Preview p)

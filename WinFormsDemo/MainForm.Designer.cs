@@ -88,6 +88,7 @@ namespace WinFormsDemo
             this._050PcToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this._100PcToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this._150PcToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.btnLine = new System.Windows.Forms.ToolStripButton();
             this.wfvcEditor = new DDraw.WinForms.WFViewerControl();
             this.previewBar1 = new WinFormsDemo.PreviewBar();
             this.tsFigureProps = new System.Windows.Forms.ToolStrip();
@@ -134,10 +135,11 @@ namespace WinFormsDemo
             this.btnTriangle,
             this.btnRATriangle,
             this.btnDiamond,
-            this.btnPentagon});
+            this.btnPentagon,
+            this.btnLine});
             this.tsEditorMode.Location = new System.Drawing.Point(3, 24);
             this.tsEditorMode.Name = "tsEditorMode";
-            this.tsEditorMode.Size = new System.Drawing.Size(445, 25);
+            this.tsEditorMode.Size = new System.Drawing.Size(506, 25);
             this.tsEditorMode.TabIndex = 0;
             this.tsEditorMode.Text = "toolStrip1";
             // 
@@ -608,6 +610,16 @@ namespace WinFormsDemo
             this._150PcToolStripMenuItem.Text = "150%";
             this._150PcToolStripMenuItem.Click += new System.EventHandler(this.ZoomToolStripMenuItem_Click);
             // 
+            // btnLine
+            // 
+            this.btnLine.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.btnLine.Image = ((System.Drawing.Image)(resources.GetObject("btnLine.Image")));
+            this.btnLine.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnLine.Name = "btnLine";
+            this.btnLine.Size = new System.Drawing.Size(30, 22);
+            this.btnLine.Text = "Line";
+            this.btnLine.Click += new System.EventHandler(this.btnLine_Click);
+            // 
             // wfvcEditor
             // 
             this.wfvcEditor.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -796,6 +808,7 @@ namespace WinFormsDemo
         private System.Windows.Forms.ToolStripButton btnRATriangle;
         private System.Windows.Forms.ToolStripButton btnDiamond;
         private System.Windows.Forms.ToolStripButton btnPentagon;
+        private System.Windows.Forms.ToolStripButton btnLine;
     }
 }
 

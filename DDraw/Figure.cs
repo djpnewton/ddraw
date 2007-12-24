@@ -190,7 +190,7 @@ namespace DDraw
             }
         }
         double rotation;
-        public double Rotation
+        public virtual double Rotation
         {
             get { return rotation; }
             set { rotation = value; }
@@ -240,7 +240,7 @@ namespace DDraw
 
         protected abstract DHitTest _HitTest(DPoint pt);
 
-        void ApplyTransforms(DGraphics dg)
+        protected void ApplyTransforms(DGraphics dg)
         {
             dg.Rotate(Rotation, Rect.Center);
         }
@@ -473,7 +473,213 @@ namespace DDraw
         }
     }
 
-    public abstract class PolylinebaseFigure : Figure, IAlphaBlendable
+    public abstract class LinebaseFigure : Figure, IStrokeable, IAlphaBlendable
+    {
+        public abstract void AddPoint(DPoint pt);
+
+        public override DRect GetSelectRect()
+        {
+            return StrokeHelper.SelectRectIncludingStrokeWidth(base.GetSelectRect(), StrokeWidth);
+        }
+
+        #region IStrokeable Members
+        DColor stroke = DColor.Blue;
+        public DColor Stroke
+        {
+            get { return stroke; }
+            set { stroke = value; }
+        }
+        double strokeWidth = 1;
+        public double StrokeWidth
+        {
+            get { return strokeWidth; }
+            set { strokeWidth = value; }
+        }
+        public DRect RectInclStroke
+        {
+            get
+            {
+                return StrokeHelper.RectIncludingStrokeWidth(Rect, strokeWidth);
+            }
+        }
+        #endregion
+
+        #region IAlphaBlendable Members
+        double alpha = 1;
+        public double Alpha
+        {
+            get { return alpha; }
+            set { alpha = value; }
+        }
+        #endregion
+    }
+
+    public abstract class LineSegmentbaseFigure : LinebaseFigure
+    {
+        public DPoint pt1, pt2;
+
+        public override double X
+        {
+            get
+            {
+                if (pt1 != null && pt2 != null)
+                    return Math.Min(pt1.X, pt2.X);
+                else
+                    return 0;
+            }
+            set
+            {
+                double dX = value - X;
+                pt1.X += dX;
+                pt2.X += dX;
+            }
+        }
+
+        public override double Y
+        {
+            get
+            {
+                if (pt1 != null && pt2 != null)
+                    return Math.Min(pt1.Y, pt2.Y);
+                else return 0;
+            }
+            set
+            {
+                double dY = value - Y;
+                pt1.Y += dY;
+                pt2.Y += dY;
+            }
+        }
+
+        public override double Width
+        {
+            get
+            {
+                if (pt1 != null && pt2 != null)
+                    return Math.Abs(pt1.X - pt2.X);
+                else
+                    return 0;
+            }
+            set
+            {
+                if (pt1.X > pt2.X)
+                    pt1.X = pt2.X + value;
+                else
+                    pt2.X = pt1.X + value;
+            }
+        }
+
+        public override double Height
+        {
+            get
+            {
+                if (pt1 != null && pt2 != null)
+                    return Math.Abs(pt1.Y - pt2.Y);
+                else
+                    return 0;
+            }
+            set
+            {
+                if (pt1.Y > pt2.Y)
+                    pt1.Y = pt2.Y + value;
+                else
+                    pt2.Y = pt1.Y + value;
+            }
+        }
+
+        public override void AddPoint(DPoint pt)
+        {
+            if (pt1 == null)
+                pt1 = pt;
+            else
+                pt2 = pt;
+        }
+
+        protected override DHitTest _HitTest(DPoint pt)
+        {
+            if (DGeom.PointInLine(pt, pt1, pt2, StrokeWidth / 2))
+                return DHitTest.Body;
+            return DHitTest.None;
+        }
+
+        public DRect GetPt1HandleRect()
+        {
+            double hs = HANDLE_SZ * Scale;
+            return new DRect(pt1.X - hs, pt1.Y - hs, hs + hs, hs + hs);
+        }
+
+        public DRect GetPt2HandleRect()
+        {
+            double hs = HANDLE_SZ * Scale;
+            return new DRect(pt2.X - hs, pt2.Y - hs, hs + hs, hs + hs);
+        }
+
+        public override void PaintSelectionChrome(DGraphics dg)
+        {
+            if (Selected)
+            {
+                // save current transform
+                DMatrix m = dg.SaveTransform();
+                // apply transform
+                ApplyTransforms(dg);
+                // draw pt1 handle
+                DRect r = GetPt1HandleRect();
+                dg.FillEllipse(r.X, r.Y, r.Width, r.Height, DColor.Red, 1);
+                dg.DrawEllipse(r.X, r.Y, r.Width, r.Height, DColor.Black, 1, Scale);
+                // draw pt2 handle
+                r = GetPt2HandleRect();
+                dg.FillEllipse(r.X, r.Y, r.Width, r.Height, DColor.Red, 1);
+                dg.DrawEllipse(r.X, r.Y, r.Width, r.Height, DColor.Black, 1, Scale);
+                // load previous transform
+                dg.LoadTransform(m);
+            }
+        }
+
+        public override DHitTest SelectHitTest(DPoint pt)
+        {
+            if (Selected && DGeom.PointInLine(pt, pt1, pt2, HANDLE_SZ * Scale))
+                return DHitTest.SelectRect;
+            return DHitTest.None;
+        }
+
+        public override DHitTest ResizeHitTest(DPoint pt)
+        {
+            if (Selected)
+            {
+                if (DGeom.PointInRect(pt, GetPt1HandleRect()))
+                    return DHitTest.ReposLinePt1;
+                else if (DGeom.PointInRect(pt, GetPt2HandleRect()))
+                    return DHitTest.ReposLinePt2;
+                return DHitTest.None;
+            }
+            return DHitTest.None;
+        }
+
+        public override DHitTest RotateHitTest(DPoint pt)
+        {
+            return DHitTest.None;
+        }
+    }
+
+    public class LineFigure : LineSegmentbaseFigure
+    {
+        public LineFigure()
+        { }
+
+        public LineFigure(DPoint pt1, DPoint pt2)
+        {
+            this.pt1 = pt1;
+            this.pt2 = pt2;
+        }
+
+        protected override void PaintBody(DGraphics dg)
+        {
+            if (pt1 != null && pt2 != null)
+                dg.DrawLine(pt1, pt2, Stroke, Alpha, DPenStyle.Solid, StrokeWidth);
+        }
+    }
+
+    public abstract class PolylinebaseFigure : LinebaseFigure
     {
         DPoints points;
         public DPoints Points
@@ -484,6 +690,14 @@ namespace DDraw
                 points = value;
                 Rect = points.Bounds();
             }
+        }
+
+        public override void AddPoint(DPoint pt)
+        {
+            if (points == null)
+                points = new DPoints();
+            points.Add(pt);
+            Points = points; // to set the bounds (maybe should fix this)
         }
 
         public override double X
@@ -530,41 +744,11 @@ namespace DDraw
             }
         }
 
-        #region IAlphaBlendable Members
-        double alpha = 1;
-        public double Alpha
-        {
-            get { return alpha; }
-            set { alpha = value; }
-        }
-        #endregion
-    }
-
-    public class PolylineFigure : PolylinebaseFigure, IStrokeable
-    {
-        public PolylineFigure(DPoints points)
-        {
-            Points = points;
-        }
-
-        public PolylineFigure()
-        { }
-
-        public override DRect GetSelectRect()
-        {
-            return StrokeHelper.SelectRectIncludingStrokeWidth(base.GetSelectRect(), strokeWidth);
-        }
-
         protected override DHitTest _HitTest(DPoint pt)
         {
-            if (DGeom.PointInPolyline(pt, Points, strokeWidth / 2))
+            if (DGeom.PointInPolyline(pt, Points, StrokeWidth / 2))
                 return DHitTest.Body;
             return DHitTest.None;
-        }
-
-        protected override void PaintBody(DGraphics dg)
-        {
-            dg.DrawPolyline(Points, stroke, Alpha, strokeWidth);
         }
 
         DPoint beforeResizeSize;
@@ -576,30 +760,24 @@ namespace DDraw
 
         public override void AfterResize()
         {
-            strokeWidth *= ((Width / beforeResizeSize.X) + (Height / beforeResizeSize.Y)) / 2;
+            StrokeWidth *= ((Width / beforeResizeSize.X) + (Height / beforeResizeSize.Y)) / 2;
+        }
+    }
+
+    public class PolylineFigure : PolylinebaseFigure
+    {
+        public PolylineFigure(DPoints points)
+        {
+            Points = points;
         }
 
-        #region IStrokeable Members
-        DColor stroke = DColor.Blue;
-        public DColor Stroke
+        public PolylineFigure()
+        { }
+
+        protected override void PaintBody(DGraphics dg)
         {
-            get { return stroke; }
-            set { stroke = value; }
+            dg.DrawPolyline(Points, Stroke, Alpha, StrokeWidth);
         }
-        double strokeWidth = 1;
-        public double StrokeWidth
-        {
-            get { return strokeWidth; }
-            set { strokeWidth = value; }
-        }
-        public DRect RectInclStroke
-        {
-            get
-            {
-                return StrokeHelper.RectIncludingStrokeWidth(Rect, strokeWidth);
-            }
-        }
-        #endregion
     }
 
     public class ImageFigure : RectbaseFigure, IBitmapable

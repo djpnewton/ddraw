@@ -99,13 +99,13 @@
      inkscape:cx="463.77744"
      inkscape:cy="383.59769"
      inkscape:document-units="px"
-     inkscape:current-layer="g2489"
+     inkscape:current-layer="layer1"
      width="1052.3622px"
      height="744.09448px"
      inkscape:window-width="1280"
      inkscape:window-height="744"
-     inkscape:window-x="0"
-     inkscape:window-y="22" />
+     inkscape:window-x="-4"
+     inkscape:window-y="-4" />
   <metadata
      id="metadata7">
     <rdf:RDF>
@@ -582,7 +582,7 @@
                y="321.67984"
                x="-629.92834"
                id="tspan5973"
-               sodipodi:role="line">DrawPolyline</tspan></text>
+               sodipodi:role="line">DrawLine</tspan></text>
           <text
              id="text5975"
              y="346.52774"
@@ -612,7 +612,7 @@
              y="227.69572"
              x="166.34019"
              style="font-size:20px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
-             xml:space="preserve">DrawPolyDefault</text>
+             xml:space="preserve">DrawLineDefault</text>
           <text
              id="text2518"
              y="248.05411"
@@ -650,7 +650,7 @@
              y="332.9212"
              x="165.08751"
              style="font-size:20px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;display:inline;font-family:Bitstream Vera Sans"
-             xml:space="preserve">DrawingPoly</text>
+             xml:space="preserve">DrawingLine</text>
           <text
              id="text2532"
              y="353.2796"
@@ -922,7 +922,7 @@
          sodipodi:role="line"
          id="tspan6107"
          x="457.28082"
-         y="40.742443">GUI_DRAWPOLYLINE</tspan></text>
+         y="40.742443">GUI_DRAWLINE</tspan></text>
     <text
        xml:space="preserve"
        style="font-size:12px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;display:inline;font-family:Bitstream Vera Sans"
