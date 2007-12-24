@@ -95,6 +95,20 @@ namespace DDraw
         }
     }
 
+    public interface ILineSegment
+    {
+        DPoint Pt1
+        {
+            get;
+            set;
+        }
+        DPoint Pt2
+        {
+            get;
+            set;
+        }
+    }
+
     public interface ISelectable
     {
         bool Selected
@@ -514,9 +528,19 @@ namespace DDraw
         #endregion
     }
 
-    public abstract class LineSegmentbaseFigure : LinebaseFigure
+    public abstract class LineSegmentbaseFigure : LinebaseFigure, ILineSegment
     {
-        public DPoint pt1, pt2;
+        DPoint pt1, pt2;
+        public DPoint Pt1
+        {
+            get { return pt1; }
+            set { pt1 = value; }
+        }
+        public DPoint Pt2
+        {
+            get { return pt2; }
+            set { pt2 = value; }
+        }
 
         public override double X
         {
@@ -676,14 +700,14 @@ namespace DDraw
 
         public LineFigure(DPoint pt1, DPoint pt2)
         {
-            this.pt1 = pt1;
-            this.pt2 = pt2;
+            Pt1 = pt1;
+            Pt2 = pt2;
         }
 
         protected override void PaintBody(DGraphics dg)
         {
-            if (pt1 != null && pt2 != null)
-                dg.DrawLine(pt1, pt2, Stroke, Alpha, DPenStyle.Solid, StrokeWidth);
+            if (Pt1 != null && Pt2 != null)
+                dg.DrawLine(Pt1, Pt2, Stroke, Alpha, DPenStyle.Solid, StrokeWidth);
         }
     }
 

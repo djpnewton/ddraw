@@ -59,6 +59,16 @@ namespace DDraw
         {
             return new DPoint(X + x, Y + y);
         }
+
+        public bool Equals(DPoint pt)
+        {
+            return pt.X == X && pt.Y == Y;
+        }
+
+        public DPoint Clone()
+        {
+            return new DPoint(X, Y);
+        }
     }
 
     public class DPoints : List<DPoint>

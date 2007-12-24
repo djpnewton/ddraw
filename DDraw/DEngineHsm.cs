@@ -439,16 +439,16 @@ namespace DDraw
                     // inital update rect
                     updateRect = GetBoundingBox(currentFigure);
                     // resize
-                    LineSegmentbaseFigure lf = (LineSegmentbaseFigure)currentFigure;
+                    ILineSegment ls = (ILineSegment)currentFigure;
                     if (mouseHitTest == DHitTest.ReposLinePt1)
                     {
-                        lf.pt1.X += pt.X - dragPt.X;
-                        lf.pt1.Y += pt.Y - dragPt.Y;
+                        ls.Pt1.X += pt.X - dragPt.X;
+                        ls.Pt1.Y += pt.Y - dragPt.Y;
                     }
                     else if (mouseHitTest == DHitTest.ReposLinePt2)
                     {
-                        lf.pt2.X += pt.X - dragPt.X;
-                        lf.pt2.Y += pt.Y - dragPt.Y;
+                        ls.Pt2.X += pt.X - dragPt.X;
+                        ls.Pt2.Y += pt.Y - dragPt.Y;
                     }
                     dragPt = pt;
                     // final update rect

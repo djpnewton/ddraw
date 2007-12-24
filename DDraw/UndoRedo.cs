@@ -20,6 +20,7 @@ namespace DDraw
 		public double FontSize;
         public FigureProperties[] ChildFigureProps;
         public Hashtable EditableAttributes;
+        public DPoint Pt1, Pt2;
 	}
 	
 	enum FigureChangeType { Removed, Added, PropertyChanged, Moved };		
@@ -128,6 +129,11 @@ namespace DDraw
             }
             if (f is IEditable)
                 fp.EditableAttributes = ((IEditable)f).GetAttributes();
+            if (f is ILineSegment)
+            {
+                fp.Pt1 = ((ILineSegment)f).Pt1.Clone();
+                fp.Pt2 = ((ILineSegment)f).Pt2.Clone();
+            }
             return fp;			
 		}
 		
@@ -209,6 +215,12 @@ namespace DDraw
                     if (!attrs[de.Key].Equals(fp.EditableAttributes[de.Key]))
                         return false;
             }
+            if (f is ILineSegment)
+            {
+                ILineSegment ls = (ILineSegment)f;
+                if (!ls.Pt1.Equals(fp.Pt1) || !ls.Pt2.Equals(fp.Pt2))
+                    return false;
+            }
             return true;               
         }
 
@@ -243,6 +255,11 @@ namespace DDraw
             }
             if (f is IEditable)
                 ((IEditable)f).SetAttributes(fp.EditableAttributes);
+            if (f is ILineSegment)
+            {
+                ((ILineSegment)f).Pt1 = fp.Pt1.Clone();
+                ((ILineSegment)f).Pt2 = fp.Pt2.Clone();
+            }
         }
 
         UndoFrame Snapshot(string name)
