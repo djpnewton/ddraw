@@ -58,7 +58,7 @@ namespace WinFormsDemo
             // Initialze DGraphics
             WFGraphics.Init();
             // create author properties
-            dap = new DAuthorProperties(DColor.Blue, DColor.Red, 3, DPenStyle.Solid, 1, "Arial");
+            dap = new DAuthorProperties(DColor.Blue, DColor.Red, 3, DStrokeStyle.Solid, 1, "Arial");
             // edit viewer
             dvEditor = new WFViewer(wfvcEditor);
             dvEditor.EditFigures = true;
@@ -222,21 +222,21 @@ namespace WinFormsDemo
             return strokeWidth;
         }
 
-        DPenStyle GetStrokeStyleMatch(Figure[] figs)
+        DStrokeStyle GetStrokeStyleMatch(Figure[] figs)
         {
-            DPenStyle strokeStyle = DPenStyle.Solid;
+            DStrokeStyle strokeStyle = DStrokeStyle.Solid;
             foreach (Figure f in figs)
                 if (f is IStrokeable)
                 {
                     strokeStyle = ((IStrokeable)f).StrokeStyle;
                     break;
                 }
-            if (strokeStyle != DPenStyle.Solid)
+            if (strokeStyle != DStrokeStyle.Solid)
                 foreach (Figure f in figs)
                     if (f is IStrokeable)
                     {
                         if (strokeStyle != ((IStrokeable)f).StrokeStyle)
-                            return DPenStyle.Solid;
+                            return DStrokeStyle.Solid;
                     }
             return strokeStyle;
         }
@@ -287,7 +287,7 @@ namespace WinFormsDemo
             btnFill.Color = Color.Empty;
             btnStroke.Color = Color.Empty;
             btnStrokeWidth.Value = ToolStripStrokeWidthButton.Empty;
-            btnStrokeStyle.Value = DPenStyle.Solid;
+            btnStrokeStyle.Value = DStrokeStyle.Solid;
             btnAlpha.Value = ToolStripAlphaButton.Empty;
             cbFontName.Value = "";
             // deselect controls
@@ -460,7 +460,7 @@ namespace WinFormsDemo
             }
         }
 
-        private void btnStrokeStyle_StrokeStyleChanged(object sender, DPenStyle strokeStyle)
+        private void btnStrokeStyle_StrokeStyleChanged(object sender, DStrokeStyle strokeStyle)
         {
             switch (de.State)
             {

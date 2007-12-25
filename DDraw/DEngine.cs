@@ -16,7 +16,7 @@ namespace DDraw
         public DColor Fill;
         public DColor Stroke;
         public double StrokeWidth;
-        public DPenStyle StrokeStyle;
+        public DStrokeStyle StrokeStyle;
         public double Alpha;
         public string FontName;
         
@@ -25,17 +25,17 @@ namespace DDraw
         	Fill = DColor.Red;
         	Stroke = DColor.Blue;
         	StrokeWidth = 1;
-            StrokeStyle = DPenStyle.Solid;
+            StrokeStyle = DStrokeStyle.Solid;
         	Alpha = 1;
         	FontName = "Arial";
         }
 
-        public DAuthorProperties(DColor fill, DColor stroke, double strokeWidth, DPenStyle strokeStyle, double alpha, string fontName)
+        public DAuthorProperties(DColor fill, DColor stroke, double strokeWidth, DStrokeStyle strokeStyle, double alpha, string fontName)
         {
             Fill = fill;
             Stroke = stroke;
             StrokeWidth = strokeWidth;
-            StrokeStyle = StrokeStyle;
+            StrokeStyle = strokeStyle;
             Alpha = alpha;
             FontName = fontName;
         }

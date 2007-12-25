@@ -26,24 +26,24 @@ namespace WinFormsDemo
             g.DrawLine(new Pen(color, strokeWidth), pt1, pt2);
         }
 
-        public static void DrawStrokeStyleIcon(Graphics g, Rectangle r, Color color, DPenStyle strokeStyle)
+        public static void DrawStrokeStyleIcon(Graphics g, Rectangle r, Color color, DStrokeStyle strokeStyle)
         {
             Pen p = new Pen(color, 2);
             switch (strokeStyle)
             {
-                case DPenStyle.Solid:
+                case DStrokeStyle.Solid:
                     p.DashStyle = System.Drawing.Drawing2D.DashStyle.Solid;
                     break;
-                case DPenStyle.Dash:
+                case DStrokeStyle.Dash:
                     p.DashStyle = System.Drawing.Drawing2D.DashStyle.Dash;
                     break;
-                case DPenStyle.Dot:
+                case DStrokeStyle.Dot:
                     p.DashStyle = System.Drawing.Drawing2D.DashStyle.Dot;
                     break;
-                case DPenStyle.DashDot:
+                case DStrokeStyle.DashDot:
                     p.DashStyle = System.Drawing.Drawing2D.DashStyle.DashDot;
                     break;
-                case DPenStyle.DashDotDot:
+                case DStrokeStyle.DashDotDot:
                     p.DashStyle = System.Drawing.Drawing2D.DashStyle.DashDotDot;
                     break;
             }
@@ -155,13 +155,13 @@ namespace WinFormsDemo
 
     public class StrokeStyleMenuItem : ToolStripMenuItem
     {
-        DPenStyle value;
-        public DPenStyle Value
+        DStrokeStyle value;
+        public DStrokeStyle Value
         {
             get { return value; }
         }
 
-        public StrokeStyleMenuItem(DPenStyle strokeStyle, EventHandler onClick)
+        public StrokeStyleMenuItem(DStrokeStyle strokeStyle, EventHandler onClick)
             : base()
         {
             DisplayStyle = ToolStripItemDisplayStyle.ImageAndText;
@@ -335,7 +335,7 @@ namespace WinFormsDemo
         }
     }
 
-    public delegate void StrokeStyleChangedHandler(object sender, DPenStyle strokeStyle);
+    public delegate void StrokeStyleChangedHandler(object sender, DStrokeStyle strokeStyle);
 
     [ToolStripItemDesignerAvailability(ToolStripItemDesignerAvailability.ToolStrip | ToolStripItemDesignerAvailability.StatusStrip)]
     public class ToolStripStrokeStyleButton : ToolStripDropDownButton
@@ -344,14 +344,14 @@ namespace WinFormsDemo
 
         public static int Empty = -1;
 
-        public DPenStyle Value
+        public DStrokeStyle Value
         {
             get
             {
                 foreach (StrokeStyleMenuItem item in DropDown.Items)
                     if (item.Checked)
                         return item.Value;
-                return DPenStyle.Solid;
+                return DStrokeStyle.Solid;
             }
             set
             {
@@ -371,11 +371,11 @@ namespace WinFormsDemo
             : base()
         {
             ShowDropDownArrow = false;
-            DropDown.Items.Add(new StrokeStyleMenuItem(DPenStyle.Solid, new EventHandler(MenuItem_OnClick)));
-            DropDown.Items.Add(new StrokeStyleMenuItem(DPenStyle.Dash, new EventHandler(MenuItem_OnClick)));
-            DropDown.Items.Add(new StrokeStyleMenuItem(DPenStyle.Dot, new EventHandler(MenuItem_OnClick)));
-            DropDown.Items.Add(new StrokeStyleMenuItem(DPenStyle.DashDot, new EventHandler(MenuItem_OnClick)));
-            DropDown.Items.Add(new StrokeStyleMenuItem(DPenStyle.DashDotDot, new EventHandler(MenuItem_OnClick)));
+            DropDown.Items.Add(new StrokeStyleMenuItem(DStrokeStyle.Solid, new EventHandler(MenuItem_OnClick)));
+            DropDown.Items.Add(new StrokeStyleMenuItem(DStrokeStyle.Dash, new EventHandler(MenuItem_OnClick)));
+            DropDown.Items.Add(new StrokeStyleMenuItem(DStrokeStyle.Dot, new EventHandler(MenuItem_OnClick)));
+            DropDown.Items.Add(new StrokeStyleMenuItem(DStrokeStyle.DashDot, new EventHandler(MenuItem_OnClick)));
+            DropDown.Items.Add(new StrokeStyleMenuItem(DStrokeStyle.DashDotDot, new EventHandler(MenuItem_OnClick)));
             DropDown.ItemAdded += new ToolStripItemEventHandler(DropDown_ItemAdded);
         }
 

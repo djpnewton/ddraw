@@ -150,33 +150,78 @@ namespace DDraw.WinForms
             return result;
         }
 
-        private Pen MakePen(Color color, DPenStyle penStyle)
+        private Pen MakePen(Color color, DStrokeStyle strokeStyle)
         {
             Pen p = new Pen(color);
-            p.DashStyle = MakeDashStyle(penStyle);
+            p.DashStyle = MakeDashStyle(strokeStyle);
             return p;
         }
 
-        private Pen MakePen(Color color, double strokeWidth, DPenStyle penStyle)
+        private Pen MakePen(Color color, double strokeWidth, DStrokeStyle strokeStyle, DStrokeJoin strokeJoin, DStrokeCap strokeCap)
         {
             Pen p = new Pen(color, (float)strokeWidth);
-            p.DashStyle = MakeDashStyle(penStyle);
+            p.DashStyle = MakeDashStyle(strokeStyle);
+            p.LineJoin = MakeLineJoin(strokeJoin);
+            p.SetLineCap(MakeLineCap(strokeCap), MakeLineCap(strokeCap), MakeDashCap(strokeCap));
+            p.SetLineCap(MakeLineCap(strokeCap), MakeLineCap(strokeCap), DashCap.Flat);
             return p;
         }
 
-        private DashStyle MakeDashStyle(DPenStyle penStyle)
+        private LineCap MakeLineCap(DStrokeCap strokeCap)
         {
-            switch (penStyle)
+            switch (strokeCap)
             {
-                case DPenStyle.Solid:
+                case DStrokeCap.Butt:
+                    return LineCap.Flat;
+                case DStrokeCap.Round:
+                    return LineCap.Round;
+                case DStrokeCap.Square:
+                    return LineCap.Square;
+            }
+            return LineCap.Flat;
+        }
+
+        private DashCap MakeDashCap(DStrokeCap strokeCap)
+        {
+            switch (strokeCap)
+            {
+                case DStrokeCap.Butt:
+                    return DashCap.Flat;
+                case DStrokeCap.Round:
+                    return DashCap.Round;
+                case DStrokeCap.Square:
+                    return DashCap.Flat;
+            }
+            return DashCap.Flat;
+        }
+
+        private LineJoin MakeLineJoin(DStrokeJoin strokeJoin)
+        {
+            switch (strokeJoin)
+            {
+                case DStrokeJoin.Mitre:
+                    return LineJoin.Miter;
+                case DStrokeJoin.Round:
+                    return LineJoin.Round;
+                case DStrokeJoin.Bevel:
+                    return LineJoin.Bevel;
+            }
+            return LineJoin.Miter;
+        }
+
+        private DashStyle MakeDashStyle(DStrokeStyle strokeStyle)
+        {
+            switch (strokeStyle)
+            {
+                case DStrokeStyle.Solid:
                     return DashStyle.Solid;
-                case DPenStyle.Dash:
+                case DStrokeStyle.Dash:
                     return DashStyle.Dash;
-                case DPenStyle.Dot:
+                case DStrokeStyle.Dot:
                     return DashStyle.Dot;
-                case DPenStyle.DashDot:
+                case DStrokeStyle.DashDot:
                     return DashStyle.DashDot;
-                case DPenStyle.DashDotDot:
+                case DStrokeStyle.DashDotDot:
                     return DashStyle.DashDotDot;
             }
             return DashStyle.Solid;
@@ -200,9 +245,9 @@ namespace DDraw.WinForms
             g.FillRectangle(MakeBrush(fillStyle, color, alpha), (float)x, (float)y, (float)width, (float)height);
         }
 
-        public override void DrawRect(double x, double y, double width, double height, DColor color, double alpha, double strokeWidth, DPenStyle penStyle)
+        public override void DrawRect(double x, double y, double width, double height, DColor color, double alpha, double strokeWidth, DStrokeStyle strokeStyle, DStrokeJoin strokeJoin)
         {
-            g.DrawRectangle(MakePen(MakeColor(color, alpha), strokeWidth, penStyle), (float)x, (float)y, (float)width, (float)height);
+            g.DrawRectangle(MakePen(MakeColor(color, alpha), strokeWidth, strokeStyle, strokeJoin, DStrokeCap.Butt), (float)x, (float)y, (float)width, (float)height);
         }
 
         public override void DrawRect(double x, double y, double width, double height, DColor color)
@@ -225,9 +270,9 @@ namespace DDraw.WinForms
             g.DrawRectangle(new Pen(MakeColor(color, alpha)), MakeRect(rect));
         }
 
-        public override void DrawRect(DRect rect, DColor color, double alpha, DPenStyle penStyle)
+        public override void DrawRect(DRect rect, DColor color, double alpha, DStrokeStyle strokeStyle)
         {
-            g.DrawRectangle(MakePen(MakeColor(color, alpha), penStyle), MakeRect(rect));
+            g.DrawRectangle(MakePen(MakeColor(color, alpha), strokeStyle), MakeRect(rect));
         }
 
         public override void FillEllipse(double x, double y, double width, double height, DColor color)
@@ -255,9 +300,9 @@ namespace DDraw.WinForms
             g.DrawEllipse(new Pen(MakeColor(color)), (float)x, (float)y, (float)width, (float)height);
         }
 
-        public override void DrawEllipse(double x, double y, double width, double height, DColor color, double alpha, double strokeWidth, DPenStyle strokeStyle)
+        public override void DrawEllipse(double x, double y, double width, double height, DColor color, double alpha, double strokeWidth, DStrokeStyle strokeStyle)
         {
-            g.DrawEllipse(MakePen(MakeColor(color, alpha), strokeWidth, strokeStyle), (float)x, (float)y, (float)width, (float)height);
+            g.DrawEllipse(MakePen(MakeColor(color, alpha), strokeWidth, strokeStyle, DStrokeJoin.Mitre, DStrokeCap.Butt), (float)x, (float)y, (float)width, (float)height);
         }
 
         public override void DrawEllipse(DRect rect, DColor color)
@@ -280,35 +325,30 @@ namespace DDraw.WinForms
             g.DrawLine(new Pen(MakeColor(color, alpha)), (float)pt1.X, (float)pt1.Y, (float)pt2.X, (float)pt2.Y);
         }
 
-        public override void DrawLine(DPoint pt1, DPoint pt2, DColor color, DPenStyle penStyle)
+        public override void DrawLine(DPoint pt1, DPoint pt2, DColor color, DStrokeStyle strokeStyle)
         {
-            g.DrawLine(MakePen(MakeColor(color), penStyle), (float)pt1.X, (float)pt1.Y, (float)pt2.X, (float)pt2.Y);
+            g.DrawLine(MakePen(MakeColor(color), strokeStyle), (float)pt1.X, (float)pt1.Y, (float)pt2.X, (float)pt2.Y);
         }
 
-        public override void DrawLine(DPoint pt1, DPoint pt2, DColor color, double alpha, DPenStyle penStyle)
+        public override void DrawLine(DPoint pt1, DPoint pt2, DColor color, double alpha, DStrokeStyle strokeStyle)
         {
-            g.DrawLine(MakePen(MakeColor(color, alpha), penStyle), (float)pt1.X, (float)pt1.Y, (float)pt2.X, (float)pt2.Y);
+            g.DrawLine(MakePen(MakeColor(color, alpha), strokeStyle), (float)pt1.X, (float)pt1.Y, (float)pt2.X, (float)pt2.Y);
         }
 
-        public override void DrawLine(DPoint pt1, DPoint pt2, DColor color, double alpha, DPenStyle penStyle, double strokeWidth)
+        public override void DrawLine(DPoint pt1, DPoint pt2, DColor color, double alpha, DStrokeStyle strokeStyle, double strokeWidth, DStrokeCap strokeCap)
         {
-            g.DrawLine(MakePen(MakeColor(color, alpha), strokeWidth, penStyle), (float)pt1.X, (float)pt1.Y, (float)pt2.X, (float)pt2.Y);
+            g.DrawLine(MakePen(MakeColor(color, alpha), strokeWidth, strokeStyle, DStrokeJoin.Mitre, strokeCap), (float)pt1.X, (float)pt1.Y, (float)pt2.X, (float)pt2.Y);
         }
 
         public override void DrawPolyline(DPoints pts, DColor color)
         {
-            DrawPolyline(pts, color, 1, 1, DPenStyle.Solid);
+            DrawPolyline(pts, color, 1, 1, DStrokeStyle.Solid, DStrokeJoin.Round, DStrokeCap.Round);
         }
 
-        public override void DrawPolyline(DPoints pts, DColor color, double alpha, double strokeWidth, DPenStyle strokeStyle)
+        public override void DrawPolyline(DPoints pts, DColor color, double alpha, double strokeWidth, DStrokeStyle strokeStyle, DStrokeJoin strokeJoin, DStrokeCap strokeCap)
         {
             if (pts.Count > 1)
-            {
-                Pen p = MakePen(MakeColor(color, alpha), strokeWidth, strokeStyle);
-                p.SetLineCap(LineCap.Round, LineCap.Round, DashCap.Flat);
-                p.LineJoin = LineJoin.Round;
-                g.DrawLines(p, MakePoints(pts));
-            }
+                g.DrawLines(MakePen(MakeColor(color, alpha), strokeWidth, strokeStyle, strokeJoin, strokeCap), MakePoints(pts));
         }
 
         public override void FillPolygon(DPoints pts, DColor color, double alpha)

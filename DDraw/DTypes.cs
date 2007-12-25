@@ -4,7 +4,11 @@ using System.Text;
 
 namespace DDraw
 {
-    public enum DPenStyle { Solid, Dash, Dot, DashDot, DashDotDot };
+    public enum DStrokeStyle { Solid, Dash, Dot, DashDot, DashDotDot };
+
+    public enum DStrokeJoin { Mitre, Round, Bevel };
+
+    public enum DStrokeCap { Butt, Round, Square };
 
     public enum DFillStyle { Solid, ForwardDiagonalHatch };
 

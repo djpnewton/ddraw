@@ -71,10 +71,11 @@ namespace GTKDemo
             // triangle figure
             f = new TriangleFigure();
             f.Rect = new DRect(200, 100, 100, 100);
+            ((TriangleFigure)f).StrokeWidth = 10;
             de.AddFigure(f);
             // line figure
             f = new LineFigure(new DPoint(100, 100), new DPoint(200, 200));
-            ((LineFigure)f).StrokeStyle = DPenStyle.DashDot;
+            ((LineFigure)f).StrokeStyle = DStrokeStyle.DashDot;
             ((LineFigure)f).StrokeWidth = 5;
             de.AddFigure(f);
             // resize window			

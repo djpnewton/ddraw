@@ -719,7 +719,7 @@ namespace WinFormsDemo
             this.btnStrokeStyle.ShowDropDownArrow = false;
             this.btnStrokeStyle.Size = new System.Drawing.Size(20, 22);
             this.btnStrokeStyle.Text = "Stroke Style";
-            this.btnStrokeStyle.Value = DDraw.DPenStyle.Solid;
+            this.btnStrokeStyle.Value = DDraw.DStrokeStyle.Solid;
             this.btnStrokeStyle.StrokeStyleChanged += new WinFormsDemo.StrokeStyleChangedHandler(this.btnStrokeStyle_StrokeStyleChanged);
             // 
             // MainForm

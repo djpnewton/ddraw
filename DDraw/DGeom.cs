@@ -25,6 +25,11 @@ namespace DDraw
             return -(Math.Atan2(p2.X - p1.X, p2.Y - p1.Y) - Math.PI);
         }
 
+        public static DPoint PointFromAngle(DPoint origin, double angle, double r)
+        {
+            return new DPoint(origin.X + r * Math.Cos(angle), origin.Y + r * Math.Sin(angle));
+        }
+
         public static double DistBetweenTwoPts(DPoint p1, DPoint p2)
         {
             /* Calculate the distance between to points */

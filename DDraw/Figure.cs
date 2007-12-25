@@ -25,7 +25,17 @@ namespace DDraw
             get;
             set;
         }
-        DPenStyle StrokeStyle
+        DStrokeStyle StrokeStyle
+        {
+            get;
+            set;
+        }
+        DStrokeJoin StrokeJoin
+        {
+            get;
+            set;
+        }
+        DStrokeCap StrokeCap
         {
             get;
             set;
@@ -310,19 +320,19 @@ namespace DDraw
                 // draw selection rectangle
                 DRect r = GetSelectRect();
                 dg.DrawRect(r.X, r.Y, r.Width, r.Height, DColor.White, 1, Scale);
-                dg.DrawRect(r.X, r.Y, r.Width, r.Height, DColor.Black, 1, Scale, DPenStyle.Dot);
+                dg.DrawRect(r.X, r.Y, r.Width, r.Height, DColor.Black, 1, Scale, DStrokeStyle.Dot, DStrokeJoin.Mitre);
                 // draw resize handle
                 r = GetResizeHandleRect();
                 dg.FillEllipse(r, DColor.Red);
-                dg.DrawEllipse(r.X, r.Y, r.Width, r.Height, DColor.Black, 1, Scale, DPenStyle.Solid);
+                dg.DrawEllipse(r.X, r.Y, r.Width, r.Height, DColor.Black, 1, Scale, DStrokeStyle.Solid);
                 // draw rotate handle
                 r = GetRotateHandleRect();
                 DPoint p1 = r.Center;
                 DPoint p2 = p1.Offset(0, 3 * HANDLE_SZ * Scale - S_INDENT * Scale);
-                dg.DrawLine(p1, p2, DColor.White, 1, DPenStyle.Solid, Scale);
-                dg.DrawLine(p1, p2, DColor.Black, 1, DPenStyle.Dot, Scale);
+                dg.DrawLine(p1, p2, DColor.White, 1, DStrokeStyle.Solid, Scale, DStrokeCap.Butt);
+                dg.DrawLine(p1, p2, DColor.Black, 1, DStrokeStyle.Dot, Scale, DStrokeCap.Butt);
                 dg.FillEllipse(r, DColor.Blue);
-                dg.DrawEllipse(r.X, r.Y, r.Width, r.Height, DColor.Black, 1, Scale, DPenStyle.Solid);
+                dg.DrawEllipse(r.X, r.Y, r.Width, r.Height, DColor.Black, 1, Scale, DStrokeStyle.Solid);
                 //r = GetEncompassingRect();
                 //dg.DrawRect(r.X, r.Y, r.Width, r.Height, DColor.Black, 1, Scale);
                 // load previous transform
@@ -430,7 +440,7 @@ namespace DDraw
         protected override void PaintBody(DGraphics dg)
         {
             dg.FillRect(X, Y, Width, Height, fill, Alpha);
-            dg.DrawRect(X, Y, Width, Height, stroke, Alpha, strokeWidth, StrokeStyle);
+            dg.DrawRect(X, Y, Width, Height, stroke, Alpha, strokeWidth, strokeStyle, strokeJoin);
         }
 
         #region IFillable Members
@@ -455,11 +465,23 @@ namespace DDraw
             get { return strokeWidth; }
             set { strokeWidth = value; }  
         }
-        DPenStyle strokeStyle = DPenStyle.Solid;
-        public DPenStyle StrokeStyle
+        DStrokeStyle strokeStyle = DStrokeStyle.Solid;
+        public DStrokeStyle StrokeStyle
         {
             get { return strokeStyle; }
             set { strokeStyle = value; }
+        }
+        DStrokeJoin strokeJoin = DStrokeJoin.Mitre;
+        public DStrokeJoin StrokeJoin
+        {
+            get { return strokeJoin; }
+            set { strokeJoin = value; }
+        }
+        DStrokeCap strokeCap = DStrokeCap.Butt;
+        public DStrokeCap StrokeCap
+        {
+            get { return strokeCap; }
+            set { strokeCap = value; }
         }
         public DRect RectInclStroke
         {
@@ -475,7 +497,7 @@ namespace DDraw
         protected override void PaintBody(DGraphics dg)
         {
             dg.DrawRect(X, Y, Width, Height, DColor.White, Alpha, Scale);
-            dg.DrawRect(X, Y, Width, Height, DColor.Black, Alpha, Scale, DPenStyle.Dot);
+            dg.DrawRect(X, Y, Width, Height, DColor.Black, Alpha, Scale, DStrokeStyle.Dot, DStrokeJoin.Mitre);
         }
     }
 
@@ -523,11 +545,23 @@ namespace DDraw
             get { return strokeWidth; }
             set { strokeWidth = value; }
         }
-        DPenStyle strokeStyle = DPenStyle.Solid;
-        public DPenStyle StrokeStyle
+        DStrokeStyle strokeStyle = DStrokeStyle.Solid;
+        public DStrokeStyle StrokeStyle
         {
             get { return strokeStyle; }
             set { strokeStyle = value; }
+        }
+        DStrokeJoin strokeJoin = DStrokeJoin.Round;
+        public DStrokeJoin StrokeJoin
+        {
+            get { return strokeJoin; }
+            set { strokeJoin = value; }
+        }
+        DStrokeCap strokeCap = DStrokeCap.Round;
+        public DStrokeCap StrokeCap
+        {
+            get { return strokeCap; }
+            set { strokeCap = value; }
         }
         public DRect RectInclStroke
         {
@@ -674,11 +708,11 @@ namespace DDraw
                 // draw pt1 handle
                 DRect r = GetPt1HandleRect();
                 dg.FillEllipse(r.X, r.Y, r.Width, r.Height, DColor.Red, 1);
-                dg.DrawEllipse(r.X, r.Y, r.Width, r.Height, DColor.Black, 1, Scale, DPenStyle.Solid);
+                dg.DrawEllipse(r.X, r.Y, r.Width, r.Height, DColor.Black, 1, Scale, DStrokeStyle.Solid);
                 // draw pt2 handle
                 r = GetPt2HandleRect();
                 dg.FillEllipse(r.X, r.Y, r.Width, r.Height, DColor.Red, 1);
-                dg.DrawEllipse(r.X, r.Y, r.Width, r.Height, DColor.Black, 1, Scale, DPenStyle.Solid);
+                dg.DrawEllipse(r.X, r.Y, r.Width, r.Height, DColor.Black, 1, Scale, DStrokeStyle.Solid);
                 // load previous transform
                 dg.LoadTransform(m);
             }
@@ -724,7 +758,7 @@ namespace DDraw
         protected override void PaintBody(DGraphics dg)
         {
             if (Pt1 != null && Pt2 != null)
-                dg.DrawLine(Pt1, Pt2, Stroke, Alpha, StrokeStyle, StrokeWidth);
+                dg.DrawLine(Pt1, Pt2, Stroke, Alpha, StrokeStyle, StrokeWidth, StrokeCap);
         }
     }
 
@@ -825,7 +859,7 @@ namespace DDraw
 
         protected override void PaintBody(DGraphics dg)
         {
-            dg.DrawPolyline(Points, Stroke, Alpha, StrokeWidth, StrokeStyle);
+            dg.DrawPolyline(Points, Stroke, Alpha, StrokeWidth, StrokeStyle, StrokeJoin, StrokeCap);
         }
     }
 

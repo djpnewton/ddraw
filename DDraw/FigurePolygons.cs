@@ -12,12 +12,11 @@ namespace DDraw
         {
             System.Diagnostics.Debug.Assert(pts.Count >= 3, "You need at least 3 points for a polygon");
             points = pts;
-            points.Add(pts[0]);
         }
 
         protected override DHitTest _HitTest(DPoint pt)
         {
-            DPoints pts = RealPoints();
+            DPoints pts = DrawPoints();
             if (DGeom.PointInPolygon(pt, pts) || DGeom.PointInPolyline(pt, pts, StrokeWidth / 2))
                 return DHitTest.Body;
             else
@@ -29,19 +28,24 @@ namespace DDraw
             return new DPoint(X + Width * pt.X, Y + Height * pt.Y);
         }
 
-        DPoints RealPoints()
+        DPoints DrawPoints()
         {
             DPoints pts = new DPoints();
             foreach (DPoint pt in points)
                 pts.Add(Vertex(pt));
+            // close the polygon
+            pts.Add(pts[0]);
+            // to draw the stroke join at the first vertex
+            pts.Add(DGeom.PointFromAngle(pts[0], DGeom.AngleBetweenPoints(pts[0], pts[1]) - Math.PI / 2, 1)); 
+            // return new points
             return pts;
         }
 
         protected override void PaintBody(DGraphics dg)
         {
-            DPoints pts = RealPoints();
+            DPoints pts = DrawPoints();
             dg.FillPolygon(pts, Fill, Alpha);
-            dg.DrawPolyline(pts, Stroke, Alpha, StrokeWidth, StrokeStyle);
+            dg.DrawPolyline(pts, Stroke, Alpha, StrokeWidth, StrokeStyle, StrokeJoin, StrokeCap);
         }
     }
 

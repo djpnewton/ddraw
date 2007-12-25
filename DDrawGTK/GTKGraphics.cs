@@ -122,7 +122,35 @@ namespace DDraw.GTK
             return new Color(color.R / 255f, color.G / 255f, color.B / 255f, color.A / 255f * alpha);
         }
 
-        void SetPattern(Context cr, DColor color, double alpha, DFillStyle fillStyle)
+        LineJoin MakeLineJoin(DStrokeJoin strokeJoin)
+        {
+            switch (strokeJoin)
+            {
+                case DStrokeJoin.Mitre:
+                    return LineJoin.Miter;
+                case DStrokeJoin.Round:
+                    return LineJoin.Round;
+                case DStrokeJoin.Bevel:
+                    return LineJoin.Bevel;
+            }
+            return LineJoin.Miter;
+        }
+
+        LineCap MakeLineCap(DStrokeCap strokeCap)
+        {
+            switch (strokeCap)
+            {
+                case DStrokeCap.Butt:
+                    return LineCap.Butt;
+                case DStrokeCap.Round:
+                    return LineCap.Round;
+                case DStrokeCap.Square:
+                    return LineCap.Square;
+            }
+            return LineCap.Butt;
+        }
+
+        void CairoSetPattern(Context cr, DColor color, double alpha, DFillStyle fillStyle)
         {
             switch (fillStyle)
             {
@@ -145,26 +173,27 @@ namespace DDraw.GTK
             }
         }
 
-        void CairoPenStyle(Context cr, DPenStyle penStyle, double strokeWidth)
+        void CairoStrokeStyle(Context cr, DStrokeStyle strokeStyle, double strokeWidth)
         {
             double dot = strokeWidth;
+            double space = 2 * strokeWidth;
             double dash = 3 * strokeWidth;
-            switch (penStyle)
+            switch (strokeStyle)
             {
-                case DPenStyle.Solid:
+                case DStrokeStyle.Solid:
                     cr.SetDash(new double[] {}, 0);
                     break;
-                case DPenStyle.Dash:
-                    cr.SetDash(new double[] { dash, dot }, 0);
+                case DStrokeStyle.Dash:
+                    cr.SetDash(new double[] { dash, space }, 0);
                     break;
-                case DPenStyle.Dot:
-                    cr.SetDash(new double[] { dot, dot }, 0);
+                case DStrokeStyle.Dot:
+                    cr.SetDash(new double[] { dot, space }, 0);
                     break;
-                case DPenStyle.DashDot:
-                    cr.SetDash(new double[] { dash, dot, dot, dot }, 0);
+                case DStrokeStyle.DashDot:
+                    cr.SetDash(new double[] { dash, space, dot, space }, 0);
                     break;
-                case DPenStyle.DashDotDot:
-                    cr.SetDash(new double[] { dash, dot, dot, dot, dot, dot }, 0);
+                case DStrokeStyle.DashDotDot:
+                    cr.SetDash(new double[] { dash, space, dot, space, dot, space }, 0);
                     break;
             }
         }
@@ -197,16 +226,17 @@ namespace DDraw.GTK
 
         public override void FillRect(double x, double y, double width, double height, DColor color, double alpha, DFillStyle fillStyle)
         {
-            SetPattern(cr, color, alpha, fillStyle);
+            CairoSetPattern(cr, color, alpha, fillStyle);
             cr.Rectangle(x, y, width, height);
             cr.Fill();
         }
 
-        public override void DrawRect(double x, double y, double width, double height, DColor color, double alpha, double strokeWidth, DPenStyle penStyle)
+        public override void DrawRect(double x, double y, double width, double height, DColor color, double alpha, double strokeWidth, DStrokeStyle strokeStyle, DStrokeJoin strokeJoin)
         {
             cr.Color = MakeColor(color, alpha);
             cr.LineWidth = strokeWidth;
-            CairoPenStyle(cr, penStyle, strokeWidth);
+            CairoStrokeStyle(cr, strokeStyle, strokeWidth);
+            cr.LineJoin = MakeLineJoin(strokeJoin);
             cr.Rectangle(x, y, width, height);
             cr.Stroke();
         }
@@ -218,7 +248,7 @@ namespace DDraw.GTK
 
         public override void DrawRect(double x, double y, double width, double height, DColor color, double alpha, double strokeWidth)
         {
-            DrawRect(x, y, width, height, color, alpha, strokeWidth, DPenStyle.Solid);
+            DrawRect(x, y, width, height, color, alpha, strokeWidth, DStrokeStyle.Solid, DStrokeJoin.Mitre);
         }
 
         public override void DrawRect(DRect rect, DColor color)
@@ -231,11 +261,11 @@ namespace DDraw.GTK
             DrawRect(rect.X, rect.Y, rect.Width, rect.Height, color, alpha, 1);
         }
 
-        public override void DrawRect(DRect rect, DColor color, double alpha, DPenStyle penStyle)
+        public override void DrawRect(DRect rect, DColor color, double alpha, DStrokeStyle strokeStyle)
         {
             cr.Color = MakeColor(color, alpha);
             cr.LineWidth = 1;
-            CairoPenStyle(cr, penStyle, 1);
+            CairoStrokeStyle(cr, strokeStyle, 1);
             cr.Rectangle(rect.X, rect.Y, rect.Width, rect.Height);
             cr.Stroke();
         }
@@ -249,7 +279,7 @@ namespace DDraw.GTK
         {
             cr.Color = MakeColor(color, alpha);
             cr.LineWidth = 1;
-            CairoPenStyle(cr, DPenStyle.Solid, 1);
+            CairoStrokeStyle(cr, DStrokeStyle.Solid, 1);
             CairoEllipse(cr, x, y, width, height);
             cr.Fill();
         }
@@ -266,53 +296,54 @@ namespace DDraw.GTK
         
         public override void DrawEllipse(double x, double y, double width, double height, DColor color)
         {
-            DrawEllipse(x, y, width, height, color, 1, 1, DPenStyle.Solid);
+            DrawEllipse(x, y, width, height, color, 1, 1, DStrokeStyle.Solid);
         }
 
-        public override void DrawEllipse(double x, double y, double width, double height, DColor color, double alpha, double strokeWidth, DPenStyle strokeStyle)
+        public override void DrawEllipse(double x, double y, double width, double height, DColor color, double alpha, double strokeWidth, DStrokeStyle strokeStyle)
         {
             cr.Color = MakeColor(color, alpha);
             cr.LineWidth = strokeWidth;
-            CairoPenStyle(cr, strokeStyle, strokeWidth);
+            CairoStrokeStyle(cr, strokeStyle, strokeWidth);
             CairoEllipse(cr, x, y, width, height);
             cr.Stroke();
         }
 
         public override void DrawEllipse(DRect rect, DColor color)
         {
-            DrawEllipse(rect.X, rect.Y, rect.Width, rect.Height, color, 1, 1, DPenStyle.Solid);
+            DrawEllipse(rect.X, rect.Y, rect.Width, rect.Height, color, 1, 1, DStrokeStyle.Solid);
         }
 
         public override void DrawEllipse(DRect rect, DColor color, double alpha)
         {
-            DrawEllipse(rect.X, rect.Y, rect.Width, rect.Height, color, alpha, 1, DPenStyle.Solid);
+            DrawEllipse(rect.X, rect.Y, rect.Width, rect.Height, color, alpha, 1, DStrokeStyle.Solid);
         }
         
         public override void DrawLine(DPoint pt1, DPoint pt2, DColor color)
         {
-            DrawLine(pt1, pt2, color, 1, DPenStyle.Solid);
+            DrawLine(pt1, pt2, color, 1, DStrokeStyle.Solid);
         }
 
         public override void DrawLine(DPoint pt1, DPoint pt2, DColor color, double alpha)
         {
-            DrawLine(pt1, pt2, color, alpha, DPenStyle.Solid);
+            DrawLine(pt1, pt2, color, alpha, DStrokeStyle.Solid);
         }
 
-        public override void DrawLine(DPoint pt1, DPoint pt2, DColor color, DPenStyle penStyle)
+        public override void DrawLine(DPoint pt1, DPoint pt2, DColor color, DStrokeStyle strokeStyle)
         {
-            DrawLine(pt1, pt2, color, 1, penStyle);
+            DrawLine(pt1, pt2, color, 1, strokeStyle);
         }
 
-        public override void DrawLine(DPoint pt1, DPoint pt2, DColor color, double alpha, DPenStyle penStyle)
+        public override void DrawLine(DPoint pt1, DPoint pt2, DColor color, double alpha, DStrokeStyle strokeStyle)
         {
-            DrawLine(pt1, pt2, color, alpha, penStyle, 1);
+            DrawLine(pt1, pt2, color, alpha, strokeStyle, 1, DStrokeCap.Round);
         }
 
-        public override void DrawLine(DPoint pt1, DPoint pt2, DColor color, double alpha, DPenStyle penStyle, double strokeWidth)
+        public override void DrawLine(DPoint pt1, DPoint pt2, DColor color, double alpha, DStrokeStyle strokeStyle, double strokeWidth, DStrokeCap strokeCap)
         {
             cr.Color = MakeColor(color, alpha);
             cr.LineWidth = strokeWidth;
-            CairoPenStyle(cr, penStyle, strokeWidth);
+            CairoStrokeStyle(cr, strokeStyle, strokeWidth);
+            cr.LineCap = MakeLineCap(strokeCap);
             cr.MoveTo(pt1.X, pt1.Y);
             cr.LineTo(pt2.X, pt2.Y);
             cr.Stroke();
@@ -320,17 +351,18 @@ namespace DDraw.GTK
         
         public override void DrawPolyline(DPoints pts, DColor color)
         {
-            DrawPolyline(pts, color, 1, 1, DPenStyle.Solid);
+            DrawPolyline(pts, color, 1, 1, DStrokeStyle.Solid, DStrokeJoin.Round, DStrokeCap.Round);
         }
 
-        public override void DrawPolyline(DPoints pts, DColor color, double alpha, double strokeWidth, DPenStyle strokeStyle)
+        public override void DrawPolyline(DPoints pts, DColor color, double alpha, double strokeWidth, DStrokeStyle strokeStyle, DStrokeJoin strokeJoin, DStrokeCap strokeCap)
         {
             if (pts.Count > 1)
             {
                 cr.Color = MakeColor(color, alpha);
-                CairoPenStyle(cr, strokeStyle, strokeWidth);
+                CairoStrokeStyle(cr, strokeStyle, strokeWidth);
                 cr.LineWidth = strokeWidth;
-                cr.LineJoin = LineJoin.Round;
+                cr.LineJoin = MakeLineJoin(strokeJoin);
+                cr.LineCap = MakeLineCap(strokeCap);
                 cr.MoveTo(pts[0].X, pts[0].Y);
                 for (int i = 1; i < pts.Count; i++)
                     cr.LineTo(pts[i].X, pts[i].Y);
