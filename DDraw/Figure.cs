@@ -415,6 +415,13 @@ namespace DDraw
             return StrokeHelper.SelectRectIncludingStrokeWidth(base.GetSelectRect(), strokeWidth);
         }
 
+        protected override DHitTest _HitTest(DPoint pt)
+        {
+            if (DGeom.PointInRect(pt, RectInclStroke))
+                return DHitTest.Body;
+            return DHitTest.None;
+        }
+
         protected override void PaintBody(DGraphics dg)
         {
             dg.FillRect(X, Y, Width, Height, fill, Alpha);
@@ -445,10 +452,7 @@ namespace DDraw
         }
         public DRect RectInclStroke
         {
-            get
-            {
-                return StrokeHelper.RectIncludingStrokeWidth(Rect, strokeWidth);
-            }
+            get { return StrokeHelper.RectIncludingStrokeWidth(Rect, strokeWidth); }
         }
         #endregion
     }
@@ -477,7 +481,6 @@ namespace DDraw
             if (DGeom.PointInEllipse(pt, RectInclStroke))
                 return DHitTest.Body;
             return DHitTest.None;
-
         }
 
         protected override void PaintBody(DGraphics dg)
