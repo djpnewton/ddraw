@@ -174,6 +174,10 @@ namespace DDraw.WinForms
                     return DashStyle.Dash;
                 case DPenStyle.Dot:
                     return DashStyle.Dot;
+                case DPenStyle.DashDot:
+                    return DashStyle.DashDot;
+                case DPenStyle.DashDotDot:
+                    return DashStyle.DashDotDot;
             }
             return DashStyle.Solid;
         }
@@ -251,9 +255,9 @@ namespace DDraw.WinForms
             g.DrawEllipse(new Pen(MakeColor(color)), (float)x, (float)y, (float)width, (float)height);
         }
 
-        public override void DrawEllipse(double x, double y, double width, double height, DColor color, double alpha, double strokeWidth)
+        public override void DrawEllipse(double x, double y, double width, double height, DColor color, double alpha, double strokeWidth, DPenStyle strokeStyle)
         {
-            g.DrawEllipse(new Pen(MakeColor(color, alpha), (float)strokeWidth), (float)x, (float)y, (float)width, (float)height);
+            g.DrawEllipse(MakePen(MakeColor(color, alpha), strokeWidth, strokeStyle), (float)x, (float)y, (float)width, (float)height);
         }
 
         public override void DrawEllipse(DRect rect, DColor color)
@@ -293,14 +297,14 @@ namespace DDraw.WinForms
 
         public override void DrawPolyline(DPoints pts, DColor color)
         {
-            DrawPolyline(pts, color, 1, 1);
+            DrawPolyline(pts, color, 1, 1, DPenStyle.Solid);
         }
 
-        public override void DrawPolyline(DPoints pts, DColor color, double alpha, double strokeWidth)
+        public override void DrawPolyline(DPoints pts, DColor color, double alpha, double strokeWidth, DPenStyle strokeStyle)
         {
             if (pts.Count > 1)
             {
-                Pen p = new Pen(MakeColor(color, alpha), (float)strokeWidth);
+                Pen p = MakePen(MakeColor(color, alpha), strokeWidth, strokeStyle);
                 p.SetLineCap(LineCap.Round, LineCap.Round, DashCap.Flat);
                 p.LineJoin = LineJoin.Round;
                 g.DrawLines(p, MakePoints(pts));

@@ -13,6 +13,7 @@ namespace DDraw
 		public DColor Fill;
 		public DColor Stroke;
 		public double StrokeWidth;
+        public DPenStyle StrokeStyle;
 		public double Alpha;
 		public DBitmap Bitmap;
 		public string Text;
@@ -108,6 +109,7 @@ namespace DDraw
 			{
 				fp.Stroke = ((IStrokeable)f).Stroke;
 				fp.StrokeWidth = ((IStrokeable)f).StrokeWidth;
+                fp.StrokeStyle = ((IStrokeable)f).StrokeStyle;
 			}
 			if (f is IAlphaBlendable)
 				fp.Alpha = ((IAlphaBlendable)f).Alpha;
@@ -180,6 +182,8 @@ namespace DDraw
                     return false;
                 if (fp.StrokeWidth != ((IStrokeable)f).StrokeWidth)
                     return false;
+                if (fp.StrokeStyle != ((IStrokeable)f).StrokeStyle)
+                    return false;
             }
             if (f is IAlphaBlendable)
             {
@@ -237,6 +241,7 @@ namespace DDraw
             {
                 ((IStrokeable)f).Stroke = fp.Stroke;
                 ((IStrokeable)f).StrokeWidth = fp.StrokeWidth;
+                ((IStrokeable)f).StrokeStyle = fp.StrokeStyle;
             }
             if (f is IAlphaBlendable)
                 ((IAlphaBlendable)f).Alpha = fp.Alpha;

@@ -16,6 +16,7 @@ namespace DDraw
         public DColor Fill;
         public DColor Stroke;
         public double StrokeWidth;
+        public DPenStyle StrokeStyle;
         public double Alpha;
         public string FontName;
         
@@ -24,15 +25,17 @@ namespace DDraw
         	Fill = DColor.Red;
         	Stroke = DColor.Blue;
         	StrokeWidth = 1;
+            StrokeStyle = DPenStyle.Solid;
         	Alpha = 1;
         	FontName = "Arial";
         }
 
-        public DAuthorProperties(DColor fill, DColor stroke, double strokeWidth, double alpha, string fontName)
+        public DAuthorProperties(DColor fill, DColor stroke, double strokeWidth, DPenStyle strokeStyle, double alpha, string fontName)
         {
             Fill = fill;
             Stroke = stroke;
             StrokeWidth = strokeWidth;
+            StrokeStyle = StrokeStyle;
             Alpha = alpha;
             FontName = fontName;
         }
@@ -45,6 +48,7 @@ namespace DDraw
             {
                 ((IStrokeable)f).Stroke = Stroke;
                 ((IStrokeable)f).StrokeWidth = StrokeWidth;
+                ((IStrokeable)f).StrokeStyle = StrokeStyle;
             }
             if (f is IAlphaBlendable)
                 ((IAlphaBlendable)f).Alpha = Alpha;

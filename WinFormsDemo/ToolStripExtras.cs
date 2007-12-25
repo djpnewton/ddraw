@@ -5,6 +5,7 @@ using System.Windows.Forms;
 using System.Drawing;
 using System.Windows.Forms.Design;
 using System.IO;
+using DDraw;
 
 namespace WinFormsDemo
 {
@@ -23,6 +24,32 @@ namespace WinFormsDemo
             PointF pt1 = new PointF(r.X, r.Height / 2 + 1);
             PointF pt2 = new PointF(r.Right, r.Height / 2 + 1);
             g.DrawLine(new Pen(color, strokeWidth), pt1, pt2);
+        }
+
+        public static void DrawStrokeStyleIcon(Graphics g, Rectangle r, Color color, DPenStyle strokeStyle)
+        {
+            Pen p = new Pen(color, 2);
+            switch (strokeStyle)
+            {
+                case DPenStyle.Solid:
+                    p.DashStyle = System.Drawing.Drawing2D.DashStyle.Solid;
+                    break;
+                case DPenStyle.Dash:
+                    p.DashStyle = System.Drawing.Drawing2D.DashStyle.Dash;
+                    break;
+                case DPenStyle.Dot:
+                    p.DashStyle = System.Drawing.Drawing2D.DashStyle.Dot;
+                    break;
+                case DPenStyle.DashDot:
+                    p.DashStyle = System.Drawing.Drawing2D.DashStyle.DashDot;
+                    break;
+                case DPenStyle.DashDotDot:
+                    p.DashStyle = System.Drawing.Drawing2D.DashStyle.DashDotDot;
+                    break;
+            }
+            PointF pt1 = new PointF(r.X, r.Height / 2 + 1);
+            PointF pt2 = new PointF(r.Right, r.Height / 2 + 1);
+            g.DrawLine(p, pt1, pt2);
         }
 
         public static void DrawAlphaIcon(Graphics g, Rectangle r, Color fill, Color outline, double alpha)
@@ -126,6 +153,24 @@ namespace WinFormsDemo
         }
     }
 
+    public class StrokeStyleMenuItem : ToolStripMenuItem
+    {
+        DPenStyle value;
+        public DPenStyle Value
+        {
+            get { return value; }
+        }
+
+        public StrokeStyleMenuItem(DPenStyle strokeStyle, EventHandler onClick)
+            : base()
+        {
+            DisplayStyle = ToolStripItemDisplayStyle.ImageAndText;
+            Text = "XXXXXXX";
+            Click += onClick;
+            this.value = strokeStyle;
+        }
+    }
+
     public class AlphaMenuItem : ToolStripMenuItem
     {
         double value;
@@ -158,6 +203,8 @@ namespace WinFormsDemo
         {
             if (e.Item is StrokeWidthMenuItem)
                 ToolStripHelper.DrawStrokeWidthIcon(e.Graphics, e.TextRectangle, Color.Black, ((StrokeWidthMenuItem)e.Item).Value);
+            else if (e.Item is StrokeStyleMenuItem)
+                ToolStripHelper.DrawStrokeStyleIcon(e.Graphics, e.TextRectangle, Color.Black, ((StrokeStyleMenuItem)e.Item).Value);
             else if (e.Item is AlphaMenuItem)
                 ToolStripHelper.DrawAlphaIcon(e.Graphics, 
                     new Rectangle(e.TextRectangle.Location, new Size(e.TextRectangle.Height, e.TextRectangle.Height)), 
@@ -285,6 +332,83 @@ namespace WinFormsDemo
             Value = ((StrokeWidthMenuItem)sender).Value;
             if (StrokeWidthChanged != null)
                 StrokeWidthChanged(this, ((StrokeWidthMenuItem)sender).Value);
+        }
+    }
+
+    public delegate void StrokeStyleChangedHandler(object sender, DPenStyle strokeStyle);
+
+    [ToolStripItemDesignerAvailability(ToolStripItemDesignerAvailability.ToolStrip | ToolStripItemDesignerAvailability.StatusStrip)]
+    public class ToolStripStrokeStyleButton : ToolStripDropDownButton
+    {
+        public event StrokeStyleChangedHandler StrokeStyleChanged;
+
+        public static int Empty = -1;
+
+        public DPenStyle Value
+        {
+            get
+            {
+                foreach (StrokeStyleMenuItem item in DropDown.Items)
+                    if (item.Checked)
+                        return item.Value;
+                return DPenStyle.Solid;
+            }
+            set
+            {
+                foreach (StrokeStyleMenuItem item in DropDown.Items)
+                {
+                    if (item.Value == value)
+                        item.Checked = true;
+                    else
+                    item.Checked = false;
+                }
+                Image = ToolStripHelper.BlankImage;
+                Invalidate();
+            }
+        }
+
+        public ToolStripStrokeStyleButton()
+            : base()
+        {
+            ShowDropDownArrow = false;
+            DropDown.Items.Add(new StrokeStyleMenuItem(DPenStyle.Solid, new EventHandler(MenuItem_OnClick)));
+            DropDown.Items.Add(new StrokeStyleMenuItem(DPenStyle.Dash, new EventHandler(MenuItem_OnClick)));
+            DropDown.Items.Add(new StrokeStyleMenuItem(DPenStyle.Dot, new EventHandler(MenuItem_OnClick)));
+            DropDown.Items.Add(new StrokeStyleMenuItem(DPenStyle.DashDot, new EventHandler(MenuItem_OnClick)));
+            DropDown.Items.Add(new StrokeStyleMenuItem(DPenStyle.DashDotDot, new EventHandler(MenuItem_OnClick)));
+            DropDown.ItemAdded += new ToolStripItemEventHandler(DropDown_ItemAdded);
+        }
+
+        protected override void OnPaint(PaintEventArgs e)
+        {
+            DisplayStyle = ToolStripItemDisplayStyle.Image;
+            base.OnPaint(e);
+            Color outline;
+            if (Enabled)
+                outline = Color.Black;
+            else
+                outline = Color.DarkGray;
+            ToolStripHelper.DrawStrokeStyleIcon(e.Graphics, ContentRectangle, outline, Value);
+        }
+
+        protected override void OnParentChanged(ToolStrip oldParent, ToolStrip newParent)
+        {
+            base.OnParentChanged(oldParent, newParent);
+            if (newParent != null)
+                newParent.Renderer = new MySpecialRenderer();
+        }
+
+        void DropDown_ItemAdded(object sender, ToolStripItemEventArgs e)
+        {
+            if (!(e.Item is StrokeStyleMenuItem))
+                DropDown.Items.Remove(e.Item);
+        }
+
+        void MenuItem_OnClick(object sender, EventArgs e)
+        {
+            Value = ((StrokeStyleMenuItem)sender).Value;
+            if (StrokeStyleChanged != null)
+                StrokeStyleChanged(this, ((StrokeStyleMenuItem)sender).Value);
         }
     } 
 

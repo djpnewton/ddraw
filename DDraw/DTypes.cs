@@ -4,7 +4,7 @@ using System.Text;
 
 namespace DDraw
 {
-    public enum DPenStyle { Solid, Dash, Dot };
+    public enum DPenStyle { Solid, Dash, Dot, DashDot, DashDotDot };
 
     public enum DFillStyle { Solid, ForwardDiagonalHatch };
 

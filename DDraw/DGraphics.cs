@@ -124,7 +124,7 @@ namespace DDraw
         abstract public void FillEllipse(DRect rect, DColor color);
         abstract public void FillEllipse(DRect rect, DColor color, double alpha);
         abstract public void DrawEllipse(double x, double y, double width, double height, DColor color);
-        abstract public void DrawEllipse(double x, double y, double width, double height, DColor color, double alpha, double strokeWidth);
+        abstract public void DrawEllipse(double x, double y, double width, double height, DColor color, double alpha, double strokeWidth, DPenStyle strokeStyle);
         abstract public void DrawEllipse(DRect rect, DColor color);
         abstract public void DrawEllipse(DRect rect, DColor color, double alpha);
         abstract public void DrawLine(DPoint pt1, DPoint pt2, DColor color);
@@ -133,7 +133,7 @@ namespace DDraw
         abstract public void DrawLine(DPoint pt1, DPoint pt2, DColor color, double alpha, DPenStyle penStyle);
         abstract public void DrawLine(DPoint pt1, DPoint pt2, DColor color, double alpha, DPenStyle penStyle, double strokeWidth);
         abstract public void DrawPolyline(DPoints pts, DColor color);
-        abstract public void DrawPolyline(DPoints pts, DColor color, double alpha, double strokeWidth);
+        abstract public void DrawPolyline(DPoints pts, DColor color, double alpha, double strokeWidth, DPenStyle strokeStyle);
         abstract public void FillPolygon(DPoints pts, DColor color, double alpha);
         abstract public void DrawBitmap(DBitmap bitmap, DPoint pt);
         abstract public void DrawBitmap(DBitmap bitmap, DRect rect);

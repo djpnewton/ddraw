@@ -44,6 +44,7 @@ namespace WinFormsDemo
             this.btnRATriangle = new System.Windows.Forms.ToolStripButton();
             this.btnDiamond = new System.Windows.Forms.ToolStripButton();
             this.btnPentagon = new System.Windows.Forms.ToolStripButton();
+            this.btnLine = new System.Windows.Forms.ToolStripButton();
             this.toolStripContainer1 = new System.Windows.Forms.ToolStripContainer();
             this.pnlMain = new System.Windows.Forms.Panel();
             this.pnlViewer = new System.Windows.Forms.Panel();
@@ -88,7 +89,6 @@ namespace WinFormsDemo
             this._050PcToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this._100PcToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this._150PcToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.btnLine = new System.Windows.Forms.ToolStripButton();
             this.wfvcEditor = new DDraw.WinForms.WFViewerControl();
             this.previewBar1 = new WinFormsDemo.PreviewBar();
             this.tsFigureProps = new System.Windows.Forms.ToolStrip();
@@ -97,6 +97,7 @@ namespace WinFormsDemo
             this.btnStrokeWidth = new WinFormsDemo.ToolStripStrokeWidthButton();
             this.btnAlpha = new WinFormsDemo.ToolStripAlphaButton();
             this.cbFontName = new WinFormsDemo.ToolStripFontNameChooser();
+            this.btnStrokeStyle = new WinFormsDemo.ToolStripStrokeStyleButton();
             this.pnlPreviews.SuspendLayout();
             this.tsEditorMode.SuspendLayout();
             this.toolStripContainer1.ContentPanel.SuspendLayout();
@@ -139,7 +140,7 @@ namespace WinFormsDemo
             this.btnLine});
             this.tsEditorMode.Location = new System.Drawing.Point(3, 24);
             this.tsEditorMode.Name = "tsEditorMode";
-            this.tsEditorMode.Size = new System.Drawing.Size(506, 25);
+            this.tsEditorMode.Size = new System.Drawing.Size(475, 25);
             this.tsEditorMode.TabIndex = 0;
             this.tsEditorMode.Text = "toolStrip1";
             // 
@@ -257,6 +258,16 @@ namespace WinFormsDemo
             this.btnPentagon.Size = new System.Drawing.Size(57, 22);
             this.btnPentagon.Text = "Pentagon";
             this.btnPentagon.Click += new System.EventHandler(this.btnPolygon_Click);
+            // 
+            // btnLine
+            // 
+            this.btnLine.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.btnLine.Image = ((System.Drawing.Image)(resources.GetObject("btnLine.Image")));
+            this.btnLine.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnLine.Name = "btnLine";
+            this.btnLine.Size = new System.Drawing.Size(30, 22);
+            this.btnLine.Text = "Line";
+            this.btnLine.Click += new System.EventHandler(this.btnLine_Click);
             // 
             // toolStripContainer1
             // 
@@ -610,16 +621,6 @@ namespace WinFormsDemo
             this._150PcToolStripMenuItem.Text = "150%";
             this._150PcToolStripMenuItem.Click += new System.EventHandler(this.ZoomToolStripMenuItem_Click);
             // 
-            // btnLine
-            // 
-            this.btnLine.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.btnLine.Image = ((System.Drawing.Image)(resources.GetObject("btnLine.Image")));
-            this.btnLine.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btnLine.Name = "btnLine";
-            this.btnLine.Size = new System.Drawing.Size(30, 22);
-            this.btnLine.Text = "Line";
-            this.btnLine.Click += new System.EventHandler(this.btnLine_Click);
-            // 
             // wfvcEditor
             // 
             this.wfvcEditor.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -648,11 +649,12 @@ namespace WinFormsDemo
             this.btnFill,
             this.btnStroke,
             this.btnStrokeWidth,
+            this.btnStrokeStyle,
             this.btnAlpha,
             this.cbFontName});
             this.tsFigureProps.Location = new System.Drawing.Point(3, 49);
             this.tsFigureProps.Name = "tsFigureProps";
-            this.tsFigureProps.Size = new System.Drawing.Size(219, 25);
+            this.tsFigureProps.Size = new System.Drawing.Size(270, 25);
             this.tsFigureProps.TabIndex = 2;
             // 
             // btnFill
@@ -707,6 +709,18 @@ namespace WinFormsDemo
             this.cbFontName.Size = new System.Drawing.Size(121, 22);
             this.cbFontName.Value = null;
             this.cbFontName.FontNameChanged += new System.EventHandler(this.cbFontName_FontNameChanged);
+            // 
+            // btnStrokeStyle
+            // 
+            this.btnStrokeStyle.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.btnStrokeStyle.Image = ((System.Drawing.Image)(resources.GetObject("btnStrokeStyle.Image")));
+            this.btnStrokeStyle.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnStrokeStyle.Name = "btnStrokeStyle";
+            this.btnStrokeStyle.ShowDropDownArrow = false;
+            this.btnStrokeStyle.Size = new System.Drawing.Size(20, 22);
+            this.btnStrokeStyle.Text = "Stroke Style";
+            this.btnStrokeStyle.Value = DDraw.DPenStyle.Solid;
+            this.btnStrokeStyle.StrokeStyleChanged += new WinFormsDemo.StrokeStyleChangedHandler(this.btnStrokeStyle_StrokeStyleChanged);
             // 
             // MainForm
             // 
@@ -809,6 +823,7 @@ namespace WinFormsDemo
         private System.Windows.Forms.ToolStripButton btnDiamond;
         private System.Windows.Forms.ToolStripButton btnPentagon;
         private System.Windows.Forms.ToolStripButton btnLine;
+        private ToolStripStrokeStyleButton btnStrokeStyle;
     }
 }
 

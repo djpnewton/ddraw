@@ -41,7 +41,7 @@ namespace DDraw
         {
             DPoints pts = RealPoints();
             dg.FillPolygon(pts, Fill, Alpha);
-            dg.DrawPolyline(pts, Stroke, Alpha, StrokeWidth);
+            dg.DrawPolyline(pts, Stroke, Alpha, StrokeWidth, StrokeStyle);
         }
     }
 

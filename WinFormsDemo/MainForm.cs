@@ -58,7 +58,7 @@ namespace WinFormsDemo
             // Initialze DGraphics
             WFGraphics.Init();
             // create author properties
-            dap = new DAuthorProperties(DColor.Blue, DColor.Red, 3, 1, "Arial");
+            dap = new DAuthorProperties(DColor.Blue, DColor.Red, 3, DPenStyle.Solid, 1, "Arial");
             // edit viewer
             dvEditor = new WFViewer(wfvcEditor);
             dvEditor.EditFigures = true;
@@ -222,6 +222,25 @@ namespace WinFormsDemo
             return strokeWidth;
         }
 
+        DPenStyle GetStrokeStyleMatch(Figure[] figs)
+        {
+            DPenStyle strokeStyle = DPenStyle.Solid;
+            foreach (Figure f in figs)
+                if (f is IStrokeable)
+                {
+                    strokeStyle = ((IStrokeable)f).StrokeStyle;
+                    break;
+                }
+            if (strokeStyle != DPenStyle.Solid)
+                foreach (Figure f in figs)
+                    if (f is IStrokeable)
+                    {
+                        if (strokeStyle != ((IStrokeable)f).StrokeStyle)
+                            return DPenStyle.Solid;
+                    }
+            return strokeStyle;
+        }
+
         double GetAlphaMatch(Figure[] figs)
         {
             double alpha = ToolStripAlphaButton.Empty;
@@ -268,12 +287,14 @@ namespace WinFormsDemo
             btnFill.Color = Color.Empty;
             btnStroke.Color = Color.Empty;
             btnStrokeWidth.Value = ToolStripStrokeWidthButton.Empty;
+            btnStrokeStyle.Value = DPenStyle.Solid;
             btnAlpha.Value = ToolStripAlphaButton.Empty;
             cbFontName.Value = "";
             // deselect controls
             btnFill.Enabled = false;
             btnStroke.Enabled = false;
             btnStrokeWidth.Enabled = false;
+            btnStrokeStyle.Enabled = false;
             btnAlpha.Enabled = false;
             cbFontName.Enabled = false;
             // update controls based on the state of DEngine
@@ -291,6 +312,7 @@ namespace WinFormsDemo
                         {
                             btnStroke.Enabled = true;
                             btnStrokeWidth.Enabled = true;
+                            btnStrokeStyle.Enabled = true;
                         }
                     foreach (Figure f in figs)
                         if (f is IAlphaBlendable)
@@ -304,6 +326,7 @@ namespace WinFormsDemo
                         btnFill.Color = GetFillMatch(figs);
                         btnStroke.Color = GetStrokeMatch(figs);
                         btnStrokeWidth.Value = (int)Math.Round(GetStrokeWidthMatch(figs));
+                        btnStrokeStyle.Value = GetStrokeStyleMatch(figs);
                         btnAlpha.Value = GetAlphaMatch(figs);
                         cbFontName.Value = GetFontNameMatch(figs);
                     }
@@ -313,6 +336,7 @@ namespace WinFormsDemo
                     btnFill.Enabled = de.CurrentFigClassImpls(typeof(IFillable));
                     btnStroke.Enabled = de.CurrentFigClassImpls(typeof(IStrokeable));
                     btnStrokeWidth.Enabled = btnStroke.Enabled;
+                    btnStrokeStyle.Enabled = btnStroke.Enabled;
                     btnAlpha.Enabled = de.CurrentFigClassImpls(typeof(IAlphaBlendable));
                     cbFontName.Enabled = de.CurrentFigClassImpls(typeof(ITextable));
                     // update values to match dap
@@ -322,6 +346,8 @@ namespace WinFormsDemo
                         btnStroke.Color = MakeColor(dap.Stroke);
                     if (btnStrokeWidth.Enabled)
                         btnStrokeWidth.Value = (int)dap.StrokeWidth;
+                    if (btnStrokeStyle.Enabled)
+                        btnStrokeStyle.Value = dap.StrokeStyle;
                     if (btnAlpha.Enabled)
                         btnAlpha.Value = dap.Alpha;
                     if (cbFontName.Enabled)
@@ -434,6 +460,19 @@ namespace WinFormsDemo
             }
         }
 
+        private void btnStrokeStyle_StrokeStyleChanged(object sender, DPenStyle strokeStyle)
+        {
+            switch (de.State)
+            {
+                case DEngineState.Select:
+                    UpdateSelectedFigures(btnStrokeStyle);
+                    break;
+                default:
+                    dap.StrokeStyle = btnStrokeStyle.Value;
+                    break;
+            }
+        }
+
         private void cbFontName_FontNameChanged(object sender, EventArgs e)
         {
             switch (de.State)
@@ -461,6 +500,8 @@ namespace WinFormsDemo
                         ((IStrokeable)f).Stroke = MakeColor(btnStroke.Color);
                     if (sender == btnStrokeWidth)
                         ((IStrokeable)f).StrokeWidth = btnStrokeWidth.Value;
+                    if (sender == btnStrokeStyle)
+                        ((IStrokeable)f).StrokeStyle = btnStrokeStyle.Value;
                 }
                 if (sender == btnAlpha && f is IAlphaBlendable)
                     ((IAlphaBlendable)f).Alpha = btnAlpha.Value;

@@ -145,18 +145,26 @@ namespace DDraw.GTK
             }
         }
 
-        void CairoPenStyle(Context cr, DPenStyle penStyle)
+        void CairoPenStyle(Context cr, DPenStyle penStyle, double strokeWidth)
         {
+            double dot = strokeWidth;
+            double dash = 3 * strokeWidth;
             switch (penStyle)
             {
                 case DPenStyle.Solid:
                     cr.SetDash(new double[] {}, 0);
                     break;
                 case DPenStyle.Dash:
-                    cr.SetDash(new double[] {2, 1}, 0);
+                    cr.SetDash(new double[] { dash, dot }, 0);
                     break;
                 case DPenStyle.Dot:
-                    cr.SetDash(new double[] {1, 1}, 0);
+                    cr.SetDash(new double[] { dot, dot }, 0);
+                    break;
+                case DPenStyle.DashDot:
+                    cr.SetDash(new double[] { dash, dot, dot, dot }, 0);
+                    break;
+                case DPenStyle.DashDotDot:
+                    cr.SetDash(new double[] { dash, dot, dot, dot, dot, dot }, 0);
                     break;
             }
         }
@@ -198,7 +206,7 @@ namespace DDraw.GTK
         {
             cr.Color = MakeColor(color, alpha);
             cr.LineWidth = strokeWidth;
-            CairoPenStyle(cr, penStyle);
+            CairoPenStyle(cr, penStyle, strokeWidth);
             cr.Rectangle(x, y, width, height);
             cr.Stroke();
         }
@@ -227,7 +235,7 @@ namespace DDraw.GTK
         {
             cr.Color = MakeColor(color, alpha);
             cr.LineWidth = 1;
-            CairoPenStyle(cr, penStyle);
+            CairoPenStyle(cr, penStyle, 1);
             cr.Rectangle(rect.X, rect.Y, rect.Width, rect.Height);
             cr.Stroke();
         }
@@ -241,7 +249,7 @@ namespace DDraw.GTK
         {
             cr.Color = MakeColor(color, alpha);
             cr.LineWidth = 1;
-            CairoPenStyle(cr, DPenStyle.Solid);
+            CairoPenStyle(cr, DPenStyle.Solid, 1);
             CairoEllipse(cr, x, y, width, height);
             cr.Fill();
         }
@@ -258,26 +266,26 @@ namespace DDraw.GTK
         
         public override void DrawEllipse(double x, double y, double width, double height, DColor color)
         {
-            DrawEllipse(x, y, width, height, color, 1, 1);
+            DrawEllipse(x, y, width, height, color, 1, 1, DPenStyle.Solid);
         }
 
-        public override void DrawEllipse(double x, double y, double width, double height, DColor color, double alpha, double strokeWidth)
+        public override void DrawEllipse(double x, double y, double width, double height, DColor color, double alpha, double strokeWidth, DPenStyle strokeStyle)
         {
             cr.Color = MakeColor(color, alpha);
             cr.LineWidth = strokeWidth;
-            CairoPenStyle(cr, DPenStyle.Solid);
+            CairoPenStyle(cr, strokeStyle, strokeWidth);
             CairoEllipse(cr, x, y, width, height);
             cr.Stroke();
         }
 
         public override void DrawEllipse(DRect rect, DColor color)
         {
-            DrawEllipse(rect.X, rect.Y, rect.Width, rect.Height, color, 1, 1);
+            DrawEllipse(rect.X, rect.Y, rect.Width, rect.Height, color, 1, 1, DPenStyle.Solid);
         }
 
         public override void DrawEllipse(DRect rect, DColor color, double alpha)
         {
-            DrawEllipse(rect.X, rect.Y, rect.Width, rect.Height, color, alpha, 1);
+            DrawEllipse(rect.X, rect.Y, rect.Width, rect.Height, color, alpha, 1, DPenStyle.Solid);
         }
         
         public override void DrawLine(DPoint pt1, DPoint pt2, DColor color)
@@ -304,7 +312,7 @@ namespace DDraw.GTK
         {
             cr.Color = MakeColor(color, alpha);
             cr.LineWidth = strokeWidth;
-            CairoPenStyle(cr, penStyle);
+            CairoPenStyle(cr, penStyle, strokeWidth);
             cr.MoveTo(pt1.X, pt1.Y);
             cr.LineTo(pt2.X, pt2.Y);
             cr.Stroke();
@@ -312,15 +320,16 @@ namespace DDraw.GTK
         
         public override void DrawPolyline(DPoints pts, DColor color)
         {
-            DrawPolyline(pts, color, 1, 1);
+            DrawPolyline(pts, color, 1, 1, DPenStyle.Solid);
         }
 
-        public override void DrawPolyline(DPoints pts, DColor color, double alpha, double strokeWidth)
+        public override void DrawPolyline(DPoints pts, DColor color, double alpha, double strokeWidth, DPenStyle strokeStyle)
         {
             if (pts.Count > 1)
             {
                 cr.Color = MakeColor(color, alpha);
-                cr.LineWidth = 1;
+                CairoPenStyle(cr, strokeStyle, strokeWidth);
+                cr.LineWidth = strokeWidth;
                 cr.LineJoin = LineJoin.Round;
                 cr.MoveTo(pts[0].X, pts[0].Y);
                 for (int i = 1; i < pts.Count; i++)

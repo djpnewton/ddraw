@@ -25,6 +25,11 @@ namespace DDraw
             get;
             set;
         }
+        DPenStyle StrokeStyle
+        {
+            get;
+            set;
+        }
         DRect RectInclStroke
         {
             get;
@@ -309,7 +314,7 @@ namespace DDraw
                 // draw resize handle
                 r = GetResizeHandleRect();
                 dg.FillEllipse(r, DColor.Red);
-                dg.DrawEllipse(r.X, r.Y, r.Width, r.Height, DColor.Black, 1, Scale);
+                dg.DrawEllipse(r.X, r.Y, r.Width, r.Height, DColor.Black, 1, Scale, DPenStyle.Solid);
                 // draw rotate handle
                 r = GetRotateHandleRect();
                 DPoint p1 = r.Center;
@@ -317,7 +322,7 @@ namespace DDraw
                 dg.DrawLine(p1, p2, DColor.White, 1, DPenStyle.Solid, Scale);
                 dg.DrawLine(p1, p2, DColor.Black, 1, DPenStyle.Dot, Scale);
                 dg.FillEllipse(r, DColor.Blue);
-                dg.DrawEllipse(r.X, r.Y, r.Width, r.Height, DColor.Black, 1, Scale);
+                dg.DrawEllipse(r.X, r.Y, r.Width, r.Height, DColor.Black, 1, Scale, DPenStyle.Solid);
                 //r = GetEncompassingRect();
                 //dg.DrawRect(r.X, r.Y, r.Width, r.Height, DColor.Black, 1, Scale);
                 // load previous transform
@@ -425,7 +430,7 @@ namespace DDraw
         protected override void PaintBody(DGraphics dg)
         {
             dg.FillRect(X, Y, Width, Height, fill, Alpha);
-            dg.DrawRect(X, Y, Width, Height, stroke, Alpha, strokeWidth);
+            dg.DrawRect(X, Y, Width, Height, stroke, Alpha, strokeWidth, StrokeStyle);
         }
 
         #region IFillable Members
@@ -450,6 +455,12 @@ namespace DDraw
             get { return strokeWidth; }
             set { strokeWidth = value; }  
         }
+        DPenStyle strokeStyle = DPenStyle.Solid;
+        public DPenStyle StrokeStyle
+        {
+            get { return strokeStyle; }
+            set { strokeStyle = value; }
+        }
         public DRect RectInclStroke
         {
             get { return StrokeHelper.RectIncludingStrokeWidth(Rect, strokeWidth); }
@@ -457,14 +468,14 @@ namespace DDraw
         #endregion
     }
 
-    public class SelectionFigure : RectFigure
+    public class SelectionFigure : RectbaseFigure
     {
         public SelectionFigure(DRect rect, double rotation) : base(rect, rotation) { }
 
         protected override void PaintBody(DGraphics dg)
         {
-            dg.DrawRect(X, Y, Width, Height, DColor.White, Alpha, StrokeWidth * Scale);
-            dg.DrawRect(X, Y, Width, Height, DColor.Black, Alpha, StrokeWidth * Scale, DPenStyle.Dot);
+            dg.DrawRect(X, Y, Width, Height, DColor.White, Alpha, Scale);
+            dg.DrawRect(X, Y, Width, Height, DColor.Black, Alpha, Scale, DPenStyle.Dot);
         }
     }
 
@@ -486,7 +497,7 @@ namespace DDraw
         protected override void PaintBody(DGraphics dg)
         {
             dg.FillEllipse(X, Y, Width, Height, Fill, Alpha);
-            dg.DrawEllipse(X, Y, Width, Height, Stroke, Alpha, StrokeWidth);
+            dg.DrawEllipse(X, Y, Width, Height, Stroke, Alpha, StrokeWidth, StrokeStyle);
         }
     }
 
@@ -512,12 +523,15 @@ namespace DDraw
             get { return strokeWidth; }
             set { strokeWidth = value; }
         }
+        DPenStyle strokeStyle = DPenStyle.Solid;
+        public DPenStyle StrokeStyle
+        {
+            get { return strokeStyle; }
+            set { strokeStyle = value; }
+        }
         public DRect RectInclStroke
         {
-            get
-            {
-                return StrokeHelper.RectIncludingStrokeWidth(Rect, strokeWidth);
-            }
+            get { return StrokeHelper.RectIncludingStrokeWidth(Rect, strokeWidth); }
         }
         #endregion
 
@@ -660,11 +674,11 @@ namespace DDraw
                 // draw pt1 handle
                 DRect r = GetPt1HandleRect();
                 dg.FillEllipse(r.X, r.Y, r.Width, r.Height, DColor.Red, 1);
-                dg.DrawEllipse(r.X, r.Y, r.Width, r.Height, DColor.Black, 1, Scale);
+                dg.DrawEllipse(r.X, r.Y, r.Width, r.Height, DColor.Black, 1, Scale, DPenStyle.Solid);
                 // draw pt2 handle
                 r = GetPt2HandleRect();
                 dg.FillEllipse(r.X, r.Y, r.Width, r.Height, DColor.Red, 1);
-                dg.DrawEllipse(r.X, r.Y, r.Width, r.Height, DColor.Black, 1, Scale);
+                dg.DrawEllipse(r.X, r.Y, r.Width, r.Height, DColor.Black, 1, Scale, DPenStyle.Solid);
                 // load previous transform
                 dg.LoadTransform(m);
             }
@@ -710,7 +724,7 @@ namespace DDraw
         protected override void PaintBody(DGraphics dg)
         {
             if (Pt1 != null && Pt2 != null)
-                dg.DrawLine(Pt1, Pt2, Stroke, Alpha, DPenStyle.Solid, StrokeWidth);
+                dg.DrawLine(Pt1, Pt2, Stroke, Alpha, StrokeStyle, StrokeWidth);
         }
     }
 
@@ -811,7 +825,7 @@ namespace DDraw
 
         protected override void PaintBody(DGraphics dg)
         {
-            dg.DrawPolyline(Points, Stroke, Alpha, StrokeWidth);
+            dg.DrawPolyline(Points, Stroke, Alpha, StrokeWidth, StrokeStyle);
         }
     }
 

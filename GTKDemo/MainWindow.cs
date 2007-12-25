@@ -73,7 +73,10 @@ namespace GTKDemo
             f.Rect = new DRect(200, 100, 100, 100);
             de.AddFigure(f);
             // line figure
-            de.AddFigure(new LineFigure(new DPoint(100, 100), new DPoint(200, 200)));
+            f = new LineFigure(new DPoint(100, 100), new DPoint(200, 200));
+            ((LineFigure)f).StrokeStyle = DPenStyle.DashDot;
+            ((LineFigure)f).StrokeWidth = 5;
+            de.AddFigure(f);
             // resize window			
 			Resize(400, 300);
 		}
