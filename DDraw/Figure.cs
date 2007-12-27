@@ -124,6 +124,88 @@ namespace DDraw
         }
     }
 
+    public interface IMarkable
+    {
+        double MarkerSize
+        {
+            get;
+        }
+        DMarker StartMarker
+        {
+            get;
+            set;
+        }
+        DMarker EndMarker
+        {
+            get;
+            set;
+        }
+        DPoints GetStartMarkerPoints();
+        DPoints GetEndMarkerPoints();
+        DRect GetStartMarkerRect();
+        DRect GetEndMarkerRect();
+    }
+
+    public static class MarkerHelper
+    {
+        public static DPoints MarkerPoints(DMarker marker, DPoint center, double angle, double size)
+        {
+            double hsz = size / 2;
+            DPoints pts = new DPoints();
+            DPoint pt;
+            switch (marker)
+            {
+                case DMarker.Arrow:
+                    pt = DGeom.PointFromAngle(center, angle, hsz);
+                    pts.Add(pt);
+                    pt = DGeom.PointFromAngle(pt, angle + DGeom.HalfPi, hsz);
+                    pt = DGeom.PointFromAngle(pt, angle + Math.PI, size);
+                    pts.Add(pt);
+                    pt = DGeom.PointFromAngle(pt, angle - DGeom.HalfPi, size);
+                    pts.Add(pt);
+                    break;
+                case DMarker.Dot:
+                    int n = (int)Math.Round(size);
+                    if (n < 4)
+                        n = 4;
+                    double angleSegment = (Math.PI * 2) / n;
+                    for (int i = 0; i < n; i++)
+                        pts.Add(DGeom.PointFromAngle(center, angle + angleSegment * i, hsz));
+                    break;
+                case DMarker.Square:
+                    pt = DGeom.PointFromAngle(center, angle, hsz);
+                    pt = DGeom.PointFromAngle(pt, angle + DGeom.HalfPi, hsz);
+                    pts.Add(pt);
+                    pt = DGeom.PointFromAngle(pt, angle + Math.PI, size);
+                    pts.Add(pt);
+                    pt = DGeom.PointFromAngle(pt, angle - DGeom.HalfPi, size);
+                    pts.Add(pt);
+                    pt = DGeom.PointFromAngle(pt, angle, size);
+                    pts.Add(pt);
+                    break;
+                case DMarker.Diamond:
+                    pt = DGeom.PointFromAngle(center, angle, hsz);
+                    pts.Add(pt); 
+                    pt = DGeom.PointFromAngle(pt, angle + DGeom.HalfPi, hsz);
+                    pt = DGeom.PointFromAngle(pt, angle + Math.PI, hsz);
+                    pts.Add(pt);
+                    pt = DGeom.PointFromAngle(pt, angle + Math.PI, hsz);
+                    pt = DGeom.PointFromAngle(pt, angle - DGeom.HalfPi, hsz);
+                    pts.Add(pt);
+                    pt = DGeom.PointFromAngle(pt, angle - DGeom.HalfPi, hsz);
+                    pt = DGeom.PointFromAngle(pt, angle, hsz);
+                    pts.Add(pt);
+                    break;
+            }
+            return pts;
+        }
+
+        public static DPoints MarkerPoints(DMarker marker, DPoint center, DPoint fromPoint, double size)
+        {
+            return MarkerPoints(marker, center, DGeom.AngleBetweenPoints(fromPoint, center) - DGeom.HalfPi, size);
+        }
+    }
+
     public interface ISelectable
     {
         bool Selected
@@ -523,14 +605,53 @@ namespace DDraw
         }
     }
 
-    public abstract class LinebaseFigure : Figure, IStrokeable, IAlphaBlendable
+    public abstract class LinebaseFigure : Figure, IStrokeable, IMarkable, IAlphaBlendable
     {
         public abstract void AddPoint(DPoint pt);
 
+        public abstract DPoints Points
+        {
+            get;
+        }
+
         public override DRect GetSelectRect()
         {
-            return StrokeHelper.SelectRectIncludingStrokeWidth(base.GetSelectRect(), StrokeWidth);
+            // add in stroke width spacing
+            DRect r = StrokeHelper.SelectRectIncludingStrokeWidth(base.GetSelectRect(), StrokeWidth);
+            // add in marker spacing
+            double i = S_INDENT * Scale;
+            if (startMarker != DMarker.None)
+                r = r.Union(GetStartMarkerRect().Offset(-i, -i).Inflate(i + i, i + i));
+            if (endMarker != DMarker.None)
+                r = r.Union(GetEndMarkerRect().Offset(-i, -i).Inflate(i + i, i + i));
+            // return rect
+            return r;
         }
+
+        public override DRect GetEncompassingRect()
+        {
+            return base.GetEncompassingRect().Union(GetStartMarkerRect()).Union(GetEndMarkerRect());
+        }
+
+        protected override DHitTest _HitTest(DPoint pt)
+        {
+            if (DGeom.PointInPolyline(pt, Points, StrokeWidth / 2))
+                return DHitTest.Body;
+            else if (DGeom.PointInPolygon(pt, GetStartMarkerPoints()) || DGeom.PointInPolygon(pt, GetEndMarkerPoints()))
+                return DHitTest.Body;
+            return DHitTest.None;
+        }
+
+        /*protected override DHitTest _HitTest(DPoint pt)
+        {
+            DHitTest ht = base._HitTest(pt);
+            if (ht == DHitTest.None)
+            {
+                if (DGeom.PointInPolygon(pt, GetStartMarkerPoints()) || DGeom.PointInPolygon(pt, GetEndMarkerPoints()))
+                    return DHitTest.Body;
+            }
+            return ht;
+        }*/
 
         #region IStrokeable Members
         DColor stroke = DColor.Blue;
@@ -566,6 +687,35 @@ namespace DDraw
         public DRect RectInclStroke
         {
             get { return StrokeHelper.RectIncludingStrokeWidth(Rect, strokeWidth); }
+        }
+        #endregion
+
+        #region IMarkable Members
+        public double MarkerSize
+        {
+            get { return strokeWidth * 2.5; }
+        }
+        DMarker startMarker = DMarker.None;
+        public DMarker StartMarker
+        {
+            get { return startMarker; }
+            set { startMarker = value; }
+        }
+        DMarker endMarker = DMarker.None;
+        public DMarker EndMarker
+        {
+            get { return endMarker; }
+            set { endMarker = value; }
+        }
+        public abstract DPoints GetStartMarkerPoints();
+        public abstract DPoints GetEndMarkerPoints();
+        public DRect GetStartMarkerRect()
+        {
+            return GetStartMarkerPoints().Bounds();
+        }
+        public DRect GetEndMarkerRect()
+        {
+            return GetEndMarkerPoints().Bounds();
         }
         #endregion
 
@@ -670,12 +820,25 @@ namespace DDraw
                 pt2 = pt;
         }
 
-        protected override DHitTest _HitTest(DPoint pt)
+        public override DPoints Points
+        {
+            get 
+            {
+                DPoints pts = new DPoints();
+                if (pt1 != null)
+                    pts.Add(pt1);
+                if (pt2 != null)
+                    pts.Add(pt2);
+                return pts;
+            }
+        }
+
+        /*protected override DHitTest _HitTest(DPoint pt)
         {
             if (DGeom.PointInLine(pt, pt1, pt2, StrokeWidth / 2))
                 return DHitTest.Body;
             return DHitTest.None;
-        }
+        }*/
 
         public DRect GetPt1HandleRect()
         {
@@ -692,9 +855,9 @@ namespace DDraw
         public override DRect GetEncompassingRect()
         {
             if (Selected)
-                return GetPt1HandleRect().Union(GetPt2HandleRect());
+                return base.GetEncompassingRect().Union(GetPt1HandleRect().Union(GetPt2HandleRect()));
             else
-                return Rect;
+                return base.GetEncompassingRect();
         }
 
         public override void PaintSelectionChrome(DGraphics dg)
@@ -713,6 +876,8 @@ namespace DDraw
                 r = GetPt2HandleRect();
                 dg.FillEllipse(r.X, r.Y, r.Width, r.Height, DColor.Red, 1);
                 dg.DrawEllipse(r.X, r.Y, r.Width, r.Height, DColor.Black, 1, Scale, DStrokeStyle.Solid);
+                // view outline
+                //dg.DrawRect(GetEncompassingRect(), DColor.Black);
                 // load previous transform
                 dg.LoadTransform(m);
             }
@@ -746,6 +911,21 @@ namespace DDraw
 
     public class LineFigure : LineSegmentbaseFigure
     {
+        public override DPoints GetStartMarkerPoints()
+        {
+            if (Pt1 != null && Pt2 != null)
+                return MarkerHelper.MarkerPoints(StartMarker, Pt1, Pt2, MarkerSize);
+            else
+                return new DPoints();
+        }
+        public override DPoints GetEndMarkerPoints()
+        {
+            if (Pt1 != null && Pt2 != null)
+                return MarkerHelper.MarkerPoints(EndMarker, Pt2, Pt1, MarkerSize);
+            else
+                return new DPoints();
+        }
+
         public LineFigure()
         { }
 
@@ -758,21 +938,28 @@ namespace DDraw
         protected override void PaintBody(DGraphics dg)
         {
             if (Pt1 != null && Pt2 != null)
+            {
                 dg.DrawLine(Pt1, Pt2, Stroke, Alpha, StrokeStyle, StrokeWidth, StrokeCap);
+                if (StartMarker != DMarker.None)
+                    dg.FillPolygon(GetStartMarkerPoints(), Stroke, Alpha);
+                if (EndMarker != DMarker.None)
+                    dg.FillPolygon(GetEndMarkerPoints(), Stroke, Alpha);
+            }
         }
     }
 
     public abstract class PolylinebaseFigure : LinebaseFigure
     {
         DPoints points;
-        public DPoints Points
+        public override DPoints Points
         {
             get { return points; }
-            set
-            {
-                points = value;
+        }
+
+        public void SetPoints(DPoints pts)
+        {
+                points = pts;
                 Rect = points.Bounds();
-            }
         }
 
         public override void AddPoint(DPoint pt)
@@ -780,7 +967,7 @@ namespace DDraw
             if (points == null)
                 points = new DPoints();
             points.Add(pt);
-            Points = points; // to set the bounds (maybe should fix this)
+            SetPoints(points); // to set the bounds (maybe should fix this)
         }
 
         public override double X
@@ -790,7 +977,7 @@ namespace DDraw
                 double dX = value - X;
                 foreach (DPoint pt in Points)
                     pt.X += dX;
-                Points = Points;
+                SetPoints(Points);
             }
         }
 
@@ -801,7 +988,7 @@ namespace DDraw
                 double dY = value - Y;
                 foreach (DPoint pt in Points)
                     pt.Y += dY;
-                Points = Points;
+                SetPoints(Points);
             }
         }
 
@@ -812,7 +999,7 @@ namespace DDraw
                 double scale = value / Width;
                 foreach (DPoint pt in points)
                     pt.X += (pt.X - X) * (scale - 1);
-                Points = Points;
+                SetPoints(Points);
             }
         }
 
@@ -823,15 +1010,8 @@ namespace DDraw
                 double scale = value / Height;
                 foreach (DPoint pt in points)
                     pt.Y += (pt.Y - Y) * (scale - 1);
-                Points = Points;
+                SetPoints(Points);
             }
-        }
-
-        protected override DHitTest _HitTest(DPoint pt)
-        {
-            if (DGeom.PointInPolyline(pt, Points, StrokeWidth / 2))
-                return DHitTest.Body;
-            return DHitTest.None;
         }
 
         DPoint beforeResizeSize;
@@ -849,9 +1029,24 @@ namespace DDraw
 
     public class PolylineFigure : PolylinebaseFigure
     {
+        public override DPoints GetStartMarkerPoints()
+        {
+            if (Points.Count > 1)
+                return MarkerHelper.MarkerPoints(StartMarker, Points[0], Points[1], MarkerSize);
+            else
+                return new DPoints();
+        }
+        public override DPoints GetEndMarkerPoints()
+        {
+            if (Points.Count > 1)
+                return MarkerHelper.MarkerPoints(EndMarker, Points[Points.Count - 1], Points[Points.Count - 2], MarkerSize);
+            else
+                return new DPoints();
+        }
+
         public PolylineFigure(DPoints points)
         {
-            Points = points;
+            SetPoints(points);
         }
 
         public PolylineFigure()
@@ -859,7 +1054,14 @@ namespace DDraw
 
         protected override void PaintBody(DGraphics dg)
         {
-            dg.DrawPolyline(Points, Stroke, Alpha, StrokeWidth, StrokeStyle, StrokeJoin, StrokeCap);
+            if (Points.Count > 1)
+            {
+                dg.DrawPolyline(Points, Stroke, Alpha, StrokeWidth, StrokeStyle, StrokeJoin, StrokeCap);
+                if (StartMarker != DMarker.None)
+                    dg.FillPolygon(GetStartMarkerPoints(), Stroke, Alpha);
+                if (EndMarker != DMarker.None)
+                    dg.FillPolygon(GetEndMarkerPoints(), Stroke, Alpha);
+            }
         }
     }
 

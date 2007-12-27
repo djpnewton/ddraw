@@ -17,6 +17,8 @@ namespace DDraw
         public DColor Stroke;
         public double StrokeWidth;
         public DStrokeStyle StrokeStyle;
+        public DMarker StartMarker;
+        public DMarker EndMarker;
         public double Alpha;
         public string FontName;
         
@@ -26,16 +28,20 @@ namespace DDraw
         	Stroke = DColor.Blue;
         	StrokeWidth = 1;
             StrokeStyle = DStrokeStyle.Solid;
+            StartMarker = DMarker.None;
+            EndMarker = DMarker.None;
         	Alpha = 1;
         	FontName = "Arial";
         }
 
-        public DAuthorProperties(DColor fill, DColor stroke, double strokeWidth, DStrokeStyle strokeStyle, double alpha, string fontName)
+        public DAuthorProperties(DColor fill, DColor stroke, double strokeWidth, DStrokeStyle strokeStyle, DMarker startMarker, DMarker endMarker, double alpha, string fontName)
         {
             Fill = fill;
             Stroke = stroke;
             StrokeWidth = strokeWidth;
             StrokeStyle = strokeStyle;
+            StartMarker = startMarker;
+            EndMarker = endMarker;
             Alpha = alpha;
             FontName = fontName;
         }
@@ -49,6 +55,11 @@ namespace DDraw
                 ((IStrokeable)f).Stroke = Stroke;
                 ((IStrokeable)f).StrokeWidth = StrokeWidth;
                 ((IStrokeable)f).StrokeStyle = StrokeStyle;
+            }
+            if (f is IMarkable)
+            {
+                ((IMarkable)f).StartMarker = StartMarker;
+                ((IMarkable)f).EndMarker = EndMarker;
             }
             if (f is IAlphaBlendable)
                 ((IAlphaBlendable)f).Alpha = Alpha;

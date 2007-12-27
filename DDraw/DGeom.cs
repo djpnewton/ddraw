@@ -6,6 +6,10 @@ namespace DDraw
 {
     static class DGeom
     {
+        public const double HalfPi = Math.PI / 2;
+        public const double QuartPi = Math.PI / 4;
+        public const double OctPi = Math.PI / 8;
+
         public static DPoint RotatePoint(DPoint pt, DPoint origin, double angle)
         {
             if (angle == 0)

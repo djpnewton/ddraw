@@ -95,9 +95,11 @@ namespace WinFormsDemo
             this.btnFill = new WinFormsDemo.ToolStripColorButton();
             this.btnStroke = new WinFormsDemo.ToolStripColorButton();
             this.btnStrokeWidth = new WinFormsDemo.ToolStripStrokeWidthButton();
+            this.btnStrokeStyle = new WinFormsDemo.ToolStripStrokeStyleButton();
+            this.btnStartMarker = new WinFormsDemo.ToolStripMarkerButton();
+            this.btnEndMarker = new WinFormsDemo.ToolStripMarkerButton();
             this.btnAlpha = new WinFormsDemo.ToolStripAlphaButton();
             this.cbFontName = new WinFormsDemo.ToolStripFontNameChooser();
-            this.btnStrokeStyle = new WinFormsDemo.ToolStripStrokeStyleButton();
             this.pnlPreviews.SuspendLayout();
             this.tsEditorMode.SuspendLayout();
             this.toolStripContainer1.ContentPanel.SuspendLayout();
@@ -650,11 +652,13 @@ namespace WinFormsDemo
             this.btnStroke,
             this.btnStrokeWidth,
             this.btnStrokeStyle,
+            this.btnStartMarker,
+            this.btnEndMarker,
             this.btnAlpha,
             this.cbFontName});
             this.tsFigureProps.Location = new System.Drawing.Point(3, 49);
             this.tsFigureProps.Name = "tsFigureProps";
-            this.tsFigureProps.Size = new System.Drawing.Size(270, 25);
+            this.tsFigureProps.Size = new System.Drawing.Size(279, 25);
             this.tsFigureProps.TabIndex = 2;
             // 
             // btnFill
@@ -691,25 +695,6 @@ namespace WinFormsDemo
             this.btnStrokeWidth.Value = 1;
             this.btnStrokeWidth.StrokeWidthChanged += new WinFormsDemo.StrokeWidthChangedHandler(this.btnStrokeWidth_StrokeWidthChanged);
             // 
-            // btnAlpha
-            // 
-            this.btnAlpha.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.btnAlpha.Image = ((System.Drawing.Image)(resources.GetObject("btnAlpha.Image")));
-            this.btnAlpha.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btnAlpha.Name = "btnAlpha";
-            this.btnAlpha.ShowDropDownArrow = false;
-            this.btnAlpha.Size = new System.Drawing.Size(20, 22);
-            this.btnAlpha.Text = "Alpha";
-            this.btnAlpha.Value = 1;
-            this.btnAlpha.AlphaChanged += new WinFormsDemo.AlphaChangedHandler(this.btnAlpha_AlphaChanged);
-            // 
-            // cbFontName
-            // 
-            this.cbFontName.Name = "cbFontName";
-            this.cbFontName.Size = new System.Drawing.Size(121, 22);
-            this.cbFontName.Value = null;
-            this.cbFontName.FontNameChanged += new System.EventHandler(this.cbFontName_FontNameChanged);
-            // 
             // btnStrokeStyle
             // 
             this.btnStrokeStyle.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
@@ -719,8 +704,53 @@ namespace WinFormsDemo
             this.btnStrokeStyle.ShowDropDownArrow = false;
             this.btnStrokeStyle.Size = new System.Drawing.Size(20, 22);
             this.btnStrokeStyle.Text = "Stroke Style";
-            this.btnStrokeStyle.Value = DDraw.DStrokeStyle.Solid;
+            this.btnStrokeStyle.Value = DDraw.DStrokeStyle.DashDotDot;
             this.btnStrokeStyle.StrokeStyleChanged += new WinFormsDemo.StrokeStyleChangedHandler(this.btnStrokeStyle_StrokeStyleChanged);
+            // 
+            // btnStartMarker
+            // 
+            this.btnStartMarker.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.btnStartMarker.Image = ((System.Drawing.Image)(resources.GetObject("btnStartMarker.Image")));
+            this.btnStartMarker.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnStartMarker.Name = "btnStartMarker";
+            this.btnStartMarker.ShowDropDownArrow = false;
+            this.btnStartMarker.Size = new System.Drawing.Size(20, 22);
+            this.btnStartMarker.Start = true;
+            this.btnStartMarker.Text = "toolStripMarkerButton1";
+            this.btnStartMarker.Value = DDraw.DMarker.None;
+            this.btnStartMarker.MarkerChanged += new WinFormsDemo.MarkerChangedHandler(this.btnMarker_MarkerChanged);
+            // 
+            // btnEndMarker
+            // 
+            this.btnEndMarker.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.btnEndMarker.Image = ((System.Drawing.Image)(resources.GetObject("btnEndMarker.Image")));
+            this.btnEndMarker.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnEndMarker.Name = "btnEndMarker";
+            this.btnEndMarker.ShowDropDownArrow = false;
+            this.btnEndMarker.Size = new System.Drawing.Size(20, 22);
+            this.btnEndMarker.Start = false;
+            this.btnEndMarker.Text = "toolStripMarkerButton2";
+            this.btnEndMarker.Value = DDraw.DMarker.None;
+            this.btnEndMarker.MarkerChanged += new WinFormsDemo.MarkerChangedHandler(this.btnMarker_MarkerChanged);
+            // 
+            // btnAlpha
+            // 
+            this.btnAlpha.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.btnAlpha.Image = ((System.Drawing.Image)(resources.GetObject("btnAlpha.Image")));
+            this.btnAlpha.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnAlpha.Name = "btnAlpha";
+            this.btnAlpha.ShowDropDownArrow = false;
+            this.btnAlpha.Size = new System.Drawing.Size(20, 22);
+            this.btnAlpha.Text = "Alpha";
+            this.btnAlpha.Value = 0.3;
+            this.btnAlpha.AlphaChanged += new WinFormsDemo.AlphaChangedHandler(this.btnAlpha_AlphaChanged);
+            // 
+            // cbFontName
+            // 
+            this.cbFontName.Name = "cbFontName";
+            this.cbFontName.Size = new System.Drawing.Size(121, 22);
+            this.cbFontName.Value = null;
+            this.cbFontName.FontNameChanged += new System.EventHandler(this.cbFontName_FontNameChanged);
             // 
             // MainForm
             // 
@@ -824,6 +854,8 @@ namespace WinFormsDemo
         private System.Windows.Forms.ToolStripButton btnPentagon;
         private System.Windows.Forms.ToolStripButton btnLine;
         private ToolStripStrokeStyleButton btnStrokeStyle;
+        private ToolStripMarkerButton btnStartMarker;
+        private ToolStripMarkerButton btnEndMarker;
     }
 }
 

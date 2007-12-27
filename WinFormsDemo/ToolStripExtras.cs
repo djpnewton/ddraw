@@ -52,6 +52,60 @@ namespace WinFormsDemo
             g.DrawLine(p, pt1, pt2);
         }
 
+        public static void DrawMarkerIcon(Graphics g, Rectangle r, Color color, DMarker marker, bool start)
+        {
+            const int sz = 8;
+            const int hsz = sz / 2;
+            int mid = r.Height / 2 + 1;
+            Pen p = new Pen(color, sz / 2);
+            Brush b = new SolidBrush(color);
+            switch (marker)
+            {
+                case DMarker.None:
+                    break;
+                case DMarker.Arrow:
+                    if (start)
+                        g.FillPolygon(b, new Point[3] { new Point(r.Left, mid), new Point(r.Left + sz, mid - hsz), 
+                                                        new Point(r.Left + sz, mid + hsz)});
+                    else
+                        g.FillPolygon(b, new Point[3] { new Point(r.Right, mid), new Point(r.Right - sz, mid - hsz), 
+                                                        new Point(r.Right - sz, mid + hsz)});
+                break;
+                case DMarker.Dot:
+                    if (start)
+                        g.FillEllipse(b, new Rectangle(r.Left, mid - hsz, sz, sz));
+                    else
+                        g.FillEllipse(b, new Rectangle(r.Right - sz, mid - hsz, sz, sz));
+                    break;
+                case DMarker.Square:
+                    if (start)
+                        g.FillRectangle(b, new Rectangle(r.Left, mid - hsz, sz, sz)); 
+                    else
+                        g.FillRectangle(b, new Rectangle(r.Right - sz, mid - hsz, sz, sz));
+                    break;
+                case DMarker.Diamond:
+                    if (start)
+                        g.FillPolygon(b, new Point[4] { new Point(r.Left + hsz, mid - hsz), new Point(r.Left + sz, mid), 
+                                                        new Point(r.Left + hsz, mid + hsz), new Point(r.Left, mid)});
+                    else
+                        g.FillPolygon(b, new Point[4] { new Point(r.Right - hsz, mid - hsz), new Point(r.Right - sz, mid), 
+                                                        new Point(r.Right - hsz, mid + hsz), new Point(r.Right, mid)});
+                    break;
+            }
+            PointF pt1, pt2;
+            if (start)
+            {
+                pt1 = new PointF(r.X + hsz, mid);
+                pt2 = new PointF(r.Right, mid);
+            }
+            else
+            {
+                pt1 = new PointF(r.Right - hsz, mid);
+                pt2 = new PointF(r.Left, mid);
+            }
+            g.DrawLine(p, pt1, pt2);
+        }
+
         public static void DrawAlphaIcon(Graphics g, Rectangle r, Color fill, Color outline, double alpha)
         {
             if (alpha == ToolStripAlphaButton.Empty)
@@ -171,6 +225,26 @@ namespace WinFormsDemo
         }
     }
 
+    public class MarkerMenuItem : ToolStripMenuItem
+    {
+        DMarker value;
+        public DMarker Value
+        {
+            get { return value; }
+        }
+
+        public bool Start = true;
+
+        public MarkerMenuItem(DMarker marker, EventHandler onClick)
+            : base()
+        {
+            DisplayStyle = ToolStripItemDisplayStyle.ImageAndText;
+            Text = "XXXXXXX";
+            Click += onClick;
+            this.value = marker;
+        }
+    }
+
     public class AlphaMenuItem : ToolStripMenuItem
     {
         double value;
@@ -193,10 +267,12 @@ namespace WinFormsDemo
 
         protected override void OnRenderItemCheck(ToolStripItemImageRenderEventArgs e) 
         {
+            System.Drawing.Drawing2D.GraphicsState gs = e.Graphics.Save();
             e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
             Point pt = new Point(e.ImageRectangle.X + e.ImageRectangle.Width / 2, e.ImageRectangle.Y + e.ImageRectangle.Height / 2);
             Rectangle r = new Rectangle(pt.X - 3, pt.Y - 3, 6, 6);
             e.Graphics.FillEllipse(Brushes.Black, r);
+            e.Graphics.Restore(gs);
         }
 
         protected override void OnRenderItemText(ToolStripItemTextRenderEventArgs e)
@@ -205,9 +281,11 @@ namespace WinFormsDemo
                 ToolStripHelper.DrawStrokeWidthIcon(e.Graphics, e.TextRectangle, Color.Black, ((StrokeWidthMenuItem)e.Item).Value);
             else if (e.Item is StrokeStyleMenuItem)
                 ToolStripHelper.DrawStrokeStyleIcon(e.Graphics, e.TextRectangle, Color.Black, ((StrokeStyleMenuItem)e.Item).Value);
+            else if (e.Item is MarkerMenuItem)
+                ToolStripHelper.DrawMarkerIcon(e.Graphics, e.TextRectangle, Color.Black, ((MarkerMenuItem)e.Item).Value, ((MarkerMenuItem)e.Item).Start);
             else if (e.Item is AlphaMenuItem)
-                ToolStripHelper.DrawAlphaIcon(e.Graphics, 
-                    new Rectangle(e.TextRectangle.Location, new Size(e.TextRectangle.Height, e.TextRectangle.Height)), 
+                ToolStripHelper.DrawAlphaIcon(e.Graphics,
+                    new Rectangle(e.TextRectangle.Location, new Size(e.TextRectangle.Height, e.TextRectangle.Height)),
                     Color.Blue, Color.Black,
                     ((AlphaMenuItem)e.Item).Value);
             else
@@ -409,6 +487,95 @@ namespace WinFormsDemo
             Value = ((StrokeStyleMenuItem)sender).Value;
             if (StrokeStyleChanged != null)
                 StrokeStyleChanged(this, ((StrokeStyleMenuItem)sender).Value);
+        }
+    }
+
+    public delegate void MarkerChangedHandler(object sender, DMarker marker);
+
+    [ToolStripItemDesignerAvailability(ToolStripItemDesignerAvailability.ToolStrip | ToolStripItemDesignerAvailability.StatusStrip)]
+    public class ToolStripMarkerButton : ToolStripDropDownButton
+    {
+        public event MarkerChangedHandler MarkerChanged;
+
+        public static int Empty = -1;
+     
+        public DMarker Value
+        {
+            get
+            {
+                foreach (MarkerMenuItem item in DropDown.Items)
+                    if (item.Checked)
+                        return item.Value;
+                return DMarker.None;
+            }
+            set
+            {
+                foreach (MarkerMenuItem item in DropDown.Items)
+                {
+                    if (item.Value == value)
+                        item.Checked = true;
+                    else
+                        item.Checked = false;
+                }
+                Image = ToolStripHelper.BlankImage;
+                Invalidate();
+            }
+        }
+        
+        bool start = true;
+        public bool Start
+        {
+            get { return start; }
+            set
+            {
+                foreach (MarkerMenuItem item in DropDown.Items)
+                    item.Start = value;
+                start = value;
+            }
+        }
+        
+        public ToolStripMarkerButton() : base()
+        {
+            
+            ShowDropDownArrow = false;
+            DropDown.Items.Add(new MarkerMenuItem(DMarker.None, new EventHandler(MenuItem_OnClick)));
+            DropDown.Items.Add(new MarkerMenuItem(DMarker.Arrow, new EventHandler(MenuItem_OnClick)));
+            DropDown.Items.Add(new MarkerMenuItem(DMarker.Dot, new EventHandler(MenuItem_OnClick)));
+            DropDown.Items.Add(new MarkerMenuItem(DMarker.Square, new EventHandler(MenuItem_OnClick)));
+            DropDown.Items.Add(new MarkerMenuItem(DMarker.Diamond, new EventHandler(MenuItem_OnClick)));
+            DropDown.ItemAdded += new ToolStripItemEventHandler(DropDown_ItemAdded);
+        }
+        
+        protected override void OnPaint(PaintEventArgs e)
+        {
+            DisplayStyle = ToolStripItemDisplayStyle.Image;
+            base.OnPaint(e);
+            Color outline;
+            if (Enabled)
+                outline = Color.Black;
+            else
+                outline = Color.DarkGray;
+            ToolStripHelper.DrawMarkerIcon(e.Graphics, ContentRectangle, outline, Value, start);
+        }
+        
+        protected override void OnParentChanged(ToolStrip oldParent, ToolStrip newParent)
+        {
+            base.OnParentChanged(oldParent, newParent);
+            if (newParent != null)
+                newParent.Renderer = new MySpecialRenderer();
+        }
+        
+        void DropDown_ItemAdded(object sender, ToolStripItemEventArgs e)
+        {
+            if (!(e.Item is MarkerMenuItem))
+                DropDown.Items.Remove(e.Item);
+        }
+
+        void MenuItem_OnClick(object sender, EventArgs e)
+        {
+            Value = ((MarkerMenuItem)sender).Value;
+            if (MarkerChanged != null)
+                MarkerChanged(this, ((MarkerMenuItem)sender).Value);
         }
     } 
 

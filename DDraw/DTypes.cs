@@ -12,6 +12,8 @@ namespace DDraw
 
     public enum DFillStyle { Solid, ForwardDiagonalHatch };
 
+    public enum DMarker { None, Arrow, Dot, Square, Diamond };
+
     public enum DCursor { Default, MoveAll, MoveNS, MoveWE, MoveNESW, MoveNWSE, Rotate, Crosshair, IBeam };
 
     public enum DHitTest { None, Body, SelectRect, Resize, Rotate, ReposLinePt1, ReposLinePt2 };
@@ -203,8 +205,11 @@ namespace DDraw
 
         public DRect Union(DRect r2)
         {
-            return new DRect(Math.Min(X, r2.X), Math.Min(Y, r2.Y),
-                Math.Max(Right, r2.Right), Math.Max(Bottom, r2.Bottom), 0);
+            if (r2.Width > 0 && r2.Height > 0)
+                return new DRect(Math.Min(X, r2.X), Math.Min(Y, r2.Y),
+                    Math.Max(Right, r2.Right), Math.Max(Bottom, r2.Bottom), 0);
+            else
+                return this;
         }
 
         public DRect Intersect(DRect r2)

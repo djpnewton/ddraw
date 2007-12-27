@@ -58,7 +58,7 @@ namespace WinFormsDemo
             // Initialze DGraphics
             WFGraphics.Init();
             // create author properties
-            dap = new DAuthorProperties(DColor.Blue, DColor.Red, 3, DStrokeStyle.Solid, 1, "Arial");
+            dap = new DAuthorProperties(DColor.Blue, DColor.Red, 3, DStrokeStyle.Solid, DMarker.None, DMarker.None, 1, "Arial");
             // edit viewer
             dvEditor = new WFViewer(wfvcEditor);
             dvEditor.EditFigures = true;
@@ -106,7 +106,9 @@ namespace WinFormsDemo
             f.Rect = new DRect(100, 200, 100, 100);
             de.AddFigure(f);
             // line figure
-            de.AddFigure(new LineFigure(new DPoint(100, 100), new DPoint(200, 200)));
+            f = new LineFigure(new DPoint(100, 100), new DPoint(200, 200));
+            ((LineFigure)f).StrokeWidth = 10;
+            de.AddFigure(f);
             // Init controls
             InitPropertyControls(de.State);
         }
@@ -241,6 +243,36 @@ namespace WinFormsDemo
             return strokeStyle;
         }
 
+        DMarker GetMarkerMatch(Figure[] figs, bool start)
+        {
+            DMarker marker = DMarker.None;
+            foreach (Figure f in figs)
+                if (f is IMarkable)
+                {
+                    if (start)
+                        marker = ((IMarkable)f).StartMarker;
+                    else
+                        marker = ((IMarkable)f).EndMarker;
+                    break;
+                }
+            if (marker != DMarker.None)
+                foreach (Figure f in figs)
+                    if (f is IMarkable)
+                    {
+                        if (start)
+                        {
+                            if (marker != ((IMarkable)f).StartMarker)
+                                return DMarker.None;
+                        }
+                        else
+                        {
+                            if (marker != ((IMarkable)f).EndMarker)
+                                return DMarker.None;
+                        }
+                    }
+            return marker;
+        }
+
         double GetAlphaMatch(Figure[] figs)
         {
             double alpha = ToolStripAlphaButton.Empty;
@@ -288,6 +320,8 @@ namespace WinFormsDemo
             btnStroke.Color = Color.Empty;
             btnStrokeWidth.Value = ToolStripStrokeWidthButton.Empty;
             btnStrokeStyle.Value = DStrokeStyle.Solid;
+            btnStartMarker.Value = DMarker.None;
+            btnEndMarker.Value = DMarker.None;
             btnAlpha.Value = ToolStripAlphaButton.Empty;
             cbFontName.Value = "";
             // deselect controls
@@ -295,6 +329,8 @@ namespace WinFormsDemo
             btnStroke.Enabled = false;
             btnStrokeWidth.Enabled = false;
             btnStrokeStyle.Enabled = false;
+            btnStartMarker.Enabled = false;
+            btnEndMarker.Enabled = false;
             btnAlpha.Enabled = false;
             cbFontName.Enabled = false;
             // update controls based on the state of DEngine
@@ -315,6 +351,12 @@ namespace WinFormsDemo
                             btnStrokeStyle.Enabled = true;
                         }
                     foreach (Figure f in figs)
+                        if (f is IMarkable)
+                        {
+                            btnStartMarker.Enabled = true;
+                            btnEndMarker.Enabled = true;
+                        }
+                    foreach (Figure f in figs)
                         if (f is IAlphaBlendable)
                             btnAlpha.Enabled = true;
                     foreach (Figure f in figs)
@@ -327,6 +369,8 @@ namespace WinFormsDemo
                         btnStroke.Color = GetStrokeMatch(figs);
                         btnStrokeWidth.Value = (int)Math.Round(GetStrokeWidthMatch(figs));
                         btnStrokeStyle.Value = GetStrokeStyleMatch(figs);
+                        btnStartMarker.Value = GetMarkerMatch(figs, true);
+                        btnEndMarker.Value = GetMarkerMatch(figs, false);
                         btnAlpha.Value = GetAlphaMatch(figs);
                         cbFontName.Value = GetFontNameMatch(figs);
                     }
@@ -337,6 +381,8 @@ namespace WinFormsDemo
                     btnStroke.Enabled = de.CurrentFigClassImpls(typeof(IStrokeable));
                     btnStrokeWidth.Enabled = btnStroke.Enabled;
                     btnStrokeStyle.Enabled = btnStroke.Enabled;
+                    btnStartMarker.Enabled = de.CurrentFigClassImpls(typeof(IMarkable));
+                    btnEndMarker.Enabled = btnStartMarker.Enabled;
                     btnAlpha.Enabled = de.CurrentFigClassImpls(typeof(IAlphaBlendable));
                     cbFontName.Enabled = de.CurrentFigClassImpls(typeof(ITextable));
                     // update values to match dap
@@ -348,6 +394,10 @@ namespace WinFormsDemo
                         btnStrokeWidth.Value = (int)dap.StrokeWidth;
                     if (btnStrokeStyle.Enabled)
                         btnStrokeStyle.Value = dap.StrokeStyle;
+                    if (btnStartMarker.Enabled)
+                        btnStartMarker.Value = dap.StartMarker;
+                    if (btnEndMarker.Enabled)
+                        btnEndMarker.Value = dap.EndMarker;
                     if (btnAlpha.Enabled)
                         btnAlpha.Value = dap.Alpha;
                     if (cbFontName.Enabled)
@@ -473,6 +523,30 @@ namespace WinFormsDemo
             }
         }
 
+        private void btnMarker_MarkerChanged(object sender, DMarker marker)
+        {
+            if (sender == btnStartMarker)
+                switch (de.State)
+                {
+                    case DEngineState.Select:
+                        UpdateSelectedFigures(btnStartMarker);
+                        break;
+                    default:
+                        dap.StartMarker = btnStartMarker.Value;
+                        break;
+                }
+            else if (sender == btnEndMarker)
+                switch (de.State)
+                {
+                    case DEngineState.Select:
+                        UpdateSelectedFigures(btnEndMarker);
+                        break;
+                    default:
+                        dap.EndMarker = btnEndMarker.Value;
+                        break;
+                }
+        }
+
         private void cbFontName_FontNameChanged(object sender, EventArgs e)
         {
             switch (de.State)
@@ -502,6 +576,13 @@ namespace WinFormsDemo
                         ((IStrokeable)f).StrokeWidth = btnStrokeWidth.Value;
                     if (sender == btnStrokeStyle)
                         ((IStrokeable)f).StrokeStyle = btnStrokeStyle.Value;
+                }
+                if (f is IMarkable)
+                {
+                    if (sender == btnStartMarker)
+                        ((IMarkable)f).StartMarker = btnStartMarker.Value;
+                    if (sender == btnEndMarker)
+                        ((IMarkable)f).EndMarker = btnEndMarker.Value;
                 }
                 if (sender == btnAlpha && f is IAlphaBlendable)
                     ((IAlphaBlendable)f).Alpha = btnAlpha.Value;

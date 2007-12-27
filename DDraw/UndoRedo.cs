@@ -24,6 +24,8 @@ namespace DDraw
         public FigureProperties[] ChildFigureProps;
         public Hashtable EditableAttributes;
         public DPoint Pt1, Pt2;
+        public DMarker StartMarker;
+        public DMarker EndMarker;
 	}
 	
 	enum FigureChangeType { Removed, Added, PropertyChanged, Moved };		
@@ -140,6 +142,11 @@ namespace DDraw
                 fp.Pt1 = ((ILineSegment)f).Pt1.Clone();
                 fp.Pt2 = ((ILineSegment)f).Pt2.Clone();
             }
+            if (f is IMarkable)
+            {
+                fp.StartMarker = ((IMarkable)f).StartMarker;
+                fp.EndMarker = ((IMarkable)f).EndMarker;
+            }
             return fp;			
 		}
 		
@@ -233,6 +240,12 @@ namespace DDraw
                 if (!ls.Pt1.Equals(fp.Pt1) || !ls.Pt2.Equals(fp.Pt2))
                     return false;
             }
+            if (f is IMarkable)
+            {
+                IMarkable m = (IMarkable)f;
+                if (m.StartMarker != fp.StartMarker || m.EndMarker != fp.EndMarker)
+                    return false;
+            }
             return true;               
         }
 
@@ -274,6 +287,11 @@ namespace DDraw
             {
                 ((ILineSegment)f).Pt1 = fp.Pt1.Clone();
                 ((ILineSegment)f).Pt2 = fp.Pt2.Clone();
+            }
+            if (f is IMarkable)
+            {
+                ((IMarkable)f).StartMarker = fp.StartMarker;
+                ((IMarkable)f).EndMarker = fp.EndMarker;
             }
         }
 

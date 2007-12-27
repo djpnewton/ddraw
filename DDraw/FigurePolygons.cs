@@ -36,7 +36,7 @@ namespace DDraw
             // close the polygon
             pts.Add(pts[0]);
             // to draw the stroke join at the first vertex
-            pts.Add(DGeom.PointFromAngle(pts[0], DGeom.AngleBetweenPoints(pts[0], pts[1]) - Math.PI / 2, 1)); 
+            pts.Add(DGeom.PointFromAngle(pts[0], DGeom.AngleBetweenPoints(pts[0], pts[1]) - DGeom.HalfPi, 1)); 
             // return new points
             return pts;
         }
