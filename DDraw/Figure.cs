@@ -812,6 +812,17 @@ namespace DDraw
             }
         }
 
+        public override double Rotation
+        {
+            get { return 0; }
+            set
+            {
+                DPoint c = Rect.Center;
+                pt1 = DGeom.RotatePoint(pt1, c, value);
+                pt2 = DGeom.RotatePoint(pt2, c, value);
+            }
+        }
+
         public override void AddPoint(DPoint pt)
         {
             if (pt1 == null)
@@ -832,13 +843,6 @@ namespace DDraw
                 return pts;
             }
         }
-
-        /*protected override DHitTest _HitTest(DPoint pt)
-        {
-            if (DGeom.PointInLine(pt, pt1, pt2, StrokeWidth / 2))
-                return DHitTest.Body;
-            return DHitTest.None;
-        }*/
 
         public DRect GetPt1HandleRect()
         {
