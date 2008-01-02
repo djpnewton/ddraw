@@ -78,11 +78,9 @@ namespace DDraw.GTK
             cr.SelectFontFace(fontName, FontSlant.Normal, FontWeight.Normal);
             cr.SetFontSize(fontSize);
             TextExtents te = cr.TextExtents(text);
-            double w = te.Width;
+            double w = te.XAdvance;
             double h = te.Height;
             FontExtents fe = cr.FontExtents;
-            if (w < fe.MaxXAdvance)
-                w = fe.MaxXAdvance;
             if (h < fe.Ascent)
                 h = fe.Ascent;
             surf.Destroy();
@@ -411,14 +409,37 @@ namespace DDraw.GTK
 
         public override void DrawText(string text, string fontName, double fontSize, DPoint pt, DColor color, double alpha)
         {
-            cr.SelectFontFace(fontName, FontSlant.Normal, FontWeight.Normal);
+            DrawText(text, fontName, fontSize, false, false, false, false, pt, color, alpha);
+        }
+		
+		public override void DrawText(string text, string fontName, double fontSize, bool bold, bool italics, bool underline, bool strikethrough, DPoint pt, DColor color, double alpha)
+        {
+    		FontWeight fw = FontWeight.Normal;
+    		if (bold) fw = FontWeight.Bold;
+    		FontSlant fs = FontSlant.Normal;
+    		if (italics) fs = FontSlant.Italic;
+            cr.SelectFontFace(fontName, fs, fw);
             cr.SetFontSize(fontSize);
             cr.Color = MakeColor(color, alpha);
             TextExtents te = cr.TextExtents(text);
             FontExtents fe = cr.FontExtents;
-            cr.MoveTo(pt.X - te.XBearing + fe.Descent, pt.Y - te.YBearing + fe.Descent);
+    		double text_x = pt.X - te.XBearing + fe.Descent;
+    		double text_y = pt.Y - te.YBearing + fe.Descent;
+            cr.MoveTo(text_x, text_y);
             cr.ShowText(text);
-        }
+    		if (underline)
+    		{
+    			cr.MoveTo(text_x, text_y + fe.Descent - 2);
+    			cr.LineTo(text_x + te.XAdvance, text_y + fe.Descent - 2);
+    			cr.Stroke();
+    		}
+    		if (strikethrough)
+    		{
+    			cr.MoveTo(text_x, text_y - fe.Descent);
+    			cr.LineTo(text_x + te.XAdvance, text_y - fe.Descent);
+    			cr.Stroke();	
+    		}
+		}
         
         public override DMatrix SaveTransform()
         {

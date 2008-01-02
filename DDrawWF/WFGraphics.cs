@@ -232,6 +232,20 @@ namespace DDraw.WinForms
             return new Matrix((float)matrix.A, (float)matrix.B, (float)matrix.C,
                 (float)matrix.D, (float)matrix.E, (float)matrix.F);
         }
+		
+		private FontStyle MakeFontStyle(bool bold, bool italics, bool underline, bool strikethrough)
+		{
+			FontStyle res = FontStyle.Regular;
+			if (bold)
+				res = res | FontStyle.Bold;
+			if (italics)
+				res = res | FontStyle.Italic;
+			if (underline)
+				res = res | FontStyle.Underline;
+			if (strikethrough)
+				res = res | FontStyle.Strikeout;
+			return res;
+		}
         
         // Drawing Functions //
 
@@ -397,6 +411,11 @@ namespace DDraw.WinForms
         public override void DrawText(string text, string fontName, double fontSize, DPoint pt, DColor color, double alpha)
         {
             g.DrawString(text, new Font(fontName, (float)fontSize), new SolidBrush(MakeColor(color, alpha)), new PointF((float)pt.X, (float)pt.Y));
+        }
+
+        public override void DrawText(string text, string fontName, double fontSize, bool bold, bool italics, bool underline, bool strikethrough, DPoint pt, DColor color, double alpha)
+        {
+            g.DrawString(text, new Font(fontName, (float)fontSize, MakeFontStyle(bold, italics, underline, strikethrough)), new SolidBrush(MakeColor(color, alpha)), new PointF((float)pt.X, (float)pt.Y));
         }
 
         public override DMatrix SaveTransform()

@@ -69,15 +69,15 @@ namespace DDraw
             set;
         }
     }
-	
-	public interface IBitmapable
-	{
-		DBitmap Bitmap
-		{
-			get;
-			set;
-		}
-	}
+
+    public interface IBitmapable
+    {
+        DBitmap Bitmap
+        {
+            get;
+            set;
+        }
+    }
 
     public interface ITextable
     {
@@ -99,6 +99,26 @@ namespace DDraw
         {
             get;
             set;
+        }
+        bool Bold
+        {
+            get;
+            set;
+        }
+        bool Italics
+        {
+            get;
+            set;
+        }
+        bool Underline
+        {
+            get;
+            set;
+        }
+        bool Strikethrough
+        {
+           get;
+           set;
         }
     }
 
@@ -1071,12 +1091,12 @@ namespace DDraw
 
     public class ImageFigure : RectbaseFigure, IBitmapable
     {
-		DBitmap bitmap = null;
+        DBitmap bitmap = null;
         public DBitmap Bitmap
-		{
-			get { return bitmap; }
-			set { bitmap = value; }
-		}
+        {
+            get { return bitmap; }
+            set { bitmap = value; }
+        }
 
         public ImageFigure(DRect rect, double rotation, DBitmap bitmap)
             : base(rect, rotation)
@@ -1116,6 +1136,31 @@ namespace DDraw
                 fontSize = value;
                 Text = text;
             }
+        }
+
+        bool bold = false;
+        public bool Bold
+        {
+            get { return bold; }
+            set { bold = value; }
+        }
+        bool italics = false;
+        public bool Italics
+        {
+            get { return italics; }
+            set { italics = value; }
+        }
+        bool underline = false;
+        public bool Underline
+        {
+            get { return underline; }
+            set { underline = value; }
+        }
+        bool strikethrough = false;
+        public bool Strikethrough
+        {
+            get { return strikethrough; }
+            set { strikethrough = value; }
         }
 
         private string text = null;
@@ -1174,7 +1219,7 @@ namespace DDraw
 
         protected override void PaintBody(DGraphics dg)
         {
-            dg.DrawText(Text, fontName, fontSize, Rect.TopLeft, fill, Alpha);
+            dg.DrawText(Text, fontName, fontSize, bold, italics, underline, strikethrough, Rect.TopLeft, fill, Alpha);
         }
 
         #region IFillable Members
@@ -1217,8 +1262,28 @@ namespace DDraw
         public double FontSize
         {
             get { return tf.FontSize; }
-            set
-            { tf.FontSize = value; }
+            set { tf.FontSize = value; }
+        }
+
+        public bool Bold
+        {
+            get { return tf.Bold; }
+            set { tf.Bold = value; }
+        }
+        public bool Italics
+        {
+            get { return tf.Italics; }
+            set { tf.Italics = value; }
+        }
+        public bool Underline
+        {
+            get { return tf.Underline; }
+            set { tf.Underline = value; }
+        }
+        public bool Strikethrough
+        {
+            get { return tf.Strikethrough; }
+            set { tf.Strikethrough = value; }
         }
 
         public override double X

@@ -4,47 +4,50 @@ using System.Collections.Generic;
 
 namespace DDraw
 {
-	struct FigureProperties
-	{
-		public Figure Figure;
-		public int ListPosition;
-		public DRect Rect;
-		public double Rotation;
-		public DColor Fill;
-		public DColor Stroke;
-		public double StrokeWidth;
+    struct FigureProperties
+    {
+        public Figure Figure;
+        public int ListPosition;
+        public DRect Rect;
+        public double Rotation;
+        public DColor Fill;
+        public DColor Stroke;
+        public double StrokeWidth;
         public DStrokeStyle StrokeStyle;
         public DStrokeJoin StrokeJoin;
         public DStrokeCap StrokeCap;
-		public double Alpha;
-		public DBitmap Bitmap;
-		public string Text;
-		public string FontName;
-		public double FontSize;
+        public double Alpha;
+        public DBitmap Bitmap;
+        public string Text;
+        public string FontName;
+        public double FontSize;
+        public bool Bold;
+        public bool Italics;
+        public bool Underline;
+        public bool Strikethough;
         public FigureProperties[] ChildFigureProps;
         public Hashtable EditableAttributes;
         public DPoint Pt1, Pt2;
         public DMarker StartMarker;
         public DMarker EndMarker;
-	}
-	
-	enum FigureChangeType { Removed, Added, PropertyChanged, Moved };		
-	
-	struct FigureChange
-	{
-		public Figure Figure;
-		public FigureChangeType Type;
-		public FigureProperties FigProps;
-		
-		public FigureChange(Figure figure, FigureChangeType figureChangeType,
-			FigureProperties figProps)
-		{
-			Figure = figure;
-			Type = figureChangeType;
-			FigProps = figProps;
-		}
-	}
-		
+    }
+
+    enum FigureChangeType { Removed, Added, PropertyChanged, Moved };	
+
+    struct FigureChange
+    {
+        public Figure Figure;
+        public FigureChangeType Type;
+        public FigureProperties FigProps;
+
+        public FigureChange(Figure figure, FigureChangeType figureChangeType, FigureProperties figProps)
+    	{
+            Figure = figure;
+            Type = figureChangeType;
+            FigProps = figProps;
+        }
+    }
+    	
 	class UndoFrame
 	{
 		string name;
@@ -126,6 +129,10 @@ namespace DDraw
 				fp.Text = ((ITextable)f).Text;
 				fp.FontName = ((ITextable)f).FontName;
 				fp.FontSize = ((ITextable)f).FontSize;
+				fp.Bold = ((ITextable)f).Bold;
+				fp.Italics = ((ITextable)f).Italics;
+				fp.Underline = ((ITextable)f).Underline;
+				fp.Strikethough = ((ITextable)f).Strikethrough;
 			}
             if (f is IChildFigureable)
             {
@@ -218,6 +225,14 @@ namespace DDraw
                     return false;
                 if (fp.FontSize != ((ITextable)f).FontSize)
                     return false;
+				if (fp.Bold != ((ITextable)f).Bold)
+					return false;
+				if (fp.Italics != ((ITextable)f).Italics)
+					return false;
+				if (fp.Underline != ((ITextable)f).Underline)
+					return false;
+				if (fp.Strikethough != ((ITextable)f).Strikethrough)
+					return false;
             }
             if (f is IChildFigureable)
             {
@@ -275,6 +290,10 @@ namespace DDraw
                 ((ITextable)f).FontSize = fp.FontSize;
                 ((ITextable)f).Text = fp.Text;
                 ((ITextable)f).FontName = fp.FontName;
+                ((ITextable)f).Bold = fp.Bold;
+                ((ITextable)f).Italics = fp.Italics;
+                ((ITextable)f).Underline = fp.Underline;
+				((ITextable)f).Strikethrough = fp.Strikethough;
             }
             if (f is IChildFigureable)
             {

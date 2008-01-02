@@ -140,6 +140,7 @@ namespace DDraw
         abstract public void DrawBitmap(DBitmap bitmap, DRect rect, double alpha);
         abstract public void DrawText(string text, string fontName, double fontSize, DPoint pt, DColor color);
         abstract public void DrawText(string text, string fontName, double fontSize, DPoint pt, DColor color, double alpha);
+        abstract public void DrawText(string text, string fontName, double fontSize, bool bold, bool italics, bool underline, bool strikethrough, DPoint pt, DColor color, double alpha);
 
         abstract public DMatrix SaveTransform();
         abstract public void LoadTransform(DMatrix matrix);
