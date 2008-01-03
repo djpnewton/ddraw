@@ -100,6 +100,10 @@ namespace WinFormsDemo
             this.btnEndMarker = new WinFormsDemo.ToolStripMarkerButton();
             this.btnAlpha = new WinFormsDemo.ToolStripAlphaButton();
             this.cbFontName = new WinFormsDemo.ToolStripFontNameChooser();
+            this.btnBold = new System.Windows.Forms.ToolStripButton();
+            this.btnItalic = new System.Windows.Forms.ToolStripButton();
+            this.btnUnderline = new System.Windows.Forms.ToolStripButton();
+            this.btnStrikethrough = new System.Windows.Forms.ToolStripButton();
             this.pnlPreviews.SuspendLayout();
             this.tsEditorMode.SuspendLayout();
             this.toolStripContainer1.ContentPanel.SuspendLayout();
@@ -142,7 +146,7 @@ namespace WinFormsDemo
             this.btnLine});
             this.tsEditorMode.Location = new System.Drawing.Point(3, 24);
             this.tsEditorMode.Name = "tsEditorMode";
-            this.tsEditorMode.Size = new System.Drawing.Size(475, 25);
+            this.tsEditorMode.Size = new System.Drawing.Size(462, 25);
             this.tsEditorMode.TabIndex = 0;
             this.tsEditorMode.Text = "toolStrip1";
             // 
@@ -213,11 +217,11 @@ namespace WinFormsDemo
             // 
             // btnClock
             // 
-            this.btnClock.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.btnClock.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
             this.btnClock.Image = ((System.Drawing.Image)(resources.GetObject("btnClock.Image")));
             this.btnClock.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnClock.Name = "btnClock";
-            this.btnClock.Size = new System.Drawing.Size(36, 22);
+            this.btnClock.Size = new System.Drawing.Size(23, 22);
             this.btnClock.Text = "Clock";
             this.btnClock.Click += new System.EventHandler(this.btnClock_Click);
             // 
@@ -655,10 +659,14 @@ namespace WinFormsDemo
             this.btnStartMarker,
             this.btnEndMarker,
             this.btnAlpha,
-            this.cbFontName});
+            this.cbFontName,
+            this.btnBold,
+            this.btnItalic,
+            this.btnUnderline,
+            this.btnStrikethrough});
             this.tsFigureProps.Location = new System.Drawing.Point(3, 49);
             this.tsFigureProps.Name = "tsFigureProps";
-            this.tsFigureProps.Size = new System.Drawing.Size(279, 25);
+            this.tsFigureProps.Size = new System.Drawing.Size(402, 25);
             this.tsFigureProps.TabIndex = 2;
             // 
             // btnFill
@@ -751,6 +759,50 @@ namespace WinFormsDemo
             this.cbFontName.Size = new System.Drawing.Size(121, 22);
             this.cbFontName.Value = null;
             this.cbFontName.FontNameChanged += new System.EventHandler(this.cbFontName_FontNameChanged);
+            // 
+            // btnBold
+            // 
+            this.btnBold.CheckOnClick = true;
+            this.btnBold.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.btnBold.Image = ((System.Drawing.Image)(resources.GetObject("btnBold.Image")));
+            this.btnBold.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnBold.Name = "btnBold";
+            this.btnBold.Size = new System.Drawing.Size(23, 22);
+            this.btnBold.Text = "Bold";
+            this.btnBold.Click += new System.EventHandler(this.btnFontProp_Changed);
+            // 
+            // btnItalic
+            // 
+            this.btnItalic.CheckOnClick = true;
+            this.btnItalic.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.btnItalic.Image = ((System.Drawing.Image)(resources.GetObject("btnItalic.Image")));
+            this.btnItalic.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnItalic.Name = "btnItalic";
+            this.btnItalic.Size = new System.Drawing.Size(23, 22);
+            this.btnItalic.Text = "Italic";
+            this.btnItalic.Click += new System.EventHandler(this.btnFontProp_Changed);
+            // 
+            // btnUnderline
+            // 
+            this.btnUnderline.CheckOnClick = true;
+            this.btnUnderline.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.btnUnderline.Image = ((System.Drawing.Image)(resources.GetObject("btnUnderline.Image")));
+            this.btnUnderline.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnUnderline.Name = "btnUnderline";
+            this.btnUnderline.Size = new System.Drawing.Size(23, 22);
+            this.btnUnderline.Text = "Underline";
+            this.btnUnderline.Click += new System.EventHandler(this.btnFontProp_Changed);
+            // 
+            // btnStrikethrough
+            // 
+            this.btnStrikethrough.CheckOnClick = true;
+            this.btnStrikethrough.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.btnStrikethrough.Image = ((System.Drawing.Image)(resources.GetObject("btnStrikethrough.Image")));
+            this.btnStrikethrough.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnStrikethrough.Name = "btnStrikethrough";
+            this.btnStrikethrough.Size = new System.Drawing.Size(23, 22);
+            this.btnStrikethrough.Text = "Strikethrough";
+            this.btnStrikethrough.Click += new System.EventHandler(this.btnFontProp_Changed);
             // 
             // MainForm
             // 
@@ -856,6 +908,10 @@ namespace WinFormsDemo
         private ToolStripStrokeStyleButton btnStrokeStyle;
         private ToolStripMarkerButton btnStartMarker;
         private ToolStripMarkerButton btnEndMarker;
+        private System.Windows.Forms.ToolStripButton btnBold;
+        private System.Windows.Forms.ToolStripButton btnItalic;
+        private System.Windows.Forms.ToolStripButton btnUnderline;
+        private System.Windows.Forms.ToolStripButton btnStrikethrough;
     }
 }
 

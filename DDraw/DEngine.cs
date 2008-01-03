@@ -21,6 +21,7 @@ namespace DDraw
         public DMarker EndMarker;
         public double Alpha;
         public string FontName;
+        public bool Bold, Italics, Underline, Strikethrough;
         
         public DAuthorProperties()
         {
@@ -32,9 +33,15 @@ namespace DDraw
             EndMarker = DMarker.None;
         	Alpha = 1;
         	FontName = "Arial";
+            Bold = false;
+            Italics = false;
+            Underline = false;
+            Strikethrough = false;
         }
 
-        public DAuthorProperties(DColor fill, DColor stroke, double strokeWidth, DStrokeStyle strokeStyle, DMarker startMarker, DMarker endMarker, double alpha, string fontName)
+        public DAuthorProperties(DColor fill, DColor stroke, double strokeWidth, DStrokeStyle strokeStyle, 
+            DMarker startMarker, DMarker endMarker, double alpha, string fontName, bool bold, bool italics,
+            bool underline, bool strikethrough)
         {
             Fill = fill;
             Stroke = stroke;
@@ -44,6 +51,10 @@ namespace DDraw
             EndMarker = endMarker;
             Alpha = alpha;
             FontName = fontName;
+            Bold = bold;
+            Italics = italics;
+            Underline = underline;
+            Strikethrough = strikethrough;
         }
 
         public void ApplyPropertiesToFigure(Figure f)
@@ -64,7 +75,13 @@ namespace DDraw
             if (f is IAlphaBlendable)
                 ((IAlphaBlendable)f).Alpha = Alpha;
             if (f is ITextable)
+            {
                 ((ITextable)f).FontName = FontName;
+                ((ITextable)f).Bold = Bold;
+                ((ITextable)f).Italics = Italics;
+                ((ITextable)f).Underline = Underline;
+                ((ITextable)f).Strikethrough = Strikethrough;
+            }
         }
     }
 

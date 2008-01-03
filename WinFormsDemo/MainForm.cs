@@ -58,7 +58,7 @@ namespace WinFormsDemo
             // Initialze DGraphics
             WFGraphics.Init();
             // create author properties
-            dap = new DAuthorProperties(DColor.Blue, DColor.Red, 3, DStrokeStyle.Solid, DMarker.None, DMarker.None, 1, "Arial");
+            dap = new DAuthorProperties(DColor.Blue, DColor.Red, 3, DStrokeStyle.Solid, DMarker.None, DMarker.None, 1, "Arial", false, false, false, false);
             // edit viewer
             dvEditor = new WFViewer(wfvcEditor);
             dvEditor.EditFigures = true;
@@ -311,6 +311,82 @@ namespace WinFormsDemo
             return fontName;
         }
 
+        bool GetBoldMatch(Figure[] figs)
+        {
+            bool bold = false;
+            foreach (Figure f in figs)
+                if (f is ITextable)
+                {
+                    bold = ((ITextable)f).Bold;
+                    break;
+                }
+            if (bold != false)
+                foreach (Figure f in figs)
+                    if (f is ITextable)
+                    {
+                        if (bold != ((ITextable)f).Bold)
+                            return false;
+                    }
+            return bold;
+        }
+
+        bool GetItalicMatch(Figure[] figs)
+        {
+            bool italic = false;
+            foreach (Figure f in figs)
+                if (f is ITextable)
+                {
+                    italic = ((ITextable)f).Italics;
+                    break;
+                }
+            if (italic != false)
+                foreach (Figure f in figs)
+                    if (f is ITextable)
+                    {
+                        if (italic != ((ITextable)f).Italics)
+                            return false;
+                    }
+            return italic;
+        }
+
+        bool GetUnderlineMatch(Figure[] figs)
+        {
+            bool underline = false;
+            foreach (Figure f in figs)
+                if (f is ITextable)
+                {
+                    underline = ((ITextable)f).Underline;
+                    break;
+                }
+            if (underline != false)
+                foreach (Figure f in figs)
+                    if (f is ITextable)
+                    {
+                        if (underline != ((ITextable)f).Underline)
+                            return false;
+                    }
+            return underline;
+        }
+
+        bool GetStrikethroughMatch(Figure[] figs)
+        {
+            bool strikethrough = false;
+            foreach (Figure f in figs)
+                if (f is ITextable)
+                {
+                    strikethrough = ((ITextable)f).Strikethrough;
+                    break;
+                }
+            if (strikethrough != false)
+                foreach (Figure f in figs)
+                    if (f is ITextable)
+                    {
+                        if (strikethrough != ((ITextable)f).Strikethrough)
+                            return false;
+                    }
+            return strikethrough;
+        }
+
         private void InitPropertyControls(DEngineState state)
         {
             // disable events
@@ -324,6 +400,10 @@ namespace WinFormsDemo
             btnEndMarker.Value = DMarker.None;
             btnAlpha.Value = ToolStripAlphaButton.Empty;
             cbFontName.Value = "";
+            btnBold.Checked = false;
+            btnItalic.Checked = false;
+            btnUnderline.Checked = false;
+            btnStrikethrough.Checked = false;
             // deselect controls
             btnFill.Enabled = false;
             btnStroke.Enabled = false;
@@ -333,6 +413,10 @@ namespace WinFormsDemo
             btnEndMarker.Enabled = false;
             btnAlpha.Enabled = false;
             cbFontName.Enabled = false;
+            btnBold.Enabled = false;
+            btnItalic.Enabled = false;
+            btnUnderline.Enabled = false;
+            btnStrikethrough.Enabled = false;
             // update controls based on the state of DEngine
             switch (state)
             {
@@ -361,7 +445,13 @@ namespace WinFormsDemo
                             btnAlpha.Enabled = true;
                     foreach (Figure f in figs)
                         if (f is ITextable)
+                        {
                             cbFontName.Enabled = true;
+                            btnBold.Enabled = true;
+                            btnItalic.Enabled = true;
+                            btnUnderline.Enabled = true;
+                            btnStrikethrough.Enabled = true;
+                        }
                     // set property controls to match selected figure/s
                     if (figs.Length > 0)
                     {
@@ -373,35 +463,53 @@ namespace WinFormsDemo
                         btnEndMarker.Value = GetMarkerMatch(figs, false);
                         btnAlpha.Value = GetAlphaMatch(figs);
                         cbFontName.Value = GetFontNameMatch(figs);
+                        btnBold.Checked = GetBoldMatch(figs);
+                        btnItalic.Checked = GetItalicMatch(figs);
+                        btnUnderline.Checked = GetUnderlineMatch(figs);
+                        btnStrikethrough.Checked = GetStrikethroughMatch(figs);
                     }
                     break;
                 default:
-                    // enable relavant controls
-                    btnFill.Enabled = de.CurrentFigClassImpls(typeof(IFillable));
-                    btnStroke.Enabled = de.CurrentFigClassImpls(typeof(IStrokeable));
-                    btnStrokeWidth.Enabled = btnStroke.Enabled;
-                    btnStrokeStyle.Enabled = btnStroke.Enabled;
-                    btnStartMarker.Enabled = de.CurrentFigClassImpls(typeof(IMarkable));
-                    btnEndMarker.Enabled = btnStartMarker.Enabled;
-                    btnAlpha.Enabled = de.CurrentFigClassImpls(typeof(IAlphaBlendable));
-                    cbFontName.Enabled = de.CurrentFigClassImpls(typeof(ITextable));
-                    // update values to match dap
-                    if (btnFill.Enabled)
+                    // enable relavant controls and update values to match dap
+                    if (de.CurrentFigClassImpls(typeof(IFillable)))
+                    {
+                        btnFill.Enabled = true;
                         btnFill.Color = MakeColor(dap.Fill);
-                    if (btnStroke.Enabled)
+                    }
+                    if (de.CurrentFigClassImpls(typeof(IStrokeable)))
+                    {
+                        btnStroke.Enabled = true;
                         btnStroke.Color = MakeColor(dap.Stroke);
-                    if (btnStrokeWidth.Enabled)
+                        btnStrokeWidth.Enabled = true;
                         btnStrokeWidth.Value = (int)dap.StrokeWidth;
-                    if (btnStrokeStyle.Enabled)
+                        btnStrokeStyle.Enabled = true;
                         btnStrokeStyle.Value = dap.StrokeStyle;
-                    if (btnStartMarker.Enabled)
+                    }
+                    if (de.CurrentFigClassImpls(typeof(IMarkable)))
+                    {
+                        btnStartMarker.Enabled = true;
                         btnStartMarker.Value = dap.StartMarker;
-                    if (btnEndMarker.Enabled)
+                        btnEndMarker.Enabled = true;
                         btnEndMarker.Value = dap.EndMarker;
-                    if (btnAlpha.Enabled)
+                    }
+                    if (de.CurrentFigClassImpls(typeof(IAlphaBlendable)))
+                    {
+                        btnAlpha.Enabled = true;
                         btnAlpha.Value = dap.Alpha;
-                    if (cbFontName.Enabled)
+                    }
+                    if (de.CurrentFigClassImpls(typeof(ITextable)))
+                    {
+                        cbFontName.Enabled = true;
                         cbFontName.Value = dap.FontName;
+                        btnBold.Enabled = true;
+                        btnBold.Checked = dap.Bold;
+                        btnItalic.Enabled = true;
+                        btnItalic.Checked = dap.Italics;
+                        btnUnderline.Enabled = true;
+                        btnUnderline.Checked = dap.Underline;
+                        btnStrikethrough.Enabled = true;
+                        btnStrikethrough.Checked = dap.Strikethrough;
+                    }                        
                     break;
             }
             // re-enable events
@@ -560,6 +668,50 @@ namespace WinFormsDemo
             }
         }
 
+        private void btnFontProp_Changed(object sender, EventArgs e)
+        {
+            if (sender == btnBold)
+                switch (de.State)
+                {
+                    case DEngineState.Select:
+                        UpdateSelectedFigures(btnBold);
+                        break;
+                    default:
+                        dap.Bold = btnBold.Checked;
+                        break;
+                }
+            if (sender == btnItalic)
+                switch (de.State)
+                {
+                    case DEngineState.Select:
+                        UpdateSelectedFigures(btnItalic);
+                        break;
+                    default:
+                        dap.Italics = btnItalic.Checked;
+                        break;
+                }
+            if (sender == btnUnderline)
+                switch (de.State)
+                {
+                    case DEngineState.Select:
+                        UpdateSelectedFigures(btnUnderline);
+                        break;
+                    default:
+                        dap.Underline = btnUnderline.Checked;
+                        break;
+                }
+            if (sender == btnStrikethrough)
+                switch (de.State)
+                {
+                    case DEngineState.Select:
+                        UpdateSelectedFigures(btnStrikethrough);
+                        break;
+                    default:
+                        dap.Strikethrough = btnStrikethrough.Checked;
+                        break;
+                }
+        }
+
         private void UpdateSelectedFigures(object sender)
         {
             de.UndoRedoMgr.Start("Change Property"); // TODO: make this work better with the slider controls
@@ -586,8 +738,19 @@ namespace WinFormsDemo
                 }
                 if (sender == btnAlpha && f is IAlphaBlendable)
                     ((IAlphaBlendable)f).Alpha = btnAlpha.Value;
-                if (sender == cbFontName && f is ITextable)
-                    ((ITextable)f).FontName = cbFontName.Value;     
+                if (f is ITextable)
+                {
+                    if (sender == cbFontName)
+                        ((ITextable)f).FontName = cbFontName.Value;
+                    if (sender == btnBold)
+                        ((ITextable)f).Bold = btnBold.Checked;
+                    if (sender == btnItalic)
+                        ((ITextable)f).Italics = btnItalic.Checked;
+                    if (sender == btnUnderline)
+                        ((ITextable)f).Underline = btnUnderline.Checked;
+                    if (sender == btnStrikethrough)
+                        ((ITextable)f).Strikethrough = btnStrikethrough.Checked;
+                }
             }
             de.UndoRedoMgr.Commit();
             dvEditor.Update();
