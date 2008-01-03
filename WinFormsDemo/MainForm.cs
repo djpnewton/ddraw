@@ -91,7 +91,7 @@ namespace WinFormsDemo
             de.AddFigure(f);
             ms.Dispose();
             // text figure
-            f = new TextFigure(new DPoint(100, 200), "hello dan", GraphicsHelper.TextExtent, 0);
+            f = new TextFigure(new DPoint(100, 200), "hello\ndan", GraphicsHelper.TextExtent, 0);
             de.AddFigure(f);
             // compositing figure
             f = new CompositedExampleFigure();

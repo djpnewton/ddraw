@@ -1169,7 +1169,7 @@ namespace DDraw
             get { return text; }
             set
             {
-                DPoint sz = textExtent.MeasureText(value, fontName, fontSize);
+                DPoint sz = textExtent.MeasureText(value, fontName, fontSize, bold, italics, underline, strikethrough);
                 base.Width = sz.X;
                 base.Height = sz.Y;
                 text = value;

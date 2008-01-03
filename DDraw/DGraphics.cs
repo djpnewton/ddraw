@@ -97,7 +97,7 @@ namespace DDraw
 
     public abstract class DTextExtent
     {
-        public abstract DPoint MeasureText(string text, string fontName, double fontSize);
+        public abstract DPoint MeasureText(string text, string fontName, double fontSize, bool bold, bool italics, bool underline, bool strikethrough);
     }
 
     public enum DCompositingMode { SourceOver, SourceCopy };

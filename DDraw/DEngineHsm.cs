@@ -737,10 +737,12 @@ namespace DDraw
                         }
                         break;
                     case '\r': // enter
-                        State = DEngineState.Select;
+                        tf.Text = string.Concat(tf.Text, "\n");
+                        dv.Update(currentFigure.Rect);
                         break;
                     case (char)27: // esc
-                        goto case '\r';
+                        State = DEngineState.Select;
+                        break;
                     default:
                         tf.Text = string.Concat(tf.Text, k);
                         dv.Update(currentFigure.Rect);

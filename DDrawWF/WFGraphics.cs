@@ -83,9 +83,10 @@ namespace DDraw.WinForms
 
     public class WFTextExtent : DTextExtent
     {
-        public override DPoint MeasureText(string text, string fontName, double fontSize)
+        public override DPoint MeasureText(string text, string fontName, double fontSize, bool bold, bool italics, bool underline, bool strikethrough)
         {
-            Size sz = TextRenderer.MeasureText(text, new Font(fontName, (float)fontSize));
+            Size sz = TextRenderer.MeasureText(text, new Font(fontName, (float)fontSize, 
+                WFGraphics.MakeFontStyle(bold, italics, underline, strikethrough)));
             return new DPoint(sz.Width, sz.Height);
         }
     }
@@ -233,7 +234,7 @@ namespace DDraw.WinForms
                 (float)matrix.D, (float)matrix.E, (float)matrix.F);
         }
 		
-		private FontStyle MakeFontStyle(bool bold, bool italics, bool underline, bool strikethrough)
+		public static FontStyle MakeFontStyle(bool bold, bool italics, bool underline, bool strikethrough)
 		{
 			FontStyle res = FontStyle.Regular;
 			if (bold)

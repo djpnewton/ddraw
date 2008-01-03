@@ -71,20 +71,33 @@ namespace DDraw.GTK
     
     public class GTKTextExtent : DTextExtent
     {
-        public override DPoint MeasureText(string text, string fontName, double fontSize)
+        public override DPoint MeasureText(string text, string fontName, double fontSize, bool bold, bool italics, bool underline, bool strikethrough)
         {
+            // create surface and context and set properties
             Surface surf = new ImageSurface(Format.ARGB32, 10, 10);
             Context cr = new Context(surf);
-            cr.SelectFontFace(fontName, FontSlant.Normal, FontWeight.Normal);
+            FontWeight fw = FontWeight.Normal;
+            if (bold) fw = FontWeight.Bold;
+            FontSlant fs = FontSlant.Normal;
+            if (italics) fs = FontSlant.Italic;
+            cr.SelectFontFace(fontName, fs, fw);
             cr.SetFontSize(fontSize);
-            TextExtents te = cr.TextExtents(text);
-            double w = te.XAdvance;
-            double h = te.Height;
+            // split into lines
+            string[] lines = text.Split('\n');
+            // calc width and height for each line
+            double w = 0, h = 0;
             FontExtents fe = cr.FontExtents;
-            if (h < fe.Ascent)
-                h = fe.Ascent;
+            foreach (string line in lines)
+            {                
+                TextExtents te = cr.TextExtents(line);
+                if (w < te.XAdvance)
+                    w = te.XAdvance;
+                h += fe.Ascent + fe.Descent;
+            }
+            // dispose of resources
             surf.Destroy();
             ((IDisposable)cr).Dispose();
+            // return dimensions
             return new DPoint(w + fe.Descent * 2, h + fe.Descent * 1.5);
         }
     }
@@ -411,9 +424,10 @@ namespace DDraw.GTK
         {
             DrawText(text, fontName, fontSize, false, false, false, false, pt, color, alpha);
         }
-		
+        
 		public override void DrawText(string text, string fontName, double fontSize, bool bold, bool italics, bool underline, bool strikethrough, DPoint pt, DColor color, double alpha)
         {
+            // set context properties (font, color etc)
     		FontWeight fw = FontWeight.Normal;
     		if (bold) fw = FontWeight.Bold;
     		FontSlant fs = FontSlant.Normal;
@@ -421,24 +435,31 @@ namespace DDraw.GTK
             cr.SelectFontFace(fontName, fs, fw);
             cr.SetFontSize(fontSize);
             cr.Color = MakeColor(color, alpha);
-            TextExtents te = cr.TextExtents(text);
-            FontExtents fe = cr.FontExtents;
-    		double text_x = pt.X - te.XBearing + fe.Descent;
-    		double text_y = pt.Y - te.YBearing + fe.Descent;
-            cr.MoveTo(text_x, text_y);
-            cr.ShowText(text);
-    		if (underline)
-    		{
-    			cr.MoveTo(text_x, text_y + fe.Descent - 2);
-    			cr.LineTo(text_x + te.XAdvance, text_y + fe.Descent - 2);
-    			cr.Stroke();
-    		}
-    		if (strikethrough)
-    		{
-    			cr.MoveTo(text_x, text_y - fe.Descent);
-    			cr.LineTo(text_x + te.XAdvance, text_y - fe.Descent);
-    			cr.Stroke();	
-    		}
+            // split text at new lines
+            string[] lines = text.Split('\n');
+            // draw each line of text
+            foreach (string line in lines)
+            {
+                TextExtents te = cr.TextExtents(line);
+                FontExtents fe = cr.FontExtents;
+        		double line_x = pt.X - te.XBearing + fe.Descent;
+        		double line_y = pt.Y - te.YBearing + fe.Descent;
+                cr.MoveTo(line_x, line_y);
+                cr.ShowText(line);
+        		if (underline)
+        		{
+        			cr.MoveTo(line_x, line_y + fe.Descent - 2);
+        			cr.LineTo(line_x + te.XAdvance, line_y + fe.Descent - 2);
+        			cr.Stroke();
+        		}
+        		if (strikethrough)
+        		{
+        			cr.MoveTo(line_x, line_y - fe.Descent);
+        			cr.LineTo(line_x + te.XAdvance, line_y - fe.Descent);
+                }
+                // increment pt.Y
+                pt.Y += fe.Ascent + fe.Descent;
+            }
 		}
         
         public override DMatrix SaveTransform()
