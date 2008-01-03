@@ -114,11 +114,16 @@ namespace WinFormsDemo
             Brush b = new SolidBrush(Color.FromArgb((int)(alpha * 255), fill));
             Pen p = new Pen(Color.FromArgb((int)(alpha * 255), outline));
             float w = r.Width * 0.75f;
-            g.FillEllipse(b, new RectangleF(r.X, r.Y, w, r.Height));
-            g.DrawEllipse(p, new RectangleF(r.X, r.Y, w, r.Height));
-            float l = r.Left + r.Width * 0.25f;
-            g.FillEllipse(b, new RectangleF(l, r.Y, w, r.Height));
-            g.DrawEllipse(p, new RectangleF(l, r.Y, w, r.Height));
+            float h = r.Height * 0.75f;
+            float l = r.Left + r.Width * 0.125f;
+            g.FillEllipse(b, new RectangleF(l, r.Y, w, h));
+            g.DrawEllipse(p, new RectangleF(l, r.Y, w, h));
+            float t = r.Top + r.Height * 0.25f;
+            g.FillEllipse(b, new RectangleF(r.X, t, w, h));
+            g.DrawEllipse(p, new RectangleF(r.X, t, w, h));
+            l = r.Left + r.Width * 0.25f;
+            g.FillEllipse(b, new RectangleF(l, t, w, h));
+            g.DrawEllipse(p, new RectangleF(l, t, w, h));
         }
     }
 

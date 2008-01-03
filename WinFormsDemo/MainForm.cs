@@ -557,10 +557,12 @@ namespace WinFormsDemo
 
         private void btnFill_Click(object sender, EventArgs e)
         {
-            colorDialog1.Color = btnFill.Color;
-            if (colorDialog1.ShowDialog() == DialogResult.OK)
+            Point pt = new Point(btnFill.Bounds.Left, btnFill.Bounds.Bottom);
+            pt = btnFill.Owner.PointToScreen(pt);
+            ColorPicker f = new ColorPicker(pt.X, pt.Y);
+            f.ColorSelected += delegate(object sender2, EventArgs ea)
             {
-                btnFill.Color = colorDialog1.Color;
+                btnFill.Color = ((ColorPicker)sender2).SelectedColor;
                 switch (de.State)
                 {
                     case DEngineState.Select:
@@ -570,15 +572,18 @@ namespace WinFormsDemo
                         dap.Fill = MakeColor(btnFill.Color);
                         break;
                 }
-            }
+            };
+            f.Show();
         }
 
         private void btnStroke_Click(object sender, EventArgs e)
         {
-            colorDialog1.Color = btnStroke.Color;
-            if (colorDialog1.ShowDialog() == DialogResult.OK)
+            Point pt = new Point(btnStroke.Bounds.Left, btnStroke.Bounds.Bottom);
+            pt = btnStroke.Owner.PointToScreen(pt);
+            ColorPicker f = new ColorPicker(pt.X, pt.Y);
+            f.ColorSelected += delegate(object sender2, EventArgs ea)
             {
-                btnStroke.Color = colorDialog1.Color;
+                btnStroke.Color = ((ColorPicker)sender2).SelectedColor;
                 switch (de.State)
                 {
                     case DEngineState.Select:
@@ -588,7 +593,8 @@ namespace WinFormsDemo
                         dap.Stroke = MakeColor(btnStroke.Color);
                         break;
                 }
-            }
+            };
+            f.Show();
         }
 
         private void btnAlpha_AlphaChanged(object sender, double alpha)

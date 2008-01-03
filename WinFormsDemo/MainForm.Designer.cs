@@ -69,7 +69,6 @@ namespace WinFormsDemo
             this.imageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.colorDialog1 = new System.Windows.Forms.ColorDialog();
             this.cmsFigure = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.groupToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
@@ -146,7 +145,7 @@ namespace WinFormsDemo
             this.btnLine});
             this.tsEditorMode.Location = new System.Drawing.Point(3, 24);
             this.tsEditorMode.Name = "tsEditorMode";
-            this.tsEditorMode.Size = new System.Drawing.Size(462, 25);
+            this.tsEditorMode.Size = new System.Drawing.Size(323, 25);
             this.tsEditorMode.TabIndex = 0;
             this.tsEditorMode.Text = "toolStrip1";
             // 
@@ -227,51 +226,55 @@ namespace WinFormsDemo
             // 
             // btnTriangle
             // 
-            this.btnTriangle.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.btnTriangle.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
             this.btnTriangle.Image = ((System.Drawing.Image)(resources.GetObject("btnTriangle.Image")));
+            this.btnTriangle.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.btnTriangle.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnTriangle.Name = "btnTriangle";
-            this.btnTriangle.Size = new System.Drawing.Size(49, 22);
+            this.btnTriangle.Size = new System.Drawing.Size(23, 22);
             this.btnTriangle.Text = "Triangle";
             this.btnTriangle.Click += new System.EventHandler(this.btnPolygon_Click);
             // 
             // btnRATriangle
             // 
-            this.btnRATriangle.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.btnRATriangle.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
             this.btnRATriangle.Image = ((System.Drawing.Image)(resources.GetObject("btnRATriangle.Image")));
+            this.btnRATriangle.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.btnRATriangle.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnRATriangle.Name = "btnRATriangle";
-            this.btnRATriangle.Size = new System.Drawing.Size(66, 22);
+            this.btnRATriangle.Size = new System.Drawing.Size(23, 22);
             this.btnRATriangle.Text = "RA Triangle";
             this.btnRATriangle.Click += new System.EventHandler(this.btnPolygon_Click);
             // 
             // btnDiamond
             // 
-            this.btnDiamond.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.btnDiamond.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
             this.btnDiamond.Image = ((System.Drawing.Image)(resources.GetObject("btnDiamond.Image")));
+            this.btnDiamond.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.btnDiamond.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnDiamond.Name = "btnDiamond";
-            this.btnDiamond.Size = new System.Drawing.Size(52, 22);
+            this.btnDiamond.Size = new System.Drawing.Size(23, 22);
             this.btnDiamond.Text = "Diamond";
             this.btnDiamond.Click += new System.EventHandler(this.btnPolygon_Click);
             // 
             // btnPentagon
             // 
-            this.btnPentagon.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.btnPentagon.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
             this.btnPentagon.Image = ((System.Drawing.Image)(resources.GetObject("btnPentagon.Image")));
+            this.btnPentagon.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.btnPentagon.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnPentagon.Name = "btnPentagon";
-            this.btnPentagon.Size = new System.Drawing.Size(57, 22);
+            this.btnPentagon.Size = new System.Drawing.Size(23, 22);
             this.btnPentagon.Text = "Pentagon";
             this.btnPentagon.Click += new System.EventHandler(this.btnPolygon_Click);
             // 
             // btnLine
             // 
-            this.btnLine.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.btnLine.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
             this.btnLine.Image = ((System.Drawing.Image)(resources.GetObject("btnLine.Image")));
             this.btnLine.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnLine.Name = "btnLine";
-            this.btnLine.Size = new System.Drawing.Size(30, 22);
+            this.btnLine.Size = new System.Drawing.Size(23, 22);
             this.btnLine.Text = "Line";
             this.btnLine.Click += new System.EventHandler(this.btnLine_Click);
             // 
@@ -750,7 +753,7 @@ namespace WinFormsDemo
             this.btnAlpha.ShowDropDownArrow = false;
             this.btnAlpha.Size = new System.Drawing.Size(20, 22);
             this.btnAlpha.Text = "Alpha";
-            this.btnAlpha.Value = 0.3;
+            this.btnAlpha.Value = 1;
             this.btnAlpha.AlphaChanged += new WinFormsDemo.AlphaChangedHandler(this.btnAlpha_AlphaChanged);
             // 
             // cbFontName
@@ -848,7 +851,6 @@ namespace WinFormsDemo
         private System.Windows.Forms.StatusStrip statusStrip1;
         private System.Windows.Forms.Panel pnlMain;
         private System.Windows.Forms.ToolStripStatusLabel lbInfo;
-        private System.Windows.Forms.ColorDialog colorDialog1;
         private System.Windows.Forms.ToolStripButton btnSelect;
         private System.Windows.Forms.ToolStripButton btnPen;
         private PreviewBar previewBar1;
