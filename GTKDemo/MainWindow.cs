@@ -59,7 +59,12 @@ namespace GTKDemo
 			rf.Alpha = 0.7;
 			rf.Fill = new DColor(80, 80, 80);
 			de.AddFigure(rf);
-			de.AddFigure(new TextFigure(new DPoint(150, 30), "hello", GraphicsHelper.TextExtent, 0));
+            TextFigure tf = new TextFigure(new DPoint(150, 30), "hello", 0);
+            tf.FontName = "Arial";
+            tf.Underline = true;
+            tf.Strikethrough = true;
+            tf.Italics = true;
+			de.AddFigure(tf);
             // compositing figure
             Figure f = new CompositedExampleFigure();
             f.Rect = new DRect(20, 150, 50, 50);

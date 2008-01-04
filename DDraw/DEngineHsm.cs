@@ -642,7 +642,7 @@ namespace DDraw
                 if (autoUndoRecord)
                     undoRedoMgr.Start("Add Text");
                 // create TextFigure
-                currentFigure = new TextFigure(pt, "", GraphicsHelper.TextExtent, 0);
+                currentFigure = new TextFigure(pt, "", 0);
                 authorProps.ApplyPropertiesToFigure((TextFigure)currentFigure);
                 // add to list of figures
                 figures.Add(currentFigure);

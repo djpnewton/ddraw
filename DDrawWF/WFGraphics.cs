@@ -81,21 +81,11 @@ namespace DDraw.WinForms
         }
     }
 
-    public class WFTextExtent : DTextExtent
-    {
-        public override DPoint MeasureText(string text, string fontName, double fontSize, bool bold, bool italics, bool underline, bool strikethrough)
-        {
-            Size sz = TextRenderer.MeasureText(text, new Font(fontName, (float)fontSize, 
-                WFGraphics.MakeFontStyle(bold, italics, underline, strikethrough)));
-            return new DPoint(sz.Width, sz.Height);
-        }
-    }
-
     public class WFGraphics : DGraphics
     {
         public static void Init()
         {
-            GraphicsHelper.Init(typeof(WFBitmap), typeof(WFGraphics), typeof(WFTextExtent));
+            GraphicsHelper.Init(typeof(WFBitmap), typeof(WFGraphics));
         }
 
         Graphics g;
@@ -234,7 +224,7 @@ namespace DDraw.WinForms
                 (float)matrix.D, (float)matrix.E, (float)matrix.F);
         }
 		
-		public static FontStyle MakeFontStyle(bool bold, bool italics, bool underline, bool strikethrough)
+		public FontStyle MakeFontStyle(bool bold, bool italics, bool underline, bool strikethrough)
 		{
 			FontStyle res = FontStyle.Regular;
 			if (bold)
@@ -406,17 +396,43 @@ namespace DDraw.WinForms
 
         public override void DrawText(string text, string fontName, double fontSize, DPoint pt, DColor color)
         {
-            g.DrawString(text, new Font(fontName, (float)fontSize), new SolidBrush(MakeColor(color)), new PointF((float)pt.X, (float)pt.Y));
+            DrawText(text, fontName, fontSize, false, false, false, false, pt, color, 1);
         }
 
         public override void DrawText(string text, string fontName, double fontSize, DPoint pt, DColor color, double alpha)
         {
-            g.DrawString(text, new Font(fontName, (float)fontSize), new SolidBrush(MakeColor(color, alpha)), new PointF((float)pt.X, (float)pt.Y));
+            DrawText(text, fontName, fontSize, false, false, false, false, pt, color, alpha);
         }
 
         public override void DrawText(string text, string fontName, double fontSize, bool bold, bool italics, bool underline, bool strikethrough, DPoint pt, DColor color, double alpha)
         {
-            g.DrawString(text, new Font(fontName, (float)fontSize, MakeFontStyle(bold, italics, underline, strikethrough)), new SolidBrush(MakeColor(color, alpha)), new PointF((float)pt.X, (float)pt.Y));
+            g.DrawString(text, new Font(fontName, (float)fontSize, MakeFontStyle(bold, italics, underline, strikethrough)), new SolidBrush(MakeColor(color, alpha)), new PointF((float)pt.X, (float)pt.Y), StringFormat.GenericDefault);
+        }
+
+        public override DPoint MeasureText(string text, string fontName, double fontSize)
+        {
+            return MeasureText(text, fontName, fontSize, false, false, false, false);
+        }
+
+        public override DPoint MeasureText(string text, string fontName, double fontSize, bool bold, bool italics, bool underline, bool strikethrough)
+        {
+            // create the font
+            Font f = new Font(fontName, (float)fontSize, MakeFontStyle(bold, italics, underline, strikethrough));
+            // measure the actual size of the text
+            StringFormat sf = StringFormat.GenericDefault;
+            sf.FormatFlags |= StringFormatFlags.MeasureTrailingSpaces;
+            SizeF sz = g.MeasureString(text, f, new PointF(0, 0), sf);
+            sf.SetMeasurableCharacterRanges(new CharacterRange[] { new CharacterRange(0, text.Length) });
+            Region[] regs = g.MeasureCharacterRanges(text, f, new RectangleF(0, 0, sz.Width, sz.Height), sf);
+            if (regs.Length > 0)
+            {
+                RectangleF r = regs[0].GetBounds(g);
+                sz.Width = r.Left + r.Width;
+            }
+            // measure a new or empty line as if it had text on it
+            if (text.EndsWith("\n") || text == "")
+                sz.Height = g.MeasureString(string.Concat(text, "."), f).Height;
+            return new DPoint(sz.Width, sz.Height);
         }
 
         public override DMatrix SaveTransform()

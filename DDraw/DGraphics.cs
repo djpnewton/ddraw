@@ -9,8 +9,6 @@ namespace DDraw
     {
         static Type _bitmapClass;
         static Type _graphicsClass;
-        static Type _textExtentClass;
-        static DTextExtent te = null;
 
         public static DBitmap MakeBitmap(double width, double height)
         {
@@ -22,24 +20,27 @@ namespace DDraw
             return (DGraphics)Activator.CreateInstance(_graphicsClass, new object[] { bmp });
         }
 
-        public static DTextExtent TextExtent
+        public static DPoint MeasureText(string text, string fontName, double fontSize)
         {
-            get
-            {
-                if (te == null)
-                    te = (DTextExtent)Activator.CreateInstance(_textExtentClass);
-                return te;
-            }
+            return MeasureText(text, fontName, fontSize, false, false, false, false);
         }
 
-        public static void Init(Type bitmapClass, Type graphicsClass, Type textExtentClass)
+        public static DPoint MeasureText(string text, string fontName, double fontSize, bool bold, bool italics, bool underline, bool strikethrough)
+        {
+            DBitmap bmp = MakeBitmap(10, 10);
+            DGraphics dg = MakeGraphics(bmp);
+            DPoint sz = dg.MeasureText(text, fontName, fontSize, bold, italics, underline, strikethrough);
+            dg.Dispose();
+            bmp.Dispose();
+            return sz;
+        }
+
+        public static void Init(Type bitmapClass, Type graphicsClass)
         {
             // bitmapClass needs to be a desendant of DBitmap
             _bitmapClass = bitmapClass;
             // graphicsClass needs to be a desendant of DGraphics
             _graphicsClass = graphicsClass;
-            // textExtentClass needs to be a desendant of DTextExtent
-            _textExtentClass = textExtentClass;
         }
     }
 
@@ -95,18 +96,13 @@ namespace DDraw
         public abstract void Save(string filename);
     }
 
-    public abstract class DTextExtent
-    {
-        public abstract DPoint MeasureText(string text, string fontName, double fontSize, bool bold, bool italics, bool underline, bool strikethrough);
-    }
-
     public enum DCompositingMode { SourceOver, SourceCopy };
 
     public abstract class DGraphics
     {
-        public static void Init(Type bitmapClass, Type graphicsClass, Type textExtentClass)
+        public static void Init(Type bitmapClass, Type graphicsClass)
         {
-            GraphicsHelper.Init(bitmapClass, graphicsClass, textExtentClass);
+            GraphicsHelper.Init(bitmapClass, graphicsClass);
         }
 
         // Abstract Drawing Methods //
@@ -141,6 +137,8 @@ namespace DDraw
         abstract public void DrawText(string text, string fontName, double fontSize, DPoint pt, DColor color);
         abstract public void DrawText(string text, string fontName, double fontSize, DPoint pt, DColor color, double alpha);
         abstract public void DrawText(string text, string fontName, double fontSize, bool bold, bool italics, bool underline, bool strikethrough, DPoint pt, DColor color, double alpha);
+        abstract public DPoint MeasureText(string text, string fontName, double fontSize);
+        abstract public DPoint MeasureText(string text, string fontName, double fontSize, bool bold, bool italics, bool underline, bool strikethrough);
 
         abstract public DMatrix SaveTransform();
         abstract public void LoadTransform(DMatrix matrix);

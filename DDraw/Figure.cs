@@ -1112,8 +1112,6 @@ namespace DDraw
 
     public class TextFigure : RectbaseFigure, IFillable, ITextable
     {
-        DTextExtent textExtent;
-
         string fontName = "Courier New";
         public string FontName
         {
@@ -1142,25 +1140,41 @@ namespace DDraw
         public bool Bold
         {
             get { return bold; }
-            set { bold = value; }
+            set
+            {
+                bold = value;
+                Text = text;
+            }
         }
         bool italics = false;
         public bool Italics
         {
             get { return italics; }
-            set { italics = value; }
+            set
+            {
+                italics = value; 
+                Text = text;
+            }
         }
         bool underline = false;
         public bool Underline
         {
             get { return underline; }
-            set { underline = value; }
+            set
+            {
+                underline = value; 
+                Text = text;
+            }
         }
         bool strikethrough = false;
         public bool Strikethrough
         {
             get { return strikethrough; }
-            set { strikethrough = value; }
+            set
+            {
+                strikethrough = value; 
+                Text = text;
+            }
         }
 
         private string text = null;
@@ -1169,7 +1183,7 @@ namespace DDraw
             get { return text; }
             set
             {
-                DPoint sz = textExtent.MeasureText(value, fontName, fontSize, bold, italics, underline, strikethrough);
+                DPoint sz = GraphicsHelper.MeasureText(value, fontName, FontSize, bold, italics, underline, strikethrough);
                 base.Width = sz.X;
                 base.Height = sz.Y;
                 text = value;
@@ -1199,17 +1213,15 @@ namespace DDraw
             get { return true; }
         }
 
-        public TextFigure(DPoint pt, string text, DTextExtent textExtent, double rotation)
+        public TextFigure(DPoint pt, string text, double rotation)
         {
-            this.textExtent = textExtent;
             TopLeft = pt;
             Text = text;
             Rotation = rotation;
         }
 
-        public TextFigure(DPoint pt, string text, string fontName, double fontSize, DTextExtent textExtent, double rotation)
+        public TextFigure(DPoint pt, string text, string fontName, double fontSize, double rotation)
         {
-            this.textExtent = textExtent;
             TopLeft = pt;
             this.fontName = fontName;
             this.fontSize = fontSize;
@@ -1335,6 +1347,12 @@ namespace DDraw
             tf.Paint(dg);
             tf.Alpha = alpha;
             tf.Rotation = rot;
+            // paint cursor
+            string[] lines = tf.Text.Split('\n');
+            DPoint pt = tf.Rect.BottomLeft;
+            string s = lines[lines.Length - 1];
+            DPoint sz = dg.MeasureText(s, FontName, FontSize, Bold, Italics, Underline, Strikethrough);
+            dg.DrawLine(new DPoint(pt.X + sz.X, pt.Y - sz.Y), new DPoint(tf.X + sz.X, pt.Y), DColor.Black, 1, DStrokeStyle.Solid, 2, DStrokeCap.Butt);
         }
     }
 
