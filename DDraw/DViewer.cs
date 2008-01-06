@@ -174,7 +174,7 @@ namespace DDraw
                 KeyUp(this, k);
         }
 
-        public void Paint(List<Figure> figures, bool drawSelectionRect, SelectionFigure selectionRect)
+        public void Paint(List<Figure> figures, Figure[] controlFigures)
         {
             // set antialias value
             dg.AntiAlias = AntiAlias;
@@ -203,10 +203,10 @@ namespace DDraw
                     figure.Scale = invScale;
                     figure.PaintSelectionChrome(dg);
                 }
-                if (drawSelectionRect)
+                foreach (Figure figure in controlFigures)
                 {
-                    selectionRect.Scale = invScale;
-                    selectionRect.Paint(dg);
+                    figure.Scale = invScale;
+                    figure.Paint(dg);
                 }
             }
         }

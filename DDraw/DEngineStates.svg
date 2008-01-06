@@ -96,10 +96,10 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="0.79022223"
-     inkscape:cx="463.77744"
-     inkscape:cy="383.59769"
+     inkscape:cx="425.72577"
+     inkscape:cy="382.78443"
      inkscape:document-units="px"
-     inkscape:current-layer="layer1"
+     inkscape:current-layer="layer3"
      width="1052.3622px"
      height="744.09448px"
      inkscape:window-width="1280"
@@ -197,7 +197,8 @@
      inkscape:label="states"
      inkscape:groupmode="layer"
      id="layer1"
-     style="opacity:1;display:inline">
+     style="opacity:1;display:inline"
+     sodipodi:insensitive="true">
     <g
        id="g6197"
        transform="translate(16.672291,-203.92175)">
@@ -870,12 +871,133 @@
         </g>
       </g>
     </g>
+    <g
+       style="opacity:1;display:inline"
+       id="g8205"
+       transform="translate(270.29992,23.973009)">
+      <g
+         id="g8207">
+        <g
+           id="g8273">
+          <g
+             transform="translate(1079.893,-209.44701)"
+             id="g8209">
+            <rect
+               style="fill:#ffc200;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+               id="rect8211"
+               width="279.66147"
+               height="205.60556"
+               x="-650.52942"
+               y="302.33151"
+               ry="22.246778" />
+            <path
+               style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+               d="M -651.50891,328.3955 L -372.19196,330.99131"
+               id="path8213"
+               sodipodi:nodetypes="cc" />
+            <text
+               xml:space="preserve"
+               style="font-size:20px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+               x="-629.92834"
+               y="321.67984"
+               id="text8215"><tspan
+                 sodipodi:role="line"
+                 id="tspan8217"
+                 x="-629.92834"
+                 y="321.67984">Eraser</tspan></text>
+            <text
+               xml:space="preserve"
+               style="font-size:12px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+               x="-646.04596"
+               y="346.52774"
+               id="text8219">entry / ClearSelection()</text>
+          </g>
+          <g
+             transform="translate(295.53401,-48.479332)"
+             id="g8221"
+             style="display:inline">
+            <rect
+               style="fill:#00d700;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:1.59165025;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+               id="rect8223"
+               width="205.90736"
+               height="56.819839"
+               x="155.244"
+               y="207.97206"
+               ry="8.5229769" />
+            <path
+               style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+               d="M 154.10505,234.47019 L 358.26094,235.81332"
+               id="path8225"
+               sodipodi:nodetypes="cc" />
+            <text
+               xml:space="preserve"
+               style="font-size:20px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+               x="166.34019"
+               y="227.69572"
+               id="text8227">EraserDefault</text>
+            <text
+               xml:space="preserve"
+               style="font-size:12px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+               x="163.04117"
+               y="248.05411"
+               id="text8229"><tspan
+                 sodipodi:role="line"
+                 id="tspan8231"
+                 x="163.04117"
+                 y="248.05411">MOUSEMOVE</tspan><tspan
+                 id="tspan8233"
+                 sodipodi:role="line"
+                 x="163.04117"
+                 y="263.05411" /></text>
+          </g>
+          <g
+             transform="translate(336.87259,-86.05986)"
+             id="g8235"
+             style="display:inline">
+            <rect
+               style="fill:#00d700;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:1.59165025;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;display:inline"
+               id="rect8237"
+               width="205.90736"
+               height="56.819839"
+               x="153.99132"
+               y="313.19754"
+               ry="8.5229769" />
+            <path
+               style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;display:inline"
+               d="M 152.85237,339.69567 L 357.00826,341.0388"
+               id="path8239"
+               sodipodi:nodetypes="cc" />
+            <text
+               xml:space="preserve"
+               style="font-size:20px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;display:inline;font-family:Bitstream Vera Sans"
+               x="165.08751"
+               y="332.9212"
+               id="text8241">Erasing</text>
+            <text
+               xml:space="preserve"
+               style="font-size:12px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;display:inline;font-family:Bitstream Vera Sans"
+               x="161.78848"
+               y="353.2796"
+               id="text8243"><tspan
+                 sodipodi:role="line"
+                 id="tspan8245"
+                 x="161.78848"
+                 y="353.2796">MOUSEMOVE</tspan><tspan
+                 id="tspan8247"
+                 sodipodi:role="line"
+                 x="161.78848"
+                 y="368.2796" /></text>
+          </g>
+        </g>
+      </g>
+    </g>
   </g>
   <g
      inkscape:groupmode="layer"
      id="layer3"
      inkscape:label="signals"
-     style="display:inline">
+     style="display:inline"
+     sodipodi:insensitive="true">
     <path
        style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:0.92148161;stroke-linecap:butt;stroke-linejoin:miter;marker-start:url(#Arrow1Mstart);marker-end:url(#Dot_l);stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;display:inline"
        d="M 27.305114,72.12087 C 27.305114,72.12087 23.171795,67.626922 16.164094,60.84373 C 10.728744,55.582517 10.901461,45.48664 10.901461,45.48664"
@@ -992,7 +1114,7 @@
          id="tspan2871">MOUSEDOWN [btn == Left]</tspan><tspan
          sodipodi:role="line"
          x="258.12845"
-         y="278.9822"
+         y="278.98221"
          id="tspan2879">KEYPRESS [key==ENTER || key==ESC]</tspan></text>
     <text
        xml:space="preserve"
@@ -1048,7 +1170,7 @@
          id="tspan3372">MOUSEDOWN</tspan><tspan
          sodipodi:role="line"
          x="472.20786"
-         y="-413.68725"
+         y="-413.68726"
          id="tspan3374" /></text>
     <text
        xml:space="preserve"
@@ -1133,5 +1255,62 @@
        d="M 718.8885,577.54001 L 753.66971,640.839"
        id="path2561"
        sodipodi:nodetypes="cs" />
+    <text
+       xml:space="preserve"
+       style="font-size:12.00000191px;font-style:normal;font-weight:normal;opacity:1;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;display:inline;font-family:Bitstream Vera Sans"
+       x="635.21405"
+       y="-702.20734"
+       id="text8249"
+       transform="matrix(0.5147077,0.8573657,-0.8573657,0.5147077,0,0)"><tspan
+         sodipodi:role="line"
+         x="635.21405"
+         y="-702.20734"
+         id="tspan8251">MOUSEDOWN</tspan><tspan
+         sodipodi:role="line"
+         x="635.21405"
+         y="-687.20734"
+         id="tspan8253" /></text>
+    <path
+       style="opacity:1;fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;marker-start:url(#Arrow1Lstart);marker-end:none;stroke-opacity:1;display:inline"
+       d="M 959.89754,248.2528 L 928.47416,191.00015"
+       id="path8261"
+       sodipodi:nodetypes="cs" />
+    <text
+       xml:space="preserve"
+       style="font-size:12px;font-style:normal;font-weight:normal;opacity:1;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;display:inline;font-family:Bitstream Vera Sans"
+       x="575.95227"
+       y="-501.19894"
+       id="text8255"
+       transform="matrix(0.4895124,0.8719963,-0.8719963,0.4895124,0,0)"><tspan
+         sodipodi:role="line"
+         x="575.95227"
+         y="-501.19894"
+         id="tspan8257">MOUSEUP</tspan></text>
+    <path
+       style="opacity:1;fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:0.82558382;stroke-linecap:butt;stroke-linejoin:miter;marker-start:url(#Arrow1Mstart);marker-end:url(#Dot_l);stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;display:inline"
+       d="M 720.17744,209.43552 C 720.17744,209.43552 716.47427,205.40926 710.19586,199.33199 C 705.32615,194.6183 705.4809,185.57309 705.4809,185.57309"
+       id="path8259"
+       sodipodi:nodetypes="csc" />
+    <path
+       style="opacity:1;fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;marker-start:url(#Arrow1Lstart);marker-end:none;stroke-opacity:1;display:inline"
+       d="M 725.21709,238.35244 L 759.9983,301.65143"
+       id="path8263"
+       sodipodi:nodetypes="cs" />
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;marker-start:url(#Arrow1Lstart);stroke-opacity:1;display:inline"
+       d="M 893.68156,114.34471 C 869.99574,91.906641 730.88945,112.02311 718.52314,72.944375"
+       id="path8295"
+       sodipodi:nodetypes="cc" />
+    <text
+       xml:space="preserve"
+       style="font-size:12.00000191px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;display:inline;font-family:Bitstream Vera Sans"
+       x="754.63245"
+       y="7.7786956"
+       id="text8297"
+       transform="matrix(0.9940071,0.1093152,-0.1093152,0.9940071,0,0)"><tspan
+         sodipodi:role="line"
+         id="tspan8299"
+         x="754.63245"
+         y="7.7786956">GUI_ERASER</tspan></text>
   </g>
 </svg>

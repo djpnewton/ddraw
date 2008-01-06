@@ -45,6 +45,7 @@ namespace WinFormsDemo
             this.btnDiamond = new System.Windows.Forms.ToolStripButton();
             this.btnPentagon = new System.Windows.Forms.ToolStripButton();
             this.btnLine = new System.Windows.Forms.ToolStripButton();
+            this.btnEraser = new System.Windows.Forms.ToolStripButton();
             this.toolStripContainer1 = new System.Windows.Forms.ToolStripContainer();
             this.pnlMain = new System.Windows.Forms.Panel();
             this.pnlViewer = new System.Windows.Forms.Panel();
@@ -134,6 +135,7 @@ namespace WinFormsDemo
             this.toolStripSeparator1,
             this.btnSelect,
             this.btnPen,
+            this.btnEraser,
             this.btnRect,
             this.btnEllipse,
             this.btnText,
@@ -145,7 +147,7 @@ namespace WinFormsDemo
             this.btnLine});
             this.tsEditorMode.Location = new System.Drawing.Point(3, 24);
             this.tsEditorMode.Name = "tsEditorMode";
-            this.tsEditorMode.Size = new System.Drawing.Size(323, 25);
+            this.tsEditorMode.Size = new System.Drawing.Size(377, 25);
             this.tsEditorMode.TabIndex = 0;
             this.tsEditorMode.Text = "toolStrip1";
             // 
@@ -277,6 +279,17 @@ namespace WinFormsDemo
             this.btnLine.Size = new System.Drawing.Size(23, 22);
             this.btnLine.Text = "Line";
             this.btnLine.Click += new System.EventHandler(this.btnLine_Click);
+            // 
+            // btnEraser
+            // 
+            this.btnEraser.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.btnEraser.Image = ((System.Drawing.Image)(resources.GetObject("btnEraser.Image")));
+            this.btnEraser.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+            this.btnEraser.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnEraser.Name = "btnEraser";
+            this.btnEraser.Size = new System.Drawing.Size(23, 22);
+            this.btnEraser.Text = "Eraser";
+            this.btnEraser.Click += new System.EventHandler(this.btn_Eraser_Click);
             // 
             // toolStripContainer1
             // 
@@ -669,7 +682,7 @@ namespace WinFormsDemo
             this.btnStrikethrough});
             this.tsFigureProps.Location = new System.Drawing.Point(3, 49);
             this.tsFigureProps.Name = "tsFigureProps";
-            this.tsFigureProps.Size = new System.Drawing.Size(402, 25);
+            this.tsFigureProps.Size = new System.Drawing.Size(371, 25);
             this.tsFigureProps.TabIndex = 2;
             // 
             // btnFill
@@ -914,6 +927,7 @@ namespace WinFormsDemo
         private System.Windows.Forms.ToolStripButton btnItalic;
         private System.Windows.Forms.ToolStripButton btnUnderline;
         private System.Windows.Forms.ToolStripButton btnStrikethrough;
+        private System.Windows.Forms.ToolStripButton btnEraser;
     }
 }
 

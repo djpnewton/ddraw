@@ -124,9 +124,10 @@ namespace DDraw
 
     public interface IChildFigureable
     {
-        Figure[] ChildFigures
+        List<Figure> ChildFigures
         {
             get;
+            set;
         }
     }
 
@@ -590,17 +591,6 @@ namespace DDraw
             get { return StrokeHelper.RectIncludingStrokeWidth(Rect, strokeWidth); }
         }
         #endregion
-    }
-
-    public class SelectionFigure : RectbaseFigure
-    {
-        public SelectionFigure(DRect rect, double rotation) : base(rect, rotation) { }
-
-        protected override void PaintBody(DGraphics dg)
-        {
-            dg.DrawRect(X, Y, Width, Height, DColor.White, Alpha, Scale);
-            dg.DrawRect(X, Y, Width, Height, DColor.Black, Alpha, Scale, DStrokeStyle.Dot, DStrokeJoin.Mitre);
-        }
     }
 
     public class EllipseFigure : RectFigure
@@ -1436,24 +1426,37 @@ namespace DDraw
 
         public bool UseRealAlpha = true;
 
-        Figure[] childFigs;
-        public Figure[] ChildFigures
+        List<Figure> childFigs;
+        public List<Figure> ChildFigures
         {
-            get { return childFigs; }
+            get  { return new List<Figure>(childFigs.ToArray()); }
+            set
+            {
+                childFigs = value;
+                CreateOriginalRects();
+            }
         }
 
         DRect[] originalChildRects;
         DRect originalRect;
 
-        public GroupFigure(Figure[] figs)
+        public GroupFigure(List<Figure> figs)
         {
             System.Diagnostics.Debug.Assert(figs != null, "figs is not assigned");
-            System.Diagnostics.Debug.Assert(figs.Length > 1, "figs.Length is less than 2");
-            childFigs = figs;
-            // store starting dimensions for scaling later on
-            originalChildRects = new DRect[figs.Length];
-            int i = 0;
+            System.Diagnostics.Debug.Assert(figs.Count > 1, "figs.Length is less than 2");
+            // make new figure list
+            childFigs = new List<Figure>();
             foreach (Figure f in figs)
+                childFigs.Add(f);
+            // store starting dimensions for scaling later on
+            CreateOriginalRects();
+        }
+
+        void CreateOriginalRects()
+        {
+            originalChildRects = new DRect[childFigs.Count];
+            int i = 0;
+            foreach (Figure f in childFigs)
             {
                 originalChildRects[i] = f.Rect;
                 i++;
@@ -1564,6 +1567,26 @@ namespace DDraw
         {
             foreach (Figure f in childFigs)
                 f.AfterResize();
+        }
+
+        public void AddChild(Figure f)
+        {
+            childFigs.Add(f);
+            CreateOriginalRects();
+        }
+
+        public void RemoveChild(Figure f)
+        {
+            if (childFigs.Contains(f))
+            {
+                childFigs.Remove(f);
+                CreateOriginalRects();
+            }
+        }
+
+        public DRect GetChildBoundingBox(Figure f)
+        {
+            return DGeom.BoundingBoxOfRotatedRect(f.GetEncompassingRect(), Rotation, Rect.Center);
         }
     }
 

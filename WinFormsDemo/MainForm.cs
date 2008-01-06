@@ -167,7 +167,7 @@ namespace WinFormsDemo
             }
         }
 
-        Color GetFillMatch(Figure[] figs)
+        Color GetFillMatch(List<Figure> figs)
         {
             Color fill = Color.Empty;
             foreach (Figure f in figs)
@@ -186,7 +186,7 @@ namespace WinFormsDemo
             return fill;
         }
 
-        Color GetStrokeMatch(Figure[] figs)
+        Color GetStrokeMatch(List<Figure> figs)
         {
             Color stroke = Color.Empty;
             foreach (Figure f in figs)
@@ -205,7 +205,7 @@ namespace WinFormsDemo
             return stroke;
         }
 
-        double GetStrokeWidthMatch(Figure[] figs)
+        double GetStrokeWidthMatch(List<Figure> figs)
         {
             double strokeWidth = ToolStripStrokeWidthButton.Empty;
             foreach (Figure f in figs)
@@ -224,7 +224,7 @@ namespace WinFormsDemo
             return strokeWidth;
         }
 
-        DStrokeStyle GetStrokeStyleMatch(Figure[] figs)
+        DStrokeStyle GetStrokeStyleMatch(List<Figure> figs)
         {
             DStrokeStyle strokeStyle = DStrokeStyle.Solid;
             foreach (Figure f in figs)
@@ -243,7 +243,7 @@ namespace WinFormsDemo
             return strokeStyle;
         }
 
-        DMarker GetMarkerMatch(Figure[] figs, bool start)
+        DMarker GetMarkerMatch(List<Figure> figs, bool start)
         {
             DMarker marker = DMarker.None;
             foreach (Figure f in figs)
@@ -273,7 +273,7 @@ namespace WinFormsDemo
             return marker;
         }
 
-        double GetAlphaMatch(Figure[] figs)
+        double GetAlphaMatch(List<Figure> figs)
         {
             double alpha = ToolStripAlphaButton.Empty;
             foreach (Figure f in figs)
@@ -292,7 +292,7 @@ namespace WinFormsDemo
             return alpha;
         }
 
-        string GetFontNameMatch(Figure[] figs)
+        string GetFontNameMatch(List<Figure> figs)
         {
             string fontName = null;
             foreach (Figure f in figs)
@@ -311,7 +311,7 @@ namespace WinFormsDemo
             return fontName;
         }
 
-        bool GetBoldMatch(Figure[] figs)
+        bool GetBoldMatch(List<Figure> figs)
         {
             bool bold = false;
             foreach (Figure f in figs)
@@ -330,7 +330,7 @@ namespace WinFormsDemo
             return bold;
         }
 
-        bool GetItalicMatch(Figure[] figs)
+        bool GetItalicMatch(List<Figure> figs)
         {
             bool italic = false;
             foreach (Figure f in figs)
@@ -349,7 +349,7 @@ namespace WinFormsDemo
             return italic;
         }
 
-        bool GetUnderlineMatch(Figure[] figs)
+        bool GetUnderlineMatch(List<Figure> figs)
         {
             bool underline = false;
             foreach (Figure f in figs)
@@ -368,7 +368,7 @@ namespace WinFormsDemo
             return underline;
         }
 
-        bool GetStrikethroughMatch(Figure[] figs)
+        bool GetStrikethroughMatch(List<Figure> figs)
         {
             bool strikethrough = false;
             foreach (Figure f in figs)
@@ -422,7 +422,7 @@ namespace WinFormsDemo
             {
                 case DEngineState.Select:
                     // get selected figures
-                    Figure[] figs = de.SelectedFigures;
+                    List<Figure> figs = de.SelectedFigures;
                     // test to enable property controls
                     foreach (Figure f in figs)
                         if (f is IFillable)
@@ -453,7 +453,7 @@ namespace WinFormsDemo
                             btnStrikethrough.Enabled = true;
                         }
                     // set property controls to match selected figure/s
-                    if (figs.Length > 0)
+                    if (figs.Count > 0)
                     {
                         btnFill.Color = GetFillMatch(figs);
                         btnStroke.Color = GetStrokeMatch(figs);
@@ -518,12 +518,12 @@ namespace WinFormsDemo
 
         void InitMenus()
         {
-            Figure[] figs = de.SelectedFigures;
+            List<Figure> figs = de.SelectedFigures;
             // update group menu item
             groupToolStripMenuItem.Enabled = true;
-            if (figs.Length == 1 && figs[0] is GroupFigure)
+            if (de.CanUngroupFigures(figs))
                 groupToolStripMenuItem.Text = "Ungroup";
-            else if (figs.Length > 1)
+            else if (de.CanGroupFigures(figs))
                 groupToolStripMenuItem.Text = "Group";
             else
                 groupToolStripMenuItem.Enabled = false;
@@ -546,6 +546,8 @@ namespace WinFormsDemo
             btnRATriangle.Checked = de.CurrentFigClassIs(typeof(RightAngleTriangleFigure));
             btnDiamond.Checked = de.CurrentFigClassIs(typeof(DiamondFigure));
             btnPentagon.Checked = de.CurrentFigClassIs(typeof(PentagonFigure));
+            btnLine.Checked = de.CurrentFigClassIs(typeof(LineFigure));
+            btnEraser.Checked = state == DEngineState.Eraser;
             InitPropertyControls(state);
         }
 
@@ -721,7 +723,7 @@ namespace WinFormsDemo
         private void UpdateSelectedFigures(object sender)
         {
             de.UndoRedoMgr.Start("Change Property"); // TODO: make this work better with the slider controls
-            Figure[] figs = de.SelectedFigures;
+            List<Figure> figs = de.SelectedFigures;
             foreach (Figure f in figs)
             {
                 if (sender == btnFill && f is IFillable)
@@ -809,6 +811,12 @@ namespace WinFormsDemo
             de.SetStateByFigureClass(typeof(LineFigure));
         }
 
+        private void btn_Eraser_Click(object sender, EventArgs e)
+        {
+            de.State = DEngineState.Eraser;
+            de.SetEraserSize(25);
+        }
+
         private void previewBar1_PreviewSelected(Preview p)
         {
             SetCurrentDe(p.DEngine);
@@ -858,10 +866,10 @@ namespace WinFormsDemo
 
         private void groupToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Figure[] figs = de.SelectedFigures;
-            if (figs.Length == 1 && figs[0] is GroupFigure)
-                de.UngroupFigure((GroupFigure)figs[0]);
-            else if (figs.Length > 1)
+            List<Figure> figs = new List<Figure>(de.SelectedFigures);
+            if (de.CanUngroupFigures(figs))
+                de.UngroupFigures(figs);
+            else if (de.CanGroupFigures(figs))
                 de.GroupFigures(figs);
         }
 

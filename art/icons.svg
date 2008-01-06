@@ -275,5 +275,29 @@
        inkscape:export-filename="D:\projects\me\dd3\line.png"
        inkscape:export-xdpi="12.222222"
        inkscape:export-ydpi="12.222222" />
+    <rect
+       style="opacity:1;fill:none;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="rect2317"
+       width="100"
+       height="100"
+       x="240.5"
+       y="191.86218"
+       ry="1.9002792" />
+    <path
+       style="fill:#ffffff;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;fill-opacity:1"
+       d="M 292.471,207.41774 L 252.471,247.41774 C 242.471,264.91774 242.971,265.16234 252.471,277.41774 C 262.471,287.41774 282.471,277.41774 282.471,277.41774 L 322.471,237.41774 C 322.471,237.41774 338.28624,219.66022 322.471,207.41774 C 308.90676,196.91774 292.471,207.41774 292.471,207.41774 z"
+       id="path2940"
+       sodipodi:nodetypes="cccccsc"
+       inkscape:export-filename="d:\projects\me\dd3\eraser.png"
+       inkscape:export-xdpi="14.26"
+       inkscape:export-ydpi="14.26" />
+    <path
+       style="fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="M 287.8137,203.78788 L 247.8137,243.78788 C 237.8137,261.28788 238.3137,261.53248 247.8137,273.78788 C 257.8137,283.78788 277.8137,273.78788 277.8137,273.78788 L 317.8137,233.78788 C 317.8137,233.78788 333.62894,216.03036 317.8137,203.78788 C 304.24946,193.28788 287.8137,203.78788 287.8137,203.78788 z"
+       id="path2938"
+       sodipodi:nodetypes="cccccsc"
+       inkscape:export-filename="d:\projects\me\dd3\eraser.png"
+       inkscape:export-xdpi="14.26"
+       inkscape:export-ydpi="14.26" />
   </g>
 </svg>

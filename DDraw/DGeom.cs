@@ -81,6 +81,11 @@ namespace DDraw
             return res <= 1;
         }
 
+        public static bool PointInCircle(DPoint pt, DPoint circleCenter, double radius)
+        {
+            return Math.Sqrt(Math.Pow(circleCenter.X - pt.X, 2) + Math.Pow(circleCenter.Y - pt.Y, 2)) <= radius;
+        }
+
         public static bool PointInLine(DPoint pt, DPoint linePt1, DPoint linePt2, double width)
         {
             DPoint p;

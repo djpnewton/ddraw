@@ -25,6 +25,7 @@ namespace DDraw
         public bool Italics;
         public bool Underline;
         public bool Strikethough;
+        public Figure[] ChildFigures;
         public FigureProperties[] ChildFigureProps;
         public Hashtable EditableAttributes;
         public DPoint Pt1, Pt2;
@@ -137,8 +138,9 @@ namespace DDraw
             if (f is IChildFigureable)
             {
                 IChildFigureable icf = (IChildFigureable)f;
-                FigureProperties[] childFigProps = new FigureProperties[icf.ChildFigures.Length];
-                for (int i = 0; i < icf.ChildFigures.Length; i++)
+                fp.ChildFigures = icf.ChildFigures.ToArray();
+                FigureProperties[] childFigProps = new FigureProperties[icf.ChildFigures.Count];
+                for (int i = 0; i < icf.ChildFigures.Count; i++)
                     childFigProps[i] = CreateFigureProps(icf.ChildFigures[i], i);
                 fp.ChildFigureProps = childFigProps;
             }
@@ -236,6 +238,8 @@ namespace DDraw
             }
             if (f is IChildFigureable)
             {
+                if (((IChildFigureable)f).ChildFigures.Count != fp.ChildFigures.Length)
+                    return false;
                 foreach (FigureProperties cfp in fp.ChildFigureProps)
                     if (!FigureMatchesProps(cfp))
                         return false;
@@ -297,6 +301,7 @@ namespace DDraw
             }
             if (f is IChildFigureable)
             {
+                ((IChildFigureable)f).ChildFigures = new List<Figure>(fp.ChildFigures);
                 foreach (FigureProperties cfp in fp.ChildFigureProps)
                     ApplyFigureProps(cfp.Figure, cfp);
             }
@@ -314,11 +319,20 @@ namespace DDraw
             }
         }
 
+        bool FiguresMatchUp(List<FigureProperties> figureProps, List<Figure> figures)
+        {
+            System.Diagnostics.Debug.Assert(figureProps.Count == figures.Count, "ERROR: figureProps & figures have different number of items");
+            for (int i = 0; i < figureProps.Count; i++)
+                if (figureProps[i].Figure != figures[i])
+                    return false;
+            return true;
+        }
+
         UndoFrame Snapshot(string name)
         {
             // record all the figures state
             List<FigureChange> fcs = new List<FigureChange>();
-            if (figureProps.Count != figures.Count)
+            if (figureProps.Count != figures.Count || !FiguresMatchUp(figureProps, figures))
             {
                 // find all removed figures
                 foreach (FigureProperties fp in figureProps)

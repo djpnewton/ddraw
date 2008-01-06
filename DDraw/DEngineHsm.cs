@@ -9,7 +9,7 @@ namespace DDraw
     public enum DEngineSignals : int
     {
         //enum values must start at UserSig value or greater
-        GSelect = QSignals.UserSig, GDrawLine, GDrawText, GDrawRect,
+        GSelect = QSignals.UserSig, GDrawLine, GDrawText, GDrawRect, GEraser,
         TextEdit, FigureEdit,
         MouseDown, MouseMove, MouseUp, DoubleClick,
         KeyDown, KeyPress, KeyUp
@@ -95,7 +95,7 @@ namespace DDraw
         }
     }
 
-    public enum DEngineState { Select, DrawLine, DrawText, TextEdit, DrawRect, FigureEdit };
+    public enum DEngineState { Select, DrawLine, DrawText, TextEdit, DrawRect, FigureEdit, Eraser };
 
     public partial class DEngine : QHsm
     {
@@ -129,6 +129,9 @@ namespace DDraw
                 QState DrawRectDefault;
                 QState DrawingRect;
             QState FigureEdit;
+            QState Eraser;
+                QState EraserDefault;
+                QState Erasing;
 
         public delegate void DEngineStateChangedHandler(DEngine de, DEngineState state);
         public event DEngineStateChangedHandler StateChanged;
@@ -148,6 +151,8 @@ namespace DDraw
                     return DEngineState.DrawRect;
                 if (IsInState(FigureEdit))
                     return DEngineState.FigureEdit;
+                if (IsInState(Eraser))
+                    return DEngineState.Eraser;
                 System.Diagnostics.Debug.Assert(false, "Logic Error :(");
                 return DEngineState.Select;
             }
@@ -157,6 +162,9 @@ namespace DDraw
                 {
                     case DEngineState.Select:
                         Dispatch(new QEvent((int)DEngineSignals.GSelect));
+                        break;
+                    case DEngineState.Eraser:
+                        Dispatch(new QEvent((int)DEngineSignals.GEraser));
                         break;
                     default:
                         System.Diagnostics.Debug.Assert(false, String.Format("Sorry, cant set directly to '{0}' :(", value));
@@ -204,6 +212,9 @@ namespace DDraw
                 case (int)DEngineSignals.GDrawRect:
                     currentFigureClass = ((QGDrawFigureEvent)qevent).FigureClass;
                     TransitionTo(DrawRect);
+                    return null;
+                case (int)DEngineSignals.GEraser:
+                    TransitionTo(Eraser);
                     return null;
             }
             return this.TopState;
@@ -969,6 +980,122 @@ namespace DDraw
             return this.Main;
         }
 
+        QState DoEraser(IQEvent qevent)
+        {
+            switch (qevent.QSignal)
+            {
+                case (int)QSignals.Init:
+                    InitializeState(EraserDefault);
+                    return Main;
+                case (int)QSignals.Entry:
+                    // clear currentFigureClass
+                    currentFigureClass = null;
+                    // clear currentfigure and selected
+                    ClearCurrentFigure();
+                    ClearSelected();
+                    // update
+                    UpdateViewers();
+                    DoStateChanged(DEngineState.Eraser);
+                    return null;
+            }
+            return this.Main;
+        }
+
+        QState DoEraserDefault(IQEvent qevent)
+        {
+            switch (qevent.QSignal)
+            {
+                case (int)DEngineSignals.MouseDown:
+                    TransitionTo(Erasing);
+                    return null;
+                case (int)DEngineSignals.MouseMove:
+                    ((QMouseEvent)qevent).Dv.SetCursor(DCursor.Crosshair);
+                    return null;
+            }
+            return this.Eraser;
+        }
+
+        void ErasePolylines(DPoint eraserPt, List<Figure> figures, ref DRect updateRect, GroupFigure parent)
+        {
+            for (int i = figures.Count - 1; i >= 0; i--)
+                if (figures[i] is PolylinebaseFigure)
+                {
+                    PolylinebaseFigure f = (PolylinebaseFigure)figures[i];
+                    DPoint rotPt = f.RotatePointToFigure(eraserPt);
+                    foreach (DPoint pt in f.Points)
+                        if (DGeom.PointInCircle(pt, rotPt, eraser.Size / 2))
+                        {
+                            if (parent != null)
+                            {
+                                // add child figure bounding box to updateRect
+                                updateRect = updateRect.Union(parent.GetChildBoundingBox(f));
+                                // record current rect and remove child figure
+                                DRect oldR = parent.Rect;
+                                parent.RemoveChild(f); // GroupFigure needs to do special stuff when removing a child
+                                DRect newR = parent.Rect;
+                                // update position of GroupFigure depending on the change in rect and its rotation
+                                DPoint dPt = CalcPosDeltaFromAngle(parent.Rotation, new DPoint(newR.Right - oldR.Right, newR.Bottom - oldR.Bottom));
+                                parent.X += dPt.X;
+                                parent.Y += dPt.Y;
+                                dPt = CalcPosDeltaFromAngle(parent.Rotation, new DPoint(newR.Left - oldR.Left, newR.Top - oldR.Top));
+                                parent.X += dPt.X;
+                                parent.Y += dPt.Y;
+                            }
+                            else
+                            {
+                                updateRect = updateRect.Union(GetBoundingBox(f));
+                                figures.Remove(f);
+                            }
+                            break;
+                        }
+                }
+                else if (figures[i] is GroupFigure)
+                {
+                    GroupFigure f = (GroupFigure)figures[i];
+                    ErasePolylines(f.RotatePointToFigure(eraserPt), f.ChildFigures, ref updateRect, f);
+                    if (f.ChildFigures.Count == 1)
+                        UngroupFigure(f);
+                    else if (f.ChildFigures.Count < 1)
+                        figures.Remove(f);
+                }
+        }
+
+        QState DoErasing(IQEvent qevent)
+        {
+            switch (qevent.QSignal)
+            {
+                case (int)QSignals.Entry:
+                    // record state for undo/redo manager
+                    if (autoUndoRecord)
+                        undoRedoMgr.Start("Erase Operation");
+                    break;
+                case (int)QSignals.Exit:
+                    // commit undo changes
+                    if (autoUndoRecord)
+                        undoRedoMgr.Commit();
+                    // hide eraser
+                    drawEraser = false;
+                    UpdateViewers(); // and show updated polylines in other viewers too
+                    break;
+                case (int)DEngineSignals.MouseMove:
+                    QMouseEvent me = (QMouseEvent)qevent;
+                    DRect updateRect = GetBoundingBox(eraser);
+                    // show & move eraser
+                    drawEraser = true;
+                    eraser.TopLeft = new DPoint(me.Pt.X - eraser.Size / 2, me.Pt.Y - eraser.Size / 2);
+                    // erase stuff
+                    ErasePolylines(me.Pt, figures, ref updateRect, null);
+                    // update
+                    me.Dv.Update(updateRect.Union(GetBoundingBox(eraser)));
+                    return null;
+                case (int)DEngineSignals.MouseUp:
+                    // transition
+                    TransitionTo(EraserDefault);
+                    return null;
+            }
+            return this.Eraser;
+        }
+
         protected override void InitializeStateMachine()
 		{
             Main = new QState(this.DoMain);
@@ -984,7 +1111,10 @@ namespace DDraw
             DrawRectDefault = new QState(this.DoDrawRectDefault);
             DrawingRect = new QState(this.DoDrawingRect);
             FigureEdit = new QState(this.DoFigureEdit);
-			InitializeState(Main); // initial transition			
+            Eraser = new QState(this.DoEraser);
+            EraserDefault = new QState(this.DoEraserDefault);
+            Erasing = new QState(this.DoErasing);
+            InitializeState(Main); // initial transition			
 		}
     }
 }

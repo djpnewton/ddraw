@@ -5,6 +5,7 @@
 //
 
 using System;
+using System.Collections.Generic;
 using Gtk;
 
 using DDraw;
@@ -114,14 +115,14 @@ namespace GTKDemo
             else
             {
                 // group menu items
-                Figure[] figs = de.SelectedFigures;
-                if (figs.Length > 1)
+                List<Figure> figs = de.SelectedFigures;
+                if (de.CanGroupFigures(figs))
                 {
                     mi = new MenuItem("Group");
                     mi.ButtonPressEvent += new ButtonPressEventHandler(miGroup_ButtonPressEvent);
                     pop.Append(mi);
                 }
-                else if (figs.Length == 1 && figs[0] is GroupFigure)
+                else if (de.CanUngroupFigures(figs))
                 {
                     mi = new MenuItem("Ungroup");
                     mi.ButtonPressEvent += new ButtonPressEventHandler(miUngroup_ButtonPressEvent);
@@ -168,7 +169,7 @@ namespace GTKDemo
             
         void miUngroup_ButtonPressEvent(object o, ButtonPressEventArgs args)
         {
-            de.UngroupFigure((GroupFigure)de.SelectedFigures[0]);
+            de.UngroupFigures(de.SelectedFigures);
         }
 		
 		void DebugMessage(string msg)
