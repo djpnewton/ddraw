@@ -8,7 +8,7 @@ namespace DDraw
     public delegate void DMouseButtonEventHandler(DViewer dv, DMouseButton btn, DPoint pt);
     public delegate void DMouseMoveEventHandler(DViewer dv, DPoint pt);
     public delegate void DKeyEventHandler(DViewer dv, DKey k);
-    public delegate void DKeyPressEventHandler(DViewer dv, char k);
+    public delegate void DKeyPressEventHandler(DViewer dv, int k);
 
     abstract public class DViewer
     {
@@ -162,7 +162,7 @@ namespace DDraw
                 KeyDown(this, k);
         }
 
-        protected void DoKeyPress(char k)
+        protected void DoKeyPress(int k)
         {
             if (KeyPress != null)
                 KeyPress(this, k);

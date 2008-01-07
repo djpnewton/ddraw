@@ -228,7 +228,7 @@ namespace DDraw
             Dispatch(new QKeyEvent((int)DEngineSignals.KeyDown, dv, k));
         }
 
-        void dv_KeyPress(DViewer dv, char k)
+        void dv_KeyPress(DViewer dv, int k)
         {
             Dispatch(new QKeyPressEvent((int)DEngineSignals.KeyPress, dv, k));
         }

@@ -18,7 +18,7 @@ namespace DDraw
         void MouseMove(DViewer dv, DPoint pt);
         void MouseUp(DViewer dv, DMouseButton btn, DPoint pt);
         void DoubleClick(DViewer dv, DPoint pt);
-        void KeyPress(DViewer dv, char k);
+        void KeyPress(DViewer dv, int k);
     }
     
     public class ClockFigure : RectbaseFigure, IEditable
@@ -131,15 +131,15 @@ namespace DDraw
             
         }
         
-        public void KeyPress (DViewer dv, char k)
+        public void KeyPress (DViewer dv, int k)
         {
-            switch (k)
+            switch ((DKeys)k)
             {
-                case '\r':
+                case DKeys.Enter:
                     DoEditFinished();
                     break;
-                case (char)27: // esc
-                    goto case '\r';
+                case DKeys.Escape:
+                    goto case DKeys.Enter;
             }
         }
 

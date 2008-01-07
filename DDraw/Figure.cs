@@ -1312,14 +1312,22 @@ namespace DDraw
             set { tf.Height = value - border - border; }
         }
 
+        // cursor position can range from 0 to Text.Length
+        int cursorPosition;
+
+        string[] Lines
+        {
+            get { return Text.Split('\n'); }
+        }
+
         public TextEditFigure(TextFigure tf)
         {
             this.tf = tf;
+            cursorPosition = Text.Length;
         }
 
-        public TextEditFigure(DPoint pt, TextFigure tf)
+        public TextEditFigure(DPoint pt, TextFigure tf) : this(tf)
         {
-            this.tf = tf;
             TopLeft = pt;
         }
 
@@ -1338,11 +1346,139 @@ namespace DDraw
             tf.Alpha = alpha;
             tf.Rotation = rot;
             // paint cursor
-            string[] lines = tf.Text.Split('\n');
-            DPoint pt = tf.Rect.BottomLeft;
+            string[] lines = Lines;
+            DPoint pt = tf.Rect.TopLeft;
             string s = lines[lines.Length - 1];
             DPoint sz = dg.MeasureText(s, FontName, FontSize, Bold, Italics, Underline, Strikethrough);
-            dg.DrawLine(new DPoint(pt.X + sz.X, pt.Y - sz.Y), new DPoint(tf.X + sz.X, pt.Y), DColor.Black, 1, DStrokeStyle.Solid, 2, DStrokeCap.Butt);
+            double height;
+            DPoint cpt = MeasureCursorPosition(lines, out height);
+            dg.DrawLine(new DPoint(pt.X + cpt.X, pt.Y + cpt.Y), new DPoint(pt.X + cpt.X, pt.Y + cpt.Y + height), DColor.Black, 1, DStrokeStyle.Solid, 2, DStrokeCap.Butt);
+        }
+
+        DPoint MeasureCursorPosition(string[] lines, out double height)
+        {
+            // find the x,y position of the cursor
+            int n = cursorPosition;
+            height = GraphicsHelper.MeasureText(Text, FontName, FontSize, Bold, Italics, Underline, Strikethrough).Y / lines.Length;
+            if (cursorPosition >= 0)
+            {
+                for (int i = 0; i < lines.Length; i++)
+                {
+                    string line = lines[i];
+                    if (n <= line.Length)
+                    {
+                        DPoint sz = GraphicsHelper.MeasureText(line.Substring(0, n), FontName, FontSize, Bold, Italics, Underline, Strikethrough);
+                        return new DPoint(sz.X, height * i);
+                    }
+                    n -= line.Length + 1;
+                }
+            }
+            return new DPoint(0, 0);
+        }
+
+        int FindLineByCharacter(string[] lines, int textChar, out int lineChar)
+        {
+            // find the line a character is on based on the index (also find the character index on the line)
+            int n = 0;
+            for (int i = 0; i < lines.Length; i++)
+            {
+                string line = lines[i];
+                if (n + line.Length >= textChar)
+                {
+                    lineChar = textChar - n;
+                    return i;
+                }
+                n += line.Length;
+                n += 1; // take new line char into account
+            }
+            lineChar = 0;
+            return 0;
+        }
+
+        int FindEquivCharacterPosition(string newLine, int currentChar, double currentXPos)
+        {
+            // given a character index and x position along a line, 
+            // find the eqvivalent character index on a different line
+            if (currentChar < 1)
+                return 0;
+
+            double newXPos = 0;
+            int n = 1;
+            while (newXPos < currentXPos)
+            {
+                if (n >= newLine.Length)
+                    return newLine.Length;
+                newXPos = GraphicsHelper.MeasureText(newLine.Substring(0, n), FontName, FontSize, Bold, Italics, Underline, Strikethrough).X;
+                n += 1;
+            }
+            return n - 1;
+        }
+
+        int CharNumberChange(string[] lines, int currentLine, int newLine, int currentLineChar, int newLineChar)
+        {
+            // given a set of lines and a current character line and position,
+            // calculate the delta of the index compared to a new character (new line and index on that line)
+            if (newLine < currentLine)
+                return -(currentLineChar + 1 + lines[newLine].Length - newLineChar);
+            else if (newLine > currentLine)
+                return lines[currentLine].Length - currentLineChar + 1 + newLineChar;
+            else
+                return newLineChar - currentLineChar;
+        }
+
+        public void MoveCursor(DKeys k)
+        {
+            switch (k)
+            {
+                case DKeys.Left:
+                    if (cursorPosition > 0) cursorPosition -= 1;
+                    break;
+                case DKeys.Right:
+                    if (cursorPosition < Text.Length) cursorPosition += 1;
+                    break;
+                case DKeys.Up:
+                    string[] lines = Lines;
+                    int currentlineCharNo;
+                    int lineNo = FindLineByCharacter(lines, cursorPosition, out currentlineCharNo);
+                    int newLineNo;
+                    if (lineNo > 0 && k == DKeys.Up)
+                        newLineNo = lineNo - 1;
+                    else if (lineNo < lines.Length - 1 && k == DKeys.Down)
+                        newLineNo = lineNo + 1;
+                    else
+                        break;
+                    double height;
+                    DPoint cpt = MeasureCursorPosition(lines, out height);
+                    int newLineCharNo = FindEquivCharacterPosition(lines[newLineNo], currentlineCharNo, cpt.X);
+                    cursorPosition += CharNumberChange(lines, lineNo, newLineNo, currentlineCharNo, newLineCharNo);                    
+                    break;
+                case DKeys.Down:
+                    goto case DKeys.Up;
+            }
+        }
+
+        public void InsertAtCursor(char c)
+        {
+            if (cursorPosition < Text.Length)
+                Text = Text.Insert(cursorPosition, c.ToString());
+            else
+                Text = string.Concat(Text, c);
+            MoveCursor(DKeys.Right);
+        }
+
+        public void BackspaceAtCursor()
+        {
+            if (cursorPosition > 0)
+            {
+                Text = Text.Remove(cursorPosition - 1, 1);
+                MoveCursor(DKeys.Left);
+            }
+        }
+
+        public void DeleteAtCursor()
+        {
+            if (cursorPosition < Text.Length)
+                Text = Text.Remove(cursorPosition, 1);
         }
     }
 

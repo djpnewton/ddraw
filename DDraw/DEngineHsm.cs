@@ -68,13 +68,13 @@ namespace DDraw
         {
             get { return dv; }
         }
-        char key;
-        public char Key
+        int key;
+        public int Key
         {
             get { return key; }
         }
 
-        public QKeyPressEvent(int qSignal, DViewer dv, char key) : base(qSignal)
+        public QKeyPressEvent(int qSignal, DViewer dv, int key) : base(qSignal)
         {
             this.dv = dv;
             this.key = key;
@@ -732,33 +732,37 @@ namespace DDraw
             DoSelectDefaultMouseMove(dv, pt);
         }
 
-        void DoTextEditKeyPress(DViewer dv, char k)
+        void DoTextEditKeyPress(DViewer dv, int k)
         {
-            if (currentFigure != null && currentFigure is ITextable)
+            if (currentFigure != null && currentFigure is TextEditFigure)
             {
-                ITextable tf = (ITextable)currentFigure;
-                switch (k)
+                TextEditFigure te = (TextEditFigure)currentFigure;
+                DRect updateRect = currentFigure.Rect;
+                switch ((DKeys)k)
                 {
-                    case '\b': // backspace
-                        if (tf.HasText)
-                        {
-                            DRect r = currentFigure.Rect;
-                            tf.Text = tf.Text.Substring(0, tf.Text.Length - 1);
-                            dv.Update(r);
-                        }
+                    case DKeys.Backspace:
+                        te.BackspaceAtCursor();
                         break;
-                    case '\r': // enter
-                        tf.Text = string.Concat(tf.Text, "\n");
-                        dv.Update(currentFigure.Rect);
+                    case DKeys.Enter:
+                        te.InsertAtCursor('\n');
                         break;
-                    case (char)27: // esc
+                    case DKeys.Escape:
                         State = DEngineState.Select;
                         break;
+                    case DKeys.Delete:
+                        te.DeleteAtCursor();
+                        break;
+                    case DKeys.Left:
+                        te.MoveCursor((DKeys)k);
+                        break;
+                    case DKeys.Right: goto case DKeys.Left;
+                    case DKeys.Up: goto case DKeys.Left;
+                    case DKeys.Down: goto case DKeys.Left;
                     default:
-                        tf.Text = string.Concat(tf.Text, k);
-                        dv.Update(currentFigure.Rect);
+                        te.InsertAtCursor((char)k);
                         break;
                 }
+                dv.Update(updateRect.Union(currentFigure.Rect));
             }
         }
 

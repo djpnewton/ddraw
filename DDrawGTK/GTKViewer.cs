@@ -165,19 +165,34 @@ namespace DDraw.GTK
             {
                 DKey k = EventKeyToDKey(args.Event);
                 DoKeyDown(k);
-                // try to match Gdk.KeyValue to ascii
+                // try to match Gdk.KeyValue DKeys or ascii
                 switch (args.Event.Key)
                 {
                     case Gdk.Key.Return:
-                        DoKeyPress('\r');
+                        DoKeyPress((int)DKeys.Enter);
                         break;
                     case Gdk.Key.KP_Enter:
                         goto case Gdk.Key.Return;
                     case Gdk.Key.Escape:
-                        DoKeyPress((char)27);
+                        DoKeyPress((int)DKeys.Escape);
                         break;
                     case Gdk.Key.BackSpace:
-                        DoKeyPress('\b');
+                        DoKeyPress((int)DKeys.Backspace);
+                        break;
+                    case Gdk.Key.Delete:
+                        DoKeyPress((int)DKeys.Delete);
+                        break;
+                    case Gdk.Key.Left:
+                        DoKeyPress((int)DKeys.Left);
+                        break;
+                    case Gdk.Key.Right:
+                        DoKeyPress((int)DKeys.Right);
+                        break;
+                    case Gdk.Key.Up:
+                        DoKeyPress((int)DKeys.Up);
+                        break;
+                    case Gdk.Key.Down:
+                        DoKeyPress((int)DKeys.Down);
                         break;
                     default:
                         // only call DoKeyPress if there is an ascii eqivalent of KeyValue 
