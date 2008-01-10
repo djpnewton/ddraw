@@ -1082,7 +1082,7 @@ namespace DDraw
                 {
                     if (newPts == null)
                         newPts = new DPoints();
-                    newPts.Add(pt);
+                    newPts.Add(new DPoint(pt.X, pt.Y));
                 }
                 else
                     createNewPoly();
@@ -1151,7 +1151,12 @@ namespace DDraw
                 else if (figures[i] is GroupFigure)
                 {
                     GroupFigure f = (GroupFigure)figures[i];
+                    // recurse into group figure and also update rotation position
+                    DRect oldR = f.Rect;
                     ErasePolylines(f.RotatePointToFigure(eraserPt), f.ChildFigures, ref updateRect, f);
+                    DRect newR = f.Rect;
+                    UpdateRotationPosition(f, oldR, newR);
+                    // clean up group figure if no longer needed
                     if (f.ChildFigures.Count == 1)
                         UngroupFigure(f);
                     else if (f.ChildFigures.Count < 1)
