@@ -1019,6 +1019,108 @@ namespace DDraw
             return this.Eraser;
         }
 
+        enum LineSegPos { Start, Middle, End, All };
+        void ClonePolyProps(Figure from, Figure to, LineSegPos linepos)
+        {
+            to.Rotation = from.Rotation;
+            UpdateRotationPosition(to, from.Rect, to.Rect);
+            if (from.GetType() == to.GetType())
+            {
+                if (from is IFillable)
+                    ((IFillable)to).Fill = ((IFillable)from).Fill;
+                if (from is IStrokeable)
+                {
+                    ((IStrokeable)to).Stroke = ((IStrokeable)from).Stroke;
+                    ((IStrokeable)to).StrokeWidth = ((IStrokeable)from).StrokeWidth;
+                    ((IStrokeable)to).StrokeStyle = ((IStrokeable)from).StrokeStyle;
+                }
+                if (from is IMarkable)
+                {
+                    if (linepos == LineSegPos.Start || linepos == LineSegPos.All)
+                        ((IMarkable)to).StartMarker = ((IMarkable)from).StartMarker;
+                    if (linepos == LineSegPos.End || linepos == LineSegPos.All)
+                        ((IMarkable)to).EndMarker = ((IMarkable)from).EndMarker;
+                }
+                if (from is IAlphaBlendable)
+                    ((IAlphaBlendable)to).Alpha = ((IAlphaBlendable)from).Alpha;
+                if (from is ITextable)
+                {
+                    ((ITextable)to).FontName = ((ITextable)from).FontName;
+                    ((ITextable)to).Bold = ((ITextable)from).Bold;
+                    ((ITextable)to).Italics = ((ITextable)from).Italics;
+                    ((ITextable)to).Underline = ((ITextable)from).Underline;
+                    ((ITextable)to).Strikethrough = ((ITextable)from).Strikethrough;
+                }
+            }
+        }
+
+        delegate void Method();
+        void ErasePolyline(DPoints ptsToRemove, PolylinebaseFigure f, GroupFigure parent)
+        {
+            // set figure list to use
+            List<Figure> figs;
+            if (parent != null)
+                figs = parent.ChildFigures;
+            else
+                figs = figures;
+            // make new polylines
+            List<Figure> newPolys = new List<Figure>();
+            DPoints newPts = null;
+            Method createNewPoly = delegate()
+            {
+                if (newPts != null && newPts.Count >= 2)
+                {
+                    PolylinebaseFigure nf = (PolylinebaseFigure)Activator.CreateInstance(f.GetType());
+                    nf.SetPoints(newPts);
+                    newPolys.Add(nf);
+                }
+                newPts = null;
+            };
+            foreach (DPoint pt in f.Points)
+            {
+                if (!ptsToRemove.Contains(pt))
+                {
+                    if (newPts == null)
+                        newPts = new DPoints();
+                    newPts.Add(pt);
+                }
+                else
+                    createNewPoly();
+            }
+            createNewPoly();
+            // apply old poly properties to new polys and add to "figs" figure list
+            for (int i = 0; i < newPolys.Count; i++)
+            {
+                Figure nf = newPolys[i];
+                if (newPolys.Count == 1)
+                    ClonePolyProps(f, nf, LineSegPos.All);
+                else if (i == 0)
+                    ClonePolyProps(f, nf, LineSegPos.Start);
+                else if (i == newPolys.Count - 1)
+                    ClonePolyProps(f, nf, LineSegPos.End);
+                else
+                    ClonePolyProps(f, nf, LineSegPos.Middle);
+                // add poly to figs
+                figs.Insert(figs.IndexOf(f), nf);
+            }
+            // remove original polyline
+            figs.Remove(f);
+            // reset GroupFigure parent figure list so its scalling boxes are reset
+            if (parent != null)
+                parent.ChildFigures = figs;
+        }
+
+        void UpdateRotationPosition(Figure f, DRect oldRect, DRect newRect)
+        {
+            // update position of the figure depending on the change in rect and its rotation
+            DPoint dPt = CalcPosDeltaFromAngle(f.Rotation, new DPoint(newRect.Right - oldRect.Right, newRect.Bottom - oldRect.Bottom));
+            f.X += dPt.X;
+            f.Y += dPt.Y;
+            dPt = CalcPosDeltaFromAngle(f.Rotation, new DPoint(newRect.Left - oldRect.Left, newRect.Top - oldRect.Top));
+            f.X += dPt.X;
+            f.Y += dPt.Y;
+        }
+
         void ErasePolylines(DPoint eraserPt, List<Figure> figures, ref DRect updateRect, GroupFigure parent)
         {
             for (int i = figures.Count - 1; i >= 0; i--)
@@ -1026,32 +1128,25 @@ namespace DDraw
                 {
                     PolylinebaseFigure f = (PolylinebaseFigure)figures[i];
                     DPoint rotPt = f.RotatePointToFigure(eraserPt);
+                    DPoints ptsToRemove = new DPoints();
                     foreach (DPoint pt in f.Points)
                         if (DGeom.PointInCircle(pt, rotPt, eraser.Size / 2))
+                            ptsToRemove.Add(pt);
+                    if (ptsToRemove.Count > 0)
+                    {
+                        // add polyline figure bounding box to updateRect
+                        updateRect = updateRect.Union(GetBoundingBox(f));
+                        if (parent != null)
                         {
-                            if (parent != null)
-                            {
-                                // add child figure bounding box to updateRect
-                                updateRect = updateRect.Union(parent.GetChildBoundingBox(f));
-                                // record current rect and remove child figure
-                                DRect oldR = parent.Rect;
-                                parent.RemoveChild(f); // GroupFigure needs to do special stuff when removing a child
-                                DRect newR = parent.Rect;
-                                // update position of GroupFigure depending on the change in rect and its rotation
-                                DPoint dPt = CalcPosDeltaFromAngle(parent.Rotation, new DPoint(newR.Right - oldR.Right, newR.Bottom - oldR.Bottom));
-                                parent.X += dPt.X;
-                                parent.Y += dPt.Y;
-                                dPt = CalcPosDeltaFromAngle(parent.Rotation, new DPoint(newR.Left - oldR.Left, newR.Top - oldR.Top));
-                                parent.X += dPt.X;
-                                parent.Y += dPt.Y;
-                            }
-                            else
-                            {
-                                updateRect = updateRect.Union(GetBoundingBox(f));
-                                figures.Remove(f);
-                            }
-                            break;
+                            // remove child figure and account for rect changes
+                            DRect oldR = parent.Rect;
+                            ErasePolyline(ptsToRemove, f, parent);
+                            DRect newR = parent.Rect;
+                            UpdateRotationPosition(f, oldR, newR);
                         }
+                        else
+                            ErasePolyline(ptsToRemove, f, parent);
+                    }
                 }
                 else if (figures[i] is GroupFigure)
                 {

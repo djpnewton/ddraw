@@ -1705,21 +1705,6 @@ namespace DDraw
                 f.AfterResize();
         }
 
-        public void AddChild(Figure f)
-        {
-            childFigs.Add(f);
-            CreateOriginalRects();
-        }
-
-        public void RemoveChild(Figure f)
-        {
-            if (childFigs.Contains(f))
-            {
-                childFigs.Remove(f);
-                CreateOriginalRects();
-            }
-        }
-
         public DRect GetChildBoundingBox(Figure f)
         {
             return DGeom.BoundingBoxOfRotatedRect(f.GetEncompassingRect(), Rotation, Rect.Center);
