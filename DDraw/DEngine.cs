@@ -601,21 +601,6 @@ namespace DDraw
                 return new DPoint((pt.X - f.X) - f.Width - dragPt.X, (pt.Y - f.Y) - f.Height - dragPt.Y);
         }
 
-        DPoint CalcPosDeltaFromAngle(double angle, DPoint dSize)
-        {
-            // x/y modification for rotation
-            if (angle == 0)
-                return new DPoint(0, 0);
-            angle = angle / 2;
-            double sintheta = Math.Sin(angle);
-            double costheta = Math.Cos(angle);
-            double r1 = sintheta * -dSize.X;
-            double r2 = sintheta * -dSize.Y;
-            double modx = r1 * sintheta + r2 * costheta;
-            double mody = -r1 * costheta + r2 * sintheta;
-            return new DPoint(modx, mody);
-        }
-
         DRect GetBoundingBox(Figure f)
         {
             return DGeom.BoundingBoxOfRotatedRect(f.GetEncompassingRect(), f.Rotation, f.Rect.Center);

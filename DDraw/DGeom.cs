@@ -146,5 +146,31 @@ namespace DDraw
         {
             return BoundingBoxOfRotatedRect(rect, angle, rect.Center);
         }
+        
+        static DPoint CalcPositionDeltaFromAngleAndCoordDelta(double angle, double dX, double dY)
+        {
+            // x/y modification for rotation
+            if (angle == 0 || (dX == 0 && dY == 0))
+                return new DPoint(0, 0);
+            angle = angle / 2;
+            double sintheta = Math.Sin(angle);
+            double costheta = Math.Cos(angle);
+            double r1 = sintheta * -dX;
+            double r2 = sintheta * -dY;
+            double modx = r1 * sintheta + r2 * costheta;
+            double mody = -r1 * costheta + r2 * sintheta;
+            return new DPoint(modx, mody);
+        }
+        
+        public static void UpdateRotationPosition(Figure f, DRect oldRect, DRect newRect)
+        {
+            // update position of the figure depending on the change in rect and its rotation
+            DPoint dPt = CalcPositionDeltaFromAngleAndCoordDelta(f.Rotation, newRect.Right - oldRect.Right, newRect.Bottom - oldRect.Bottom);
+            f.X += dPt.X;
+            f.Y += dPt.Y;
+            dPt = CalcPositionDeltaFromAngleAndCoordDelta(f.Rotation, newRect.Left - oldRect.Left, newRect.Top - oldRect.Top);
+            f.X += dPt.X;
+            f.Y += dPt.Y;
+        }
     }
 }

@@ -430,12 +430,10 @@ namespace DDraw
                         if (LockingAspectRatio || currentFigure.LockAspectRatio)
                             dSize.X = (currentFigure.Width / currentFigure.Height) * dSize.Y;
                     }
+                    DRect oldRect = currentFigure.Rect;
                     currentFigure.Width += dSize.X;
                     currentFigure.Height += dSize.Y;
-                    // apply x/y delta to figure to account for rotation
-                    dPos = CalcPosDeltaFromAngle(currentFigure.Rotation, dSize);
-                    currentFigure.X += dPos.X;
-                    currentFigure.Y += dPos.Y;
+                    DGeom.UpdateRotationPosition(currentFigure, oldRect, currentFigure.Rect); 
                     // final update rect
                     updateRect = updateRect.Union(GetBoundingBox(currentFigure));
                     // alert figure we have finished resizing
@@ -1023,7 +1021,7 @@ namespace DDraw
         void ClonePolyProps(Figure from, Figure to, LineSegPos linepos)
         {
             to.Rotation = from.Rotation;
-            UpdateRotationPosition(to, from.Rect, to.Rect);
+            DGeom.UpdateRotationPosition(to, from.Rect, to.Rect);
             if (from.GetType() == to.GetType())
             {
                 if (from is IFillable)
@@ -1110,17 +1108,6 @@ namespace DDraw
                 parent.ChildFigures = figs;
         }
 
-        void UpdateRotationPosition(Figure f, DRect oldRect, DRect newRect)
-        {
-            // update position of the figure depending on the change in rect and its rotation
-            DPoint dPt = CalcPosDeltaFromAngle(f.Rotation, new DPoint(newRect.Right - oldRect.Right, newRect.Bottom - oldRect.Bottom));
-            f.X += dPt.X;
-            f.Y += dPt.Y;
-            dPt = CalcPosDeltaFromAngle(f.Rotation, new DPoint(newRect.Left - oldRect.Left, newRect.Top - oldRect.Top));
-            f.X += dPt.X;
-            f.Y += dPt.Y;
-        }
-
         void ErasePolylines(DPoint eraserPt, List<Figure> figures, ref DRect updateRect, GroupFigure parent)
         {
             for (int i = figures.Count - 1; i >= 0; i--)
@@ -1142,7 +1129,7 @@ namespace DDraw
                             DRect oldR = parent.Rect;
                             ErasePolyline(ptsToRemove, f, parent);
                             DRect newR = parent.Rect;
-                            UpdateRotationPosition(f, oldR, newR);
+                            DGeom.UpdateRotationPosition(f, oldR, newR);
                         }
                         else
                             ErasePolyline(ptsToRemove, f, parent);
@@ -1155,7 +1142,7 @@ namespace DDraw
                     DRect oldR = f.Rect;
                     ErasePolylines(f.RotatePointToFigure(eraserPt), f.ChildFigures, ref updateRect, f);
                     DRect newR = f.Rect;
-                    UpdateRotationPosition(f, oldR, newR);
+                    DGeom.UpdateRotationPosition(f, oldR, newR);
                     // clean up group figure if no longer needed
                     if (f.ChildFigures.Count == 1)
                         UngroupFigure(f);

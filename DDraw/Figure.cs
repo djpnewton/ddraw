@@ -1348,8 +1348,6 @@ namespace DDraw
             // paint cursor
             string[] lines = Lines;
             DPoint pt = tf.Rect.TopLeft;
-            string s = lines[lines.Length - 1];
-            DPoint sz = dg.MeasureText(s, FontName, FontSize, Bold, Italics, Underline, Strikethrough);
             double height;
             DPoint cpt = MeasureCursorPosition(lines, out height);
             dg.DrawLine(new DPoint(pt.X + cpt.X, pt.Y + cpt.Y), new DPoint(pt.X + cpt.X, pt.Y + cpt.Y + height), DColor.Black, 1, DStrokeStyle.Solid, 2, DStrokeCap.Butt);
