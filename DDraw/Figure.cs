@@ -1488,8 +1488,14 @@ namespace DDraw
             set
             {
                 double dX = value - X;
+                originalRect.X += dX;
+                int i = 0;
                 foreach (Figure f in childFigs)
+                {
+                    originalChildRects[i].X += dX;
                     f.X += dX;
+                    i += 1;
+                }
             }
         }
 
@@ -1499,8 +1505,14 @@ namespace DDraw
             set
             {
                 double dY = value - Y;
+                originalRect.Y += dY;
+                int i = 0;
                 foreach (Figure f in childFigs)
+                {
+                    originalChildRects[i].Y += dY;
                     f.Y += dY;
+                    i += 1;
+                }
             }
         }
 
@@ -1510,12 +1522,11 @@ namespace DDraw
             set
             {
                 double sx = value / originalRect.Width;
-                double dx = X - originalRect.X;
                 int i = 0;
                 foreach (Figure f in childFigs)
                 {
                     DRect ocr = originalChildRects[i];
-                    f.X = originalRect.X + (sx * (ocr.X - originalRect.X)) + dx;
+                    f.X = originalRect.X + (sx * (ocr.X - originalRect.X));
                     f.Width = sx * ocr.Width;
                     i++;
                 }
@@ -1528,12 +1539,11 @@ namespace DDraw
             set
             {
                 double sy = value / originalRect.Height;
-                double dy = Y - originalRect.Y;
                 int i = 0;
                 foreach (Figure f in childFigs)
                 {
                     DRect ocr = originalChildRects[i];
-                    f.Y = originalRect.Y + (sy * (ocr.Y - originalRect.Y)) + dy;
+                    f.Y = originalRect.Y + (sy * (ocr.Y - originalRect.Y));
                     f.Height = sy * ocr.Height;
                     i++;
                 }
