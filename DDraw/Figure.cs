@@ -652,49 +652,38 @@ namespace DDraw
             return DHitTest.None;
         }
 
-        /*protected override DHitTest _HitTest(DPoint pt)
-        {
-            DHitTest ht = base._HitTest(pt);
-            if (ht == DHitTest.None)
-            {
-                if (DGeom.PointInPolygon(pt, GetStartMarkerPoints()) || DGeom.PointInPolygon(pt, GetEndMarkerPoints()))
-                    return DHitTest.Body;
-            }
-            return ht;
-        }*/
-
         #region IStrokeable Members
         DColor stroke = DColor.Blue;
-        public DColor Stroke
+        public virtual DColor Stroke
         {
             get { return stroke; }
             set { stroke = value; }
         }
         double strokeWidth = 1;
-        public double StrokeWidth
+        public virtual double StrokeWidth
         {
             get { return strokeWidth; }
             set { strokeWidth = value; }
         }
         DStrokeStyle strokeStyle = DStrokeStyle.Solid;
-        public DStrokeStyle StrokeStyle
+        public virtual DStrokeStyle StrokeStyle
         {
             get { return strokeStyle; }
             set { strokeStyle = value; }
         }
         DStrokeJoin strokeJoin = DStrokeJoin.Round;
-        public DStrokeJoin StrokeJoin
+        public virtual DStrokeJoin StrokeJoin
         {
             get { return strokeJoin; }
             set { strokeJoin = value; }
         }
         DStrokeCap strokeCap = DStrokeCap.Round;
-        public DStrokeCap StrokeCap
+        public virtual DStrokeCap StrokeCap
         {
             get { return strokeCap; }
             set { strokeCap = value; }
         }
-        public DRect RectInclStroke
+        public virtual DRect RectInclStroke
         {
             get { return StrokeHelper.RectIncludingStrokeWidth(Rect, strokeWidth); }
         }
@@ -972,8 +961,8 @@ namespace DDraw
 
         public void SetPoints(DPoints pts)
         {
-                points = pts;
-                Rect = points.Bounds();
+            points = pts;
+            Rect = points.Bounds();
         }
 
         public override void AddPoint(DPoint pt)
@@ -1028,16 +1017,39 @@ namespace DDraw
             }
         }
 
+        const int StrokeWidthFactorNull = -1;
+        void CalcStrokeWidthFactor()
+        {
+            if (Width == 0 && Height == 0)
+                strokeWidthFactor = StrokeWidthFactorNull;
+            else
+                strokeWidthFactor = strokeWidth / (Width + Height);
+        }
+        double strokeWidthFactor = StrokeWidthFactorNull;
+
+        double strokeWidth = 1;
+        public override double StrokeWidth
+        {
+            get { return strokeWidth; }
+            set 
+            {
+                strokeWidth = value;
+                CalcStrokeWidthFactor();
+            }
+        }
+
         DPoint beforeResizeSize;
 
         public override void BeforeResize()
         {
             beforeResizeSize = new DPoint(Width, Height);
+            if (strokeWidthFactor == StrokeWidthFactorNull)
+                CalcStrokeWidthFactor();
         }
 
         public override void AfterResize()
         {
-            StrokeWidth *= ((Width / beforeResizeSize.X) + (Height / beforeResizeSize.Y)) / 2;
+            strokeWidth = strokeWidthFactor * (Width + Height);
         }
     }
 
@@ -1059,8 +1071,8 @@ namespace DDraw
         }
 
         public PolylineFigure(DPoints points)
-        {
-            SetPoints(points);
+        { 
+            SetPoints(points); 
         }
 
         public PolylineFigure()
