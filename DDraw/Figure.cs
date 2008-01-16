@@ -1223,15 +1223,14 @@ namespace DDraw
 
         public override double Width
         {
-            get
-            {
-                return base.Width;
-            }
-            set
-            {
-                FontSize *= value / base.Width;
-                base.Width = value;
-            }
+            get { return base.Width; }
+            set { FontSize *= value / base.Width; }
+        }
+
+        public override double Height
+        {
+            get { return base.Height; }
+            set { /* do nothing :) */ }
         }
 
         public override bool LockAspectRatio
