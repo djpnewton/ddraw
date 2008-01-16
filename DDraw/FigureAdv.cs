@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Text;
 using System.Collections;
 
+using DejaVu;
+
 namespace DDraw
 {
     public delegate void EditFinishedHandler(IEditable sender);
@@ -11,8 +13,6 @@ namespace DDraw
     {
         void StartEdit();
         void EndEdit();
-        Hashtable GetAttributes();
-        void SetAttributes(Hashtable attrs);
         event EditFinishedHandler EditFinished; 
         void MouseDown(DViewer dv, DMouseButton btn, DPoint pt);
         void MouseMove(DViewer dv, DPoint pt);
@@ -26,9 +26,9 @@ namespace DDraw
         bool editing = false;
         double origRotation;
         
-        double firstHandAngle = 0;
+        UndoRedo<double> firstHandAngle = new UndoRedo<double>(0);
         bool editingFirstHand = false;
-        double secondHandAngle = Math.PI / 4;
+        UndoRedo<double> secondHandAngle = new UndoRedo<double>(Math.PI / 4);
         bool editingSecondHand = false;
 
         public override bool LockAspectRatio
@@ -72,9 +72,9 @@ namespace DDraw
         public void SetAttributes(Hashtable attrs)
         {
             if (attrs.Contains(FIRST_HAND_ANGLE))
-                firstHandAngle = (double)attrs[FIRST_HAND_ANGLE];
+                firstHandAngle.Value = (double)attrs[FIRST_HAND_ANGLE];
             if (attrs.Contains(SECOND_HAND_ANGLE))
-                secondHandAngle = (double)attrs[SECOND_HAND_ANGLE];
+                secondHandAngle.Value = (double)attrs[SECOND_HAND_ANGLE];
         }
 
         public event EditFinishedHandler EditFinished;
@@ -89,12 +89,12 @@ namespace DDraw
                 if (DGeom.DistBetweenTwoPts(pt, fhp) <= DGeom.DistBetweenTwoPts(pt, shp))
                 {
                     editingFirstHand = true;
-                    firstHandAngle = DGeom.AngleBetweenPoints(r.Center, pt);
+                    firstHandAngle.Value = DGeom.AngleBetweenPoints(r.Center, pt);
                 }
                 else
                 {
                     editingSecondHand = true;
-                    secondHandAngle = DGeom.AngleBetweenPoints(r.Center, pt);
+                    secondHandAngle.Value = DGeom.AngleBetweenPoints(r.Center, pt);
                 }
                 dv.Update(r);                          
             }
@@ -106,12 +106,12 @@ namespace DDraw
         {
             if (editingFirstHand)
             {
-                firstHandAngle = DGeom.AngleBetweenPoints(GetClockRect().Center, pt);
+                firstHandAngle.Value = DGeom.AngleBetweenPoints(GetClockRect().Center, pt);
                 dv.Update(GetClockRect());
             }
             else if (editingSecondHand)
             {
-                secondHandAngle = DGeom.AngleBetweenPoints(GetClockRect().Center, pt);
+                secondHandAngle.Value = DGeom.AngleBetweenPoints(GetClockRect().Center, pt);
                 dv.Update(GetClockRect());
             }
             else if (editing && HitTest(pt) == DHitTest.Body) 
@@ -156,12 +156,12 @@ namespace DDraw
             
         DPoint FirstHandPoint(DRect r)
         { 
-            return DGeom.RotatePoint(new DPoint(r.Center.X, r.Y), r.Center, firstHandAngle);    
+            return DGeom.RotatePoint(new DPoint(r.Center.X, r.Y), r.Center, firstHandAngle.Value);    
         }
             
         DPoint SecondHandPoint(DRect r)
         {
-            return DGeom.RotatePoint(new DPoint(r.Center.X, r.Y + r.Height / 6), r.Center, secondHandAngle);
+            return DGeom.RotatePoint(new DPoint(r.Center.X, r.Y + r.Height / 6), r.Center, secondHandAngle.Value);
         }
 
         protected override void PaintBody (DGraphics dg)

@@ -4,11 +4,21 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.50727</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{483D8236-B660-429C-A441-19FF82EA3867}</ProjectGuid>
+    <ProjectGuid>{A204BD9C-1C1A-4AE8-9716-B7B6C67E09F7}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>DDraw</RootNamespace>
-    <AssemblyName>DDraw</AssemblyName>
+    <RootNamespace>DejaVu</RootNamespace>
+    <AssemblyName>Dejavu</AssemblyName>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>dejavu.snk</AssemblyOriginatorKeyFile>
+    <SccProjectName>
+    </SccProjectName>
+    <SccLocalPath>
+    </SccLocalPath>
+    <SccAuxPath>
+    </SccAuxPath>
+    <SccProvider>
+    </SccProvider>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -18,11 +28,6 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <OutputType>Library</OutputType>
-    <AssemblyName>DDraw</AssemblyName>
-    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
-    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
-    <RootNamespace>DDraw</RootNamespace>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -31,45 +36,29 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <OutputType>Library</OutputType>
-    <AssemblyName>DDraw</AssemblyName>
-    <DebugSymbols>true</DebugSymbols>
-    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
-    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
-    <RootNamespace>DDraw</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="qf4net, Version=1.1.17.0, Culture=neutral">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\libs\qf4net.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DColor.cs" />
-    <Compile Include="DDraw.cs" />
-    <Compile Include="DEngineHsm.cs" />
-    <Compile Include="DGeom.cs" />
-    <Compile Include="DEngine.cs" />
-    <Compile Include="DGraphics.cs" />
-    <Compile Include="DViewer.cs" />
-    <Compile Include="Figure.cs" />
-    <Compile Include="FigureControls.cs" />
-    <Compile Include="FigurePolygons.cs" />
+    <Compile Include="Change.cs" />
+    <Compile Include="Collections\Generic\UndoRedoDictionary.cs" />
+    <Compile Include="Collections\Generic\UndoRedoList.cs" />
+    <Compile Include="Command.cs" />
+    <Compile Include="IUndoRedoMember.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="DTypes.cs" />
-    <Compile Include="FigureAdv.cs" />
+    <Compile Include="UndoRedoArea.cs" />
+    <Compile Include="UndoRedoManager.cs" />
+    <Compile Include="UndoRedoProperty.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Todo.txt" />
+    <Content Include="CodeSnippet\!readme.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\libs\Dejavu\DejaVu.csproj">
-      <Project>{A204BD9C-1C1A-4AE8-9716-B7B6C67E09F7}</Project>
-      <Name>DejaVu</Name>
-    </ProjectReference>
+    <None Include="CodeSnippet\undoredo.snippet" />
+    <None Include="dejavu.snk" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

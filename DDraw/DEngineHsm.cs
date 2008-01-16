@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 
 using qf4net;
+using DejaVu.Collections.Generic;
 
 namespace DDraw
 {
@@ -385,11 +386,12 @@ namespace DDraw
                         updateRect = updateRect.Union(GetBoundingBox(f));
                     // apply x/y delta to figures
                     DPoint dPos = CalcDragDelta(pt);
-                    foreach (Figure f in selectedFigures)
-                    {
-                        f.X += dPos.X;
-                        f.Y += dPos.Y;
-                    }
+                    if (dPos.X != 0 || dPos.Y != 0)
+                        foreach (Figure f in selectedFigures)
+                        {
+                            f.X += dPos.X;
+                            f.Y += dPos.Y;
+                        }
                     // store drag pt for reference later (eg. next mousemove event)
                     dragPt = pt;
                     // final update rect
@@ -450,15 +452,9 @@ namespace DDraw
                     // resize
                     ILineSegment ls = (ILineSegment)currentFigure;
                     if (mouseHitTest == DHitTest.ReposLinePt1)
-                    {
-                        ls.Pt1.X += pt.X - dragPt.X;
-                        ls.Pt1.Y += pt.Y - dragPt.Y;
-                    }
+                        ls.Pt1 = new DPoint(ls.Pt1.X + pt.X - dragPt.X, ls.Pt1.Y + pt.Y - dragPt.Y);
                     else if (mouseHitTest == DHitTest.ReposLinePt2)
-                    {
-                        ls.Pt2.X += pt.X - dragPt.X;
-                        ls.Pt2.Y += pt.Y - dragPt.Y;
-                    }
+                        ls.Pt2 = new DPoint(ls.Pt2.X + pt.X - dragPt.X, ls.Pt2.Y + pt.Y - dragPt.Y);
                     dragPt = pt;
                     // final update rect
                     updateRect = updateRect.Union(GetBoundingBox(currentFigure));
@@ -536,13 +532,11 @@ namespace DDraw
             {
                 case (int)QSignals.Entry:
                     // record state for undo/redo manager
-                    if (autoUndoRecord)
-                        undoRedoMgr.Start("Select Operation");
+                    UndoRedoStart("Select Operation");
                     break;
                 case (int)QSignals.Exit:
                     // commit undo changes
-                    if (autoUndoRecord)
-                        undoRedoMgr.Commit();
+                    UndoRedoCommit();
                     break;
                 case (int)DEngineSignals.MouseMove:
                     DoDragFigureMouseMove(((QMouseEvent)qevent).Dv, ((QMouseEvent)qevent).Pt);
@@ -578,8 +572,7 @@ namespace DDraw
         {
             if (btn == DMouseButton.Left)
             {
-                if (autoUndoRecord)
-                    undoRedoMgr.Start("Add Line");
+                UndoRedoStart("Add Line");
                 // create line figure
                 currentFigure = (Figure)Activator.CreateInstance(currentFigureClass);
                 ((LinebaseFigure)currentFigure).AddPoint(pt);
@@ -623,8 +616,7 @@ namespace DDraw
 
         void DoDrawingLineMouseUp(DViewer dv, DMouseButton btn, DPoint pt)
         {
-            if (autoUndoRecord)
-                undoRedoMgr.Commit();
+            UndoRedoCommit();
             // transition
             TransitionTo(DrawLineDefault);
         }
@@ -648,8 +640,7 @@ namespace DDraw
             if (btn == DMouseButton.Left)
             {
                 ClearCurrentFigure();
-                if (autoUndoRecord)
-                    undoRedoMgr.Start("Add Text");
+                UndoRedoStart("Add Text");
                 // create TextFigure
                 currentFigure = new TextFigure(pt, "", 0);
                 authorProps.ApplyPropertiesToFigure((TextFigure)currentFigure);
@@ -719,9 +710,6 @@ namespace DDraw
                 dragPt = pt;
                 // transition to select state
                 TransitionTo(DragFigure);
-                // select op started
-                if (autoUndoRecord)
-                    undoRedoMgr.Start("Select Operation");
             }
         }
 
@@ -772,8 +760,7 @@ namespace DDraw
                     return Main;
                 case (int)QSignals.Entry:
                     // start undo record
-                    if (autoUndoRecord)
-                        undoRedoMgr.Start("Text Edit");
+                    UndoRedoStart("Text Edit");
                     // add TextEditFigure
                     Figure tf = currentFigure;
                     currentFigure = new TextEditFigure((TextFigure)tf);
@@ -793,8 +780,7 @@ namespace DDraw
                         figures.Remove(currentFigure);
                     }
                     // record text edit to undo manager
-                    if (autoUndoRecord)
-                        undoRedoMgr.Commit();
+                    UndoRedoCommit();
                     return null;
                 case (int)DEngineSignals.MouseDown:
                     DoTextEditMouseDown(((QMouseEvent)qevent).Dv, ((QMouseEvent)qevent).Button, ((QMouseEvent)qevent).Pt);
@@ -830,8 +816,7 @@ namespace DDraw
         {
             if (btn == DMouseButton.Left)
             {
-                if (autoUndoRecord)
-                    undoRedoMgr.Start(string.Format("Add {0}", currentFigureClass.Name));
+                UndoRedoStart(string.Format("Add {0}", currentFigureClass.Name));
                 // create Figure
                 currentFigure = (Figure)Activator.CreateInstance(currentFigureClass);
                 currentFigure.TopLeft = pt;
@@ -903,8 +888,7 @@ namespace DDraw
 
         void DoDrawingRectMouseUp(DViewer dv, DMouseButton btn, DPoint pt)
         {
-            if (autoUndoRecord)
-                undoRedoMgr.Commit();
+            UndoRedoCommit();
             // transition
             TransitionTo(DrawRectDefault);
             // update drawing
@@ -946,8 +930,7 @@ namespace DDraw
                 case (int)QSignals.Entry:
                     DoStateChanged(DEngineState.FigureEdit);
                     // start undo record
-                    if (autoUndoRecord)
-                        undoRedoMgr.Start("Figure Edit");
+                    UndoRedoStart("Figure Edit");
                     // set editing and connect to edit finished event
                     ((IEditable)currentFigure).StartEdit();
                     ((IEditable)currentFigure).EditFinished += new EditFinishedHandler(currentFigure_EditFinished);
@@ -960,8 +943,7 @@ namespace DDraw
                     ((IEditable)currentFigure).EndEdit();
                     ((IEditable)currentFigure).EditFinished -= currentFigure_EditFinished;                
                     // record figure edit to undo manager
-                    if (autoUndoRecord)
-                        undoRedoMgr.Commit();
+                    UndoRedoCommit();
                     return null;
                 case (int)DEngineSignals.MouseDown:
                     ((IEditable)currentFigure).MouseDown(((QMouseEvent)qevent).Dv, ((QMouseEvent)qevent).Button, ((QMouseEvent)qevent).Pt);
@@ -1056,7 +1038,7 @@ namespace DDraw
         void ErasePolyline(DPoints ptsToRemove, PolylinebaseFigure f, GroupFigure parent)
         {
             // set figure list to use
-            List<Figure> figs;
+            UndoRedoList<Figure> figs;
             if (parent != null)
                 figs = parent.ChildFigures;
             else
@@ -1108,7 +1090,7 @@ namespace DDraw
                 parent.ChildFigures = figs;
         }
 
-        void ErasePolylines(DPoint eraserPt, List<Figure> figures, ref DRect updateRect, GroupFigure parent)
+        void ErasePolylines(DPoint eraserPt, UndoRedoList<Figure> figures, ref DRect updateRect, GroupFigure parent)
         {
             for (int i = figures.Count - 1; i >= 0; i--)
                 if (figures[i] is PolylinebaseFigure)
@@ -1116,9 +1098,10 @@ namespace DDraw
                     PolylinebaseFigure f = (PolylinebaseFigure)figures[i];
                     DPoint rotPt = f.RotatePointToFigure(eraserPt);
                     DPoints ptsToRemove = new DPoints();
-                    foreach (DPoint pt in f.Points)
-                        if (DGeom.PointInCircle(pt, rotPt, eraser.Size / 2))
-                            ptsToRemove.Add(pt);
+                    if (f.Points != null)
+                        foreach (DPoint pt in f.Points)
+                            if (DGeom.PointInCircle(pt, rotPt, eraser.Size / 2))
+                                ptsToRemove.Add(pt);
                     if (ptsToRemove.Count > 0)
                     {
                         // add polyline figure bounding box to updateRect
@@ -1157,13 +1140,11 @@ namespace DDraw
             {
                 case (int)QSignals.Entry:
                     // record state for undo/redo manager
-                    if (autoUndoRecord)
-                        undoRedoMgr.Start("Erase Operation");
+                    UndoRedoStart("Erase Operation");
                     break;
                 case (int)QSignals.Exit:
                     // commit undo changes
-                    if (autoUndoRecord)
-                        undoRedoMgr.Commit();
+                    UndoRedoCommit();
                     // hide eraser
                     drawEraser = false;
                     UpdateViewers(); // and show updated polylines in other viewers too

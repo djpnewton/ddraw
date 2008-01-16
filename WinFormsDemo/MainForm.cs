@@ -29,7 +29,7 @@ namespace WinFormsDemo
             // DEngine events
             de.DebugMessage += new DebugMessageHandler(DebugMessage);
             de.SelectedFiguresChanged += new SelectedFiguresHandler(de_SelectedFiguresChanged);
-            de.UndoRedoMgr.UndoRedoChanged += new UndoRedoChangedDelegate(UndoRedoMgr_UndoRedoChanged);
+            de.UndoRedoChanged += new EventHandler(de_UndoRedoChanged);
             de.ContextClick += new ContextClickHandler(de_ContextClick);
             de.StateChanged += new DEngine.DEngineStateChangedHandler(de_StateChanged);
 
@@ -49,7 +49,7 @@ namespace WinFormsDemo
             dvEditor.Update();
             this.de = de;
             de_SelectedFiguresChanged();
-            UndoRedoMgr_UndoRedoChanged(false);
+            UpdateUndoRedoControls();
         }
 
         public MainForm()
@@ -65,6 +65,8 @@ namespace WinFormsDemo
             dvEditor.DebugMessage += new DebugMessageHandler(DebugMessage);
             // create ddraw engine 1
             CreateDEngine();
+            // create initial figures
+            de.UndoRedoStart("create initial figures");
             // rect figures
             de.AddFigure(new RectFigure(new DRect(10, 10, 50, 50), 0));
             Figure f = new RectFigure(new DRect(40, 40, 50, 50), 0);
@@ -109,6 +111,10 @@ namespace WinFormsDemo
             f = new LineFigure(new DPoint(100, 100), new DPoint(200, 200));
             ((LineFigure)f).StrokeWidth = 10;
             de.AddFigure(f);
+            // commit figures to undo redo manager
+            de.UndoRedoCommit();
+            de.UndoRedoClearHistory();
+            UpdateUndoRedoControls();
             // Init controls
             InitPropertyControls(de.State);
         }
@@ -134,18 +140,31 @@ namespace WinFormsDemo
             InitMenus();
         }
 
-        void UndoRedoMgr_UndoRedoChanged(bool commitAction)
+        void UpdateUndoRedoControls()
         {
-            undoToolStripMenuItem.Enabled = de.UndoRedoMgr.CanUndo;
+            undoToolStripMenuItem.Enabled = de.CanUndo;
             if (undoToolStripMenuItem.Enabled)
-                undoToolStripMenuItem.Text = string.Format("Undo \"{0}\"", de.UndoRedoMgr.UndoName);
+            {
+                IEnumerator<string> en = de.UndoCommands.GetEnumerator();
+                en.MoveNext();
+                undoToolStripMenuItem.Text = string.Format("Undo \"{0}\"", en.Current);
+            }
             else
                 undoToolStripMenuItem.Text = "Undo";
-            redoToolStripMenuItem.Enabled = de.UndoRedoMgr.CanRedo;
+            redoToolStripMenuItem.Enabled = de.CanRedo;
             if (redoToolStripMenuItem.Enabled)
-                redoToolStripMenuItem.Text = string.Format("Redo \"{0}\"", de.UndoRedoMgr.RedoName);
+            {
+                IEnumerator<string> en = de.RedoCommands.GetEnumerator();
+                en.MoveNext();
+                redoToolStripMenuItem.Text = string.Format("Redo \"{0}\"", en.Current);
+            }
             else
                 redoToolStripMenuItem.Text = "Redo";
+        }
+
+        void de_UndoRedoChanged(object sender, EventArgs e)
+        {
+            UpdateUndoRedoControls();
         }
 
         void de_ContextClick(DEngine de, Figure clickedFigure, DPoint pt)
@@ -601,7 +620,6 @@ namespace WinFormsDemo
 
         private void btnAlpha_AlphaChanged(object sender, double alpha)
         {
-            UpdateSelectedFigures(btnAlpha);
             switch (de.State)
             {
                 case DEngineState.Select:
@@ -722,7 +740,7 @@ namespace WinFormsDemo
 
         private void UpdateSelectedFigures(object sender)
         {
-            de.UndoRedoMgr.Start("Change Property"); // TODO: make this work better with the slider controls
+            de.UndoRedoStart("Change Property");
             List<Figure> figs = de.SelectedFigures;
             foreach (Figure f in figs)
             {
@@ -760,7 +778,7 @@ namespace WinFormsDemo
                         ((ITextable)f).Strikethrough = btnStrikethrough.Checked;
                 }
             }
-            de.UndoRedoMgr.Commit();
+            de.UndoRedoCommit();
             dvEditor.Update();
         }
 
@@ -835,9 +853,9 @@ namespace WinFormsDemo
             {
                 de.ClearSelected();
                 WFBitmap bmp = new WFBitmap(ofd.FileName);
-				de.UndoRedoMgr.Start("Add Image");
+				de.UndoRedoStart("Add Image");
                 de.AddFigure(new ImageFigure(new DRect(10, 10, bmp.Width, bmp.Height), 0, bmp));
-				de.UndoRedoMgr.Commit();
+				de.UndoRedoCommit();
                 de.UpdateViewers();
             }
         }
@@ -856,12 +874,12 @@ namespace WinFormsDemo
 
         private void undoToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            de.UndoRedoMgr.Undo();
+            de.Undo();
         }
 
         private void redoToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            de.UndoRedoMgr.Redo();
+            de.Redo();
         }
 
         private void groupToolStripMenuItem_Click(object sender, EventArgs e)

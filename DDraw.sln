@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DDrawGTK", "DDrawGTK\DDrawG
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DDrawWF", "DDrawWF\DDrawWF.csproj", "{5A55F6B3-6748-402C-B910-C8543B97BE73}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DejaVu", "libs\Dejavu\DejaVu.csproj", "{A204BD9C-1C1A-4AE8-9716-B7B6C67E09F7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -37,6 +39,10 @@ Global
 		{5A55F6B3-6748-402C-B910-C8543B97BE73}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5A55F6B3-6748-402C-B910-C8543B97BE73}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5A55F6B3-6748-402C-B910-C8543B97BE73}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A204BD9C-1C1A-4AE8-9716-B7B6C67E09F7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A204BD9C-1C1A-4AE8-9716-B7B6C67E09F7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A204BD9C-1C1A-4AE8-9716-B7B6C67E09F7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A204BD9C-1C1A-4AE8-9716-B7B6C67E09F7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

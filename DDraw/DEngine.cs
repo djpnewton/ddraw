@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Text;
 
 using qf4net;
+using DejaVu;
+using DejaVu.Collections.Generic;
 
 namespace DDraw
 {
@@ -87,7 +89,7 @@ namespace DDraw
 
     public partial class DEngine
     {
-        protected List<Figure> figures = new List<Figure>();
+        protected UndoRedoList<Figure> figures = new UndoRedoList<Figure>();
         List<DViewer> viewers = new List<DViewer>();
         List<Figure> selectedFigures = new List<Figure>();
         public List<Figure> SelectedFigures
@@ -122,35 +124,74 @@ namespace DDraw
         const double figureSnapRange = Math.PI / (4 * 18); // 2.5  degrees (each way)
 
         DAuthorProperties authorProps;
-        UndoRedoManager undoRedoMgr;
-        public UndoRedoManager UndoRedoMgr
+
+        UndoRedoArea undoRedoMgr;
+        public bool CanUndo
         {
-            get { return undoRedoMgr; }
+            get { return undoRedoMgr.CanUndo; }
         }
-		
-        bool autoUndoRecord = true;
-        public bool AutoUndoRecord
+        public bool CanRedo
         {
-            get { return autoUndoRecord; }
-            set { autoUndoRecord = value; }
+            get { return undoRedoMgr.CanRedo; }
+        }
+        public IEnumerable<string> UndoCommands
+        {
+            get { return undoRedoMgr.UndoCommands; }
+        }
+        public IEnumerable<string> RedoCommands
+        {
+            get { return undoRedoMgr.RedoCommands; }
+        }
+        public void UndoRedoStart(string name)
+        {
+            if (!undoRedoMgr.IsCommandStarted)
+                undoRedoMgr.Start(name);
+        }
+        public void UndoRedoCommit()
+        {
+            undoRedoMgr.Commit();
+        }
+        public void UndoRedoCancel()
+        {
+            undoRedoMgr.Cancel();
+        }
+        public void UndoRedoClearHistory()
+        {
+            undoRedoMgr.ClearHistory();
+        }
+        public void Undo()
+        {
+            undoRedoMgr.Undo();
+        }
+        public void Redo()
+        {
+            undoRedoMgr.Redo();
         }
         
-        DPoint pageSize = new DPoint(500, 400);
+        UndoRedo<DPoint> _pageSize = new UndoRedo<DPoint>(new DPoint(500, 400));
         public DPoint PageSize
         {
-            get { return pageSize; }
+            get { return _pageSize.Value; }
             set
             {
-                pageSize = value;
-                foreach (DViewer dv in viewers)
-                    dv.SetPageSize(pageSize);
+                if (!value.Equals(_pageSize.Value))
+                {
+                    bool meStartCommand = !undoRedoMgr.IsCommandStarted;
+                    if (meStartCommand)
+                        undoRedoMgr.Start("Set Page Size");
+                    _pageSize.Value = value;
+                    if (meStartCommand)
+                        undoRedoMgr.Commit();
+                }
                 if (PageSizeChanged != null)
                     PageSizeChanged(this, value);
+                foreach (DViewer dv in viewers)
+                    dv.SetPageSize(value);
             }
         }       
         public PageFormat PageFormat
         {
-            get { return PageTools.SizeToFormat(pageSize); }
+            get { return PageTools.SizeToFormat(PageSize); }
             set 
             {
                 if (value != PageFormat.Custom)
@@ -162,26 +203,40 @@ namespace DDraw
         public event SelectedFiguresHandler SelectedFiguresChanged;
         public event ContextClickHandler ContextClick;
         public event PageSizeChangedHandler PageSizeChanged;
+        public event EventHandler UndoRedoChanged;
+
+        static int instanceNumber;
 
         public DEngine(DAuthorProperties ap)
         {
+            // create the undo/redo manager
+            undoRedoMgr = new UndoRedoArea("UndoRedoArea #" + instanceNumber.ToString());
+            undoRedoMgr.CommandDone += new EventHandler<CommandDoneEventArgs>(undoRedoMgr_CommandDone);
+            // set the author properties manager
             authorProps = ap;
+            // create selection figure and eraser
+            UndoRedoStart("Create Selection Rect & Eraser");
             selectionRect = new SelectionFigure(new DRect(), 0);
             eraser = new EraserFigure(10);
-            undoRedoMgr = new UndoRedoManager(figures);
-            undoRedoMgr.UndoRedoChanged += new UndoRedoChangedDelegate(undoRedoMgr_UndoRedoChanged);
-
+            UndoRedoCommit();
+            UndoRedoClearHistory();
             // QHsm Init
             Init();
+            // increment static instanceNumber variable
+            instanceNumber += 1;
         }
 
-        void undoRedoMgr_UndoRedoChanged(bool commitAction)
+        void undoRedoMgr_CommandDone(object sender, CommandDoneEventArgs e)
         {
-            if (!commitAction)
+            if (e.CommandDoneType == CommandDoneType.Undo || e.CommandDoneType == CommandDoneType.Redo)
             {
                 ClearSelected();
                 UpdateViewers();
+                // in case the page size was undooed
+                PageSize = PageSize;
             }
+            if (UndoRedoChanged != null)
+                UndoRedoChanged(this, e);
         }
 
         void dv_NeedRepaint(DViewer dv)
@@ -247,7 +302,7 @@ namespace DDraw
 
         public void AddViewer(DViewer dv)
         {
-            dv.SetPageSize(pageSize);
+            dv.SetPageSize(PageSize);
             dv.NeedRepaint += new DPaintEventHandler(dv_NeedRepaint);
             dv.MouseDown += new DMouseButtonEventHandler(dv_MouseDown);
             dv.MouseMove += new DMouseMoveEventHandler(dv_MouseMove);
@@ -297,8 +352,7 @@ namespace DDraw
             if (CanGroupFigures(figs))
             {
                 // init undoRedo frame
-                if (autoUndoRecord)
-                    undoRedoMgr.Start("Group");
+                UndoRedoStart("Group");
                 // make group
                 GroupFigure gf = new GroupFigure(figs);
                 figures.Add(gf);
@@ -312,8 +366,7 @@ namespace DDraw
                 // update all viewers
                 UpdateViewers();
                 // commit changes to undoRedoMgr
-                if (autoUndoRecord)
-                    undoRedoMgr.Commit();
+                 UndoRedoCommit();
             }
         }
 
@@ -328,8 +381,7 @@ namespace DDraw
             {
                 GroupFigure gf = (GroupFigure)figs[0];
                 // init undoRedo frame
-                if (autoUndoRecord)
-                    undoRedoMgr.Start("Ungroup");
+                UndoRedoStart("Ungroup");
                 // perform ungroup
                 UngroupFigure(gf);
                 // add group figures to selected list
@@ -340,16 +392,14 @@ namespace DDraw
                 // update all viewers
                 UpdateViewers();
                 // commit changes to undoRedoMgr
-                if (autoUndoRecord)
-                    undoRedoMgr.Commit();
+                UndoRedoCommit();
             }
         }
 
         public void SendToBack(List<Figure> figs)
         {
             // init undoRedo frame
-            if (autoUndoRecord)
-                undoRedoMgr.Start("Send to Back");
+            UndoRedoStart("Send to Back");
             // do send to back
             OrderFigures(figs);
             for (int i = figs.Count - 1; i >= 0; i--)
@@ -365,15 +415,13 @@ namespace DDraw
             DoSelectedFiguresChanged();
             UpdateViewers();
             // commit changes to undoRedoMgr
-            if (autoUndoRecord)
-                undoRedoMgr.Commit(); 
+            UndoRedoCommit(); 
         }
 
         public void BringToFront(List<Figure> figs)
         {
             // init undoRedo frame
-            if (autoUndoRecord)
-                undoRedoMgr.Start("Bring to Front");
+            UndoRedoStart("Bring to Front");
             // do bring to front
             OrderFigures(figs);
             foreach (Figure f in figs)
@@ -386,15 +434,13 @@ namespace DDraw
             DoSelectedFiguresChanged();
             UpdateViewers();
             // commit changes to undoRedoMgr
-            if (autoUndoRecord)
-                undoRedoMgr.Commit(); 
+            UndoRedoCommit(); 
         }
 
         public void SendBackward(List<Figure> figs)
         {            
             // init undoRedo frame
-            if (autoUndoRecord)
-                undoRedoMgr.Start("Send Backward");
+            UndoRedoStart("Send Backward");
             // do send backward
             OrderFigures(figs);
             foreach (Figure f in figs)
@@ -411,8 +457,7 @@ namespace DDraw
             DoSelectedFiguresChanged();
             UpdateViewers();
             // commit changes to undoRedoMgr
-            if (autoUndoRecord)
-                undoRedoMgr.Commit(); 
+            UndoRedoCommit(); 
         }
 
         public bool CanSendBackward(List<Figure> figs)
@@ -429,8 +474,7 @@ namespace DDraw
         public void BringForward(List<Figure> figs)
         {
             // init undoRedo frame
-            if (autoUndoRecord)
-                undoRedoMgr.Start("Bring Forward");
+             UndoRedoStart("Bring Forward");
             // do bring forward
             OrderFigures(figs);
             for (int i = figs.Count - 1; i >= 0; i--)
@@ -450,8 +494,7 @@ namespace DDraw
             DoSelectedFiguresChanged();
             UpdateViewers();
             // commit changes to undoRedoMgr
-            if (autoUndoRecord)
-                undoRedoMgr.Commit(); 
+            UndoRedoCommit(); 
         }
 
         public bool CanBringForward(List<Figure> figs)

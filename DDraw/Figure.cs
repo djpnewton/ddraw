@@ -2,6 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
+using DejaVu;
+using DejaVu.Collections.Generic;
+
 namespace DDraw
 {
     public interface IFillable
@@ -124,7 +127,7 @@ namespace DDraw
 
     public interface IChildFigureable
     {
-        List<Figure> ChildFigures
+        UndoRedoList<Figure> ChildFigures
         {
             get;
             set;
@@ -248,29 +251,29 @@ namespace DDraw
     {
         public double Scale = 1;
 
-        double x;
+        UndoRedo<double> _x = new UndoRedo<double>(0);
         public virtual double X
         {
-            get { return x; }
-            set { x = value; }
+            get { return _x.Value; }
+            set { if (value != _x.Value) _x.Value = value; }
         }
-        double y;
+        UndoRedo<double> _y = new UndoRedo<double>(0);
         public virtual double Y
         {
-            get { return y; }
-            set { y = value; }
+            get { return _y.Value; }
+            set { if (value != _y.Value) _y.Value = value; }
         }
-        double width;
+        UndoRedo<double> _width = new UndoRedo<double>(0);
         public virtual double Width
         {
-            get { return width; }
-            set { width = value; }
+            get { return _width.Value; }
+            set { if (value != _width.Value) _width.Value = value; }
         }
-        double height;
+        UndoRedo<double> _height = new UndoRedo<double>(0);
         public virtual double Height
         {
-            get { return height; }
-            set { height = value; }
+            get { return _height.Value; }
+            set { if (value != _height.Value) _height.Value = value; }
         }
         public virtual double Left
         {
@@ -285,12 +288,12 @@ namespace DDraw
         public virtual double Right
         {
             get { return X + Width; }
-            set { Width = value - x; }
+            set { Width = value - X; }
         }
         public virtual double Bottom
         {
             get { return Y + Height; }
-            set { Height = value - y; }
+            set { Height = value - Y; }
         }
         public virtual DPoint TopLeft
         {
@@ -315,17 +318,17 @@ namespace DDraw
             get { return new DRect(X, Y, Width, Height); }
             set
             {
-                x = value.X;
-                y = value.Y;
-                width = value.Width;
-                height = value.Height;
+                if (value.X != _x.Value) _x.Value = value.X;
+                if (value.Y != _y.Value) _y.Value = value.Y;
+                if (value.Width != _width.Value) _width.Value = value.Width;
+                if (value.Height != _height.Value) _height.Value = value.Height;
             }
         }
-        double rotation;
+        UndoRedo<double> _rotation = new UndoRedo<double>(0);
         public virtual double Rotation
         {
-            get { return rotation; }
-            set { rotation = value; }
+            get { return _rotation.Value; }
+            set { if (value != _rotation.Value) _rotation.Value = value; }
         }
 
         bool lockAspectRatio = false;
@@ -336,10 +339,7 @@ namespace DDraw
         }
 
         public Figure()
-        {
-            Rect = new DRect();
-            Rotation = 0;
-        }
+        { }
 
         public Figure(DRect rect, double rotation)
         {
@@ -392,7 +392,7 @@ namespace DDraw
             // rotate childFigure's rect by its rotation
             DRect r = DGeom.BoundingBoxOfRotatedRect(childFigure.Rect, childFigure.Rotation, childFigure.Rect.Center);
             // rotate result by the reverse rotation of this figures rect
-            r = DGeom.BoundingBoxOfRotatedRect(r, -rotation, Rect.Center);
+            r = DGeom.BoundingBoxOfRotatedRect(r, -Rotation, Rect.Center);
             // return whether result lies within this figures rect
             return Rect.Contains(r);
         }
@@ -511,11 +511,11 @@ namespace DDraw
         }
 
         #region IAlphaBlendable Members
-        double alpha = 1;
+        UndoRedo<double> _alpha = new UndoRedo<double>(1);
         public virtual double Alpha
         {
-            get { return alpha; }
-            set { alpha = value; }
+            get { return _alpha.Value; }
+            set { if (value != _alpha.Value) _alpha.Value = value; }
         }
         #endregion
     }
@@ -530,7 +530,7 @@ namespace DDraw
 
         public override DRect GetSelectRect()
         {
-            return StrokeHelper.SelectRectIncludingStrokeWidth(base.GetSelectRect(), strokeWidth);
+            return StrokeHelper.SelectRectIncludingStrokeWidth(base.GetSelectRect(), StrokeWidth);
         }
 
         protected override DHitTest _HitTest(DPoint pt)
@@ -542,53 +542,53 @@ namespace DDraw
 
         protected override void PaintBody(DGraphics dg)
         {
-            dg.FillRect(X, Y, Width, Height, fill, Alpha);
-            dg.DrawRect(X, Y, Width, Height, stroke, Alpha, strokeWidth, strokeStyle, strokeJoin);
+            dg.FillRect(X, Y, Width, Height, Fill, Alpha);
+            dg.DrawRect(X, Y, Width, Height, Stroke, Alpha, StrokeWidth, StrokeStyle, StrokeJoin);
         }
 
         #region IFillable Members
-        DColor fill = DColor.Red;
+        UndoRedo<DColor> _fill = new UndoRedo<DColor>(DColor.Red);
         public DColor Fill
         {
-            get { return fill; }
-            set { fill = value; }
+            get { return _fill.Value; }
+            set { if (!value.Equals(_fill.Value)) _fill.Value = value; }
         }
         #endregion
 
         #region IStrokeable Members
-        DColor stroke = DColor.Blue;
-        public DColor Stroke
+        UndoRedo<DColor> _stroke = new UndoRedo<DColor>(DColor.Blue);
+        public virtual DColor Stroke
         {
-            get { return stroke; }
-            set { stroke = value; }
+            get { return _stroke.Value; }
+            set { if (!value.Equals(_stroke.Value)) _stroke.Value = value; }
         }
-        double strokeWidth = 1;
-        public double StrokeWidth
+        UndoRedo<double> _strokeWidth = new UndoRedo<double>(1);
+        public virtual double StrokeWidth
         {
-            get { return strokeWidth; }
-            set { strokeWidth = value; }  
+            get { return _strokeWidth.Value; }
+            set { if (value != _strokeWidth.Value) _strokeWidth.Value = value; }  
         }
-        DStrokeStyle strokeStyle = DStrokeStyle.Solid;
-        public DStrokeStyle StrokeStyle
+        UndoRedo<DStrokeStyle> _strokeStyle = new UndoRedo<DStrokeStyle>(DStrokeStyle.Solid);
+        public virtual DStrokeStyle StrokeStyle
         {
-            get { return strokeStyle; }
-            set { strokeStyle = value; }
+            get { return _strokeStyle.Value; }
+            set { if (value != _strokeStyle.Value) _strokeStyle.Value = value; }
         }
-        DStrokeJoin strokeJoin = DStrokeJoin.Mitre;
-        public DStrokeJoin StrokeJoin
+        UndoRedo<DStrokeJoin> _strokeJoin = new UndoRedo<DStrokeJoin>(DStrokeJoin.Mitre);
+        public virtual DStrokeJoin StrokeJoin
         {
-            get { return strokeJoin; }
-            set { strokeJoin = value; }
+            get { return _strokeJoin.Value; }
+            set { if (value != _strokeJoin.Value) _strokeJoin.Value = value; }
         }
-        DStrokeCap strokeCap = DStrokeCap.Butt;
-        public DStrokeCap StrokeCap
+        UndoRedo<DStrokeCap> _strokeCap = new UndoRedo<DStrokeCap>(DStrokeCap.Butt);
+        public virtual DStrokeCap StrokeCap
         {
-            get { return strokeCap; }
-            set { strokeCap = value; }
+            get { return _strokeCap.Value; }
+            set { if (value != _strokeCap.Value) _strokeCap.Value = value; }
         }
         public DRect RectInclStroke
         {
-            get { return StrokeHelper.RectIncludingStrokeWidth(Rect, strokeWidth); }
+            get { return StrokeHelper.RectIncludingStrokeWidth(Rect, StrokeWidth); }
         }
         #endregion
     }
@@ -630,9 +630,9 @@ namespace DDraw
             DRect r = StrokeHelper.SelectRectIncludingStrokeWidth(base.GetSelectRect(), StrokeWidth);
             // add in marker spacing
             double i = S_INDENT * Scale;
-            if (startMarker != DMarker.None)
+            if (StartMarker != DMarker.None)
                 r = r.Union(GetStartMarkerRect().Offset(-i, -i).Inflate(i + i, i + i));
-            if (endMarker != DMarker.None)
+            if (EndMarker != DMarker.None)
                 r = r.Union(GetEndMarkerRect().Offset(-i, -i).Inflate(i + i, i + i));
             // return rect
             return r;
@@ -645,66 +645,69 @@ namespace DDraw
 
         protected override DHitTest _HitTest(DPoint pt)
         {
-            if (DGeom.PointInPolyline(pt, Points, StrokeWidth / 2))
-                return DHitTest.Body;
-            else if (DGeom.PointInPolygon(pt, GetStartMarkerPoints()) || DGeom.PointInPolygon(pt, GetEndMarkerPoints()))
-                return DHitTest.Body;
+            if (Points != null)
+            {
+                if (DGeom.PointInPolyline(pt, Points, StrokeWidth / 2))
+                    return DHitTest.Body;
+                else if (DGeom.PointInPolygon(pt, GetStartMarkerPoints()) || DGeom.PointInPolygon(pt, GetEndMarkerPoints()))
+                    return DHitTest.Body;
+            }
             return DHitTest.None;
         }
 
         #region IStrokeable Members
-        DColor stroke = DColor.Blue;
+        UndoRedo<DColor> _stroke = new UndoRedo<DColor>(DColor.Blue);
         public virtual DColor Stroke
         {
-            get { return stroke; }
-            set { stroke = value; }
+            get { return _stroke.Value; }
+            set { if (!value.Equals(_stroke.Value)) _stroke.Value = value; }
         }
-        double strokeWidth = 1;
+        UndoRedo<double> _strokeWidth = new UndoRedo<double>(1);
         public virtual double StrokeWidth
         {
-            get { return strokeWidth; }
-            set { strokeWidth = value; }
+            get { return _strokeWidth.Value; }
+            set { if (value != _strokeWidth.Value) _strokeWidth.Value = value; }
         }
-        DStrokeStyle strokeStyle = DStrokeStyle.Solid;
+        UndoRedo<DStrokeStyle> _strokeStyle = new UndoRedo<DStrokeStyle>(DStrokeStyle.Solid);
         public virtual DStrokeStyle StrokeStyle
         {
-            get { return strokeStyle; }
-            set { strokeStyle = value; }
+            get { return _strokeStyle.Value; }
+            set { if (value != _strokeStyle.Value) _strokeStyle.Value = value; }
         }
-        DStrokeJoin strokeJoin = DStrokeJoin.Round;
+        UndoRedo<DStrokeJoin> _strokeJoin = new UndoRedo<DStrokeJoin>(DStrokeJoin.Round);
         public virtual DStrokeJoin StrokeJoin
         {
-            get { return strokeJoin; }
-            set { strokeJoin = value; }
+            get { return _strokeJoin.Value; }
+            set { if (value != _strokeJoin.Value) _strokeJoin.Value = value; }
         }
-        DStrokeCap strokeCap = DStrokeCap.Round;
+        UndoRedo<DStrokeCap> _strokeCap = new UndoRedo<DStrokeCap>(DStrokeCap.Round);
         public virtual DStrokeCap StrokeCap
         {
-            get { return strokeCap; }
-            set { strokeCap = value; }
+            get { return _strokeCap.Value; }
+            set { if (value != _strokeCap.Value) _strokeCap.Value = value; }
         }
-        public virtual DRect RectInclStroke
+        public DRect RectInclStroke
         {
-            get { return StrokeHelper.RectIncludingStrokeWidth(Rect, strokeWidth); }
+            get { return StrokeHelper.RectIncludingStrokeWidth(Rect, StrokeWidth); }
         }
         #endregion
 
         #region IMarkable Members
         public double MarkerSize
         {
-            get { return strokeWidth * 2.5; }
+            get { return StrokeWidth * 2.5; }
         }
-        DMarker startMarker = DMarker.None;
+        UndoRedo<DMarker> _startMarker = new UndoRedo<DMarker>(DMarker.None);
         public DMarker StartMarker
         {
-            get { return startMarker; }
-            set { startMarker = value; }
+            get { return _startMarker.Value; }
+            set { if (value != _startMarker.Value) _startMarker.Value = value; }
         }
-        DMarker endMarker = DMarker.None;
+        UndoRedo<DMarker> _endMarker = new UndoRedo<DMarker>(DMarker.None);
         public DMarker EndMarker
         {
-            get { return endMarker; }
-            set { endMarker = value; }
+            get { return _endMarker.Value; }
+            set { if (value != _endMarker.Value) _endMarker.Value = value; }
         }
         public abstract DPoints GetStartMarkerPoints();
         public abstract DPoints GetEndMarkerPoints();
@@ -719,43 +722,44 @@ namespace DDraw
         #endregion
 
         #region IAlphaBlendable Members
-        double alpha = 1;
-        public double Alpha
+        UndoRedo<double> _alpha = new UndoRedo<double>(1);
+        public virtual double Alpha
         {
-            get { return alpha; }
-            set { alpha = value; }
+            get { return _alpha.Value; }
+            set { if (value != _alpha.Value) _alpha.Value = value; }
         }
         #endregion
     }
 
     public abstract class LineSegmentbaseFigure : LinebaseFigure, ILineSegment
     {
-        DPoint pt1, pt2;
+        UndoRedo<DPoint> _pt1 = new UndoRedo<DPoint>();
         public DPoint Pt1
         {
-            get { return pt1; }
-            set { pt1 = value; }
+            get { return _pt1.Value; }
+            set { if (value != _pt1.Value) _pt1.Value = value; }
         }
+        UndoRedo<DPoint> _pt2 = new UndoRedo<DPoint>();
         public DPoint Pt2
         {
-            get { return pt2; }
-            set { pt2 = value; }
+            get { return _pt2.Value; }
+            set { if (value != _pt2.Value) _pt2.Value = value; }
         }
 
         public override double X
         {
             get
             {
-                if (pt1 != null && pt2 != null)
-                    return Math.Min(pt1.X, pt2.X);
+                if (Pt1 != null && Pt2 != null)
+                    return Math.Min(Pt1.X, Pt2.X);
                 else
                     return 0;
             }
             set
             {
                 double dX = value - X;
-                pt1.X += dX;
-                pt2.X += dX;
+                Pt1.X += dX;
+                Pt2.X += dX;
             }
         }
 
@@ -763,15 +767,15 @@ namespace DDraw
         {
             get
             {
-                if (pt1 != null && pt2 != null)
-                    return Math.Min(pt1.Y, pt2.Y);
+                if (Pt1 != null && Pt2 != null)
+                    return Math.Min(Pt1.Y, Pt2.Y);
                 else return 0;
             }
             set
             {
                 double dY = value - Y;
-                pt1.Y += dY;
-                pt2.Y += dY;
+                Pt1.Y += dY;
+                Pt2.Y += dY;
             }
         }
 
@@ -779,17 +783,17 @@ namespace DDraw
         {
             get
             {
-                if (pt1 != null && pt2 != null)
-                    return Math.Abs(pt1.X - pt2.X);
+                if (Pt1 != null && Pt2 != null)
+                    return Math.Abs(Pt1.X - Pt2.X);
                 else
                     return 0;
             }
             set
             {
-                if (pt1.X > pt2.X)
-                    pt1.X = pt2.X + value;
+                if (Pt1.X > Pt2.X)
+                    Pt1.X = Pt2.X + value;
                 else
-                    pt2.X = pt1.X + value;
+                    Pt2.X = Pt1.X + value;
             }
         }
 
@@ -797,17 +801,17 @@ namespace DDraw
         {
             get
             {
-                if (pt1 != null && pt2 != null)
-                    return Math.Abs(pt1.Y - pt2.Y);
+                if (Pt1 != null && Pt2 != null)
+                    return Math.Abs(Pt1.Y - Pt2.Y);
                 else
                     return 0;
             }
             set
             {
-                if (pt1.Y > pt2.Y)
-                    pt1.Y = pt2.Y + value;
+                if (Pt1.Y > Pt2.Y)
+                    Pt1.Y = Pt2.Y + value;
                 else
-                    pt2.Y = pt1.Y + value;
+                    Pt2.Y = Pt1.Y + value;
             }
         }
 
@@ -817,17 +821,17 @@ namespace DDraw
             set
             {
                 DPoint c = Rect.Center;
-                pt1 = DGeom.RotatePoint(pt1, c, value);
-                pt2 = DGeom.RotatePoint(pt2, c, value);
+                Pt1 = DGeom.RotatePoint(Pt1, c, value);
+                Pt2 = DGeom.RotatePoint(Pt2, c, value);
             }
         }
 
         public override void AddPoint(DPoint pt)
         {
-            if (pt1 == null)
-                pt1 = pt;
+            if (Pt1 == null)
+                Pt1 = pt;
             else
-                pt2 = pt;
+                Pt2 = pt;
         }
 
         public override DPoints Points
@@ -835,10 +839,10 @@ namespace DDraw
             get 
             {
                 DPoints pts = new DPoints();
-                if (pt1 != null)
-                    pts.Add(pt1);
-                if (pt2 != null)
-                    pts.Add(pt2);
+                if (Pt1 != null)
+                    pts.Add(Pt1);
+                if (Pt2 != null)
+                    pts.Add(Pt2);
                 return pts;
             }
         }
@@ -846,13 +850,13 @@ namespace DDraw
         public DRect GetPt1HandleRect()
         {
             double hs = HANDLE_SZ * Scale;
-            return new DRect(pt1.X - hs, pt1.Y - hs, hs + hs, hs + hs);
+            return new DRect(Pt1.X - hs, Pt1.Y - hs, hs + hs, hs + hs);
         }
 
         public DRect GetPt2HandleRect()
         {
             double hs = HANDLE_SZ * Scale;
-            return new DRect(pt2.X - hs, pt2.Y - hs, hs + hs, hs + hs);
+            return new DRect(Pt2.X - hs, Pt2.Y - hs, hs + hs, hs + hs);
         }
         
         public override DRect GetEncompassingRect()
@@ -888,7 +892,7 @@ namespace DDraw
 
         public override DHitTest SelectHitTest(DPoint pt)
         {
-            if (Selected && DGeom.PointInLine(pt, pt1, pt2, HANDLE_SZ * Scale))
+            if (Selected && DGeom.PointInLine(pt, Pt1, Pt2, HANDLE_SZ * Scale))
                 return DHitTest.SelectRect;
             return DHitTest.None;
         }
@@ -953,24 +957,27 @@ namespace DDraw
 
     public abstract class PolylinebaseFigure : LinebaseFigure
     {
-        DPoints points;
+        UndoRedo<DPoints> _points = new UndoRedo<DPoints>();
         public override DPoints Points
         {
-            get { return points; }
+            get { return _points.Value; }
         }
 
         public void SetPoints(DPoints pts)
         {
-            points = pts;
-            Rect = points.Bounds();
+            _points.Value = new DPoints();
+            foreach (DPoint pt in pts)
+                _points.Value.Add(new DPoint(pt.X, pt.Y));
+            Rect = _points.Value.Bounds();
         }
 
         public override void AddPoint(DPoint pt)
         {
-            if (points == null)
-                points = new DPoints();
-            points.Add(pt);
-            SetPoints(points); // to set the bounds (maybe should fix this)
+            DPoints pts = Points;
+            if (pts == null)
+                pts = new DPoints();
+            pts.Add(pt);
+            SetPoints(pts); // to set the bounds (maybe should fix this)
         }
 
         public override double X
@@ -1000,7 +1007,7 @@ namespace DDraw
             set
             {
                 double scale = value / Width;
-                foreach (DPoint pt in points)
+                foreach (DPoint pt in Points)
                     pt.X += (pt.X - X) * (scale - 1);
                 SetPoints(Points);
             }
@@ -1011,7 +1018,7 @@ namespace DDraw
             set
             {
                 double scale = value / Height;
-                foreach (DPoint pt in points)
+                foreach (DPoint pt in Points)
                     pt.Y += (pt.Y - Y) * (scale - 1);
                 SetPoints(Points);
             }
@@ -1023,17 +1030,16 @@ namespace DDraw
             if (Width == 0 && Height == 0)
                 strokeWidthFactor = StrokeWidthFactorNull;
             else
-                strokeWidthFactor = strokeWidth / (Width + Height);
+                strokeWidthFactor = StrokeWidth / (Width + Height);
         }
         double strokeWidthFactor = StrokeWidthFactorNull;
 
-        double strokeWidth = 1;
         public override double StrokeWidth
         {
-            get { return strokeWidth; }
+            get { return base.StrokeWidth; }
             set 
             {
-                strokeWidth = value;
+                base.StrokeWidth = value;
                 CalcStrokeWidthFactor();
             }
         }
@@ -1049,7 +1055,7 @@ namespace DDraw
 
         public override void AfterResize()
         {
-            strokeWidth = strokeWidthFactor * (Width + Height);
+            StrokeWidth = strokeWidthFactor * (Width + Height);
         }
     }
 
@@ -1080,7 +1086,7 @@ namespace DDraw
 
         protected override void PaintBody(DGraphics dg)
         {
-            if (Points.Count > 1)
+            if (Points != null && Points.Count > 1)
             {
                 dg.DrawPolyline(Points, Stroke, Alpha, StrokeWidth, StrokeStyle, StrokeJoin, StrokeCap);
                 if (StartMarker != DMarker.None)
@@ -1093,17 +1099,16 @@ namespace DDraw
 
     public class ImageFigure : RectbaseFigure, IBitmapable
     {
-        DBitmap bitmap = null;
+        UndoRedo<DBitmap> _bitmap = new UndoRedo<DBitmap>(null);
         public DBitmap Bitmap
         {
-            get { return bitmap; }
-            set { bitmap = value; }
+            get { return _bitmap.Value; }
+            set { if (_bitmap.Value == null || !value.Equals(_bitmap.Value)) _bitmap.Value = value; }
         }
 
-        public ImageFigure(DRect rect, double rotation, DBitmap bitmap)
-            : base(rect, rotation)
+        public ImageFigure(DRect rect, double rotation, DBitmap bitmap) : base(rect, rotation)
         {
-            this.bitmap = bitmap;
+            Bitmap = bitmap;
         }
 
         protected override void PaintBody(DGraphics dg)
@@ -1114,87 +1119,106 @@ namespace DDraw
 
     public class TextFigure : RectbaseFigure, IFillable, ITextable
     {
-        string fontName = "Courier New";
+        UndoRedo<string> _fontName = new UndoRedo<string>("Courier New");
         public string FontName
         {
-            get { return fontName; }
+            get { return _fontName.Value; }
             set
             {
-                fontName = value;
-                Text = text;
+                if (value != _fontName.Value)
+                {
+                    _fontName.Value = value;
+                    UpdateSize();
+                }
             }
         }
 
-        double fontSize = 10;
+        UndoRedo<double> _fontSize = new UndoRedo<double>(10);
         public double FontSize
         {
-            get { return fontSize; }
+            get { return _fontSize.Value; }
             set
             {
-                if (value <= 0)
-                    value = 1;
-                fontSize = value;
-                Text = text;
+                if (value != _fontSize.Value)
+                {
+                    if (value <= 0)
+                        value = 1;
+                    _fontSize.Value = value;
+                    UpdateSize();
+                }
             }
         }
 
-        bool bold = false;
+        UndoRedo<bool> _bold = new UndoRedo<bool>(false);
         public bool Bold
         {
-            get { return bold; }
+            get { return _bold.Value; }
             set
             {
-                bold = value;
-                Text = text;
+                if (value != _bold.Value)
+                {
+                    _bold.Value = value;
+                    UpdateSize();
+                }
             }
         }
-        bool italics = false;
+        UndoRedo<bool> _italics = new UndoRedo<bool>(false);
         public bool Italics
         {
-            get { return italics; }
+            get { return _italics.Value; }
             set
             {
-                italics = value; 
-                Text = text;
+                if (value != _italics.Value)
+                {
+                    _italics.Value = value;
+                    UpdateSize();
+                }
             }
         }
-        bool underline = false;
+        UndoRedo<bool> _underline = new UndoRedo<bool>(false);
         public bool Underline
         {
-            get { return underline; }
+            get { return _underline.Value; }
             set
             {
-                underline = value; 
-                Text = text;
+                if (value != _underline.Value)
+                {
+                    _underline.Value = value;
+                    UpdateSize();
+                }
             }
         }
-        bool strikethrough = false;
+        UndoRedo<bool> _strikethrough = new UndoRedo<bool>(false);
         public bool Strikethrough
         {
-            get { return strikethrough; }
+            get { return _underline.Value; }
             set
             {
-                strikethrough = value; 
-                Text = text;
+                if (value != _underline.Value)
+                {
+                    _underline.Value = value;
+                    UpdateSize();
+                }
             }
         }
 
-        private string text = null;
+        UndoRedo<string> _text = new UndoRedo<string>(null);
         public string Text
         {
-            get { return text; }
+            get { return _text.Value; }
             set
             {
-                DPoint sz = GraphicsHelper.MeasureText(value, fontName, FontSize, bold, italics, underline, strikethrough);
-                base.Width = sz.X;
-                base.Height = sz.Y;
-                text = value;
+                if (value != _text.Value)
+                {
+                    _text.Value = value;
+                    UpdateSize();
+                }
             }
         }
 
         public bool HasText
         {
-            get { return text != null && text.Length > 0; }
+            get { return Text != null && Text.Length > 0; }
         }
 
         public override double Width
@@ -1205,7 +1229,7 @@ namespace DDraw
             }
             set
             {
-                fontSize *= value / base.Width;
+                FontSize *= value / base.Width;
                 base.Width = value;
             }
         }
@@ -1225,23 +1249,30 @@ namespace DDraw
         public TextFigure(DPoint pt, string text, string fontName, double fontSize, double rotation)
         {
             TopLeft = pt;
-            this.fontName = fontName;
-            this.fontSize = fontSize;
+            FontName = fontName;
+            FontSize = fontSize;
             Text = text;
             Rotation = rotation;
         }
 
+        void UpdateSize()
+        {
+            DPoint sz = GraphicsHelper.MeasureText(Text, FontName, FontSize, Bold, Italics, Underline, Strikethrough);
+            base.Width = sz.X;
+            base.Height = sz.Y;
+        }
+
         protected override void PaintBody(DGraphics dg)
         {
-            dg.DrawText(Text, fontName, fontSize, bold, italics, underline, strikethrough, Rect.TopLeft, fill, Alpha);
+            dg.DrawText(Text, FontName, FontSize, Bold, Italics, Underline, Strikethrough, Rect.TopLeft, Fill, Alpha);
         }
 
         #region IFillable Members
-        DColor fill = DColor.Red;
+        UndoRedo<DColor> _fill = new UndoRedo<DColor>(DColor.Red);
         public DColor Fill
         {
-            get { return fill; }
-            set { fill = value; }
+            get { return _fill.Value; }
+            set { if (!value.Equals(_fill.Value)) _fill.Value = value; }
         }
         #endregion
     }
@@ -1582,10 +1613,10 @@ namespace DDraw
 
         public bool UseRealAlpha = true;
 
-        List<Figure> childFigs;
-        public List<Figure> ChildFigures
+        UndoRedoList<Figure> childFigs;
+        public UndoRedoList<Figure> ChildFigures
         {
-            get  { return new List<Figure>(childFigs.ToArray()); }
+            get { return childFigs; }
             set
             {
                 childFigs = value;
@@ -1601,7 +1632,7 @@ namespace DDraw
             System.Diagnostics.Debug.Assert(figs != null, "figs is not assigned");
             System.Diagnostics.Debug.Assert(figs.Count > 1, "figs.Length is less than 2");
             // make new figure list
-            childFigs = new List<Figure>();
+            childFigs = new UndoRedoList<Figure>();
             foreach (Figure f in figs)
                 childFigs.Add(f);
             // store starting dimensions for scaling later on

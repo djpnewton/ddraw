@@ -174,7 +174,7 @@ namespace DDraw
                 KeyUp(this, k);
         }
 
-        public void Paint(List<Figure> figures, Figure[] controlFigures)
+        public void Paint(IList<Figure> figures, Figure[] controlFigures)
         {
             // set antialias value
             dg.AntiAlias = AntiAlias;
