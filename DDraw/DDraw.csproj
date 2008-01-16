@@ -39,10 +39,6 @@
     <RootNamespace>DDraw</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="qf4net, Version=1.1.17.0, Culture=neutral">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\libs\qf4net.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
@@ -69,6 +65,10 @@
     <ProjectReference Include="..\libs\Dejavu\DejaVu.csproj">
       <Project>{A204BD9C-1C1A-4AE8-9716-B7B6C67E09F7}</Project>
       <Name>DejaVu</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\libs\qf4net\src\qf4net.csproj">
+      <Project>{068CD5CC-1000-430B-A575-A1E5644EDFD3}</Project>
+      <Name>qf4net</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
