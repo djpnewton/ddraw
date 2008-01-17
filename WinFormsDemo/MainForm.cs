@@ -171,19 +171,6 @@ namespace WinFormsDemo
         {
             if (clickedFigure != null)
                 cmsFigure.Show(wfvcEditor, new Point((int)pt.X, (int)pt.Y));
-            else
-            {
-                a4ToolStripMenuItem.Checked = de.PageFormat == PageFormat.A4;
-                a5ToolStripMenuItem.Checked = de.PageFormat == PageFormat.A5;
-                letterToolStripMenuItem.Checked = de.PageFormat == PageFormat.Letter;
-                customToolStripMenuItem.Checked = de.PageFormat == PageFormat.Custom;
-                fitToPageToolStripMenuItem.Checked = dvEditor.Zoom == Zoom.FitToPage;
-                fitToWidthToolStripMenuItem.Checked = dvEditor.Zoom == Zoom.FitToWidth;
-                _050PcToolStripMenuItem.Checked = dvEditor.Scale == 0.5;
-                _100PcToolStripMenuItem.Checked = dvEditor.Scale == 1.0;
-                _150PcToolStripMenuItem.Checked = dvEditor.Scale == 1.5;
-                cmsBackground.Show(wfvcEditor, new Point((int)pt.X, (int)pt.Y));
-            }
         }
 
         Color GetFillMatch(List<Figure> figs)
@@ -538,19 +525,19 @@ namespace WinFormsDemo
         void InitMenus()
         {
             List<Figure> figs = de.SelectedFigures;
-            // update group menu item
-            groupToolStripMenuItem.Enabled = true;
+            // update group action
+            actGroupFigures.Enabled = true;
             if (de.CanUngroupFigures(figs))
-                groupToolStripMenuItem.Text = "Ungroup";
+                actGroupFigures.Text = "Ungroup";
             else if (de.CanGroupFigures(figs))
-                groupToolStripMenuItem.Text = "Group";
+                actGroupFigures.Text = "Group";
             else
-                groupToolStripMenuItem.Enabled = false;
+                actGroupFigures.Enabled = false;
             // update order menu items
-            sendToBackToolStripMenuItem.Enabled = de.CanSendBackward(figs);
-            bringToFrontToolStripMenuItem.Enabled = de.CanBringForward(figs);
-            sendBackwardToolStripMenuItem.Enabled = de.CanSendBackward(figs);
-            bringForwardToolStripMenuItem.Enabled = de.CanBringForward(figs);
+            actSendToBack.Enabled = de.CanSendBackward(figs);
+            actBringToFront.Enabled = de.CanBringForward(figs);
+            actSendBackward.Enabled = de.CanSendBackward(figs);
+            actBringForward.Enabled = de.CanBringForward(figs);
         }
 
         void de_HsmStateChanged(DEngine de, DHsmState state)
@@ -882,25 +869,12 @@ namespace WinFormsDemo
             de.Redo();
         }
 
-        private void groupToolStripMenuItem_Click(object sender, EventArgs e)
+        private void pageSizeToolStripMenuItem_DropDownOpening(object sender, EventArgs e)
         {
-            List<Figure> figs = new List<Figure>(de.SelectedFigures);
-            if (de.CanUngroupFigures(figs))
-                de.UngroupFigures(figs);
-            else if (de.CanGroupFigures(figs))
-                de.GroupFigures(figs);
-        }
-
-        private void orderToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (sender == sendToBackToolStripMenuItem)
-                de.SendToBack(de.SelectedFigures);
-            else if (sender == bringToFrontToolStripMenuItem)
-                de.BringToFront(de.SelectedFigures);
-            else if (sender == sendBackwardToolStripMenuItem)
-                de.SendBackward(de.SelectedFigures);
-            else if (sender == bringForwardToolStripMenuItem)
-                de.BringForward(de.SelectedFigures);
+            a4ToolStripMenuItem.Checked = de.PageFormat == PageFormat.A4;
+            a5ToolStripMenuItem.Checked = de.PageFormat == PageFormat.A5;
+            letterToolStripMenuItem.Checked = de.PageFormat == PageFormat.Letter;
+            customToolStripMenuItem.Checked = de.PageFormat == PageFormat.Custom;
         }
 
         private void PageSizeToolStripMenuItem_Click(object sender, EventArgs e)
@@ -918,6 +892,15 @@ namespace WinFormsDemo
                 if (f.ShowDialog() == DialogResult.OK)
                     de.PageSize = f.PageSize;
             }
+        }
+
+        private void zoomToolStripMenuItem_DropDownOpening(object sender, EventArgs e)
+        {
+            fitToPageToolStripMenuItem.Checked = dvEditor.Zoom == Zoom.FitToPage;
+            fitToWidthToolStripMenuItem.Checked = dvEditor.Zoom == Zoom.FitToWidth;
+            _050PcToolStripMenuItem.Checked = dvEditor.Scale == 0.5;
+            _100PcToolStripMenuItem.Checked = dvEditor.Scale == 1.0;
+            _150PcToolStripMenuItem.Checked = dvEditor.Scale == 1.5;
         }
 
         private void ZoomToolStripMenuItem_Click(object sender, EventArgs e)
@@ -954,6 +937,37 @@ namespace WinFormsDemo
         {
             de.FigureLockAspectRatio = e.Shift;
             de.FigureAlwaysSnapAngle = e.Shift;
+        }
+
+        // action methods //
+
+        private void actGroupFigures_Execute(object sender, EventArgs e)
+        {
+            List<Figure> figs = new List<Figure>(de.SelectedFigures);
+            if (de.CanUngroupFigures(figs))
+                de.UngroupFigures(figs);
+            else if (de.CanGroupFigures(figs))
+                de.GroupFigures(figs);
+        }
+
+        private void actSendToBack_Execute(object sender, EventArgs e)
+        {
+            de.SendToBack(de.SelectedFigures);
+        }
+
+        private void actBringToFront_Execute(object sender, EventArgs e)
+        {
+            de.BringToFront(de.SelectedFigures);
+        }
+
+        private void actSendBackward_Execute(object sender, EventArgs e)
+        {
+            de.SendBackward(de.SelectedFigures);
+        }
+
+        private void actBringForward_Execute(object sender, EventArgs e)
+        {
+            de.BringForward(de.SelectedFigures);
         }
     }
 }

@@ -31,6 +31,7 @@
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Deployment" />
+    <Reference Include="System.Design" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
@@ -41,6 +42,17 @@
     </Compile>
     <Compile Include="AboutBox.Designer.cs">
       <DependentUpon>AboutBox.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ActionListProvider\Action.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ActionListProvider\ActionCollection.cs" />
+    <Compile Include="ActionListProvider\ActionCollectionEditor.cs" />
+    <Compile Include="ActionListProvider\ActionListProvider.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ActionListProvider\ActionListProvider.designer.cs">
+      <DependentUpon>ActionListProvider.cs</DependentUpon>
     </Compile>
     <Compile Include="ColorPicker.cs">
       <SubType>Form</SubType>

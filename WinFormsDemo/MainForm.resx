@@ -120,6 +120,24 @@
   <metadata name="tsEditorMode.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>12, 10</value>
   </metadata>
+  <metadata name="actionListProvider1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>503, 9</value>
+  </metadata>
+  <metadata name="actGroupFigures.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>648, 9</value>
+  </metadata>
+  <metadata name="actSendToBack.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>781, 9</value>
+  </metadata>
+  <metadata name="actBringToFront.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>908, 9</value>
+  </metadata>
+  <metadata name="actSendBackward.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>20, 37</value>
+  </metadata>
+  <metadata name="actBringForward.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>159, 37</value>
+  </metadata>
   <assembly alias="System.Drawing" name="System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
   <data name="btnAntiAlias.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
@@ -164,12 +182,12 @@
   <data name="btnEraser.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAAA4AAAANCAYAAACZ3F9/AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
-        YQUAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAAOpgAABdwnLpRPAAAAR5JREFUKFNjZMAD
-        enp6fExNTZO4ubnNgcqYbt26dWzbtm2ZS5YseYVT27Rp09I+fvz48z8a2L59+9v4+HgFrBpnzJiBVRPI
-        jJ8/f/6fO3fufgyNs2fPxqkJpPHr16//gbY+QNE4b9689E+fPv1Cdx4y/9KlS/+PHTu2Da5xwYIFBDU9
-        e/bs/+3bt383Nze7gDUuXrw4/fPnz3htAmm6efPm34ULF9aBNenq6joDBb/gcx5IEzAq/gJdVQV34vTp
-        02cToekP0KYKlADZt2/fA1waoTb9WbRoURlG8E+YMGE9No1ImkqwRra4uLj54cOHX8I0//79+//169dB
-        fgLZVIgvSTK4u7tLzp8/fwcQvNq5c+ejEydOLJ06dWoAPk0A/mOodtLsA20AAAAASUVORK5CYII=
+        YQUAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAAOpgAABdwnLpRPAAAAR9JREFUKFNjZMAD
+        enp6fExNTZM4ODjMmZmZmW7dunVs27ZtmUuWLHmFU9u0adPSXr58+fM/Gti4cePb+Ph4BawaZ8yYgVUT
+        yIyfP3/+nzt37n4MjbNnz8apCaTx69ev/7dv3/4AReO8efPSnz59+gvdecj8S5cu/T969Og2uMYFCxYQ
+        1PTs2bP/t2/f/t3c3OwC1rh48WKiNJ04ceLvwoUL68CadHV1ne/cufMFn/NANp08efIv0FVVcCdOnz59
+        NiFNV65c+QO0qQIlQPbt2/cAl0aQTSBNixYtKsMI/gkTJqzHphFJUwnWyBYXFzffv3//S5jm379//79+
+        /TrMpkJ8SZLB3d1dcv78+TuA4NXOnTsfHT9+fOnUqVMD8GkCAHaHpsawhbR3AAAAAElFTkSuQmCC
 </value>
   </data>
   <data name="btnRect.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
@@ -299,13 +317,13 @@
 </value>
   </data>
   <metadata name="statusStrip1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>209, 10</value>
+    <value>116, 11</value>
   </metadata>
   <metadata name="menuStrip1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>303, 10</value>
+    <value>207, 10</value>
   </metadata>
   <metadata name="tsFigureProps.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>612, 10</value>
+    <value>384, 9</value>
   </metadata>
   <data name="btnStrokeWidth.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
@@ -387,12 +405,9 @@
 </value>
   </data>
   <metadata name="cmsFigure.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>396, 10</value>
-  </metadata>
-  <metadata name="cmsBackground.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>482, 10</value>
+    <value>300, 10</value>
   </metadata>
   <metadata name="$this.TrayHeight" type="System.Int32, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>40</value>
+    <value>69</value>
   </metadata>
 </root>
