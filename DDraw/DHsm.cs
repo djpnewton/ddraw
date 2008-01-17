@@ -132,6 +132,13 @@ namespace DDraw
             get { return lockInitialAspectRatio || figureLockAspectRatio; }
         }
 
+        bool figureAlwaysSnapAngle = false;
+        public bool FigureAlwaysSnapAngle
+        {
+            get { return figureAlwaysSnapAngle; }
+            set { figureAlwaysSnapAngle = value; }
+        }
+
         bool drawSelection = false;
         SelectionFigure selectionFigure = new SelectionFigure(new DRect(), 0);
         bool drawEraser = false;
@@ -454,7 +461,6 @@ namespace DDraw
                             lockInitialAspectRatio = true;
                             break;
                         case DHitTest.ReposLinePt1:
-                            dragPt = pt;
                             break;
                         case DHitTest.ReposLinePt2:
                             goto case DHitTest.ReposLinePt1;
@@ -536,6 +542,8 @@ namespace DDraw
             return this.Select;
         }
 
+        delegate void SetPointDelegate(DPoint pt);
+        delegate double GetRotationalSnapDelegate(double ar);
         void DoDragFigureMouseMove(DViewer dv, DPoint pt)
         {
             // rectangular area to update with paint event
@@ -630,21 +638,83 @@ namespace DDraw
                     break;
                 case DHitTest.ReposLinePt1:
                     System.Diagnostics.Trace.Assert(currentFigure != null, "currentFigure is null");
-                    // alert figure we are going to resize it
-                    currentFigure.BeforeResize();
                     // inital update rect
                     updateRect = GetBoundingBox(currentFigure);
-                    // resize
+                    // get our line segment interface
                     ILineSegment ls = (ILineSegment)currentFigure;
+                    // setup points
+                    DPoint oldPoint, newPoint, otherPoint;
                     if (mouseHitTest == DHitTest.ReposLinePt1)
-                        ls.Pt1 = new DPoint(ls.Pt1.X + pt.X - dragPt.X, ls.Pt1.Y + pt.Y - dragPt.Y);
-                    else if (mouseHitTest == DHitTest.ReposLinePt2)
-                        ls.Pt2 = new DPoint(ls.Pt2.X + pt.X - dragPt.X, ls.Pt2.Y + pt.Y - dragPt.Y);
-                    dragPt = pt;
+                    {
+                        oldPoint = ls.Pt1;
+                        newPoint = new DPoint(pt.X, pt.Y);
+                        otherPoint = ls.Pt2;
+                    }
+                    else
+                    {
+                        oldPoint = ls.Pt2;
+                        newPoint = new DPoint(pt.X, pt.Y);
+                        otherPoint = ls.Pt1;
+                    }
+                    SetPointDelegate setPoint = delegate(DPoint point)
+                    {
+                        if (mouseHitTest == DHitTest.ReposLinePt1)
+                            ls.Pt1 = point;
+                        else
+                            ls.Pt2 = point;
+                    };
+                    GetRotationalSnapDelegate getRotationalSnap = delegate(double angleRemainder)
+                    {
+                        if (angleRemainder < figureSnapRange)
+                            return -angleRemainder;
+                        else if (angleRemainder > figureSnapAngle - figureSnapRange)
+                            return figureSnapAngle - angleRemainder;
+                        else
+                            return 0;
+                    };
+                    // find the current angle of the line and the remainder when divided by the snap angle
+                    double currentAngle = DGeom.AngleBetweenPoints(oldPoint, otherPoint);
+                    double ar = currentAngle % figureSnapAngle;
+                    // reposition line
+                    if (figureAlwaysSnapAngle)
+                    {
+                        // slide point along snap angle
+                        double newAngle = DGeom.AngleBetweenPoints(newPoint, otherPoint);
+                        ar = newAngle % figureSnapAngle;
+                        if (ar < figureSnapAngle / 2) 
+                            setPoint(DGeom.RotatePoint(newPoint, otherPoint, -ar));
+                        else
+                            setPoint(DGeom.RotatePoint(newPoint, otherPoint, figureSnapAngle - ar));
+                    }
+                    else if (ar == 0)
+                    {
+                        // line is snapped, test if new angle will unsnap the line
+                        double newAngle = DGeom.AngleBetweenPoints(newPoint, otherPoint);
+                        ar = newAngle % figureSnapAngle;
+                        if (ar > figureSnapRange && ar < figureSnapAngle - figureSnapRange)
+                            // unsnapped, set new point
+                            setPoint(newPoint);
+                        else
+                        {
+                            // slide point along snap angle
+                            newPoint = DGeom.RotatePoint(newPoint, otherPoint, getRotationalSnap(ar));
+                            setPoint(newPoint);
+                        }
+                    }
+                    else
+                    {
+                        // set new point
+                        setPoint(newPoint);
+                        // test whether to snap our line
+                        double newAngle = DGeom.AngleBetweenPoints(newPoint, otherPoint);
+                        ar = newAngle % figureSnapAngle;
+                        double rotationalSnap = getRotationalSnap(ar);
+                        // snap it
+                        if (rotationalSnap != 0)
+                            setPoint(DGeom.RotatePoint(newPoint, otherPoint, rotationalSnap));
+                    }                       
                     // final update rect
                     updateRect = updateRect.Union(GetBoundingBox(currentFigure));
-                    // alert figure we have finished resizing
-                    currentFigure.AfterResize();
                     break;
                 case DHitTest.ReposLinePt2:
                     goto case DHitTest.ReposLinePt1;
@@ -655,7 +725,14 @@ namespace DDraw
                     // apply rotation to figure
                     double newRot = GetRotationOfPointComparedToFigure(currentFigure, pt) - dragRot;
                     double r = newRot % figureSnapAngle;
-                    if (r < figureSnapRange)
+                    if (figureAlwaysSnapAngle)
+                    {
+                        if (r < figureSnapAngle / 2)
+                            currentFigure.Rotation = newRot - r;
+                        else
+                            currentFigure.Rotation = newRot + figureSnapAngle - r;
+                    }
+                    else if (r < figureSnapRange)
                         currentFigure.Rotation = newRot - r;
                     else if (r > figureSnapAngle - figureSnapRange)
                         currentFigure.Rotation = newRot + figureSnapAngle - r;
@@ -795,6 +872,17 @@ namespace DDraw
             // initial update rect
             DRect updateRect = currentFigure.GetSelectRect();
             // add point
+            if (figureAlwaysSnapAngle && currentFigure is ILineSegment)
+            {
+                ILineSegment ls = ((ILineSegment)currentFigure);
+                // slide point along snap angle
+                double newAngle = DGeom.AngleBetweenPoints(pt, ls.Pt1);
+                double r = newAngle % figureSnapAngle;
+                if (r < figureSnapAngle / 2)
+                    pt = DGeom.RotatePoint(pt, ls.Pt1, -r);
+                else
+                    pt = DGeom.RotatePoint(pt, ls.Pt1, figureSnapAngle - r);
+            }
             ((LinebaseFigure)currentFigure).AddPoint(pt);
             // update drawing
             dv.Update(updateRect.Union(currentFigure.GetSelectRect()));

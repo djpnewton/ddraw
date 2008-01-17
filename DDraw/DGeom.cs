@@ -12,8 +12,8 @@ namespace DDraw
 
         public static DPoint RotatePoint(DPoint pt, DPoint origin, double angle)
         {
-            if (angle == 0)
-                return pt;
+            if (angle == 0 || (pt.X == origin.X && pt.Y == origin.Y))
+                return new DPoint(pt.X, pt.Y);
             // set to origin
             pt = pt.Offset(-origin.X, -origin.Y);
             // rotate point

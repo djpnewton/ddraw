@@ -947,11 +947,13 @@ namespace WinFormsDemo
         private void wfvcEditor_KeyDown(object sender, KeyEventArgs e)
         {
             de.FigureLockAspectRatio = e.Shift;
+            de.FigureAlwaysSnapAngle = e.Shift;
         }
 
         private void wfvcEditor_KeyUp(object sender, KeyEventArgs e)
         {
             de.FigureLockAspectRatio = e.Shift;
+            de.FigureAlwaysSnapAngle = e.Shift;
         }
     }
 }

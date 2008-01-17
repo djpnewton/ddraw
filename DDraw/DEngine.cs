@@ -167,6 +167,11 @@ namespace DDraw
             get { return hsm.FigureLockAspectRatio; }
             set { hsm.FigureLockAspectRatio = value; }
         }
+        public bool FigureAlwaysSnapAngle
+        {
+            get { return hsm.FigureAlwaysSnapAngle; }
+            set { hsm.FigureAlwaysSnapAngle = value; }
+        }
         
         UndoRedo<DPoint> _pageSize = new UndoRedo<DPoint>(new DPoint(500, 400));
         public DPoint PageSize
