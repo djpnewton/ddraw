@@ -69,6 +69,23 @@ namespace DDraw
             set { height = value; }
         }
 
+        // reimplement fill, stroke & strokewidth to escape the UndoRedo properties
+        public override DColor Fill
+        {
+            get { return DColor.White; }
+            set { }
+        }
+        public override DColor Stroke
+        {
+            get { return DColor.Black; }
+            set { }
+        }
+        public override double StrokeWidth
+        {
+            get { return 2; }
+            set { }
+        }
+
         public double Size
         {
             get { return Width; }
@@ -82,9 +99,6 @@ namespace DDraw
         public EraserFigure(double size)
         {
             Size = size;
-            Fill = DColor.White;
-            Stroke = DColor.Black;
-            StrokeWidth = 2;
         }
     }
 }

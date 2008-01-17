@@ -7,7 +7,7 @@ using DejaVu.Collections.Generic;
 
 namespace DDraw
 {
-    public enum DEngineSignals : int
+    public enum DHsmSignals : int
     {
         //enum values must start at UserSig value or greater
         GSelect = QSignals.UserSig, GDrawLine, GDrawText, GDrawRect, GEraser,
@@ -96,25 +96,88 @@ namespace DDraw
         }
     }
 
-    public enum DEngineState { Select, DrawLine, DrawText, TextEdit, DrawRect, FigureEdit, Eraser };
+    public enum DHsmState { Select, DrawLine, DrawText, TextEdit, DrawRect, FigureEdit, Eraser };
 
-    public partial class DEngine : QHsm
+    public delegate void HsmStateChangedHandler(DEngine de, DHsmState state);
+
+    public class DHsm : QHsm
     {
-        Type currentFigureClass;
-        public bool CurrentFigClassImpls(Type _interface)
+        // private variables
+        UndoRedoManager undoRedoManager;
+        DViewerHandler viewerHandler;
+        DFigureHandler figureHandler;
+        DAuthorProperties authorProps;
+
+        Type currentFigureClass = null;
+        Figure currentFigure = null;
+        DPoint dragPt;
+        double dragRot;
+        DHitTest mouseHitTest;
+
+        bool lockInitialAspectRatio = false;
+        double unlockInitalAspectRatioThreshold = 50;
+
+        const double figureSnapAngle = Math.PI / 4;        // 45 degrees
+        const double figureSnapRange = Math.PI / (4 * 18); // 2.5  degrees (each way)
+
+        // properties
+        bool figureLockAspectRatio = false;
+        public bool FigureLockAspectRatio
         {
-            if (currentFigureClass != null)
-                return _interface.IsAssignableFrom(currentFigureClass);
-            else
-                return false;
+            get { return figureLockAspectRatio; }
+            set { figureLockAspectRatio = value; }
         }
-        public bool CurrentFigClassIs(Type _class)
+        public bool LockingAspectRatio
         {
-            if (currentFigureClass != null)
-                return _class.Equals(currentFigureClass);
-            else
-                return false;
+            get { return lockInitialAspectRatio || figureLockAspectRatio; }
         }
+
+        bool drawSelection = false;
+        SelectionFigure selectionFigure = new SelectionFigure(new DRect(), 0);
+        bool drawEraser = false;
+        EraserFigure eraserFigure = new EraserFigure(10);
+
+        public event HsmStateChangedHandler StateChanged;
+        public DHsmState State
+        {
+            get
+            {
+                if (IsInState(Select))
+                    return DHsmState.Select;
+                if (IsInState(DrawLine))
+                    return DHsmState.DrawLine;
+                if (IsInState(DrawText))
+                    return DHsmState.DrawText;
+                if (IsInState(TextEdit))
+                    return DHsmState.TextEdit;
+                if (IsInState(DrawRect))
+                    return DHsmState.DrawRect;
+                if (IsInState(FigureEdit))
+                    return DHsmState.FigureEdit;
+                if (IsInState(Eraser))
+                    return DHsmState.Eraser;
+                System.Diagnostics.Debug.Assert(false, "Logic Error :(");
+                return DHsmState.Select;
+            }
+            set
+            {
+                switch (value)
+                {
+                    case DHsmState.Select:
+                        Dispatch(new QEvent((int)DHsmSignals.GSelect));
+                        break;
+                    case DHsmState.Eraser:
+                        Dispatch(new QEvent((int)DHsmSignals.GEraser));
+                        break;
+                    default:
+                        System.Diagnostics.Debug.Assert(false, String.Format("Sorry, cant set directly to '{0}' :(", value));
+                        break;
+                }
+            }
+        }
+
+        public event DebugMessageHandler DebugMessage;
+        public event ContextClickHandler ContextClick;
 
         // state variables (showing state hierachy here)
         QState Main;
@@ -134,63 +197,186 @@ namespace DDraw
                 QState EraserDefault;
                 QState Erasing;
 
-        public delegate void DEngineStateChangedHandler(DEngine de, DEngineState state);
-        public event DEngineStateChangedHandler StateChanged;
-        public DEngineState State
+        public DHsm(UndoRedoManager undoRedoManager, DViewerHandler viewerHandler, DFigureHandler figureHandler, DAuthorProperties authorProps) : base()
         {
-            get
-            {
-                if (IsInState(Select))
-                    return DEngineState.Select;
-                if (IsInState(DrawLine))
-                    return DEngineState.DrawLine;
-                if (IsInState(DrawText))
-                    return DEngineState.DrawText;
-                if (IsInState(TextEdit))
-                    return DEngineState.TextEdit;
-                if (IsInState(DrawRect))
-                    return DEngineState.DrawRect;
-                if (IsInState(FigureEdit))
-                    return DEngineState.FigureEdit;
-                if (IsInState(Eraser))
-                    return DEngineState.Eraser;
-                System.Diagnostics.Debug.Assert(false, "Logic Error :(");
-                return DEngineState.Select;
-            }
-            set
-            {
-                switch (value)
-                {
-                    case DEngineState.Select:
-                        Dispatch(new QEvent((int)DEngineSignals.GSelect));
-                        break;
-                    case DEngineState.Eraser:
-                        Dispatch(new QEvent((int)DEngineSignals.GEraser));
-                        break;
-                    default:
-                        System.Diagnostics.Debug.Assert(false, String.Format("Sorry, cant set directly to '{0}' :(", value));
-                        break;
-                }
-            }
+            // undo redo manager
+            this.undoRedoManager = undoRedoManager;
+            // viewer handler
+            this.viewerHandler = viewerHandler;
+            viewerHandler.NeedRepaint += new DPaintEventHandler(dv_NeedRepaint);
+            viewerHandler.MouseDown += new DMouseButtonEventHandler(dv_MouseDown);
+            viewerHandler.MouseMove += new DMouseMoveEventHandler(dv_MouseMove);
+            viewerHandler.MouseUp += new DMouseButtonEventHandler(dv_MouseUp);
+            viewerHandler.DoubleClick += new DMouseMoveEventHandler(dv_DoubleClick);
+            viewerHandler.KeyDown += new DKeyEventHandler(dv_KeyDown);
+            viewerHandler.KeyPress += new DKeyPressEventHandler(dv_KeyPress);
+            viewerHandler.KeyUp += new DKeyEventHandler(dv_KeyUp);
+            // figure handler
+            this.figureHandler = figureHandler;
+            // author properties
+            this.authorProps = authorProps;
+            // QHsm Init
+            Init();
         }
 
-        public void SetStateByFigureClass(Type FigureClass)
+        // viewer events
+
+        void dv_NeedRepaint(DViewer dv)
         {
-            if (FigureClass.Equals(typeof(TextFigure))) // do TextFigure first as it is inherits from RectbaseFigure
-                Dispatch(new QGDrawFigureEvent((int)DEngineSignals.GDrawText, FigureClass));
-            else if (FigureClass.IsSubclassOf(typeof(RectbaseFigure)))
-                Dispatch(new QGDrawFigureEvent((int)DEngineSignals.GDrawRect, FigureClass));
-            else if (FigureClass.IsSubclassOf(typeof(LinebaseFigure)))
-                Dispatch(new QGDrawFigureEvent((int)DEngineSignals.GDrawLine, FigureClass));
+            Figure[] controlFigures = new Figure[0];
+            if (drawSelection)
+            {
+                Array.Resize(ref controlFigures, controlFigures.Length + 1);
+                controlFigures[controlFigures.Length - 1] = selectionFigure;
+            }
+            if (drawEraser)
+            {
+                Array.Resize(ref controlFigures, controlFigures.Length + 1);
+                controlFigures[controlFigures.Length - 1] = eraserFigure;
+            }
+            dv.Paint(figureHandler.Figures, controlFigures);
+        }
+
+        void dv_MouseDown(DViewer dv, DMouseButton btn, DPoint pt)
+        {
+            Dispatch(new QMouseEvent((int)DHsmSignals.MouseDown, dv, btn, pt));
+        }
+
+        void dv_MouseMove(DViewer dv, DPoint pt)
+        {
+            Dispatch(new QMouseEvent((int)DHsmSignals.MouseMove, dv, DMouseButton.NotApplicable, pt));
+        }
+
+        void dv_MouseUp(DViewer dv, DMouseButton btn, DPoint pt)
+        {
+            Dispatch(new QMouseEvent((int)DHsmSignals.MouseUp, dv, btn, pt));
+        }
+
+        void dv_DoubleClick(DViewer dv, DPoint pt)
+        {
+            Dispatch(new QMouseEvent((int)DHsmSignals.DoubleClick, dv, DMouseButton.NotApplicable, pt));
+        }
+
+        void dv_KeyDown(DViewer dv, DKey k)
+        {
+            Dispatch(new QKeyEvent((int)DHsmSignals.KeyDown, dv, k));
+        }
+
+        void dv_KeyPress(DViewer dv, int k)
+        {
+            Dispatch(new QKeyPressEvent((int)DHsmSignals.KeyPress, dv, k));
+        }
+
+        void dv_KeyUp(DViewer dv, DKey k)
+        {
+            Dispatch(new QKeyEvent((int)DHsmSignals.KeyUp, dv, k));
+        }
+
+        // public methods
+
+        public void SetStateByFigureClass(Type figureClass)
+        {
+            if (figureClass.Equals(typeof(TextFigure))) // do TextFigure first as it is inherits from RectbaseFigure
+                Dispatch(new QGDrawFigureEvent((int)DHsmSignals.GDrawText, figureClass));
+            else if (figureClass.IsSubclassOf(typeof(RectbaseFigure)))
+                Dispatch(new QGDrawFigureEvent((int)DHsmSignals.GDrawRect, figureClass));
+            else if (figureClass.IsSubclassOf(typeof(LinebaseFigure)))
+                Dispatch(new QGDrawFigureEvent((int)DHsmSignals.GDrawLine, figureClass));
             else
-                System.Diagnostics.Debug.Assert(false, String.Format("Sorry, cant set state using '{0}' :(", FigureClass.Name));
+                System.Diagnostics.Debug.Assert(false, String.Format("Sorry, cant set state using '{0}' :(", figureClass.Name));
         }
 
-        void DoStateChanged(DEngineState state)
+        void DoStateChanged(DHsmState state)
         {
             if (StateChanged != null)
-                StateChanged(this, state);
+                StateChanged(null, state);
         }
+
+        public bool CurrentFigClassImpls(Type _interface)
+        {
+            if (currentFigureClass != null)
+                return _interface.IsAssignableFrom(currentFigureClass);
+            else
+                return false;
+        }
+
+        public bool CurrentFigClassIs(Type _class)
+        {
+            if (currentFigureClass != null)
+                return _class.Equals(currentFigureClass);
+            else
+                return false;
+        }
+
+        public void SetEraserSize(double size)
+        {
+            eraserFigure.Size = size;
+        }
+
+        // private methods
+
+        void ClearCurrentFigure()
+        {
+            if (currentFigure != null)
+            {
+                // remove current figure if it was not sized by a mouse drag
+                if (currentFigure.Width == 0 || currentFigure.Height == 0)
+                    figureHandler.Remove(currentFigure);
+                // null currentfigure
+                currentFigure = null;
+            }
+        }
+
+        DPoint CalcDragDelta(DPoint pt)
+        {
+            return new DPoint(pt.X - dragPt.X, pt.Y - dragPt.Y);
+        }
+
+        DPoint CalcSizeDelta(DPoint pt, Figure f, bool lockAspectRatio)
+        {
+            if (lockAspectRatio)
+            {
+                pt = pt.Offset(-dragPt.X, -dragPt.Y);
+                double m = f.Height / f.Width;
+                DPoint intersectionPt = DGeom.IntersectionOfTwoLines(m, f.BottomRight, -1, pt);
+                // using soh/cah/toa
+                double h = DGeom.DistBetweenTwoPts(f.BottomRight, intersectionPt);
+                double A = Math.Atan(m);
+                // cos(A) = a/h
+                double dX = Math.Cos(A) * h;
+                // sin(A) = o/h
+                double dY = Math.Sin(A) * h;
+                // find out the angle of the line between the mouse pt and the botton left of the figure
+                double angle = -(Math.Atan2(pt.Y - f.BottomRight.Y, pt.X - f.BottomRight.X) - Math.PI);
+                // if the angle is on the topleft side (225 deg to 45 deg) then we are resizing smaller
+                if (angle < Math.PI / 4 || angle > Math.PI + Math.PI / 4)
+                    return new DPoint(-dX, -dY);
+                else
+                    return new DPoint(dX, dY);
+            }
+            else
+                return new DPoint((pt.X - f.X) - f.Width - dragPt.X, (pt.Y - f.Y) - f.Height - dragPt.Y);
+        }
+
+        DRect GetBoundingBox(Figure f)
+        {
+            return DGeom.BoundingBoxOfRotatedRect(f.GetEncompassingRect(), f.Rotation, f.Rect.Center);
+        }
+
+        double GetRotationOfPointComparedToFigure(Figure f, DPoint pt)
+        {
+            return DGeom.AngleBetweenPoints(f.GetSelectRect().Center, pt);
+        }
+
+        protected const int MIN_SIZE = 5;
+
+        void DoDebugMessage(string msg)
+        {
+            if (DebugMessage != null)
+                DebugMessage(msg);
+        }
+
+        // state methods
 
         QState DoMain(IQEvent qevent)
         {
@@ -199,22 +385,22 @@ namespace DDraw
                 case (int)QSignals.Init:
                     InitializeState(Select);
                     return null;
-                case (int)DEngineSignals.GSelect:
+                case (int)DHsmSignals.GSelect:
                     TransitionTo(Select);
                     return null;
-                case (int)DEngineSignals.GDrawLine:
+                case (int)DHsmSignals.GDrawLine:
                     currentFigureClass = ((QGDrawFigureEvent)qevent).FigureClass;
                     TransitionTo(DrawLine);
                     return null;
-                case (int)DEngineSignals.GDrawText:
+                case (int)DHsmSignals.GDrawText:
                     currentFigureClass = ((QGDrawFigureEvent)qevent).FigureClass;
                     TransitionTo(DrawText);
                     return null;
-                case (int)DEngineSignals.GDrawRect:
+                case (int)DHsmSignals.GDrawRect:
                     currentFigureClass = ((QGDrawFigureEvent)qevent).FigureClass;
                     TransitionTo(DrawRect);
                     return null;
-                case (int)DEngineSignals.GEraser:
+                case (int)DHsmSignals.GEraser:
                     TransitionTo(Eraser);
                     return null;
             }
@@ -235,10 +421,10 @@ namespace DDraw
                     if (!IsInState(TextEdit))
                     {
                         ClearCurrentFigure();
-                        ClearSelected();
+                        figureHandler.ClearSelected();
                     }
-                    UpdateViewers();
-                    DoStateChanged(DEngineState.Select);
+                    viewerHandler.Update();
+                    DoStateChanged(DHsmState.Select);
                     return null;
             }
             return this.Main;
@@ -249,7 +435,7 @@ namespace DDraw
             if (btn == DMouseButton.Left)
             {
                 // find and select clicked figure
-                Figure f = HitTestSelect(pt, out mouseHitTest);
+                Figure f = figureHandler.HitTestSelect(pt, out mouseHitTest);
                 // update selected figures
                 if (f != null)
                 {
@@ -281,8 +467,7 @@ namespace DDraw
                 }
                 else
                 {
-                    ClearSelectedFiguresList();
-                    DoSelectedFiguresChanged();
+                    figureHandler.ClearSelected();
                     dragPt = pt; // mouseHitTest = DHitTest.None
                 }
                 // update drawing
@@ -296,7 +481,7 @@ namespace DDraw
         {
             // set cursor
             DHitTest hitTest;
-            HitTestFigures(pt, out hitTest);
+            figureHandler.HitTestFigures(pt, out hitTest);
             switch (hitTest)
             {
                 case DHitTest.None:
@@ -326,11 +511,11 @@ namespace DDraw
             if (btn == DMouseButton.Right)
             {
                 DHitTest hitTest;
-                Figure f = HitTestSelect(pt, out hitTest);
+                Figure f = figureHandler.HitTestSelect(pt, out hitTest);
                 dv.SetCursor(DCursor.Default);
                 dv.Update();
                 if (ContextClick != null)
-                    ContextClick(this, f, dv.EngineToClient(pt));
+                    ContextClick(null, f, dv.EngineToClient(pt));
             }
         }
 
@@ -338,13 +523,13 @@ namespace DDraw
         {
             switch (qevent.QSignal)
             {
-                case (int)DEngineSignals.MouseDown:
+                case (int)DHsmSignals.MouseDown:
                     DoSelectDefaultMouseDown(((QMouseEvent)qevent).Dv, ((QMouseEvent)qevent).Button, ((QMouseEvent)qevent).Pt);
                     return null;
-                case (int)DEngineSignals.MouseMove:
+                case (int)DHsmSignals.MouseMove:
                     DoSelectDefaultMouseMove(((QMouseEvent)qevent).Dv, ((QMouseEvent)qevent).Pt);
                     return null;
-                case (int)DEngineSignals.MouseUp:
+                case (int)DHsmSignals.MouseUp:
                     DoSelectDefaultMouseUp(((QMouseEvent)qevent).Dv, ((QMouseEvent)qevent).Button, ((QMouseEvent)qevent).Pt);
                     return null;
             }
@@ -360,34 +545,34 @@ namespace DDraw
             {
                 case DHitTest.None:
                     // initial update rect
-                    updateRect = selectionRect.Rect;
+                    updateRect = selectionFigure.Rect;
                     // drag select figure
-                    selectionRect.TopLeft = dragPt;
-                    selectionRect.BottomRight = pt;
-                    if (selectionRect.Width < 0)
+                    selectionFigure.TopLeft = dragPt;
+                    selectionFigure.BottomRight = pt;
+                    if (selectionFigure.Width < 0)
                     {
-                        selectionRect.X += selectionRect.Width;
-                        selectionRect.Width = -selectionRect.Width;
+                        selectionFigure.X += selectionFigure.Width;
+                        selectionFigure.Width = -selectionFigure.Width;
                     }
-                    if (selectionRect.Height < 0)
+                    if (selectionFigure.Height < 0)
                     {
-                        selectionRect.Y += selectionRect.Height;
-                        selectionRect.Height = -selectionRect.Height;
+                        selectionFigure.Y += selectionFigure.Height;
+                        selectionFigure.Height = -selectionFigure.Height;
                     }
-                    drawSelectionRect = true;
+                    drawSelection = true;
                     // final update rect
-                    updateRect = updateRect.Union(selectionRect.Rect);
+                    updateRect = updateRect.Union(selectionFigure.Rect);
                     break;
                 case DHitTest.Body:
                     System.Diagnostics.Trace.Assert(currentFigure != null, "currentFigure is null");
                     // initial update rect
                     updateRect = GetBoundingBox(currentFigure);
-                    foreach (Figure f in selectedFigures)
+                    foreach (Figure f in figureHandler.SelectedFigures)
                         updateRect = updateRect.Union(GetBoundingBox(f));
                     // apply x/y delta to figures
                     DPoint dPos = CalcDragDelta(pt);
                     if (dPos.X != 0 || dPos.Y != 0)
-                        foreach (Figure f in selectedFigures)
+                        foreach (Figure f in figureHandler.SelectedFigures)
                         {
                             f.X += dPos.X;
                             f.Y += dPos.Y;
@@ -395,7 +580,7 @@ namespace DDraw
                     // store drag pt for reference later (eg. next mousemove event)
                     dragPt = pt;
                     // final update rect
-                    foreach (Figure f in selectedFigures)
+                    foreach (Figure f in figureHandler.SelectedFigures)
                         updateRect = updateRect.Union(GetBoundingBox(f));
                     break;
                 case DHitTest.SelectRect:
@@ -491,17 +676,18 @@ namespace DDraw
             if (btn == DMouseButton.Left)
             {
                 currentFigure = null;
-                if (drawSelectionRect)
+                if (drawSelection)
                 {
-                    DRect updateRect = selectionRect.Rect;
-                    foreach (Figure f in figures)
-                        if (selectionRect.Contains(f))
+                    DRect updateRect = selectionFigure.Rect;
+                    List<Figure> selectFigs = new List<Figure>();
+                    foreach (Figure f in figureHandler.Figures)
+                        if (selectionFigure.Contains(f))
                         {
-                            AddToSelected(f);
+                            selectFigs.Add(f);
                             updateRect = updateRect.Union(GetBoundingBox(f));
                         }
-                    DoSelectedFiguresChanged();
-                    drawSelectionRect = false;
+                    figureHandler.SelectFigures(selectFigs);
+                    drawSelection = false;
                     // update drawing
                     dv.Update(updateRect);
                 }
@@ -513,7 +699,7 @@ namespace DDraw
         void DoDragFigureDoubleClick(DViewer dv, DPoint pt)
         {
             DHitTest ht;
-            Figure f = HitTestFigures(pt, out ht);
+            Figure f = figureHandler.HitTestFigures(pt, out ht);
             if (f is TextFigure)
             {
                 currentFigure = f;
@@ -532,19 +718,19 @@ namespace DDraw
             {
                 case (int)QSignals.Entry:
                     // record state for undo/redo manager
-                    UndoRedoStart("Select Operation");
+                    undoRedoManager.Start("Select Operation");
                     break;
                 case (int)QSignals.Exit:
                     // commit undo changes
-                    UndoRedoCommit();
+                    undoRedoManager.Commit();
                     break;
-                case (int)DEngineSignals.MouseMove:
+                case (int)DHsmSignals.MouseMove:
                     DoDragFigureMouseMove(((QMouseEvent)qevent).Dv, ((QMouseEvent)qevent).Pt);
                     return null;
-                case (int)DEngineSignals.MouseUp:
+                case (int)DHsmSignals.MouseUp:
                     DoDragFigureMouseUp(((QMouseEvent)qevent).Dv, ((QMouseEvent)qevent).Button, ((QMouseEvent)qevent).Pt);
                     return null;
-                case (int)DEngineSignals.DoubleClick:
+                case (int)DHsmSignals.DoubleClick:
                     DoDragFigureDoubleClick(((QMouseEvent)qevent).Dv, ((QMouseEvent)qevent).Pt);
                     return null;
             }
@@ -560,9 +746,9 @@ namespace DDraw
                     return Main;
                 case (int)QSignals.Entry:
                     ClearCurrentFigure();
-                    ClearSelected();
-                    UpdateViewers();
-                    DoStateChanged(DEngineState.DrawLine);
+                    figureHandler.ClearSelected();
+                    viewerHandler.Update();
+                    DoStateChanged(DHsmState.DrawLine);
                     return null;
             }
             return this.Main;
@@ -572,13 +758,13 @@ namespace DDraw
         {
             if (btn == DMouseButton.Left)
             {
-                UndoRedoStart("Add Line");
+                undoRedoManager.Start("Add Line");
                 // create line figure
                 currentFigure = (Figure)Activator.CreateInstance(currentFigureClass);
                 ((LinebaseFigure)currentFigure).AddPoint(pt);
                 authorProps.ApplyPropertiesToFigure(currentFigure);
                 // add to list of figures
-                figures.Add(currentFigure);
+                figureHandler.Add(currentFigure);
                 // transition
                 TransitionTo(DrawingLine);
             }
@@ -594,10 +780,10 @@ namespace DDraw
         {
             switch (qevent.QSignal)
             {
-                case (int)DEngineSignals.MouseDown:
+                case (int)DHsmSignals.MouseDown:
                     DoDrawLineDefaultMouseDown(((QMouseEvent)qevent).Dv, ((QMouseEvent)qevent).Button, ((QMouseEvent)qevent).Pt);
                     return null;
-                case (int)DEngineSignals.MouseMove:
+                case (int)DHsmSignals.MouseMove:
                     DoDrawLineDefaultMouseMove(((QMouseEvent)qevent).Dv, ((QMouseEvent)qevent).Pt);
                     return null;
             }
@@ -616,7 +802,7 @@ namespace DDraw
 
         void DoDrawingLineMouseUp(DViewer dv, DMouseButton btn, DPoint pt)
         {
-            UndoRedoCommit();
+            undoRedoManager.Commit();
             // transition
             TransitionTo(DrawLineDefault);
         }
@@ -625,10 +811,10 @@ namespace DDraw
         {
             switch (qevent.QSignal)
             {
-                case (int)DEngineSignals.MouseMove:
+                case (int)DHsmSignals.MouseMove:
                     DoDrawingLineMouseMove(((QMouseEvent)qevent).Dv, ((QMouseEvent)qevent).Pt);
                     return null;
-                case (int)DEngineSignals.MouseUp:
+                case (int)DHsmSignals.MouseUp:
                     DoDrawingLineMouseUp(((QMouseEvent)qevent).Dv, ((QMouseEvent)qevent).Button, ((QMouseEvent)qevent).Pt);
                     return null;
             }
@@ -640,12 +826,12 @@ namespace DDraw
             if (btn == DMouseButton.Left)
             {
                 ClearCurrentFigure();
-                UndoRedoStart("Add Text");
+                undoRedoManager.Start("Add Text");
                 // create TextFigure
                 currentFigure = new TextFigure(pt, "", 0);
                 authorProps.ApplyPropertiesToFigure((TextFigure)currentFigure);
                 // add to list of figures
-                figures.Add(currentFigure);
+                figureHandler.Add(currentFigure);
                 // update DViewer
                 dv.Update();
                 // transition
@@ -671,17 +857,17 @@ namespace DDraw
                     return Main;
                 case (int)QSignals.Entry:
                     ClearCurrentFigure();
-                    ClearSelected();
-                    UpdateViewers();
-                    DoStateChanged(DEngineState.DrawText);
+                    figureHandler.ClearSelected();
+                    viewerHandler.Update();
+                    DoStateChanged(DHsmState.DrawText);
                     return null;
-                case (int)DEngineSignals.MouseDown:
+                case (int)DHsmSignals.MouseDown:
                     DoDrawTextMouseDown(((QMouseEvent)qevent).Dv, ((QMouseEvent)qevent).Button, ((QMouseEvent)qevent).Pt);
                     return null;
-                case (int)DEngineSignals.MouseMove:
+                case (int)DHsmSignals.MouseMove:
                     DoDrawTextMouseMove(((QMouseEvent)qevent).Dv, ((QMouseEvent)qevent).Pt);
                     return null;
-                case (int)DEngineSignals.MouseUp:
+                case (int)DHsmSignals.MouseUp:
                     DoDrawTextMouseUp(((QMouseEvent)qevent).Dv, ((QMouseEvent)qevent).Button, ((QMouseEvent)qevent).Pt);
                     return null;
             }
@@ -693,7 +879,7 @@ namespace DDraw
             if (btn == DMouseButton.Left)
             {
                 // find and select clicked figure
-                Figure f = HitTestSelect(pt, out mouseHitTest);
+                Figure f = figureHandler.HitTestSelect(pt, out mouseHitTest);
                 // select the TextFigure from the TextEditFigure
                 TextEditFigure tef = (TextEditFigure)currentFigure;
                 if (f == tef)
@@ -701,9 +887,7 @@ namespace DDraw
                     if (tef.HasText)
                     {
                         f = tef.TextFigure;
-                        ClearSelectedFiguresList();
-                        AddToSelected(f);
-                        DoSelectedFiguresChanged();
+                        figureHandler.SelectFigures(new List<Figure>(new Figure[] { f }));
                     }
                 }
                 // setup for select mouse move
@@ -733,7 +917,7 @@ namespace DDraw
                         te.InsertAtCursor('\n');
                         break;
                     case DKeys.Escape:
-                        State = DEngineState.Select;
+                        State = DHsmState.Select;
                         break;
                     case DKeys.Delete:
                         te.DeleteAtCursor();
@@ -760,35 +944,35 @@ namespace DDraw
                     return Main;
                 case (int)QSignals.Entry:
                     // start undo record
-                    UndoRedoStart("Text Edit");
+                    undoRedoManager.Start("Text Edit");
                     // add TextEditFigure
                     Figure tf = currentFigure;
                     currentFigure = new TextEditFigure((TextFigure)tf);
-                    figures.Insert(figures.IndexOf(tf), currentFigure);
-                    figures.Remove(tf);
+                    figureHandler.Insert(currentFigure, tf);
+                    figureHandler.Remove(tf);
                     // update view
-                    ClearSelected();
-                    UpdateViewers();
-                    DoStateChanged(DEngineState.TextEdit);
+                    figureHandler.ClearSelected();
+                    viewerHandler.Update();
+                    DoStateChanged(DHsmState.TextEdit);
                     return null;
                 case (int)QSignals.Exit:
                     // replace text edit figure with the textfigure
                     if (currentFigure is TextEditFigure)
                     {
                         if (((TextEditFigure)currentFigure).HasText)
-                            figures.Insert(figures.IndexOf(currentFigure), ((TextEditFigure)currentFigure).TextFigure);
-                        figures.Remove(currentFigure);
+                            figureHandler.Insert(((TextEditFigure)currentFigure).TextFigure, currentFigure);
+                        figureHandler.Remove(currentFigure);
                     }
                     // record text edit to undo manager
-                    UndoRedoCommit();
+                    undoRedoManager.Commit();
                     return null;
-                case (int)DEngineSignals.MouseDown:
+                case (int)DHsmSignals.MouseDown:
                     DoTextEditMouseDown(((QMouseEvent)qevent).Dv, ((QMouseEvent)qevent).Button, ((QMouseEvent)qevent).Pt);
                     return null;
-                case (int)DEngineSignals.MouseMove:
+                case (int)DHsmSignals.MouseMove:
                     DoTextEditMouseMove(((QMouseEvent)qevent).Dv, ((QMouseEvent)qevent).Pt);
                     return null;
-                case (int)DEngineSignals.KeyPress:
+                case (int)DHsmSignals.KeyPress:
                     DoTextEditKeyPress(((QKeyPressEvent)qevent).Dv, ((QKeyPressEvent)qevent).Key);
                     return null;
             }
@@ -804,9 +988,9 @@ namespace DDraw
                     return Main;
                 case (int)QSignals.Entry:
                     ClearCurrentFigure();
-                    ClearSelected();
-                    UpdateViewers();
-                    DoStateChanged(DEngineState.DrawRect);
+                    figureHandler.ClearSelected();
+                    viewerHandler.Update();
+                    DoStateChanged(DHsmState.DrawRect);
                     return null;
             }
             return this.Main;
@@ -816,13 +1000,13 @@ namespace DDraw
         {
             if (btn == DMouseButton.Left)
             {
-                UndoRedoStart(string.Format("Add {0}", currentFigureClass.Name));
+                undoRedoManager.Start(string.Format("Add {0}", currentFigureClass.Name));
                 // create Figure
                 currentFigure = (Figure)Activator.CreateInstance(currentFigureClass);
                 currentFigure.TopLeft = pt;
                 authorProps.ApplyPropertiesToFigure(currentFigure);
                 // add to list of figures
-                figures.Add(currentFigure);
+                figureHandler.Add(currentFigure);
                 // store drag pt for reference on mousemove event)
                 dragPt = pt;
                 // transition
@@ -840,10 +1024,10 @@ namespace DDraw
         {
             switch (qevent.QSignal)
             {
-                case (int)DEngineSignals.MouseDown:
+                case (int)DHsmSignals.MouseDown:
                     DoDrawRectDefaultMouseDown(((QMouseEvent)qevent).Dv, ((QMouseEvent)qevent).Button, ((QMouseEvent)qevent).Pt);
                     return null;
-                case (int)DEngineSignals.MouseMove:
+                case (int)DHsmSignals.MouseMove:
                     DoDrawRectDefaultMouseMove(((QMouseEvent)qevent).Dv, ((QMouseEvent)qevent).Pt);
                     return null;
             }
@@ -881,18 +1065,18 @@ namespace DDraw
                 }
             }
             // set selection rectangle
-            selectionRect.Rect = currentFigure.GetSelectRect();
+            selectionFigure.Rect = currentFigure.GetSelectRect();
             // update drawing
             dv.Update(updateRect.Union(currentFigure.GetSelectRect()));
         }
 
         void DoDrawingRectMouseUp(DViewer dv, DMouseButton btn, DPoint pt)
         {
-            UndoRedoCommit();
+            undoRedoManager.Commit();
             // transition
             TransitionTo(DrawRectDefault);
             // update drawing
-            dv.Update(selectionRect.Rect);
+            dv.Update(selectionFigure.Rect);
         }
 
         QState DoDrawingRect(IQEvent qevent)
@@ -900,15 +1084,13 @@ namespace DDraw
             switch (qevent.QSignal)
             {
                 case (int)QSignals.Entry:
-                    drawSelectionRect = true;
                     return null;
                 case (int)QSignals.Exit:
-                    drawSelectionRect = false;
                     return null;
-                case (int)DEngineSignals.MouseMove:
+                case (int)DHsmSignals.MouseMove:
                     DoDrawingRectMouseMove(((QMouseEvent)qevent).Dv, ((QMouseEvent)qevent).Pt);
                     return null;
-                case (int)DEngineSignals.MouseUp:
+                case (int)DHsmSignals.MouseUp:
                     DoDrawingRectMouseUp(((QMouseEvent)qevent).Dv, ((QMouseEvent)qevent).Button, ((QMouseEvent)qevent).Pt);
                     return null;
             }
@@ -928,36 +1110,36 @@ namespace DDraw
                 case (int)QSignals.Init:
                     return Main;
                 case (int)QSignals.Entry:
-                    DoStateChanged(DEngineState.FigureEdit);
+                    DoStateChanged(DHsmState.FigureEdit);
                     // start undo record
-                    UndoRedoStart("Figure Edit");
+                    undoRedoManager.Start("Figure Edit");
                     // set editing and connect to edit finished event
                     ((IEditable)currentFigure).StartEdit();
                     ((IEditable)currentFigure).EditFinished += new EditFinishedHandler(currentFigure_EditFinished);
                     // update view
-                    ClearSelected();
-                    UpdateViewers();
+                    figureHandler.ClearSelected();
+                    viewerHandler.Update();
                     return null;
                 case (int)QSignals.Exit:
                     // not editing any more
                     ((IEditable)currentFigure).EndEdit();
                     ((IEditable)currentFigure).EditFinished -= currentFigure_EditFinished;                
                     // record figure edit to undo manager
-                    UndoRedoCommit();
+                    undoRedoManager.Commit();
                     return null;
-                case (int)DEngineSignals.MouseDown:
+                case (int)DHsmSignals.MouseDown:
                     ((IEditable)currentFigure).MouseDown(((QMouseEvent)qevent).Dv, ((QMouseEvent)qevent).Button, ((QMouseEvent)qevent).Pt);
                     return null;
-                case (int)DEngineSignals.MouseMove:
+                case (int)DHsmSignals.MouseMove:
                     ((IEditable)currentFigure).MouseMove(((QMouseEvent)qevent).Dv, ((QMouseEvent)qevent).Pt);
                     return null;
-                case (int)DEngineSignals.MouseUp:
+                case (int)DHsmSignals.MouseUp:
                     ((IEditable)currentFigure).MouseUp(((QMouseEvent)qevent).Dv, ((QMouseEvent)qevent).Button, ((QMouseEvent)qevent).Pt);
                     return null;
-                case (int)DEngineSignals.DoubleClick:
+                case (int)DHsmSignals.DoubleClick:
                     ((IEditable)currentFigure).DoubleClick(((QMouseEvent)qevent).Dv, ((QMouseEvent)qevent).Pt);
                     return null;
-                case (int)DEngineSignals.KeyPress:
+                case (int)DHsmSignals.KeyPress:
                     ((IEditable)currentFigure).KeyPress(((QKeyPressEvent)qevent).Dv, ((QKeyPressEvent)qevent).Key);
                     return null;
             }
@@ -976,10 +1158,10 @@ namespace DDraw
                     currentFigureClass = null;
                     // clear currentfigure and selected
                     ClearCurrentFigure();
-                    ClearSelected();
+                    figureHandler.ClearSelected();
                     // update
-                    UpdateViewers();
-                    DoStateChanged(DEngineState.Eraser);
+                    viewerHandler.Update();
+                    DoStateChanged(DHsmState.Eraser);
                     return null;
             }
             return this.Main;
@@ -989,10 +1171,10 @@ namespace DDraw
         {
             switch (qevent.QSignal)
             {
-                case (int)DEngineSignals.MouseDown:
+                case (int)DHsmSignals.MouseDown:
                     TransitionTo(Erasing);
                     return null;
-                case (int)DEngineSignals.MouseMove:
+                case (int)DHsmSignals.MouseMove:
                     ((QMouseEvent)qevent).Dv.SetCursor(DCursor.Crosshair);
                     return null;
             }
@@ -1042,7 +1224,7 @@ namespace DDraw
             if (parent != null)
                 figs = parent.ChildFigures;
             else
-                figs = figures;
+                figs = figureHandler.Figures;
             // make new polylines
             List<Figure> newPolys = new List<Figure>();
             DPoints newPts = null;
@@ -1090,7 +1272,7 @@ namespace DDraw
                 parent.ChildFigures = figs;
         }
 
-        void ErasePolylines(DPoint eraserPt, UndoRedoList<Figure> figures, ref DRect updateRect, GroupFigure parent)
+        void ErasePolylines(DPoint eraserPt, IList<Figure> figures, ref DRect updateRect, GroupFigure parent)
         {
             for (int i = figures.Count - 1; i >= 0; i--)
                 if (figures[i] is PolylinebaseFigure)
@@ -1100,7 +1282,7 @@ namespace DDraw
                     DPoints ptsToRemove = new DPoints();
                     if (f.Points != null)
                         foreach (DPoint pt in f.Points)
-                            if (DGeom.PointInCircle(pt, rotPt, eraser.Size / 2))
+                            if (DGeom.PointInCircle(pt, rotPt, eraserFigure.Size / 2))
                                 ptsToRemove.Add(pt);
                     if (ptsToRemove.Count > 0)
                     {
@@ -1128,7 +1310,7 @@ namespace DDraw
                     DGeom.UpdateRotationPosition(f, oldR, newR);
                     // clean up group figure if no longer needed
                     if (f.ChildFigures.Count == 1)
-                        UngroupFigure(f);
+                        figureHandler.UngroupFigure(f);
                     else if (f.ChildFigures.Count < 1)
                         figures.Remove(f);
                 }
@@ -1140,27 +1322,27 @@ namespace DDraw
             {
                 case (int)QSignals.Entry:
                     // record state for undo/redo manager
-                    UndoRedoStart("Erase Operation");
+                    undoRedoManager.Start("Erase Operation");
                     break;
                 case (int)QSignals.Exit:
                     // commit undo changes
-                    UndoRedoCommit();
+                    undoRedoManager.Commit();
                     // hide eraser
                     drawEraser = false;
-                    UpdateViewers(); // and show updated polylines in other viewers too
+                    viewerHandler.Update(); // and show updated polylines in other viewers too
                     break;
-                case (int)DEngineSignals.MouseMove:
+                case (int)DHsmSignals.MouseMove:
                     QMouseEvent me = (QMouseEvent)qevent;
-                    DRect updateRect = GetBoundingBox(eraser);
+                    DRect updateRect = GetBoundingBox(eraserFigure);
                     // show & move eraser
                     drawEraser = true;
-                    eraser.TopLeft = new DPoint(me.Pt.X - eraser.Size / 2, me.Pt.Y - eraser.Size / 2);
+                    eraserFigure.TopLeft = new DPoint(me.Pt.X - eraserFigure.Size / 2, me.Pt.Y - eraserFigure.Size / 2);
                     // erase stuff
-                    ErasePolylines(me.Pt, figures, ref updateRect, null);
+                    ErasePolylines(me.Pt, figureHandler.Figures, ref updateRect, null);
                     // update
-                    me.Dv.Update(updateRect.Union(GetBoundingBox(eraser)));
+                    me.Dv.Update(updateRect.Union(GetBoundingBox(eraserFigure)));
                     return null;
-                case (int)DEngineSignals.MouseUp:
+                case (int)DHsmSignals.MouseUp:
                     // transition
                     TransitionTo(EraserDefault);
                     return null;

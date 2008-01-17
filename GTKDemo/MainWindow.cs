@@ -51,7 +51,7 @@ namespace GTKDemo
 			dv.DebugMessage += new DebugMessageHandler(DebugMessage);
 			de = new DEngine(new DAuthorProperties());
 			de.AddViewer(dv);
-			de.State = DEngineState.Select;
+			de.HsmState = DHsmState.Select;
 			de.DebugMessage += new DebugMessageHandler(DebugMessage);
             de.ContextClick += new ContextClickHandler(de_ContextClick);
 			// add figures

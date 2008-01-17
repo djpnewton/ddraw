@@ -548,7 +548,7 @@ namespace DDraw
 
         #region IFillable Members
         UndoRedo<DColor> _fill = new UndoRedo<DColor>(DColor.Red);
-        public DColor Fill
+        public virtual DColor Fill
         {
             get { return _fill.Value; }
             set { if (!value.Equals(_fill.Value)) _fill.Value = value; }
@@ -1626,7 +1626,7 @@ namespace DDraw
         DRect[] originalChildRects;
         DRect originalRect;
 
-        public GroupFigure(List<Figure> figs)
+        public GroupFigure(IList<Figure> figs)
         {
             System.Diagnostics.Debug.Assert(figs != null, "figs is not assigned");
             System.Diagnostics.Debug.Assert(figs.Count > 1, "figs.Length is less than 2");

@@ -31,7 +31,7 @@ namespace WinFormsDemo
             de.SelectedFiguresChanged += new SelectedFiguresHandler(de_SelectedFiguresChanged);
             de.UndoRedoChanged += new EventHandler(de_UndoRedoChanged);
             de.ContextClick += new ContextClickHandler(de_ContextClick);
-            de.StateChanged += new DEngine.DEngineStateChangedHandler(de_StateChanged);
+            de.HsmStateChanged += new HsmStateChangedHandler(de_HsmStateChanged);
 
             SetCurrentDe(de);
         }
@@ -41,7 +41,7 @@ namespace WinFormsDemo
             if (this.de != null)
             {
                 this.de.RemoveViewer(dvEditor);
-                de.State = this.de.State;
+                de.HsmState = this.de.HsmState;
             }
             de.AddViewer(dvEditor);
             if (dvEditor.Zoom != Zoom.Custom)
@@ -116,7 +116,7 @@ namespace WinFormsDemo
             de.UndoRedoClearHistory();
             UpdateUndoRedoControls();
             // Init controls
-            InitPropertyControls(de.State);
+            InitPropertyControls(de.HsmState);
         }
 
         void DebugMessage(string msg)
@@ -136,7 +136,7 @@ namespace WinFormsDemo
 
         void de_SelectedFiguresChanged()
         {
-            InitPropertyControls(de.State);
+            InitPropertyControls(de.HsmState);
             InitMenus();
         }
 
@@ -406,7 +406,7 @@ namespace WinFormsDemo
             return strikethrough;
         }
 
-        private void InitPropertyControls(DEngineState state)
+        private void InitPropertyControls(DHsmState state)
         {
             // disable events
             cbFontName.FontNameChanged -= cbFontName_FontNameChanged;
@@ -439,7 +439,7 @@ namespace WinFormsDemo
             // update controls based on the state of DEngine
             switch (state)
             {
-                case DEngineState.Select:
+                case DHsmState.Select:
                     // get selected figures
                     List<Figure> figs = de.SelectedFigures;
                     // test to enable property controls
@@ -490,12 +490,12 @@ namespace WinFormsDemo
                     break;
                 default:
                     // enable relavant controls and update values to match dap
-                    if (de.CurrentFigClassImpls(typeof(IFillable)))
+                    if (de.HsmCurrentFigClassImpls(typeof(IFillable)))
                     {
                         btnFill.Enabled = true;
                         btnFill.Color = MakeColor(dap.Fill);
                     }
-                    if (de.CurrentFigClassImpls(typeof(IStrokeable)))
+                    if (de.HsmCurrentFigClassImpls(typeof(IStrokeable)))
                     {
                         btnStroke.Enabled = true;
                         btnStroke.Color = MakeColor(dap.Stroke);
@@ -504,19 +504,19 @@ namespace WinFormsDemo
                         btnStrokeStyle.Enabled = true;
                         btnStrokeStyle.Value = dap.StrokeStyle;
                     }
-                    if (de.CurrentFigClassImpls(typeof(IMarkable)))
+                    if (de.HsmCurrentFigClassImpls(typeof(IMarkable)))
                     {
                         btnStartMarker.Enabled = true;
                         btnStartMarker.Value = dap.StartMarker;
                         btnEndMarker.Enabled = true;
                         btnEndMarker.Value = dap.EndMarker;
                     }
-                    if (de.CurrentFigClassImpls(typeof(IAlphaBlendable)))
+                    if (de.HsmCurrentFigClassImpls(typeof(IAlphaBlendable)))
                     {
                         btnAlpha.Enabled = true;
                         btnAlpha.Value = dap.Alpha;
                     }
-                    if (de.CurrentFigClassImpls(typeof(ITextable)))
+                    if (de.HsmCurrentFigClassImpls(typeof(ITextable)))
                     {
                         cbFontName.Enabled = true;
                         cbFontName.Value = dap.FontName;
@@ -553,20 +553,20 @@ namespace WinFormsDemo
             bringForwardToolStripMenuItem.Enabled = de.CanBringForward(figs);
         }
 
-        void de_StateChanged(DEngine de, DEngineState state)
+        void de_HsmStateChanged(DEngine de, DHsmState state)
         {
-            btnSelect.Checked = state == DEngineState.Select;
-            btnPen.Checked = de.CurrentFigClassIs(typeof(PolylineFigure));
-            btnRect.Checked = de.CurrentFigClassIs(typeof(RectFigure));
-            btnEllipse.Checked = de.CurrentFigClassIs(typeof(EllipseFigure));
-            btnText.Checked = state == DEngineState.DrawText;
-            btnClock.Checked = de.CurrentFigClassIs(typeof(ClockFigure));
-            btnTriangle.Checked = de.CurrentFigClassIs(typeof(TriangleFigure));
-            btnRATriangle.Checked = de.CurrentFigClassIs(typeof(RightAngleTriangleFigure));
-            btnDiamond.Checked = de.CurrentFigClassIs(typeof(DiamondFigure));
-            btnPentagon.Checked = de.CurrentFigClassIs(typeof(PentagonFigure));
-            btnLine.Checked = de.CurrentFigClassIs(typeof(LineFigure));
-            btnEraser.Checked = state == DEngineState.Eraser;
+            btnSelect.Checked = state == DHsmState.Select;
+            btnPen.Checked = de.HsmCurrentFigClassIs(typeof(PolylineFigure));
+            btnRect.Checked = de.HsmCurrentFigClassIs(typeof(RectFigure));
+            btnEllipse.Checked = de.HsmCurrentFigClassIs(typeof(EllipseFigure));
+            btnText.Checked = state == DHsmState.DrawText;
+            btnClock.Checked = de.HsmCurrentFigClassIs(typeof(ClockFigure));
+            btnTriangle.Checked = de.HsmCurrentFigClassIs(typeof(TriangleFigure));
+            btnRATriangle.Checked = de.HsmCurrentFigClassIs(typeof(RightAngleTriangleFigure));
+            btnDiamond.Checked = de.HsmCurrentFigClassIs(typeof(DiamondFigure));
+            btnPentagon.Checked = de.HsmCurrentFigClassIs(typeof(PentagonFigure));
+            btnLine.Checked = de.HsmCurrentFigClassIs(typeof(LineFigure));
+            btnEraser.Checked = state == DHsmState.Eraser;
             InitPropertyControls(state);
         }
 
@@ -584,9 +584,9 @@ namespace WinFormsDemo
             f.ColorSelected += delegate(object sender2, EventArgs ea)
             {
                 btnFill.Color = ((ColorPicker)sender2).SelectedColor;
-                switch (de.State)
+                switch (de.HsmState)
                 {
-                    case DEngineState.Select:
+                    case DHsmState.Select:
                         UpdateSelectedFigures(btnFill);
                         break;
                     default:
@@ -605,9 +605,9 @@ namespace WinFormsDemo
             f.ColorSelected += delegate(object sender2, EventArgs ea)
             {
                 btnStroke.Color = ((ColorPicker)sender2).SelectedColor;
-                switch (de.State)
+                switch (de.HsmState)
                 {
-                    case DEngineState.Select:
+                    case DHsmState.Select:
                         UpdateSelectedFigures(btnStroke);
                         break;
                     default:
@@ -620,9 +620,9 @@ namespace WinFormsDemo
 
         private void btnAlpha_AlphaChanged(object sender, double alpha)
         {
-            switch (de.State)
+            switch (de.HsmState)
             {
-                case DEngineState.Select:
+                case DHsmState.Select:
                     UpdateSelectedFigures(btnAlpha);
                     break;
                 default:
@@ -633,9 +633,9 @@ namespace WinFormsDemo
 
         private void btnStrokeWidth_StrokeWidthChanged(object sender, int strokeWidth)
         {
-            switch (de.State)
+            switch (de.HsmState)
             {
-                case DEngineState.Select:
+                case DHsmState.Select:
                     UpdateSelectedFigures(btnStrokeWidth);
                     break;
                 default:
@@ -646,9 +646,9 @@ namespace WinFormsDemo
 
         private void btnStrokeStyle_StrokeStyleChanged(object sender, DStrokeStyle strokeStyle)
         {
-            switch (de.State)
+            switch (de.HsmState)
             {
-                case DEngineState.Select:
+                case DHsmState.Select:
                     UpdateSelectedFigures(btnStrokeStyle);
                     break;
                 default:
@@ -660,9 +660,9 @@ namespace WinFormsDemo
         private void btnMarker_MarkerChanged(object sender, DMarker marker)
         {
             if (sender == btnStartMarker)
-                switch (de.State)
+                switch (de.HsmState)
                 {
-                    case DEngineState.Select:
+                    case DHsmState.Select:
                         UpdateSelectedFigures(btnStartMarker);
                         break;
                     default:
@@ -670,9 +670,9 @@ namespace WinFormsDemo
                         break;
                 }
             else if (sender == btnEndMarker)
-                switch (de.State)
+                switch (de.HsmState)
                 {
-                    case DEngineState.Select:
+                    case DHsmState.Select:
                         UpdateSelectedFigures(btnEndMarker);
                         break;
                     default:
@@ -683,9 +683,9 @@ namespace WinFormsDemo
 
         private void cbFontName_FontNameChanged(object sender, EventArgs e)
         {
-            switch (de.State)
+            switch (de.HsmState)
             {
-                case DEngineState.Select:
+                case DHsmState.Select:
                     UpdateSelectedFigures(cbFontName);
                     break;
                 default:
@@ -697,9 +697,9 @@ namespace WinFormsDemo
         private void btnFontProp_Changed(object sender, EventArgs e)
         {
             if (sender == btnBold)
-                switch (de.State)
+                switch (de.HsmState)
                 {
-                    case DEngineState.Select:
+                    case DHsmState.Select:
                         UpdateSelectedFigures(btnBold);
                         break;
                     default:
@@ -707,9 +707,9 @@ namespace WinFormsDemo
                         break;
                 }
             if (sender == btnItalic)
-                switch (de.State)
+                switch (de.HsmState)
                 {
-                    case DEngineState.Select:
+                    case DHsmState.Select:
                         UpdateSelectedFigures(btnItalic);
                         break;
                     default:
@@ -717,9 +717,9 @@ namespace WinFormsDemo
                         break;
                 }
             if (sender == btnUnderline)
-                switch (de.State)
+                switch (de.HsmState)
                 {
-                    case DEngineState.Select:
+                    case DHsmState.Select:
                         UpdateSelectedFigures(btnUnderline);
                         break;
                     default:
@@ -727,9 +727,9 @@ namespace WinFormsDemo
                         break;
                 }
             if (sender == btnStrikethrough)
-                switch (de.State)
+                switch (de.HsmState)
                 {
-                    case DEngineState.Select:
+                    case DHsmState.Select:
                         UpdateSelectedFigures(btnStrikethrough);
                         break;
                     default:
@@ -784,54 +784,54 @@ namespace WinFormsDemo
 
         private void btnSelect_Click(object sender, EventArgs e)
         {
-            de.State = DEngineState.Select;
+            de.HsmState = DHsmState.Select;
         }
 
         private void btnPen_Click(object sender, EventArgs e)
         {
-            de.SetStateByFigureClass(typeof(PolylineFigure));
+            de.HsmSetStateByFigureClass(typeof(PolylineFigure));
         }
 
         private void btnRect_Click(object sender, EventArgs e)
         {
-            de.SetStateByFigureClass(typeof(RectFigure));
+            de.HsmSetStateByFigureClass(typeof(RectFigure));
         }
 
         private void btnEllipse_Click(object sender, EventArgs e)
         {
-            de.SetStateByFigureClass(typeof(EllipseFigure));
+            de.HsmSetStateByFigureClass(typeof(EllipseFigure));
         }
 
         private void btnText_Click(object sender, EventArgs e)
         {
-            de.SetStateByFigureClass(typeof(TextFigure));
+            de.HsmSetStateByFigureClass(typeof(TextFigure));
         }
 
         private void btnClock_Click(object sender, EventArgs e)
         {
-            de.SetStateByFigureClass(typeof(ClockFigure));
+            de.HsmSetStateByFigureClass(typeof(ClockFigure));
         }
 
         private void btnPolygon_Click(object sender, EventArgs e)
         {
             if (sender == btnTriangle)
-                de.SetStateByFigureClass(typeof(TriangleFigure));
+                de.HsmSetStateByFigureClass(typeof(TriangleFigure));
             else if (sender == btnRATriangle)
-                de.SetStateByFigureClass(typeof(RightAngleTriangleFigure));
+                de.HsmSetStateByFigureClass(typeof(RightAngleTriangleFigure));
             else if (sender == btnDiamond)
-                de.SetStateByFigureClass(typeof(DiamondFigure));
+                de.HsmSetStateByFigureClass(typeof(DiamondFigure));
             else if (sender == btnPentagon)
-                de.SetStateByFigureClass(typeof(PentagonFigure));
+                de.HsmSetStateByFigureClass(typeof(PentagonFigure));
         }
 
         private void btnLine_Click(object sender, EventArgs e)
         {
-            de.SetStateByFigureClass(typeof(LineFigure));
+            de.HsmSetStateByFigureClass(typeof(LineFigure));
         }
 
         private void btn_Eraser_Click(object sender, EventArgs e)
         {
-            de.State = DEngineState.Eraser;
+            de.HsmState = DHsmState.Eraser;
             de.SetEraserSize(25);
         }
 
@@ -868,8 +868,8 @@ namespace WinFormsDemo
 
         private void editToolStripMenuItem_DropDownOpened(object sender, EventArgs e)
         {
-            if (de.State != DEngineState.Select)
-                de.State = DEngineState.Select;
+            if (de.HsmState != DHsmState.Select)
+                de.HsmState = DHsmState.Select;
         }
 
         private void undoToolStripMenuItem_Click(object sender, EventArgs e)

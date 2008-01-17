@@ -125,10 +125,6 @@
       <Project>{483D8236-B660-429C-A441-19FF82EA3867}</Project>
       <Name>DDraw</Name>
     </ProjectReference>
-    <ProjectReference Include="..\libs\qf4net\src\qf4net.csproj">
-      <Project>{068CD5CC-1000-430B-A575-A1E5644EDFD3}</Project>
-      <Name>qf4net</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\technocolor.png" />

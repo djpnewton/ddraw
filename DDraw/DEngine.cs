@@ -2,14 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-using qf4net;
 using DejaVu;
 using DejaVu.Collections.Generic;
 
 namespace DDraw
 {
     public delegate void DebugMessageHandler(string msg);
-    public delegate void SelectedFiguresHandler();
     public delegate void PageSizeChangedHandler(DEngine de, DPoint pageSize);
     public delegate void ContextClickHandler(DEngine de, Figure clickedFigure, DPoint pt);
 
@@ -87,85 +85,87 @@ namespace DDraw
         }
     }
 
-    public partial class DEngine
+    public class UndoRedoManager : UndoRedoArea
     {
-        protected UndoRedoList<Figure> figures = new UndoRedoList<Figure>();
-        List<DViewer> viewers = new List<DViewer>();
-        List<Figure> selectedFigures = new List<Figure>();
-        public List<Figure> SelectedFigures
-        {
-            get { return new List<Figure>(selectedFigures.ToArray()); }
-        }
-        Figure currentFigure = null;
-        bool drawSelectionRect = false;
-        SelectionFigure selectionRect;
-        bool drawEraser = false;
-        EraserFigure eraser;
-        DPoint dragPt;
-        double dragRot;
-        DHitTest mouseHitTest;
+        static int instanceNumber = 0;
 
-        bool lockInitialAspectRatio = false;
-        double unlockInitalAspectRatioThreshold = 50;
-
-        bool figureLockAspectRatio = false;
-        public bool FigureLockAspectRatio
+        public UndoRedoManager() : base("UndoRedoArea #" + instanceNumber.ToString())
         {
-            get { return figureLockAspectRatio; }
-            set { figureLockAspectRatio = value; }
+            // increment static instanceNumber variable
+            instanceNumber += 1;
         }
 
-        public bool LockingAspectRatio
+        public new IDisposable Start(string name)
         {
-            get { return lockInitialAspectRatio || figureLockAspectRatio; }
+            if (!IsCommandStarted)
+                return base.Start(name);
+            else
+                return null;
         }
+    }
 
-        const double figureSnapAngle = Math.PI / 4;        // 45 degrees
-        const double figureSnapRange = Math.PI / (4 * 18); // 2.5  degrees (each way)
-
-        DAuthorProperties authorProps;
-
-        UndoRedoArea undoRedoMgr;
+    public class DEngine
+    {
+        UndoRedoManager undoRedoManager;
         public bool CanUndo
         {
-            get { return undoRedoMgr.CanUndo; }
+            get { return undoRedoManager.CanUndo; }
         }
         public bool CanRedo
         {
-            get { return undoRedoMgr.CanRedo; }
+            get { return undoRedoManager.CanRedo; }
         }
         public IEnumerable<string> UndoCommands
         {
-            get { return undoRedoMgr.UndoCommands; }
+            get { return undoRedoManager.UndoCommands; }
         }
         public IEnumerable<string> RedoCommands
         {
-            get { return undoRedoMgr.RedoCommands; }
+            get { return undoRedoManager.RedoCommands; }
         }
         public void UndoRedoStart(string name)
         {
-            if (!undoRedoMgr.IsCommandStarted)
-                undoRedoMgr.Start(name);
+            undoRedoManager.Start(name);
         }
         public void UndoRedoCommit()
         {
-            undoRedoMgr.Commit();
+            undoRedoManager.Commit();
         }
         public void UndoRedoCancel()
         {
-            undoRedoMgr.Cancel();
+            undoRedoManager.Cancel();
         }
         public void UndoRedoClearHistory()
         {
-            undoRedoMgr.ClearHistory();
+            undoRedoManager.ClearHistory();
         }
         public void Undo()
         {
-            undoRedoMgr.Undo();
+            undoRedoManager.Undo();
         }
         public void Redo()
         {
-            undoRedoMgr.Redo();
+            undoRedoManager.Redo();
+        }
+
+        DViewerHandler viewerHandler;
+
+        DFigureHandler figureHandler;
+        public List<Figure> SelectedFigures
+        {
+            get { return figureHandler.SelectedFigures; }
+        }
+
+        DHsm hsm;
+        public DHsmState HsmState
+        {
+            get { return hsm.State; }
+            set { hsm.State = value; }
+        }
+        public bool FigureLockAspectRatio
+        {
+            get { return hsm.FigureLockAspectRatio; }
+            set { hsm.FigureLockAspectRatio = value; }
         }
         
         UndoRedo<DPoint> _pageSize = new UndoRedo<DPoint>(new DPoint(500, 400));
@@ -176,17 +176,16 @@ namespace DDraw
             {
                 if (!value.Equals(_pageSize.Value))
                 {
-                    bool meStartCommand = !undoRedoMgr.IsCommandStarted;
+                    bool meStartCommand = !undoRedoManager.IsCommandStarted;
                     if (meStartCommand)
-                        undoRedoMgr.Start("Set Page Size");
+                        undoRedoManager.Start("Set Page Size");
                     _pageSize.Value = value;
                     if (meStartCommand)
-                        undoRedoMgr.Commit();
+                        undoRedoManager.Commit();
                 }
                 if (PageSizeChanged != null)
                     PageSizeChanged(this, value);
-                foreach (DViewer dv in viewers)
-                    dv.SetPageSize(value);
+                viewerHandler.SetPageSize(value);
             }
         }       
         public PageFormat PageFormat
@@ -204,29 +203,26 @@ namespace DDraw
         public event ContextClickHandler ContextClick;
         public event PageSizeChangedHandler PageSizeChanged;
         public event EventHandler UndoRedoChanged;
+        public event HsmStateChangedHandler HsmStateChanged;
 
-        static int instanceNumber;
-
-        public DEngine(DAuthorProperties ap)
+        public DEngine(DAuthorProperties authorProps)
         {
             // create the undo/redo manager
-            undoRedoMgr = new UndoRedoArea("UndoRedoArea #" + instanceNumber.ToString());
-            undoRedoMgr.CommandDone += new EventHandler<CommandDoneEventArgs>(undoRedoMgr_CommandDone);
-            // set the author properties manager
-            authorProps = ap;
-            // create selection figure and eraser
-            UndoRedoStart("Create Selection Rect & Eraser");
-            selectionRect = new SelectionFigure(new DRect(), 0);
-            eraser = new EraserFigure(10);
-            UndoRedoCommit();
-            UndoRedoClearHistory();
-            // QHsm Init
-            Init();
-            // increment static instanceNumber variable
-            instanceNumber += 1;
+            undoRedoManager = new UndoRedoManager();
+            undoRedoManager.CommandDone += new EventHandler<CommandDoneEventArgs>(undoRedoArea_CommandDone);
+            // create viewer handler
+            viewerHandler = new DViewerHandler();
+            // create figure handler
+            figureHandler = new DFigureHandler();
+            figureHandler.SelectedFiguresChanged += new SelectedFiguresHandler(DoSelectedFiguresChanged);
+            // create state machine
+            hsm = new DHsm(undoRedoManager, viewerHandler, figureHandler, authorProps);
+            hsm.DebugMessage += new DebugMessageHandler(hsm_DebugMessage);
+            hsm.ContextClick += new ContextClickHandler(hsm_ContextClick);
+            hsm.StateChanged += new HsmStateChangedHandler(hsm_StateChanged);
         }
 
-        void undoRedoMgr_CommandDone(object sender, CommandDoneEventArgs e)
+        void undoRedoArea_CommandDone(object sender, CommandDoneEventArgs e)
         {
             if (e.CommandDoneType == CommandDoneType.Undo || e.CommandDoneType == CommandDoneType.Redo)
             {
@@ -239,112 +235,55 @@ namespace DDraw
                 UndoRedoChanged(this, e);
         }
 
-        void dv_NeedRepaint(DViewer dv)
+        void hsm_StateChanged(DEngine de, DHsmState state)
         {
-            Figure[] controlFigures = new Figure[0];
-            if (drawSelectionRect)
-            {
-                Array.Resize(ref controlFigures, controlFigures.Length + 1);
-                controlFigures[controlFigures.Length - 1] = selectionRect;
-            }
-            if (drawEraser)
-            {
-                Array.Resize(ref controlFigures, controlFigures.Length + 1);
-                controlFigures[controlFigures.Length - 1] = eraser;
-            }
-            dv.Paint(figures, controlFigures);
+            if (HsmStateChanged != null)
+                HsmStateChanged(this, state);
         }
 
-        void dv_MouseDown(DViewer dv, DMouseButton btn, DPoint pt)
+        void hsm_ContextClick(DEngine de, Figure clickedFigure, DPoint pt)
         {
-            Dispatch(new QMouseEvent((int)DEngineSignals.MouseDown, dv, btn, pt));
+            if (ContextClick != null)
+                ContextClick(this, clickedFigure, pt);
         }
 
-        void dv_MouseMove(DViewer dv, DPoint pt)
+        void hsm_DebugMessage(string msg)
         {
-            Dispatch(new QMouseEvent((int)DEngineSignals.MouseMove, dv, DMouseButton.NotApplicable, pt));
-        }
-
-        void dv_MouseUp(DViewer dv, DMouseButton btn, DPoint pt)
-        {
-            Dispatch(new QMouseEvent((int)DEngineSignals.MouseUp, dv, btn, pt));
-            foreach (DViewer dvOther in viewers)
-                if (dvOther != dv)
-                    dvOther.Update();
-        }
-
-        void dv_DoubleClick(DViewer dv, DPoint pt)
-        {
-            Dispatch(new QMouseEvent((int)DEngineSignals.DoubleClick, dv, DMouseButton.NotApplicable, pt));
-        }
-
-        void dv_KeyDown(DViewer dv, DKey k)
-        {
-            Dispatch(new QKeyEvent((int)DEngineSignals.KeyDown, dv, k));
-        }
-
-        void dv_KeyPress(DViewer dv, int k)
-        {
-            Dispatch(new QKeyPressEvent((int)DEngineSignals.KeyPress, dv, k));
-        }
-
-        void dv_KeyUp(DViewer dv, DKey k)
-        {
-            Dispatch(new QKeyEvent((int)DEngineSignals.KeyUp, dv, k));
+            if (DebugMessage != null)
+                DebugMessage(msg);
         }
 
         // Public Functions //
 
         public void AddFigure(Figure f)
         {
-            figures.Add(f);
+            figureHandler.Add(f);
         }
 
         public void AddViewer(DViewer dv)
         {
             dv.SetPageSize(PageSize);
-            dv.NeedRepaint += new DPaintEventHandler(dv_NeedRepaint);
-            dv.MouseDown += new DMouseButtonEventHandler(dv_MouseDown);
-            dv.MouseMove += new DMouseMoveEventHandler(dv_MouseMove);
-            dv.MouseUp += new DMouseButtonEventHandler(dv_MouseUp);
-            dv.DoubleClick += new DMouseMoveEventHandler(dv_DoubleClick);
-            dv.KeyDown += new DKeyEventHandler(dv_KeyDown);
-            dv.KeyPress += new DKeyPressEventHandler(dv_KeyPress);
-            dv.KeyUp += new DKeyEventHandler(dv_KeyUp);
-            viewers.Add(dv);
+            viewerHandler.Add(dv);
         }
 
         public void RemoveViewer(DViewer dv)
         {
-            if (viewers.Contains(dv))
-            {
-                viewers.Remove(dv);
-                dv.NeedRepaint -= dv_NeedRepaint;
-                dv.MouseDown -= dv_MouseDown;
-                dv.MouseMove -= dv_MouseMove;
-                dv.MouseUp -= dv_MouseUp;
-                dv.DoubleClick -= dv_DoubleClick;
-                dv.KeyDown -= dv_KeyDown;
-                dv.KeyPress -= dv_KeyPress;
-                dv.KeyUp -= dv_KeyUp;
-            }
+            viewerHandler.Remove(dv);
         }
 
         public void UpdateViewers()
         {
-            foreach (DViewer dv in viewers)
-                dv.Update();
+            viewerHandler.Update();
         }
 
         public void ClearSelected()
         {
-            ClearSelectedFiguresList();
-            DoSelectedFiguresChanged();
+            figureHandler.ClearSelected();
         }
 
         public bool CanGroupFigures(List<Figure> figs)
         {
-            return figs.Count > 1;
+            return figureHandler.CanGroupFigures(figs);
         }
 
         public void GroupFigures(List<Figure> figs)
@@ -354,45 +293,31 @@ namespace DDraw
                 // init undoRedo frame
                 UndoRedoStart("Group");
                 // make group
-                GroupFigure gf = new GroupFigure(figs);
-                figures.Add(gf);
-                // change selected figures to the group
-                ClearSelected();
-                AddToSelected(gf);
-                DoSelectedFiguresChanged();
-                // remove child figures from figure list
-                foreach (Figure f in figs)
-                    figures.Remove(f);
+                figureHandler.GroupFigures(figs);
+                // commit changes to undoRedoArea
+                UndoRedoCommit();
                 // update all viewers
                 UpdateViewers();
-                // commit changes to undoRedoMgr
-                 UndoRedoCommit();
             }
         }
 
         public bool CanUngroupFigures(List<Figure> figs)
         {
-            return figs.Count == 1 && figs[0] is GroupFigure;
+            return figureHandler.CanUngroupFigures(figs);
         }
 
         public void UngroupFigures(List<Figure> figs)
         {
             if (CanUngroupFigures(figs))
             {
-                GroupFigure gf = (GroupFigure)figs[0];
                 // init undoRedo frame
                 UndoRedoStart("Ungroup");
                 // perform ungroup
-                UngroupFigure(gf);
-                // add group figures to selected list
-                ClearSelected();
-                foreach (Figure f in gf.ChildFigures)
-                    AddToSelected(f);
-                DoSelectedFiguresChanged();
+                figureHandler.UngroupFigures(figs);
+                // commit changes to undoRedoArea
+                UndoRedoCommit();
                 // update all viewers
                 UpdateViewers();
-                // commit changes to undoRedoMgr
-                UndoRedoCommit();
             }
         }
 
@@ -400,21 +325,11 @@ namespace DDraw
         {
             // init undoRedo frame
             UndoRedoStart("Send to Back");
-            // do send to back
-            OrderFigures(figs);
-            for (int i = figs.Count - 1; i >= 0; i--)
-            {
-                Figure f = figs[i];
-                if (figures.Contains(f))
-                {
-                    figures.Remove(f);
-                    figures.Insert(0, f);
-                }
-            }
-            // update all
-            DoSelectedFiguresChanged();
+            // send to back
+            figureHandler.SendToBack(figs);
+            // update viewers
             UpdateViewers();
-            // commit changes to undoRedoMgr
+            // commit changes to undoRedoArea
             UndoRedoCommit(); 
         }
 
@@ -422,18 +337,11 @@ namespace DDraw
         {
             // init undoRedo frame
             UndoRedoStart("Bring to Front");
-            // do bring to front
-            OrderFigures(figs);
-            foreach (Figure f in figs)
-                if (figures.Contains(f))
-                {
-                    figures.Remove(f);
-                    figures.Add(f);
-                }
-            // update
-            DoSelectedFiguresChanged();
+            // bring to front
+            figureHandler.BringToFront(figs);
+            // update viewers
             UpdateViewers();
-            // commit changes to undoRedoMgr
+            // commit changes to undoRedoArea
             UndoRedoCommit(); 
         }
 
@@ -441,220 +349,55 @@ namespace DDraw
         {            
             // init undoRedo frame
             UndoRedoStart("Send Backward");
-            // do send backward
-            OrderFigures(figs);
-            foreach (Figure f in figs)
-                if (figures.Contains(f))
-                {
-                    int idx = figures.IndexOf(f);
-                    if (idx > 0 && !figs.Contains(figures[idx - 1]))
-                    {
-                        figures.Remove(f);
-                        figures.Insert(idx - 1, f);
-                    }
-                }
+            // send backward
+            figureHandler.SendBackward(figs);
             // update
-            DoSelectedFiguresChanged();
             UpdateViewers();
-            // commit changes to undoRedoMgr
+            // commit changes to undoRedoArea
             UndoRedoCommit(); 
         }
 
         public bool CanSendBackward(List<Figure> figs)
         {
-            foreach (Figure f in figs)
-            {
-                int idx = figures.IndexOf(f);
-                if (idx > 0 && !figs.Contains(figures[idx - 1]))
-                    return true;
-            }
-            return false;
+            return figureHandler.CanSendBackward(figs);
         }
 
         public void BringForward(List<Figure> figs)
         {
             // init undoRedo frame
-             UndoRedoStart("Bring Forward");
-            // do bring forward
-            OrderFigures(figs);
-            for (int i = figs.Count - 1; i >= 0; i--)
-            {
-                Figure f = figs[i];
-                if (figures.Contains(f))
-                {
-                    int idx = figures.IndexOf(f);
-                    if (idx < figures.Count - 1 && !figs.Contains(figures[idx + 1]))
-                    {
-                        figures.Remove(f);
-                        figures.Insert(idx + 1, f);
-                    }
-                }
-            }
-            // update
-            DoSelectedFiguresChanged();
+            UndoRedoStart("Bring Forward");
+            // bring forward
+            figureHandler.BringForward(figs);
+            // update viewers
             UpdateViewers();
-            // commit changes to undoRedoMgr
-            UndoRedoCommit(); 
+            // commit changes to undoRedoArea
+            UndoRedoCommit();
         }
 
         public bool CanBringForward(List<Figure> figs)
         {
-            foreach (Figure f in figs)
-            {
-                int idx = figures.IndexOf(f);
-                if (idx < figures.Count - 1 && !figs.Contains(figures[idx + 1]))
-                    return true;
-            }
-            return false;
+            return figureHandler.CanBringForward(figs);
         }
 
         public void SetEraserSize(double size)
         {
-            eraser.Size = size;
+            hsm.SetEraserSize(size);
         }
 
-        // Helper Functions //
-
-        Figure HitTestFigures(DPoint pt, out DHitTest hitTest)
+        public bool HsmCurrentFigClassImpls(Type _interface)
         {
-            hitTest = DHitTest.None;
-            // first hittest for selection chrome
-            for (int i = figures.Count - 1; i >= 0; i--)
-            {
-                Figure f = figures[i];
-                hitTest = f.HitTest(pt);
-                if (hitTest != DHitTest.None && hitTest != DHitTest.Body)
-                    return f;
-            }
-            // now hittest for any part of the figure
-            for (int i = figures.Count - 1; i >= 0; i--)
-            {
-                Figure f = figures[i];
-                hitTest = f.HitTest(pt);
-                if (hitTest != DHitTest.None)
-                    return f;
-            }
-            return null;
+            return hsm.CurrentFigClassImpls(_interface);
         }
 
-        void ClearSelectedFiguresList()
+        public bool HsmCurrentFigClassIs(Type _class)
         {
-            foreach (Figure f in selectedFigures)
-                f.Selected = false;
-            selectedFigures.Clear();
+            return hsm.CurrentFigClassIs(_class);
         }
 
-        void AddToSelected(Figure f)
+        public void HsmSetStateByFigureClass(Type figureClass)
         {
-            f.Selected = true;
-            selectedFigures.Add(f);
+            hsm.SetStateByFigureClass(figureClass);
         }
-
-        Figure HitTestSelect(DPoint pt, out DHitTest hitTest)
-        {
-            Figure f = HitTestFigures(pt, out hitTest);
-            // update selected figures
-            if (f != null)
-            {
-                if (!f.Selected)
-                {
-                    ClearSelectedFiguresList();
-                    AddToSelected(f);
-                    DoSelectedFiguresChanged();
-                }
-            }
-            return f;
-        }
-
-        void OrderFigures(List<Figure> figs)
-        {
-            int[] idx = new int[figs.Count];
-            for(int i = 0; i < figs.Count; i++)
-                idx[i] = figures.IndexOf(figs[i]);
-            Figure[] figs2 = figs.ToArray();
-            Array.Sort(idx, figs2);
-            figs = new List<Figure>(figs2);
-        }
-
-        void ClearCurrentFigure()
-        {
-            if (currentFigure != null)
-            {
-                // remove current figure if it was not sized by a mouse drag
-                if (currentFigure.Width == 0 || currentFigure.Height == 0)
-                    figures.Remove(currentFigure);
-                // null currentfigure
-                currentFigure = null;
-            }
-        }
-
-        void UngroupFigure(GroupFigure gf)
-        {
-            // apply group properties (rotation etc) to child figures
-            DPoint gcpt = gf.Rect.Center;
-            foreach (Figure f in gf.ChildFigures)
-            {
-                // rotation
-                DPoint fcpt = f.Rect.Center;
-                DPoint rotpt = DGeom.RotatePoint(fcpt, gcpt, gf.Rotation);
-                f.X += rotpt.X - fcpt.X;
-                f.Y += rotpt.Y - fcpt.Y;
-                f.Rotation += gf.Rotation;
-                // alpha
-                if (gf.UseRealAlpha && f is IAlphaBlendable)
-                    ((IAlphaBlendable)f).Alpha *= gf.Alpha;
-            }
-            // add group figures to figure list
-            foreach (Figure f in gf.ChildFigures)
-                figures.Add(f);
-            // remove group
-            figures.Remove(gf);
-        }
-
-        // Mouse Functions //
-
-        DPoint CalcDragDelta(DPoint pt)
-        {
-            return new DPoint(pt.X - dragPt.X, pt.Y - dragPt.Y);
-        }
-
-        DPoint CalcSizeDelta(DPoint pt, Figure f, bool lockAspectRatio)
-        {
-            if (lockAspectRatio)
-            {
-                pt = pt.Offset(-dragPt.X, -dragPt.Y);
-                double m = f.Height / f.Width;
-                DPoint intersectionPt = DGeom.IntersectionOfTwoLines(m, f.BottomRight, -1, pt);
-                // using soh/cah/toa
-                double h = DGeom.DistBetweenTwoPts(f.BottomRight, intersectionPt);
-                double A = Math.Atan(m);
-                // cos(A) = a/h
-                double dX = Math.Cos(A) * h;
-                // sin(A) = o/h
-                double dY = Math.Sin(A) * h;
-                // find out the angle of the line between the mouse pt and the botton left of the figure
-                double angle = -(Math.Atan2(pt.Y - f.BottomRight.Y, pt.X - f.BottomRight.X) - Math.PI);
-                // if the angle is on the topleft side (225 deg to 45 deg) then we are resizing smaller
-                if (angle < Math.PI / 4 || angle > Math.PI + Math.PI / 4)
-                    return new DPoint(-dX, -dY);
-                else
-                    return new DPoint(dX, dY);
-            }
-            else
-                return new DPoint((pt.X - f.X) - f.Width - dragPt.X, (pt.Y - f.Y) - f.Height - dragPt.Y);
-        }
-
-        DRect GetBoundingBox(Figure f)
-        {
-            return DGeom.BoundingBoxOfRotatedRect(f.GetEncompassingRect(), f.Rotation, f.Rect.Center);
-        }
-
-        double GetRotationOfPointComparedToFigure(Figure f, DPoint pt)
-        {
-            return DGeom.AngleBetweenPoints(f.GetSelectRect().Center, pt);
-        }
-
-        protected const int MIN_SIZE = 5;
 
         // Other //
 
