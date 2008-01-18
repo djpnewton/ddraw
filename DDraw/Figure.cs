@@ -543,7 +543,8 @@ namespace DDraw
         protected override void PaintBody(DGraphics dg)
         {
             dg.FillRect(X, Y, Width, Height, Fill, Alpha);
-            dg.DrawRect(X, Y, Width, Height, Stroke, Alpha, StrokeWidth, StrokeStyle, StrokeJoin);
+            if (StrokeWidth > 0)
+                dg.DrawRect(X, Y, Width, Height, Stroke, Alpha, StrokeWidth, StrokeStyle, StrokeJoin);
         }
 
         #region IFillable Members

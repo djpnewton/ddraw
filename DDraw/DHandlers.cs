@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
+using DejaVu;
 using DejaVu.Collections.Generic;
 
 namespace DDraw
@@ -10,6 +11,23 @@ namespace DDraw
 
     public class DFigureHandler
     {
+        UndoRedo<RectbaseFigure> _backgroundFigure = new UndoRedo<RectbaseFigure>();
+        public RectbaseFigure BackgroundFigure
+        {
+            get { return _backgroundFigure.Value; }
+            set { _backgroundFigure.Value = value; }
+        }
+        SelectionFigure selectionFigure = new SelectionFigure(new DRect(), 0);
+        public SelectionFigure SelectionFigure
+        {
+            get { return selectionFigure; }
+        }
+        EraserFigure eraserFigure = new EraserFigure(10);
+        public EraserFigure EraserFigure
+        {
+            get { return eraserFigure; }
+        }
+
         protected UndoRedoList<Figure> figures = new UndoRedoList<Figure>();
         public UndoRedoList<Figure> Figures
         {
@@ -21,6 +39,15 @@ namespace DDraw
         public List<Figure> SelectedFigures
         {
             get { return selectedFigures; }
+        }
+
+        public DFigureHandler()
+        {
+            BackgroundFigure = new RectFigure();
+            ((RectFigure)BackgroundFigure).Fill = DColor.White;
+            ((RectFigure)BackgroundFigure).StrokeWidth = 0;
+            BackgroundFigure.Width = PageTools.DefaultPageWidth;
+            BackgroundFigure.Height = PageTools.DefaultPageHeight;
         }
 
         // public methods //
@@ -239,6 +266,17 @@ namespace DDraw
                 figures.Add(f);
             // remove group
             figures.Remove(gf);
+        }
+
+        public void SetBackgroundFigureSize(DPoint size)
+        {
+            BackgroundFigure.Width = size.X;
+            BackgroundFigure.Height = size.Y;
+        }
+
+        public void SetEraserSize(double size)
+        {
+            eraserFigure.Size = size;
         }
 
         // helper methods //

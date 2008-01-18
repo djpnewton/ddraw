@@ -171,6 +171,8 @@ namespace WinFormsDemo
         {
             if (clickedFigure != null)
                 cmsFigure.Show(wfvcEditor, new Point((int)pt.X, (int)pt.Y));
+            else
+                cmsCanvas.Show(wfvcEditor, new Point((int)pt.X, (int)pt.Y));
         }
 
         Color GetFillMatch(List<Figure> figs)
@@ -869,31 +871,6 @@ namespace WinFormsDemo
             de.Redo();
         }
 
-        private void pageSizeToolStripMenuItem_DropDownOpening(object sender, EventArgs e)
-        {
-            a4ToolStripMenuItem.Checked = de.PageFormat == PageFormat.A4;
-            a5ToolStripMenuItem.Checked = de.PageFormat == PageFormat.A5;
-            letterToolStripMenuItem.Checked = de.PageFormat == PageFormat.Letter;
-            customToolStripMenuItem.Checked = de.PageFormat == PageFormat.Custom;
-        }
-
-        private void PageSizeToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (sender == a4ToolStripMenuItem)
-                de.PageFormat = PageFormat.A4;
-            else if (sender == a5ToolStripMenuItem)
-                de.PageFormat = PageFormat.A5;
-            else if (sender == letterToolStripMenuItem)
-                de.PageFormat = PageFormat.Letter;
-            else if (sender == customToolStripMenuItem)
-            {
-                CustomPageSizeForm f = new CustomPageSizeForm();
-                f.PageSize = de.PageSize;
-                if (f.ShowDialog() == DialogResult.OK)
-                    de.PageSize = f.PageSize;
-            }
-        }
-
         private void zoomToolStripMenuItem_DropDownOpening(object sender, EventArgs e)
         {
             fitToPageToolStripMenuItem.Checked = dvEditor.Zoom == Zoom.FitToPage;
@@ -968,6 +945,34 @@ namespace WinFormsDemo
         private void actBringForward_Execute(object sender, EventArgs e)
         {
             de.BringForward(de.SelectedFigures);
+        }
+
+        private void actPageSize_Execute(object sender, EventArgs e)
+        {
+            CustomPageSizeForm f = new CustomPageSizeForm();
+            f.PageSize = de.PageSize;
+            f.PageFormat = de.PageFormat;
+            if (f.ShowDialog() == DialogResult.OK)
+            {
+                if (f.PageFormat == PageFormat.Custom)
+                    de.PageSize = f.PageSize;
+                else
+                    de.PageFormat = f.PageFormat;
+            }
+        }
+
+        private void actBackground_Execute(object sender, EventArgs e)
+        {
+            ColorDialog cd = new ColorDialog();
+            if (cd.ShowDialog() == DialogResult.OK)
+            {
+                de.UndoRedoStart("Set Background");
+                RectFigure f = new RectFigure();
+                f.Fill = MakeColor(cd.Color);
+                f.StrokeWidth = 0;
+                de.SetBackgroundFigure(f);
+                de.UndoRedoCommit();
+            }
         }
     }
 }

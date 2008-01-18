@@ -172,8 +172,8 @@ namespace DDraw
             get { return hsm.FigureAlwaysSnapAngle; }
             set { hsm.FigureAlwaysSnapAngle = value; }
         }
-        
-        UndoRedo<DPoint> _pageSize = new UndoRedo<DPoint>(new DPoint(500, 400));
+
+        UndoRedo<DPoint> _pageSize = new UndoRedo<DPoint>(new DPoint(PageTools.DefaultPageWidth, PageTools.DefaultPageHeight));
         public DPoint PageSize
         {
             get { return _pageSize.Value; }
@@ -185,6 +185,7 @@ namespace DDraw
                     if (meStartCommand)
                         undoRedoManager.Start("Set Page Size");
                     _pageSize.Value = value;
+                    figureHandler.SetBackgroundFigureSize(value);
                     if (meStartCommand)
                         undoRedoManager.Commit();
                 }
@@ -218,8 +219,11 @@ namespace DDraw
             // create viewer handler
             viewerHandler = new DViewerHandler();
             // create figure handler
+            undoRedoManager.Start("create figure handler");
             figureHandler = new DFigureHandler();
             figureHandler.SelectedFiguresChanged += new SelectedFiguresHandler(DoSelectedFiguresChanged);
+            undoRedoManager.Commit();
+            undoRedoManager.ClearHistory();
             // create state machine
             hsm = new DHsm(undoRedoManager, viewerHandler, figureHandler, authorProps);
             hsm.DebugMessage += new DebugMessageHandler(hsm_DebugMessage);
@@ -384,9 +388,16 @@ namespace DDraw
             return figureHandler.CanBringForward(figs);
         }
 
+        public void SetBackgroundFigure(RectbaseFigure f)
+        {
+            f.Rect = new DRect(0, 0, PageSize.X, PageSize.Y);
+            figureHandler.BackgroundFigure = f;
+            viewerHandler.Update();
+        }
+
         public void SetEraserSize(double size)
         {
-            hsm.SetEraserSize(size);
+            figureHandler.SetEraserSize(size);
         }
 
         public bool HsmCurrentFigClassImpls(Type _interface)

@@ -174,25 +174,22 @@ namespace DDraw
                 KeyUp(this, k);
         }
 
-        public void Paint(IList<Figure> figures, Figure[] controlFigures)
+        public void Paint(Figure backgroundFigure, IList<Figure> figures, Figure[] controlFigures)
         {
             // set antialias value
             dg.AntiAlias = AntiAlias;
             // draw backround and transform canvas accordind to the pagesize
             if (Preview)
-            {
-                dg.FillRect(0, 0, Width, Height, DColor.White, 1); // draw white canvas
                 dg.Scale(Width / PageSize.X, Height / PageSize.Y); // scale to width & height as this is a preview viewer
-            }
             else
             {
                 dg.FillRect(0, 0, Width, Height, new DColor(200, 200, 200), 1); // gray background
                 dg.Translate(CanvasOffset()); // center drawing
                 dg.Scale(scale, scale); // scale canvas
                 dg.FillRect(SHADOW_OFFSET, SHADOW_OFFSET, PageSize.X, PageSize.Y, DColor.Black, 1); // draw black canvas shadow
-                dg.FillRect(0, 0, PageSize.X, PageSize.Y, DColor.White, 1); // draw white canvas
             }
             // paint figures
+            backgroundFigure.Paint(dg);
             foreach (Figure figure in figures)
                 figure.Paint(dg);
             if (editFigures)

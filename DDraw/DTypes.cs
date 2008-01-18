@@ -269,6 +269,9 @@ namespace DDraw
 
     public static class PageTools
     {
+        public const int DefaultPageWidth = 500;
+        public const int DefaultPageHeight = 400;
+
         // TODO: find these out cross platform
         const int DpiX = 96;
         const int DpiY = 96;

@@ -140,9 +140,7 @@ namespace DDraw
         }
 
         bool drawSelection = false;
-        SelectionFigure selectionFigure = new SelectionFigure(new DRect(), 0);
         bool drawEraser = false;
-        EraserFigure eraserFigure = new EraserFigure(10);
 
         public event HsmStateChangedHandler StateChanged;
         public DHsmState State
@@ -234,14 +232,14 @@ namespace DDraw
             if (drawSelection)
             {
                 Array.Resize(ref controlFigures, controlFigures.Length + 1);
-                controlFigures[controlFigures.Length - 1] = selectionFigure;
+                controlFigures[controlFigures.Length - 1] = figureHandler.SelectionFigure;
             }
             if (drawEraser)
             {
                 Array.Resize(ref controlFigures, controlFigures.Length + 1);
-                controlFigures[controlFigures.Length - 1] = eraserFigure;
+                controlFigures[controlFigures.Length - 1] = figureHandler.EraserFigure;
             }
-            dv.Paint(figureHandler.Figures, controlFigures);
+            dv.Paint(figureHandler.BackgroundFigure, figureHandler.Figures, controlFigures);
         }
 
         void dv_MouseDown(DViewer dv, DMouseButton btn, DPoint pt)
@@ -313,11 +311,6 @@ namespace DDraw
                 return _class.Equals(currentFigureClass);
             else
                 return false;
-        }
-
-        public void SetEraserSize(double size)
-        {
-            eraserFigure.Size = size;
         }
 
         // private methods
@@ -553,23 +546,23 @@ namespace DDraw
             {
                 case DHitTest.None:
                     // initial update rect
-                    updateRect = selectionFigure.Rect;
+                    updateRect = figureHandler.SelectionFigure.Rect;
                     // drag select figure
-                    selectionFigure.TopLeft = dragPt;
-                    selectionFigure.BottomRight = pt;
-                    if (selectionFigure.Width < 0)
+                    figureHandler.SelectionFigure.TopLeft = dragPt;
+                    figureHandler.SelectionFigure.BottomRight = pt;
+                    if (figureHandler.SelectionFigure.Width < 0)
                     {
-                        selectionFigure.X += selectionFigure.Width;
-                        selectionFigure.Width = -selectionFigure.Width;
+                        figureHandler.SelectionFigure.X += figureHandler.SelectionFigure.Width;
+                        figureHandler.SelectionFigure.Width = -figureHandler.SelectionFigure.Width;
                     }
-                    if (selectionFigure.Height < 0)
+                    if (figureHandler.SelectionFigure.Height < 0)
                     {
-                        selectionFigure.Y += selectionFigure.Height;
-                        selectionFigure.Height = -selectionFigure.Height;
+                        figureHandler.SelectionFigure.Y += figureHandler.SelectionFigure.Height;
+                        figureHandler.SelectionFigure.Height = -figureHandler.SelectionFigure.Height;
                     }
                     drawSelection = true;
                     // final update rect
-                    updateRect = updateRect.Union(selectionFigure.Rect);
+                    updateRect = updateRect.Union(figureHandler.SelectionFigure.Rect);
                     break;
                 case DHitTest.Body:
                     System.Diagnostics.Trace.Assert(currentFigure != null, "currentFigure is null");
@@ -755,10 +748,10 @@ namespace DDraw
                 currentFigure = null;
                 if (drawSelection)
                 {
-                    DRect updateRect = selectionFigure.Rect;
+                    DRect updateRect = figureHandler.SelectionFigure.Rect;
                     List<Figure> selectFigs = new List<Figure>();
                     foreach (Figure f in figureHandler.Figures)
-                        if (selectionFigure.Contains(f))
+                        if (figureHandler.SelectionFigure.Contains(f))
                         {
                             selectFigs.Add(f);
                             updateRect = updateRect.Union(GetBoundingBox(f));
@@ -1153,7 +1146,7 @@ namespace DDraw
                 }
             }
             // set selection rectangle
-            selectionFigure.Rect = currentFigure.GetSelectRect();
+            figureHandler.SelectionFigure.Rect = currentFigure.GetSelectRect();
             // update drawing
             dv.Update(updateRect.Union(currentFigure.GetSelectRect()));
         }
@@ -1164,7 +1157,7 @@ namespace DDraw
             // transition
             TransitionTo(DrawRectDefault);
             // update drawing
-            dv.Update(selectionFigure.Rect);
+            dv.Update(figureHandler.SelectionFigure.Rect);
         }
 
         QState DoDrawingRect(IQEvent qevent)
@@ -1370,7 +1363,7 @@ namespace DDraw
                     DPoints ptsToRemove = new DPoints();
                     if (f.Points != null)
                         foreach (DPoint pt in f.Points)
-                            if (DGeom.PointInCircle(pt, rotPt, eraserFigure.Size / 2))
+                            if (DGeom.PointInCircle(pt, rotPt, figureHandler.EraserFigure.Size / 2))
                                 ptsToRemove.Add(pt);
                     if (ptsToRemove.Count > 0)
                     {
@@ -1421,14 +1414,14 @@ namespace DDraw
                     break;
                 case (int)DHsmSignals.MouseMove:
                     QMouseEvent me = (QMouseEvent)qevent;
-                    DRect updateRect = GetBoundingBox(eraserFigure);
+                    DRect updateRect = GetBoundingBox(figureHandler.EraserFigure);
                     // show & move eraser
                     drawEraser = true;
-                    eraserFigure.TopLeft = new DPoint(me.Pt.X - eraserFigure.Size / 2, me.Pt.Y - eraserFigure.Size / 2);
+                    figureHandler.EraserFigure.TopLeft = new DPoint(me.Pt.X - figureHandler.EraserFigure.Size / 2, me.Pt.Y - figureHandler.EraserFigure.Size / 2);
                     // erase stuff
                     ErasePolylines(me.Pt, figureHandler.Figures, ref updateRect, null);
                     // update
-                    me.Dv.Update(updateRect.Union(GetBoundingBox(eraserFigure)));
+                    me.Dv.Update(updateRect.Union(GetBoundingBox(figureHandler.EraserFigure)));
                     return null;
                 case (int)DHsmSignals.MouseUp:
                     // transition
