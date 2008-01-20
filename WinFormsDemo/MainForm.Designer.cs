@@ -32,8 +32,6 @@ namespace WinFormsDemo
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.pnlPreviews = new System.Windows.Forms.Panel();
             this.tsEditorMode = new System.Windows.Forms.ToolStrip();
-            this.btnAntiAlias = new System.Windows.Forms.ToolStripButton();
-            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.btnSelect = new System.Windows.Forms.ToolStripButton();
             this.btnPen = new System.Windows.Forms.ToolStripButton();
             this.btnEraser = new System.Windows.Forms.ToolStripButton();
@@ -73,6 +71,7 @@ namespace WinFormsDemo
             this._050PcToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this._100PcToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this._150PcToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.antialiasToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.insertToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.imageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.formatToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -82,8 +81,10 @@ namespace WinFormsDemo
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.cmsFigure = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            this.cmsCanvas = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.wfvcEditor = new DDraw.WinForms.WFViewerControl();
             this.previewBar1 = new WinFormsDemo.PreviewBar();
+            this.deleteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.pageSizeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.backgroundToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.groupToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
@@ -109,7 +110,10 @@ namespace WinFormsDemo
             this.bringToFrontToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.sendBackwardToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.bringForwardToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.pageSizeToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.backgroundToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.actionListProvider1 = new Burkovsky.Controls.ActionListProvider(this.components);
+            this.actDelete = new Burkovsky.Controls.Action();
             this.actPageSize = new Burkovsky.Controls.Action();
             this.actBackground = new Burkovsky.Controls.Action();
             this.actGroupFigures = new Burkovsky.Controls.Action();
@@ -117,9 +121,14 @@ namespace WinFormsDemo
             this.actBringToFront = new Burkovsky.Controls.Action();
             this.actSendBackward = new Burkovsky.Controls.Action();
             this.actBringForward = new Burkovsky.Controls.Action();
-            this.cmsCanvas = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.pageSizeToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-            this.backgroundToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.cutToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.copyToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.pasteToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.deleteToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.actCut = new Burkovsky.Controls.Action();
+            this.actCopy = new Burkovsky.Controls.Action();
+            this.actPaste = new Burkovsky.Controls.Action();
             this.pnlPreviews.SuspendLayout();
             this.tsEditorMode.SuspendLayout();
             this.toolStripContainer1.ContentPanel.SuspendLayout();
@@ -130,9 +139,9 @@ namespace WinFormsDemo
             this.statusStrip1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.cmsFigure.SuspendLayout();
+            this.cmsCanvas.SuspendLayout();
             this.tsFigureProps.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.actionListProvider1)).BeginInit();
-            this.cmsCanvas.SuspendLayout();
             this.SuspendLayout();
             // 
             // pnlPreviews
@@ -148,8 +157,6 @@ namespace WinFormsDemo
             // 
             this.tsEditorMode.Dock = System.Windows.Forms.DockStyle.None;
             this.tsEditorMode.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.btnAntiAlias,
-            this.toolStripSeparator1,
             this.btnSelect,
             this.btnPen,
             this.btnEraser,
@@ -164,26 +171,9 @@ namespace WinFormsDemo
             this.btnLine});
             this.tsEditorMode.Location = new System.Drawing.Point(3, 24);
             this.tsEditorMode.Name = "tsEditorMode";
-            this.tsEditorMode.Size = new System.Drawing.Size(346, 25);
+            this.tsEditorMode.Size = new System.Drawing.Size(288, 25);
             this.tsEditorMode.TabIndex = 0;
             this.tsEditorMode.Text = "toolStrip1";
-            // 
-            // btnAntiAlias
-            // 
-            this.actionListProvider1.SetAction(this.btnAntiAlias, null);
-            this.btnAntiAlias.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.btnAntiAlias.Image = ((System.Drawing.Image)(resources.GetObject("btnAntiAlias.Image")));
-            this.btnAntiAlias.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btnAntiAlias.Name = "btnAntiAlias";
-            this.btnAntiAlias.Size = new System.Drawing.Size(52, 22);
-            this.btnAntiAlias.Text = "AntiAlias";
-            this.btnAntiAlias.Click += new System.EventHandler(this.btnAntiAlias_Click);
-            // 
-            // toolStripSeparator1
-            // 
-            this.actionListProvider1.SetAction(this.toolStripSeparator1, null);
-            this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 25);
             // 
             // btnSelect
             // 
@@ -467,7 +457,8 @@ namespace WinFormsDemo
             this.toolStripSeparator4,
             this.cutToolStripMenuItem,
             this.copyToolStripMenuItem,
-            this.pasteToolStripMenuItem});
+            this.pasteToolStripMenuItem,
+            this.deleteToolStripMenuItem});
             this.editToolStripMenuItem.Name = "editToolStripMenuItem";
             this.editToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
             this.editToolStripMenuItem.Text = "Edit";
@@ -499,36 +490,34 @@ namespace WinFormsDemo
             // 
             // cutToolStripMenuItem
             // 
-            this.actionListProvider1.SetAction(this.cutToolStripMenuItem, null);
+            this.actionListProvider1.SetAction(this.cutToolStripMenuItem, this.actCut);
             this.cutToolStripMenuItem.Name = "cutToolStripMenuItem";
             this.cutToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.X)));
             this.cutToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.cutToolStripMenuItem.Text = "Cut";
-            this.cutToolStripMenuItem.Click += new System.EventHandler(this.notImplemented_Click);
             // 
             // copyToolStripMenuItem
             // 
-            this.actionListProvider1.SetAction(this.copyToolStripMenuItem, null);
+            this.actionListProvider1.SetAction(this.copyToolStripMenuItem, this.actCopy);
             this.copyToolStripMenuItem.Name = "copyToolStripMenuItem";
             this.copyToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.C)));
             this.copyToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.copyToolStripMenuItem.Text = "Copy";
-            this.copyToolStripMenuItem.Click += new System.EventHandler(this.notImplemented_Click);
             // 
             // pasteToolStripMenuItem
             // 
-            this.actionListProvider1.SetAction(this.pasteToolStripMenuItem, null);
+            this.actionListProvider1.SetAction(this.pasteToolStripMenuItem, this.actPaste);
             this.pasteToolStripMenuItem.Name = "pasteToolStripMenuItem";
             this.pasteToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.V)));
             this.pasteToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.pasteToolStripMenuItem.Text = "Paste";
-            this.pasteToolStripMenuItem.Click += new System.EventHandler(this.notImplemented_Click);
             // 
             // viewToolStripMenuItem
             // 
             this.actionListProvider1.SetAction(this.viewToolStripMenuItem, null);
             this.viewToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.zoomToolStripMenuItem});
+            this.zoomToolStripMenuItem,
+            this.antialiasToolStripMenuItem});
             this.viewToolStripMenuItem.Name = "viewToolStripMenuItem";
             this.viewToolStripMenuItem.Size = new System.Drawing.Size(41, 20);
             this.viewToolStripMenuItem.Text = "View";
@@ -543,7 +532,7 @@ namespace WinFormsDemo
             this._100PcToolStripMenuItem,
             this._150PcToolStripMenuItem});
             this.zoomToolStripMenuItem.Name = "zoomToolStripMenuItem";
-            this.zoomToolStripMenuItem.Size = new System.Drawing.Size(111, 22);
+            this.zoomToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.zoomToolStripMenuItem.Text = "Zoom";
             this.zoomToolStripMenuItem.DropDownOpening += new System.EventHandler(this.zoomToolStripMenuItem_DropDownOpening);
             // 
@@ -587,6 +576,16 @@ namespace WinFormsDemo
             this._150PcToolStripMenuItem.Text = "150%";
             this._150PcToolStripMenuItem.Click += new System.EventHandler(this.ZoomToolStripMenuItem_Click);
             // 
+            // antialiasToolStripMenuItem
+            // 
+            this.actionListProvider1.SetAction(this.antialiasToolStripMenuItem, null);
+            this.antialiasToolStripMenuItem.Checked = true;
+            this.antialiasToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.antialiasToolStripMenuItem.Name = "antialiasToolStripMenuItem";
+            this.antialiasToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.antialiasToolStripMenuItem.Text = "Antialias";
+            this.antialiasToolStripMenuItem.Click += new System.EventHandler(this.antialiasToolStripMenuItem_Click);
+            // 
             // insertToolStripMenuItem
             // 
             this.actionListProvider1.SetAction(this.insertToolStripMenuItem, null);
@@ -600,7 +599,7 @@ namespace WinFormsDemo
             // 
             this.actionListProvider1.SetAction(this.imageToolStripMenuItem, null);
             this.imageToolStripMenuItem.Name = "imageToolStripMenuItem";
-            this.imageToolStripMenuItem.Size = new System.Drawing.Size(115, 22);
+            this.imageToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.imageToolStripMenuItem.Text = "Image";
             this.imageToolStripMenuItem.Click += new System.EventHandler(this.imageToolStripMenuItem_Click);
             // 
@@ -654,6 +653,11 @@ namespace WinFormsDemo
             // cmsFigure
             // 
             this.cmsFigure.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.cutToolStripMenuItem1,
+            this.copyToolStripMenuItem1,
+            this.pasteToolStripMenuItem1,
+            this.deleteToolStripMenuItem1,
+            this.toolStripSeparator1,
             this.groupToolStripMenuItem,
             this.toolStripSeparator2,
             this.sendToBackToolStripMenuItem,
@@ -661,13 +665,21 @@ namespace WinFormsDemo
             this.sendBackwardToolStripMenuItem,
             this.bringForwardToolStripMenuItem});
             this.cmsFigure.Name = "cmsFigure";
-            this.cmsFigure.Size = new System.Drawing.Size(239, 120);
+            this.cmsFigure.Size = new System.Drawing.Size(239, 214);
             // 
             // toolStripSeparator2
             // 
             this.actionListProvider1.SetAction(this.toolStripSeparator2, null);
             this.toolStripSeparator2.Name = "toolStripSeparator2";
             this.toolStripSeparator2.Size = new System.Drawing.Size(235, 6);
+            // 
+            // cmsCanvas
+            // 
+            this.cmsCanvas.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.pageSizeToolStripMenuItem1,
+            this.backgroundToolStripMenuItem1});
+            this.cmsCanvas.Name = "cmsCanvas";
+            this.cmsCanvas.Size = new System.Drawing.Size(142, 48);
             // 
             // wfvcEditor
             // 
@@ -689,6 +701,14 @@ namespace WinFormsDemo
             this.previewBar1.TabIndex = 0;
             this.previewBar1.PreviewSelected += new WinFormsDemo.PreviewSelectedHandler(this.previewBar1_PreviewSelected);
             this.previewBar1.PreviewAdd += new System.EventHandler(this.previewBar1_PreviewAdd);
+            // 
+            // deleteToolStripMenuItem
+            // 
+            this.actionListProvider1.SetAction(this.deleteToolStripMenuItem, this.actDelete);
+            this.deleteToolStripMenuItem.Name = "deleteToolStripMenuItem";
+            this.deleteToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.Delete;
+            this.deleteToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.deleteToolStripMenuItem.Text = "Delete";
             // 
             // pageSizeToolStripMenuItem
             // 
@@ -956,6 +976,20 @@ namespace WinFormsDemo
             this.bringForwardToolStripMenuItem.Size = new System.Drawing.Size(238, 22);
             this.bringForwardToolStripMenuItem.Text = "Bring Forward";
             // 
+            // pageSizeToolStripMenuItem1
+            // 
+            this.actionListProvider1.SetAction(this.pageSizeToolStripMenuItem1, this.actPageSize);
+            this.pageSizeToolStripMenuItem1.Name = "pageSizeToolStripMenuItem1";
+            this.pageSizeToolStripMenuItem1.Size = new System.Drawing.Size(141, 22);
+            this.pageSizeToolStripMenuItem1.Text = "Page Size";
+            // 
+            // backgroundToolStripMenuItem1
+            // 
+            this.actionListProvider1.SetAction(this.backgroundToolStripMenuItem1, this.actBackground);
+            this.backgroundToolStripMenuItem1.Name = "backgroundToolStripMenuItem1";
+            this.backgroundToolStripMenuItem1.Size = new System.Drawing.Size(141, 22);
+            this.backgroundToolStripMenuItem1.Text = "Background";
+            // 
             // actionListProvider1
             // 
             this.actionListProvider1.Actions.Add(this.actGroupFigures);
@@ -965,6 +999,16 @@ namespace WinFormsDemo
             this.actionListProvider1.Actions.Add(this.actBringForward);
             this.actionListProvider1.Actions.Add(this.actPageSize);
             this.actionListProvider1.Actions.Add(this.actBackground);
+            this.actionListProvider1.Actions.Add(this.actCut);
+            this.actionListProvider1.Actions.Add(this.actCopy);
+            this.actionListProvider1.Actions.Add(this.actPaste);
+            this.actionListProvider1.Actions.Add(this.actDelete);
+            // 
+            // actDelete
+            // 
+            this.actDelete.ShortcutKeys = System.Windows.Forms.Keys.Delete;
+            this.actDelete.Text = "Delete";
+            this.actDelete.Execute += new System.EventHandler(this.actDelete_Execute);
             // 
             // actPageSize
             // 
@@ -1010,27 +1054,57 @@ namespace WinFormsDemo
             this.actBringForward.Text = "Bring Forward";
             this.actBringForward.Execute += new System.EventHandler(this.actBringForward_Execute);
             // 
-            // cmsCanvas
+            // cutToolStripMenuItem1
             // 
-            this.cmsCanvas.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.pageSizeToolStripMenuItem1,
-            this.backgroundToolStripMenuItem1});
-            this.cmsCanvas.Name = "cmsCanvas";
-            this.cmsCanvas.Size = new System.Drawing.Size(142, 48);
+            this.actionListProvider1.SetAction(this.cutToolStripMenuItem1, this.actCut);
+            this.cutToolStripMenuItem1.Name = "cutToolStripMenuItem1";
+            this.cutToolStripMenuItem1.Size = new System.Drawing.Size(238, 22);
+            this.cutToolStripMenuItem1.Text = "Cut";
             // 
-            // pageSizeToolStripMenuItem1
+            // copyToolStripMenuItem1
             // 
-            this.actionListProvider1.SetAction(this.pageSizeToolStripMenuItem1, this.actPageSize);
-            this.pageSizeToolStripMenuItem1.Name = "pageSizeToolStripMenuItem1";
-            this.pageSizeToolStripMenuItem1.Size = new System.Drawing.Size(141, 22);
-            this.pageSizeToolStripMenuItem1.Text = "Page Size";
+            this.actionListProvider1.SetAction(this.copyToolStripMenuItem1, this.actCopy);
+            this.copyToolStripMenuItem1.Name = "copyToolStripMenuItem1";
+            this.copyToolStripMenuItem1.Size = new System.Drawing.Size(238, 22);
+            this.copyToolStripMenuItem1.Text = "Copy";
             // 
-            // backgroundToolStripMenuItem1
+            // pasteToolStripMenuItem1
             // 
-            this.actionListProvider1.SetAction(this.backgroundToolStripMenuItem1, this.actBackground);
-            this.backgroundToolStripMenuItem1.Name = "backgroundToolStripMenuItem1";
-            this.backgroundToolStripMenuItem1.Size = new System.Drawing.Size(141, 22);
-            this.backgroundToolStripMenuItem1.Text = "Background";
+            this.actionListProvider1.SetAction(this.pasteToolStripMenuItem1, this.actPaste);
+            this.pasteToolStripMenuItem1.Name = "pasteToolStripMenuItem1";
+            this.pasteToolStripMenuItem1.Size = new System.Drawing.Size(238, 22);
+            this.pasteToolStripMenuItem1.Text = "Paste";
+            // 
+            // deleteToolStripMenuItem1
+            // 
+            this.actionListProvider1.SetAction(this.deleteToolStripMenuItem1, this.actDelete);
+            this.deleteToolStripMenuItem1.Name = "deleteToolStripMenuItem1";
+            this.deleteToolStripMenuItem1.Size = new System.Drawing.Size(238, 22);
+            this.deleteToolStripMenuItem1.Text = "Delete";
+            // 
+            // toolStripSeparator1
+            // 
+            this.actionListProvider1.SetAction(this.toolStripSeparator1, null);
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(235, 6);
+            // 
+            // actCut
+            // 
+            this.actCut.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.X)));
+            this.actCut.Text = "Cut";
+            this.actCut.Execute += new System.EventHandler(this.actCut_Execute);
+            // 
+            // actCopy
+            // 
+            this.actCopy.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.C)));
+            this.actCopy.Text = "Copy";
+            this.actCopy.Execute += new System.EventHandler(this.actCopy_Execute);
+            // 
+            // actPaste
+            // 
+            this.actPaste.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.V)));
+            this.actPaste.Text = "Paste";
+            this.actPaste.Execute += new System.EventHandler(this.actPaste_Execute);
             // 
             // MainForm
             // 
@@ -1057,10 +1131,10 @@ namespace WinFormsDemo
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             this.cmsFigure.ResumeLayout(false);
+            this.cmsCanvas.ResumeLayout(false);
             this.tsFigureProps.ResumeLayout(false);
             this.tsFigureProps.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.actionListProvider1)).EndInit();
-            this.cmsCanvas.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -1071,8 +1145,6 @@ namespace WinFormsDemo
         private System.Windows.Forms.Panel pnlPreviews;
         private System.Windows.Forms.ToolStrip tsEditorMode;
         private System.Windows.Forms.ToolStripContainer toolStripContainer1;
-        private System.Windows.Forms.ToolStripButton btnAntiAlias;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.Panel pnlViewer;
         private System.Windows.Forms.StatusStrip statusStrip1;
         private System.Windows.Forms.Panel pnlMain;
@@ -1157,6 +1229,17 @@ namespace WinFormsDemo
         private System.Windows.Forms.ContextMenuStrip cmsCanvas;
         private System.Windows.Forms.ToolStripMenuItem pageSizeToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem backgroundToolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem antialiasToolStripMenuItem;
+        private Burkovsky.Controls.Action actDelete;
+        private System.Windows.Forms.ToolStripMenuItem deleteToolStripMenuItem;
+        private Burkovsky.Controls.Action actCut;
+        private Burkovsky.Controls.Action actCopy;
+        private Burkovsky.Controls.Action actPaste;
+        private System.Windows.Forms.ToolStripMenuItem cutToolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem copyToolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem pasteToolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem deleteToolStripMenuItem1;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
     }
 }
 

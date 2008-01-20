@@ -62,6 +62,7 @@ namespace WinFormsDemo
             // edit viewer
             dvEditor = new WFViewer(wfvcEditor);
             dvEditor.EditFigures = true;
+            dvEditor.AntiAlias = true;
             dvEditor.DebugMessage += new DebugMessageHandler(DebugMessage);
             // create ddraw engine 1
             CreateDEngine();
@@ -549,10 +550,10 @@ namespace WinFormsDemo
             InitPropertyControls(state);
         }
 
-        private void btnAntiAlias_Click(object sender, EventArgs e)
+        private void antialiasToolStripMenuItem_Click(object sender, EventArgs e)
         {
             dvEditor.AntiAlias = !dvEditor.AntiAlias;
-            btnAntiAlias.Checked = dvEditor.AntiAlias;
+            antialiasToolStripMenuItem.Checked = dvEditor.AntiAlias;
         }
 
         private void btnFill_Click(object sender, EventArgs e)
@@ -915,26 +916,31 @@ namespace WinFormsDemo
                 de.UngroupFigures(figs);
             else if (de.CanGroupFigures(figs))
                 de.GroupFigures(figs);
+            InitMenus();
         }
 
         private void actSendToBack_Execute(object sender, EventArgs e)
         {
             de.SendToBack(de.SelectedFigures);
+            InitMenus();
         }
 
         private void actBringToFront_Execute(object sender, EventArgs e)
         {
             de.BringToFront(de.SelectedFigures);
+            InitMenus();
         }
 
         private void actSendBackward_Execute(object sender, EventArgs e)
         {
             de.SendBackward(de.SelectedFigures);
+            InitMenus();
         }
 
         private void actBringForward_Execute(object sender, EventArgs e)
         {
             de.BringForward(de.SelectedFigures);
+            InitMenus();
         }
 
         private void actPageSize_Execute(object sender, EventArgs e)
@@ -964,5 +970,31 @@ namespace WinFormsDemo
             else
                 de.UndoRedoCancel();
         }
+
+        private void actCut_Execute(object sender, EventArgs e)
+        {
+            MessageBox.Show("Not yet implemented");
+        }
+
+        private void actCopy_Execute(object sender, EventArgs e)
+        {
+            MessageBox.Show("Not yet implemented");
+        }
+
+        private void actPaste_Execute(object sender, EventArgs e)
+        {
+            MessageBox.Show("Not yet implemented");
+        }
+
+        private void actDelete_Execute(object sender, EventArgs e)
+        {
+            de.UndoRedoStart("Delete Figures");
+            foreach (Figure f in de.SelectedFigures)
+                de.RemoveFigure(f);
+            de.UndoRedoCommit();
+            de.ClearSelected();
+            de.UpdateViewers();
+        }
+
     }
 }

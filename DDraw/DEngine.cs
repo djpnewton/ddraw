@@ -269,6 +269,11 @@ namespace DDraw
             figureHandler.Add(f);
         }
 
+        public void RemoveFigure(Figure f)
+        {
+            figureHandler.Remove(f);
+        }
+
         public void AddViewer(DViewer dv)
         {
             dv.SetPageSize(PageSize);
