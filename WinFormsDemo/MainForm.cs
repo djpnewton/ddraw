@@ -124,16 +124,6 @@ namespace WinFormsDemo
             lbInfo.Text = msg;
         }
 
-        Color MakeColor(DColor color)
-        {
-            return Color.FromArgb(color.A, color.R, color.G, color.B);
-        }
-
-        DColor MakeColor(Color color)
-        {
-            return new DColor(color.R, color.G, color.B, color.A);
-        }
-
         void de_SelectedFiguresChanged()
         {
             InitPropertyControls(de.HsmState);
@@ -181,14 +171,14 @@ namespace WinFormsDemo
             foreach (Figure f in figs)
                 if (f is IFillable)
                 {
-                    fill = MakeColor(((IFillable)f).Fill);
+                    fill = WFHelper.MakeColor(((IFillable)f).Fill);
                     break;
                 }
             if (fill != Color.Empty)
                 foreach (Figure f in figs)
                     if (f is IFillable)
                     {
-                        if (fill != MakeColor(((IFillable)f).Fill))
+                        if (fill != WFHelper.MakeColor(((IFillable)f).Fill))
                             return Color.Empty;
                     }
             return fill;
@@ -200,14 +190,14 @@ namespace WinFormsDemo
             foreach (Figure f in figs)
                 if (f is IStrokeable)
                 {
-                    stroke = MakeColor(((IStrokeable)f).Stroke);
+                    stroke = WFHelper.MakeColor(((IStrokeable)f).Stroke);
                     break;
                 }
             if (stroke != Color.Empty)
                 foreach (Figure f in figs)
                     if (f is IStrokeable)
                     {
-                        if (stroke != MakeColor(((IStrokeable)f).Stroke))
+                        if (stroke != WFHelper.MakeColor(((IStrokeable)f).Stroke))
                             return Color.Empty;
                     }
             return stroke;
@@ -482,12 +472,12 @@ namespace WinFormsDemo
                     if (de.HsmCurrentFigClassImpls(typeof(IFillable)))
                     {
                         btnFill.Enabled = true;
-                        btnFill.Color = MakeColor(dap.Fill);
+                        btnFill.Color = WFHelper.MakeColor(dap.Fill);
                     }
                     if (de.HsmCurrentFigClassImpls(typeof(IStrokeable)))
                     {
                         btnStroke.Enabled = true;
-                        btnStroke.Color = MakeColor(dap.Stroke);
+                        btnStroke.Color = WFHelper.MakeColor(dap.Stroke);
                         btnStrokeWidth.Enabled = true;
                         btnStrokeWidth.Value = (int)dap.StrokeWidth;
                         btnStrokeStyle.Enabled = true;
@@ -579,7 +569,7 @@ namespace WinFormsDemo
                         UpdateSelectedFigures(btnFill);
                         break;
                     default:
-                        dap.Fill = MakeColor(btnFill.Color);
+                        dap.Fill = WFHelper.MakeColor(btnFill.Color);
                         break;
                 }
             };
@@ -600,7 +590,7 @@ namespace WinFormsDemo
                         UpdateSelectedFigures(btnStroke);
                         break;
                     default:
-                        dap.Stroke = MakeColor(btnStroke.Color);
+                        dap.Stroke = WFHelper.MakeColor(btnStroke.Color);
                         break;
                 }
             };
@@ -734,11 +724,11 @@ namespace WinFormsDemo
             foreach (Figure f in figs)
             {
                 if (sender == btnFill && f is IFillable)
-                    ((IFillable)f).Fill = MakeColor(btnFill.Color);
+                    ((IFillable)f).Fill = WFHelper.MakeColor(btnFill.Color);
                 if (f is IStrokeable)
                 {
                     if (sender == btnStroke)
-                        ((IStrokeable)f).Stroke = MakeColor(btnStroke.Color);
+                        ((IStrokeable)f).Stroke = WFHelper.MakeColor(btnStroke.Color);
                     if (sender == btnStrokeWidth)
                         ((IStrokeable)f).StrokeWidth = btnStrokeWidth.Value;
                     if (sender == btnStrokeStyle)
@@ -963,16 +953,16 @@ namespace WinFormsDemo
 
         private void actBackground_Execute(object sender, EventArgs e)
         {
-            ColorDialog cd = new ColorDialog();
-            if (cd.ShowDialog() == DialogResult.OK)
+            BackgroundForm bf = new BackgroundForm();
+            bf.BackgroundFigure = de.GetBackgroundFigure();
+            de.UndoRedoStart("Set Background");
+            if (bf.ShowDialog() == DialogResult.OK)
             {
-                de.UndoRedoStart("Set Background");
-                RectFigure f = new RectFigure();
-                f.Fill = MakeColor(cd.Color);
-                f.StrokeWidth = 0;
-                de.SetBackgroundFigure(f);
+                de.SetBackgroundFigure(bf.BackgroundFigure);
                 de.UndoRedoCommit();
             }
+            else
+                de.UndoRedoCancel();
         }
     }
 }

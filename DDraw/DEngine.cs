@@ -388,6 +388,11 @@ namespace DDraw
             return figureHandler.CanBringForward(figs);
         }
 
+        public RectbaseFigure GetBackgroundFigure()
+        {
+            return figureHandler.BackgroundFigure;
+        }
+
         public void SetBackgroundFigure(RectbaseFigure f)
         {
             f.Rect = new DRect(0, 0, PageSize.X, PageSize.Y);

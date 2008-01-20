@@ -9,6 +9,24 @@ using System.IO;
 
 namespace DDraw.WinForms
 {
+    public static class WFHelper
+    {
+        public static DColor MakeColor(Color color)
+        {
+            return new DColor(color.R, color.G, color.B, color.A);
+        }
+
+        public static Color MakeColor(DColor color)
+        {
+            return Color.FromArgb(color.A, color.R, color.G, color.B);
+        }
+
+        public static Color MakeColor(DColor color, double alpha)
+        {
+            return Color.FromArgb((int)(color.A * alpha), color.R, color.G, color.B);
+        }
+    }
+
     public class WFBitmap : DBitmap
     {
         Bitmap bmp
@@ -102,24 +120,14 @@ namespace DDraw.WinForms
 
         // Helper Functions //
 
-        Color MakeColor(DColor color)
-        {
-            return Color.FromArgb(color.A, color.R, color.G, color.B);
-        }
-
-        Color MakeColor(DColor color, double alpha)
-        {
-            return Color.FromArgb((int)(color.A * alpha), color.R, color.G, color.B);
-        }
-
         Brush MakeBrush(DFillStyle fillStyle, DColor color, double alpha)
         {
             switch (fillStyle)
             {
                 case DFillStyle.ForwardDiagonalHatch:
-                    return new HatchBrush(HatchStyle.ForwardDiagonal, MakeColor(color, alpha), Color.FromArgb(0, Color.Red));
+                    return new HatchBrush(HatchStyle.ForwardDiagonal, WFHelper.MakeColor(color, alpha), Color.FromArgb(0, Color.Red));
                 default:
-                    return new SolidBrush(MakeColor(color, alpha)); ;
+                    return new SolidBrush(WFHelper.MakeColor(color, alpha)); ;
             }
         }
 
@@ -242,7 +250,7 @@ namespace DDraw.WinForms
 
         public override void FillRect(double x, double y, double width, double height, DColor color, double alpha)
         {
-            g.FillRectangle(new SolidBrush(MakeColor(color, alpha)), (float)x, (float)y, (float)width, (float)height);
+            g.FillRectangle(new SolidBrush(WFHelper.MakeColor(color, alpha)), (float)x, (float)y, (float)width, (float)height);
         }
 
         public override void FillRect(double x, double y, double width, double height, DColor color, double alpha, DFillStyle fillStyle)
@@ -252,97 +260,97 @@ namespace DDraw.WinForms
 
         public override void DrawRect(double x, double y, double width, double height, DColor color, double alpha, double strokeWidth, DStrokeStyle strokeStyle, DStrokeJoin strokeJoin)
         {
-            g.DrawRectangle(MakePen(MakeColor(color, alpha), strokeWidth, strokeStyle, strokeJoin, DStrokeCap.Butt), (float)x, (float)y, (float)width, (float)height);
+            g.DrawRectangle(MakePen(WFHelper.MakeColor(color, alpha), strokeWidth, strokeStyle, strokeJoin, DStrokeCap.Butt), (float)x, (float)y, (float)width, (float)height);
         }
 
         public override void DrawRect(double x, double y, double width, double height, DColor color)
         {
-            g.DrawRectangle(new Pen(MakeColor(color)), (float)x, (float)y, (float)width, (float)height);
+            g.DrawRectangle(new Pen(WFHelper.MakeColor(color)), (float)x, (float)y, (float)width, (float)height);
         }
 
         public override void DrawRect(double x, double y, double width, double height, DColor color, double alpha, double strokeWidth)
         {
-            g.DrawRectangle(new Pen(MakeColor(color, alpha), (float)strokeWidth), (float)x, (float)y, (float)width, (float)height);
+            g.DrawRectangle(new Pen(WFHelper.MakeColor(color, alpha), (float)strokeWidth), (float)x, (float)y, (float)width, (float)height);
         }
 
         public override void DrawRect(DRect rect, DColor color)
         {
-            g.DrawRectangle(new Pen(MakeColor(color)), MakeRect(rect));
+            g.DrawRectangle(new Pen(WFHelper.MakeColor(color)), MakeRect(rect));
         }
 
         public override void DrawRect(DRect rect, DColor color, double alpha)
         {
-            g.DrawRectangle(new Pen(MakeColor(color, alpha)), MakeRect(rect));
+            g.DrawRectangle(new Pen(WFHelper.MakeColor(color, alpha)), MakeRect(rect));
         }
 
         public override void DrawRect(DRect rect, DColor color, double alpha, DStrokeStyle strokeStyle)
         {
-            g.DrawRectangle(MakePen(MakeColor(color, alpha), strokeStyle), MakeRect(rect));
+            g.DrawRectangle(MakePen(WFHelper.MakeColor(color, alpha), strokeStyle), MakeRect(rect));
         }
 
         public override void FillEllipse(double x, double y, double width, double height, DColor color)
         {
-            g.FillEllipse(new SolidBrush(MakeColor(color)), (float)x, (float)y, (float)width, (float)height);
+            g.FillEllipse(new SolidBrush(WFHelper.MakeColor(color)), (float)x, (float)y, (float)width, (float)height);
         }
 
         public override void FillEllipse(double x, double y, double width, double height, DColor color, double alpha)
         {
-            g.FillEllipse(new SolidBrush(MakeColor(color, alpha)), (float)x, (float)y, (float)width, (float)height);
+            g.FillEllipse(new SolidBrush(WFHelper.MakeColor(color, alpha)), (float)x, (float)y, (float)width, (float)height);
         }
 
         public override void FillEllipse(DRect rect, DColor color)
         {
-            g.FillEllipse(new SolidBrush(MakeColor(color)), MakeRect(rect));
+            g.FillEllipse(new SolidBrush(WFHelper.MakeColor(color)), MakeRect(rect));
         }
 
         public override void FillEllipse(DRect rect, DColor color, double alpha)
         {
-            g.FillEllipse(new SolidBrush(MakeColor(color, alpha)), MakeRect(rect));
+            g.FillEllipse(new SolidBrush(WFHelper.MakeColor(color, alpha)), MakeRect(rect));
         }
 
         public override void DrawEllipse(double x, double y, double width, double height, DColor color)
         {
-            g.DrawEllipse(new Pen(MakeColor(color)), (float)x, (float)y, (float)width, (float)height);
+            g.DrawEllipse(new Pen(WFHelper.MakeColor(color)), (float)x, (float)y, (float)width, (float)height);
         }
 
         public override void DrawEllipse(double x, double y, double width, double height, DColor color, double alpha, double strokeWidth, DStrokeStyle strokeStyle)
         {
-            g.DrawEllipse(MakePen(MakeColor(color, alpha), strokeWidth, strokeStyle, DStrokeJoin.Mitre, DStrokeCap.Butt), (float)x, (float)y, (float)width, (float)height);
+            g.DrawEllipse(MakePen(WFHelper.MakeColor(color, alpha), strokeWidth, strokeStyle, DStrokeJoin.Mitre, DStrokeCap.Butt), (float)x, (float)y, (float)width, (float)height);
         }
 
         public override void DrawEllipse(DRect rect, DColor color)
         {
-            g.DrawEllipse(new Pen(MakeColor(color)), MakeRect(rect));
+            g.DrawEllipse(new Pen(WFHelper.MakeColor(color)), MakeRect(rect));
         }
 
         public override void DrawEllipse(DRect rect, DColor color, double alpha)
         {
-            g.DrawEllipse(new Pen(MakeColor(color, alpha)), MakeRect(rect));
+            g.DrawEllipse(new Pen(WFHelper.MakeColor(color, alpha)), MakeRect(rect));
         }
 
         public override void DrawLine(DPoint pt1, DPoint pt2, DColor color)
         {
-            g.DrawLine(new Pen(MakeColor(color)), (float)pt1.X, (float)pt1.Y, (float)pt2.X, (float)pt2.Y);
+            g.DrawLine(new Pen(WFHelper.MakeColor(color)), (float)pt1.X, (float)pt1.Y, (float)pt2.X, (float)pt2.Y);
         }
 
         public override void DrawLine(DPoint pt1, DPoint pt2, DColor color, double alpha)
         {
-            g.DrawLine(new Pen(MakeColor(color, alpha)), (float)pt1.X, (float)pt1.Y, (float)pt2.X, (float)pt2.Y);
+            g.DrawLine(new Pen(WFHelper.MakeColor(color, alpha)), (float)pt1.X, (float)pt1.Y, (float)pt2.X, (float)pt2.Y);
         }
 
         public override void DrawLine(DPoint pt1, DPoint pt2, DColor color, DStrokeStyle strokeStyle)
         {
-            g.DrawLine(MakePen(MakeColor(color), strokeStyle), (float)pt1.X, (float)pt1.Y, (float)pt2.X, (float)pt2.Y);
+            g.DrawLine(MakePen(WFHelper.MakeColor(color), strokeStyle), (float)pt1.X, (float)pt1.Y, (float)pt2.X, (float)pt2.Y);
         }
 
         public override void DrawLine(DPoint pt1, DPoint pt2, DColor color, double alpha, DStrokeStyle strokeStyle)
         {
-            g.DrawLine(MakePen(MakeColor(color, alpha), strokeStyle), (float)pt1.X, (float)pt1.Y, (float)pt2.X, (float)pt2.Y);
+            g.DrawLine(MakePen(WFHelper.MakeColor(color, alpha), strokeStyle), (float)pt1.X, (float)pt1.Y, (float)pt2.X, (float)pt2.Y);
         }
 
         public override void DrawLine(DPoint pt1, DPoint pt2, DColor color, double alpha, DStrokeStyle strokeStyle, double strokeWidth, DStrokeCap strokeCap)
         {
-            g.DrawLine(MakePen(MakeColor(color, alpha), strokeWidth, strokeStyle, DStrokeJoin.Mitre, strokeCap), (float)pt1.X, (float)pt1.Y, (float)pt2.X, (float)pt2.Y);
+            g.DrawLine(MakePen(WFHelper.MakeColor(color, alpha), strokeWidth, strokeStyle, DStrokeJoin.Mitre, strokeCap), (float)pt1.X, (float)pt1.Y, (float)pt2.X, (float)pt2.Y);
         }
 
         public override void DrawPolyline(DPoints pts, DColor color)
@@ -353,7 +361,7 @@ namespace DDraw.WinForms
         public override void DrawPolyline(DPoints pts, DColor color, double alpha, double strokeWidth, DStrokeStyle strokeStyle, DStrokeJoin strokeJoin, DStrokeCap strokeCap)
         {
             if (pts.Count > 1)
-                g.DrawLines(MakePen(MakeColor(color, alpha), strokeWidth, strokeStyle, strokeJoin, strokeCap), MakePoints(pts));
+                g.DrawLines(MakePen(WFHelper.MakeColor(color, alpha), strokeWidth, strokeStyle, strokeJoin, strokeCap), MakePoints(pts));
         }
 
         public override void FillPolygon(DPoints pts, DColor color, double alpha)
@@ -406,7 +414,7 @@ namespace DDraw.WinForms
 
         public override void DrawText(string text, string fontName, double fontSize, bool bold, bool italics, bool underline, bool strikethrough, DPoint pt, DColor color, double alpha)
         {
-            g.DrawString(text, new Font(fontName, (float)fontSize, MakeFontStyle(bold, italics, underline, strikethrough)), new SolidBrush(MakeColor(color, alpha)), new PointF((float)pt.X, (float)pt.Y), StringFormat.GenericDefault);
+            g.DrawString(text, new Font(fontName, (float)fontSize, MakeFontStyle(bold, italics, underline, strikethrough)), new SolidBrush(WFHelper.MakeColor(color, alpha)), new PointF((float)pt.X, (float)pt.Y), StringFormat.GenericDefault);
         }
 
         public override DPoint MeasureText(string text, string fontName, double fontSize)

@@ -15,7 +15,11 @@ namespace DDraw
         public RectbaseFigure BackgroundFigure
         {
             get { return _backgroundFigure.Value; }
-            set { _backgroundFigure.Value = value; }
+            set 
+            { 
+                if (_backgroundFigure.Value != value)
+                    _backgroundFigure.Value = value; 
+            }
         }
         SelectionFigure selectionFigure = new SelectionFigure(new DRect(), 0);
         public SelectionFigure SelectionFigure
