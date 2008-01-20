@@ -306,6 +306,7 @@ namespace WinFormsDemo
             this.actionListProvider1.SetAction(this.btnLine, null);
             this.btnLine.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
             this.btnLine.Image = ((System.Drawing.Image)(resources.GetObject("btnLine.Image")));
+            this.btnLine.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.btnLine.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnLine.Name = "btnLine";
             this.btnLine.Size = new System.Drawing.Size(23, 22);

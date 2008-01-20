@@ -362,7 +362,7 @@ namespace DDraw.GTK
         
         public override void DrawBitmap(DBitmap bitmap, DPoint pt)
         {
-            //cr.SetSource((ImageSurface)bitmap.NativeBmp, pt.X, pt.Y);
+            cr.SetSource((ImageSurface)bitmap.NativeBmp, pt.X, pt.Y);
             cr.Paint();
         }
 
@@ -377,7 +377,7 @@ namespace DDraw.GTK
             cr.Save();
             cr.Translate(rect.X, rect.Y);
             cr.Scale(surf.Width / rect.Width, surf.Height / rect.Height);
-            //cr.SetSource(surf, 0, 0);
+            cr.SetSource(surf, 0, 0);
             cr.PaintWithAlpha(alpha);
             cr.Restore();
         }
