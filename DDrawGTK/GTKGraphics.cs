@@ -67,6 +67,11 @@ namespace DDraw.GTK
         {
             surface.WriteToPng(filename);
         }
+
+        public override byte[] GetData()
+        {
+            /** TODO **/
+        }
     }
     
     public class GTKGraphics : DGraphics

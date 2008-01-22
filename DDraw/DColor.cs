@@ -32,6 +32,28 @@ namespace DDraw
             A = 255;
         }
 
+        public static string FormatToString(DColor color)
+        {
+            return string.Format("{0},{1},{2},{3}", color.R, color.G, color.B, color.A);
+        }
+
+        public static DColor FromString(string s)
+        {
+            string[] parts = s.Split(',');
+            if (parts.Length == 3 || parts.Length == 4)
+            {
+                byte r, g, b, a = 0;;
+                byte.TryParse(parts[0], out r);
+                byte.TryParse(parts[1], out g);
+                byte.TryParse(parts[2], out b);
+                if (parts.Length == 4)
+                    byte.TryParse(parts[3], out a);
+                return new DColor(r, g, b, a);
+            }
+            else
+                return DColor.Black;                
+        }
+
         // Predefined colors
 
         public static DColor Clear

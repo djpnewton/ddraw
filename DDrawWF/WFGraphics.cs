@@ -6,6 +6,7 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.IO;
+using System.ComponentModel;
 
 namespace DDraw.WinForms
 {
@@ -96,6 +97,11 @@ namespace DDraw.WinForms
         public override void Save(string filename)
         {
             bmp.Save(filename);
+        }
+
+        public override byte[] GetData()
+        {
+            return (byte[])TypeDescriptor.GetConverter(bmp).ConvertTo(bmp, typeof(byte[]));
         }
     }
 
@@ -397,9 +403,12 @@ namespace DDraw.WinForms
 
         public override void DrawBitmap(DBitmap bitmap, DRect rect, double alpha)
         {
-            Bitmap bmp = (Bitmap)bitmap.NativeBmp;
-            g.DrawImage(bmp, MakeRect(rect.Inflate(1, 1)),
-                0, 0, bmp.Width, bmp.Height, GraphicsUnit.Pixel, MakeImageAttributesWithAlpha(alpha));
+            if (bitmap != null)
+            {
+                Bitmap bmp = (Bitmap)bitmap.NativeBmp;
+                g.DrawImage(bmp, MakeRect(rect.Inflate(1, 1)),
+                    0, 0, bmp.Width, bmp.Height, GraphicsUnit.Pixel, MakeImageAttributesWithAlpha(alpha));
+            }
         }
 
         public override void DrawText(string text, string fontName, double fontSize, DPoint pt, DColor color)

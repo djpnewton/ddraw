@@ -78,6 +78,25 @@ namespace DDraw
         {
             return new DPoint(X, Y);
         }
+
+        public static string FormatToString(DPoint pt)
+        {
+            return string.Format("{0},{1}", pt.X, pt.Y);
+        }
+
+        public static DPoint FromString(string s)
+        {
+            string[] parts = s.Split(',');
+            if (parts.Length == 2)
+            {
+                double x, y;
+                double.TryParse(parts[0], out x);
+                double.TryParse(parts[1], out y);
+                return new DPoint(x, y);
+            }
+            else
+                return new DPoint(0, 0);
+        }
     }
 
     public class DPoints : List<DPoint>
@@ -109,6 +128,23 @@ namespace DDraw
             foreach (DPoint pt in pts)
                 points.Add(pt);
             return points;
+        }
+
+        public static string FormatToString(DPoints pts)
+        {
+            string res = "";
+            foreach (DPoint pt in pts)
+                res = string.Concat(res, DPoint.FormatToString(pt), " ");
+            return res;
+        }
+
+        public static DPoints FromString(string s)
+        {
+            DPoints res = new DPoints();
+            string[] parts = s.Trim().Split(' ');
+            foreach (string part in parts)
+                res.Add(DPoint.FromString(part));
+            return res;
         }
     }
 

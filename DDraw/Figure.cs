@@ -7,6 +7,35 @@ using DejaVu.Collections.Generic;
 
 namespace DDraw
 {
+    public interface IDimension
+    {
+        double X
+        {
+            get;
+            set;
+        }
+        double Y
+        {
+            get;
+            set;
+        }
+        double Width
+        {
+            get;
+            set;
+        }
+        double Height
+        {
+            get;
+            set;
+        }
+        double Rotation
+        {
+            get;
+            set;
+        }
+    }
+
     public interface IFillable
     {
         DColor Fill
@@ -148,6 +177,17 @@ namespace DDraw
         }
     }
 
+    public interface IPolyline
+    {
+        DPoints Points
+        {
+            get;
+            set;
+        }
+
+        void AddPoint(DPoint pt);
+    }
+
     public interface IMarkable
     {
         double MarkerSize
@@ -247,7 +287,7 @@ namespace DDraw
         DHitTest RotateHitTest(DPoint pt);
     }
 
-    public abstract class Figure: ISelectable
+    public abstract class Figure: IDimension, ISelectable
     {
         public double Scale = 1;
 
@@ -618,13 +658,6 @@ namespace DDraw
 
     public abstract class LinebaseFigure : Figure, IStrokeable, IMarkable, IAlphaBlendable
     {
-        public abstract void AddPoint(DPoint pt);
-
-        public abstract DPoints Points
-        {
-            get;
-        }
-
         public override DRect GetSelectRect()
         {
             // add in stroke width spacing
@@ -642,18 +675,6 @@ namespace DDraw
         public override DRect GetEncompassingRect()
         {
             return base.GetEncompassingRect().Union(GetStartMarkerRect()).Union(GetEndMarkerRect());
-        }
-
-        protected override DHitTest _HitTest(DPoint pt)
-        {
-            if (Points != null)
-            {
-                if (DGeom.PointInPolyline(pt, Points, StrokeWidth / 2))
-                    return DHitTest.Body;
-                else if (DGeom.PointInPolygon(pt, GetStartMarkerPoints()) || DGeom.PointInPolygon(pt, GetEndMarkerPoints()))
-                    return DHitTest.Body;
-            }
-            return DHitTest.None;
         }
 
         #region IStrokeable Members
@@ -759,8 +780,10 @@ namespace DDraw
             set
             {
                 double dX = value - X;
-                Pt1.X += dX;
-                Pt2.X += dX;
+                if (Pt1 != null)
+                    Pt1.X += dX;
+                if (Pt2 != null)
+                    Pt2.X += dX;
             }
         }
 
@@ -775,8 +798,10 @@ namespace DDraw
             set
             {
                 double dY = value - Y;
-                Pt1.Y += dY;
-                Pt2.Y += dY;
+                if (Pt1 != null)
+                    Pt1.Y += dY;
+                if (Pt2 != null)
+                    Pt2.Y += dY;
             }
         }
 
@@ -791,10 +816,13 @@ namespace DDraw
             }
             set
             {
-                if (Pt1.X > Pt2.X)
-                    Pt1.X = Pt2.X + value;
-                else
-                    Pt2.X = Pt1.X + value;
+                if (Pt1 != null && Pt2 != null)
+                {
+                    if (Pt1.X > Pt2.X)
+                        Pt1.X = Pt2.X + value;
+                    else
+                        Pt2.X = Pt1.X + value;
+                }
             }
         }
 
@@ -809,10 +837,13 @@ namespace DDraw
             }
             set
             {
-                if (Pt1.Y > Pt2.Y)
-                    Pt1.Y = Pt2.Y + value;
-                else
-                    Pt2.Y = Pt1.Y + value;
+                if (Pt1 != null && Pt2 != null)
+                {
+                    if (Pt1.Y > Pt2.Y)
+                        Pt1.Y = Pt2.Y + value;
+                    else
+                        Pt2.Y = Pt1.Y + value;
+                }
             }
         }
 
@@ -821,30 +852,12 @@ namespace DDraw
             get { return 0; }
             set
             {
-                DPoint c = Rect.Center;
-                Pt1 = DGeom.RotatePoint(Pt1, c, value);
-                Pt2 = DGeom.RotatePoint(Pt2, c, value);
-            }
-        }
-
-        public override void AddPoint(DPoint pt)
-        {
-            if (Pt1 == null)
-                Pt1 = pt;
-            else
-                Pt2 = pt;
-        }
-
-        public override DPoints Points
-        {
-            get 
-            {
-                DPoints pts = new DPoints();
-                if (Pt1 != null)
-                    pts.Add(Pt1);
-                if (Pt2 != null)
-                    pts.Add(Pt2);
-                return pts;
+                if (Pt1 != null && Pt2 != null)
+                {
+                    DPoint c = Rect.Center;
+                    Pt1 = DGeom.RotatePoint(Pt1, c, value);
+                    Pt2 = DGeom.RotatePoint(Pt2, c, value);
+                }
             }
         }
 
@@ -891,10 +904,25 @@ namespace DDraw
             }
         }
 
+        protected override DHitTest _HitTest(DPoint pt)
+        {
+            if (Pt1 != null && Pt2 != null)
+            {
+                if (DGeom.PointInLine(pt, Pt1, Pt2, StrokeWidth / 2))
+                    return DHitTest.Body;
+                else if (DGeom.PointInPolygon(pt, GetStartMarkerPoints()) || DGeom.PointInPolygon(pt, GetEndMarkerPoints()))
+                    return DHitTest.Body;
+            }
+            return DHitTest.None;
+        }
+
         public override DHitTest SelectHitTest(DPoint pt)
         {
-            if (Selected && DGeom.PointInLine(pt, Pt1, Pt2, HANDLE_SZ * Scale))
-                return DHitTest.SelectRect;
+            if (Pt1 != null && Pt2 != null)
+            {
+                if (Selected && DGeom.PointInLine(pt, Pt1, Pt2, HANDLE_SZ * Scale))
+                    return DHitTest.SelectRect;
+            }
             return DHitTest.None;
         }
 
@@ -902,10 +930,13 @@ namespace DDraw
         {
             if (Selected)
             {
-                if (DGeom.PointInRect(pt, GetPt1HandleRect()))
-                    return DHitTest.ReposLinePt1;
-                else if (DGeom.PointInRect(pt, GetPt2HandleRect()))
-                    return DHitTest.ReposLinePt2;
+                if (Pt1 != null && Pt2 != null)
+                {
+                    if (DGeom.PointInRect(pt, GetPt1HandleRect()))
+                        return DHitTest.ReposLinePt1;
+                    else if (DGeom.PointInRect(pt, GetPt2HandleRect()))
+                        return DHitTest.ReposLinePt2;
+                }
                 return DHitTest.None;
             }
             return DHitTest.None;
@@ -956,39 +987,41 @@ namespace DDraw
         }
     }
 
-    public abstract class PolylinebaseFigure : LinebaseFigure
+    public abstract class PolylinebaseFigure : LinebaseFigure, IPolyline
     {
         UndoRedo<DPoints> _points = new UndoRedo<DPoints>();
-        public override DPoints Points
+        public DPoints Points
         {
             get { return _points.Value; }
+            set
+            {
+                _points.Value = new DPoints();
+                foreach (DPoint pt in value)
+                    _points.Value.Add(new DPoint(pt.X, pt.Y));
+                Rect = _points.Value.Bounds();
+            }
         }
 
-        public void SetPoints(DPoints pts)
-        {
-            _points.Value = new DPoints();
-            foreach (DPoint pt in pts)
-                _points.Value.Add(new DPoint(pt.X, pt.Y));
-            Rect = _points.Value.Bounds();
-        }
-
-        public override void AddPoint(DPoint pt)
+        public void AddPoint(DPoint pt)
         {
             DPoints pts = Points;
             if (pts == null)
                 pts = new DPoints();
             pts.Add(pt);
-            SetPoints(pts); // to set the bounds (maybe should fix this)
+            Points = pts; // to set the bounds (maybe should fix this)
         }
 
         public override double X
         {
             set
             {
-                double dX = value - X;
-                foreach (DPoint pt in Points)
-                    pt.X += dX;
-                SetPoints(Points);
+                if (Points != null)
+                {
+                    double dX = value - X;
+                    foreach (DPoint pt in Points)
+                        pt.X += dX;
+                    Points = Points;
+                }
             }
         }
 
@@ -996,10 +1029,13 @@ namespace DDraw
         {
             set
             {
-                double dY = value - Y;
-                foreach (DPoint pt in Points)
-                    pt.Y += dY;
-                SetPoints(Points);
+                if (Points != null)
+                {
+                    double dY = value - Y;
+                    foreach (DPoint pt in Points)
+                        pt.Y += dY;
+                    Points = Points;
+                }
             }
         }
 
@@ -1007,10 +1043,13 @@ namespace DDraw
         {
             set
             {
-                double scale = value / Width;
-                foreach (DPoint pt in Points)
-                    pt.X += (pt.X - X) * (scale - 1);
-                SetPoints(Points);
+                if (Points != null)
+                {
+                    double scale = value / Width;
+                    foreach (DPoint pt in Points)
+                        pt.X += (pt.X - X) * (scale - 1);
+                    Points = Points;
+                }
             }
         }
 
@@ -1018,10 +1057,13 @@ namespace DDraw
         {
             set
             {
-                double scale = value / Height;
-                foreach (DPoint pt in Points)
-                    pt.Y += (pt.Y - Y) * (scale - 1);
-                SetPoints(Points);
+                if (Points != null)
+                {
+                    double scale = value / Height;
+                    foreach (DPoint pt in Points)
+                        pt.Y += (pt.Y - Y) * (scale - 1);
+                    Points = Points;
+                }
             }
         }
 
@@ -1058,6 +1100,18 @@ namespace DDraw
         {
             StrokeWidth = strokeWidthFactor * (Width + Height);
         }
+
+        protected override DHitTest _HitTest(DPoint pt)
+        {
+            if (Points != null)
+            {
+                if (DGeom.PointInPolyline(pt, Points, StrokeWidth / 2))
+                    return DHitTest.Body;
+                else if (DGeom.PointInPolygon(pt, GetStartMarkerPoints()) || DGeom.PointInPolygon(pt, GetEndMarkerPoints()))
+                    return DHitTest.Body;
+            }
+            return DHitTest.None;
+        }
     }
 
     public class PolylineFigure : PolylinebaseFigure
@@ -1078,8 +1132,8 @@ namespace DDraw
         }
 
         public PolylineFigure(DPoints points)
-        { 
-            SetPoints(points); 
+        {
+            Points = points; 
         }
 
         public PolylineFigure()
@@ -1106,6 +1160,9 @@ namespace DDraw
             get { return _bitmap.Value; }
             set { if (_bitmap.Value == null || !value.Equals(_bitmap.Value)) _bitmap.Value = value; }
         }
+
+        public ImageFigure() : this(new DRect(), 0, null)
+        { }
 
         public ImageFigure(DRect rect, double rotation, DBitmap bitmap) : base(rect, rotation)
         {
@@ -1192,12 +1249,12 @@ namespace DDraw
         UndoRedo<bool> _strikethrough = new UndoRedo<bool>(false);
         public bool Strikethrough
         {
-            get { return _underline.Value; }
+            get { return _strikethrough.Value; }
             set
             {
-                if (value != _underline.Value)
+                if (value != _strikethrough.Value)
                 {
-                    _underline.Value = value;
+                    _strikethrough.Value = value;
                     UpdateSize();
                 }
             }
@@ -1225,7 +1282,11 @@ namespace DDraw
         public override double Width
         {
             get { return base.Width; }
-            set { FontSize *= value / base.Width; }
+            set 
+            {
+                if (base.Width != 0)
+                    FontSize *= value / base.Width; 
+            }
         }
 
         public override double Height
@@ -1238,6 +1299,9 @@ namespace DDraw
         {
             get { return true; }
         }
+
+        public TextFigure() : this(new DPoint(0, 0), "", 0)
+        { }
 
         public TextFigure(DPoint pt, string text, double rotation)
         {
@@ -1627,10 +1691,12 @@ namespace DDraw
         DRect[] originalChildRects;
         DRect originalRect;
 
+        public GroupFigure() : this(new List<Figure>())
+        { }
+
         public GroupFigure(IList<Figure> figs)
         {
             System.Diagnostics.Debug.Assert(figs != null, "figs is not assigned");
-            System.Diagnostics.Debug.Assert(figs.Count > 1, "figs.Length is less than 2");
             // make new figure list
             childFigs = new UndoRedoList<Figure>();
             foreach (Figure f in figs)
@@ -1724,13 +1790,18 @@ namespace DDraw
 
         DRect GetBoundingBox()
         {
-            DRect r = DGeom.BoundingBoxOfRotatedRect(childFigs[0].Rect, childFigs[0].Rotation);
-            foreach (Figure f in childFigs)
+            if (childFigs.Count > 0)
             {
-                DRect r2 = DGeom.BoundingBoxOfRotatedRect(f.Rect, f.Rotation);
-                r = r.Union(r2);
+                DRect r = DGeom.BoundingBoxOfRotatedRect(childFigs[0].Rect, childFigs[0].Rotation);
+                foreach (Figure f in childFigs)
+                {
+                    DRect r2 = DGeom.BoundingBoxOfRotatedRect(f.Rect, f.Rotation);
+                    r = r.Union(r2);
+                }
+                return r;
             }
-            return r;
+            else
+                return new DRect();
         }
         
         public override DRect GetSelectRect()

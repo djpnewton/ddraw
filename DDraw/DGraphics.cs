@@ -15,6 +15,11 @@ namespace DDraw
             return (DBitmap)Activator.CreateInstance(_bitmapClass, new object[] { (int)Math.Ceiling(width + 1), (int)Math.Ceiling(height + 1) });
         }
 
+        public static DBitmap MakeBitmap(Stream s)
+        {
+            return (DBitmap)Activator.CreateInstance(_bitmapClass, new object[] { s });
+        }
+
         public static DGraphics MakeGraphics(DBitmap bmp)
         {
             return (DGraphics)Activator.CreateInstance(_graphicsClass, new object[] { bmp });
@@ -94,6 +99,7 @@ namespace DDraw
             get;
         }
         public abstract void Save(string filename);
+        public abstract byte[] GetData();
     }
 
     public enum DCompositingMode { SourceOver, SourceCopy };

@@ -831,7 +831,15 @@ namespace DDraw
                 undoRedoManager.Start("Add Line");
                 // create line figure
                 currentFigure = (Figure)Activator.CreateInstance(currentFigureClass);
-                ((LinebaseFigure)currentFigure).AddPoint(pt);
+                if (currentFigure is ILineSegment)
+                {
+                    if (((ILineSegment)currentFigure).Pt1 == null)
+                        ((ILineSegment)currentFigure).Pt1 = pt;
+                    else
+                        ((ILineSegment)currentFigure).Pt2 = pt;
+                }
+                else if (currentFigure is IPolyline)
+                    ((IPolyline)currentFigure).AddPoint(pt);
                 authorProps.ApplyPropertiesToFigure(currentFigure);
                 // add to list of figures
                 figureHandler.Add(currentFigure);
@@ -876,7 +884,10 @@ namespace DDraw
                 else
                     pt = DGeom.RotatePoint(pt, ls.Pt1, figureSnapAngle - r);
             }
-            ((LinebaseFigure)currentFigure).AddPoint(pt);
+            if (currentFigure is ILineSegment)
+                ((ILineSegment)currentFigure).Pt2 = pt;
+            else if (currentFigure is IPolyline)
+                ((IPolyline)currentFigure).AddPoint(pt);
             // update drawing
             dv.Update(updateRect.Union(currentFigure.GetSelectRect()));
         }
@@ -1314,7 +1325,7 @@ namespace DDraw
                 if (newPts != null && newPts.Count >= 2)
                 {
                     PolylinebaseFigure nf = (PolylinebaseFigure)Activator.CreateInstance(f.GetType());
-                    nf.SetPoints(newPts);
+                    nf.Points = newPts;
                     newPolys.Add(nf);
                 }
                 newPts = null;

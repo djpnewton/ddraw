@@ -128,7 +128,7 @@ namespace WinFormsDemo
         void de_SelectedFiguresChanged()
         {
             InitPropertyControls(de.HsmState);
-            InitMenus();
+            InitActions();
         }
 
         void UpdateUndoRedoControls()
@@ -515,7 +515,7 @@ namespace WinFormsDemo
             cbFontName.FontNameChanged += cbFontName_FontNameChanged;
         }
 
-        void InitMenus()
+        void InitActions()
         {
             List<Figure> figs = de.SelectedFigures;
             // update group action
@@ -526,11 +526,14 @@ namespace WinFormsDemo
                 actGroupFigures.Text = "Group";
             else
                 actGroupFigures.Enabled = false;
-            // update order menu items
+            // update order menu actions
             actSendToBack.Enabled = de.CanSendBackward(figs);
             actBringToFront.Enabled = de.CanBringForward(figs);
             actSendBackward.Enabled = de.CanSendBackward(figs);
             actBringForward.Enabled = de.CanBringForward(figs);
+            // update cut/copy actions
+            actCut.Enabled = de.CanCopy(figs);
+            actCopy.Enabled = de.CanCopy(figs);
         }
 
         void de_HsmStateChanged(DEngine de, DHsmState state)
@@ -916,31 +919,31 @@ namespace WinFormsDemo
                 de.UngroupFigures(figs);
             else if (de.CanGroupFigures(figs))
                 de.GroupFigures(figs);
-            InitMenus();
+            InitActions();
         }
 
         private void actSendToBack_Execute(object sender, EventArgs e)
         {
             de.SendToBack(de.SelectedFigures);
-            InitMenus();
+            InitActions();
         }
 
         private void actBringToFront_Execute(object sender, EventArgs e)
         {
             de.BringToFront(de.SelectedFigures);
-            InitMenus();
+            InitActions();
         }
 
         private void actSendBackward_Execute(object sender, EventArgs e)
         {
             de.SendBackward(de.SelectedFigures);
-            InitMenus();
+            InitActions();
         }
 
         private void actBringForward_Execute(object sender, EventArgs e)
         {
             de.BringForward(de.SelectedFigures);
-            InitMenus();
+            InitActions();
         }
 
         private void actPageSize_Execute(object sender, EventArgs e)
@@ -973,27 +976,56 @@ namespace WinFormsDemo
 
         private void actCut_Execute(object sender, EventArgs e)
         {
-            MessageBox.Show("Not yet implemented");
+            List<Figure> figs = de.SelectedFigures;
+            DBitmap bmp;
+            string data = de.Cut(figs, out bmp, dvEditor.AntiAlias);
+            CopyToClipboard(data, (Bitmap)bmp.NativeBmp, figs);
+        }
+
+        void CopyToClipboard(string data, Bitmap bmp, List<Figure> figs)
+        {
+            DataObject dataObject = new DataObject();
+            dataObject.SetData(FigureSerialize.DDRAW_FIGURE_XML, data);
+            if (figs.Count == 1 && figs[0] is TextFigure)
+                dataObject.SetData(DataFormats.Text, ((ITextable)figs[0]).Text);
+            dataObject.SetData(DataFormats.Bitmap, true, bmp);
+            Clipboard.SetDataObject(dataObject);
         }
 
         private void actCopy_Execute(object sender, EventArgs e)
         {
-            MessageBox.Show("Not yet implemented");
+            List<Figure> figs = de.SelectedFigures;
+            DBitmap bmp;
+            string data = de.Copy(figs, out bmp, dvEditor.AntiAlias);
+            CopyToClipboard(data, (Bitmap)bmp.NativeBmp, figs);
         }
 
         private void actPaste_Execute(object sender, EventArgs e)
         {
-            MessageBox.Show("Not yet implemented");
+            IDataObject iData = Clipboard.GetDataObject();
+            if (iData.GetDataPresent(FigureSerialize.DDRAW_FIGURE_XML))
+                de.PasteAsSelectedFigures((string)iData.GetData(FigureSerialize.DDRAW_FIGURE_XML));
+            else if (iData.GetDataPresent(DataFormats.Text))
+            {
+                de.UndoRedoStart("Paste Text");
+                TextFigure f = new TextFigure(new DPoint(10, 10), (string)iData.GetData(DataFormats.Text), 0);
+                dap.ApplyPropertiesToFigure(f);
+                de.PasteAsSelectedFigures(new List<Figure>(new Figure[] { f }));
+                de.UndoRedoCommit();
+            }
+            else if (iData.GetDataPresent(DataFormats.Bitmap))
+            {
+                de.UndoRedoStart("Paste Bitmap");
+                Image img = (Image)iData.GetData(DataFormats.Bitmap, true);
+                ImageFigure f = new ImageFigure(new DRect(10, 10, img.Width, img.Height), 0, new WFBitmap((Bitmap)img));
+                de.PasteAsSelectedFigures(new List<Figure>(new Figure[] { f }));
+                de.UndoRedoCommit();
+            }
         }
 
         private void actDelete_Execute(object sender, EventArgs e)
         {
-            de.UndoRedoStart("Delete Figures");
-            foreach (Figure f in de.SelectedFigures)
-                de.RemoveFigure(f);
-            de.UndoRedoCommit();
-            de.ClearSelected();
-            de.UpdateViewers();
+            de.Delete(de.SelectedFigures);
         }
 
     }

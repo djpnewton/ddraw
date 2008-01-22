@@ -274,6 +274,11 @@ namespace DDraw
             figureHandler.Remove(f);
         }
 
+        public void SelectFigures(IList<Figure> figs)
+        {
+            figureHandler.Select(figs);
+        }
+
         public void AddViewer(DViewer dv)
         {
             dv.SetPageSize(PageSize);
@@ -391,6 +396,59 @@ namespace DDraw
         public bool CanBringForward(List<Figure> figs)
         {
             return figureHandler.CanBringForward(figs);
+        }
+
+        public string Cut(List<Figure> figs, out DBitmap bmp, bool bmpAntiAlias)
+        {
+            if (CanCopy(figs))
+            {
+                string data = Copy(figs, out bmp, bmpAntiAlias);
+                UndoRedoStart("Cut");
+                foreach (Figure f in figs)
+                    RemoveFigure(f);
+                UndoRedoCommit();
+                ClearSelected();
+                UpdateViewers();
+                return data;
+            }
+            bmp = null;
+            return null;
+        }
+
+        public bool CanCopy(List<Figure> figs)
+        {
+            return figs.Count > 0;
+        }
+
+        public string Copy(List<Figure> figs, out DBitmap bmp, bool bmpAntiAlias)
+        {
+            bmp = FigureSerialize.FormatToBmp(figs, bmpAntiAlias);
+            return FigureSerialize.FormatToXml(figs);
+        }
+
+        public void PasteAsSelectedFigures(string data)
+        {
+            UndoRedoStart("Paste");
+            PasteAsSelectedFigures(FigureSerialize.FromXml(data));
+            UndoRedoCommit();
+        }
+
+        public void PasteAsSelectedFigures(IList<Figure> figs)
+        {
+            foreach (Figure f in figs)
+                AddFigure(f);
+            SelectFigures(figs);
+            UpdateViewers();
+        }
+
+        public void Delete(List<Figure> figs)
+        {
+            UndoRedoStart("Delete Figures");
+            foreach (Figure f in figs)
+                RemoveFigure(f);
+            UndoRedoCommit();
+            ClearSelected();
+            UpdateViewers();
         }
 
         public RectbaseFigure GetBackgroundFigure()

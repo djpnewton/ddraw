@@ -71,6 +71,14 @@ namespace DDraw
             figures.Remove(f);
         }
 
+        public void Select(IList<Figure> figs)
+        {
+            ClearSelectedFiguresList();
+            foreach (Figure f in figs)
+                AddToSelected(f);
+            DoSelectedFiguresChanged();
+        }
+
         public void ClearSelected()
         {
             ClearSelectedFiguresList();
