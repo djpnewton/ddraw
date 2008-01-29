@@ -75,7 +75,8 @@ namespace WinFormsDemo
             }
             else if (BackgroundType == BackgroundType.Image)
             {
-                pictureBox1.Image = (Bitmap)((ImageFigure)backgroundFigure).Bitmap.NativeBmp;
+                if (((ImageFigure)backgroundFigure).Bitmap != null)
+                    pictureBox1.Image = (Bitmap)((ImageFigure)backgroundFigure).Bitmap.NativeBmp;
                 rbImage.Checked = true;
             }
             UpdateControls();
@@ -105,7 +106,7 @@ namespace WinFormsDemo
             {
                 if (rbColor.Checked)
                 {
-                    if (!(backgroundFigure is RectFigure) || 
+                    if (!(backgroundFigure is RectFigure) ||
                         WFHelper.MakeColor(((RectFigure)backgroundFigure).Fill) != panel1.BackColor)
                     {
                         backgroundFigure = new RectFigure();
@@ -115,9 +116,14 @@ namespace WinFormsDemo
                 }
                 else if (rbImage.Checked)
                 {
-                    if (!(backgroundFigure is ImageFigure) || 
+                    if (!(backgroundFigure is ImageFigure) ||
+                        ((ImageFigure)backgroundFigure).Bitmap == null ||
                         ((ImageFigure)backgroundFigure).Bitmap.NativeBmp != pictureBox1.Image)
-                        backgroundFigure = new ImageFigure(new DRect(), 0, new WFBitmap((Bitmap)pictureBox1.Image));
+                    {
+                        byte[] imageData = (byte[])TypeDescriptor.GetConverter((Bitmap)pictureBox1.Image).
+                            ConvertTo((Bitmap)pictureBox1.Image, typeof(byte[]));
+                        backgroundFigure = new ImageFigure(new DRect(), 0, imageData);
+                    }
                 }
             }
         }

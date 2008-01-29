@@ -117,14 +117,12 @@ namespace WinFormsDemo
             f = new PolylineFigure(pts);
             de.AddFigure(f);
             // bitmap images
-            MemoryStream ms = new MemoryStream();
-            Resource1.technocolor.Save(ms, ImageFormat.Bmp);
-            f = new ImageFigure(new DRect(250, 50, 24, 16), 0, new WFBitmap(ms));
+            byte[] imageData = (byte[])TypeDescriptor.GetConverter(Resource1.technocolor).ConvertTo(Resource1.technocolor, typeof(byte[]));
+            f = new ImageFigure(new DRect(250, 50, 24, 16), 0, imageData);
             de.AddFigure(f);
-            f = new ImageFigure(new DRect(150, 150, 39, 50), 0, new WFBitmap(ms));
+            f = new ImageFigure(new DRect(150, 150, 39, 50), 0, imageData);
             f.LockAspectRatio = true;
             de.AddFigure(f);
-            ms.Dispose();
             // text figure
             f = new TextFigure(new DPoint(100, 200), "hello\ndan", 0);
             de.AddFigure(f);
@@ -877,7 +875,8 @@ namespace WinFormsDemo
                 de.ClearSelected();
                 WFBitmap bmp = new WFBitmap(ofd.FileName);
 				de.UndoRedoStart("Add Image");
-                de.AddFigure(new ImageFigure(new DRect(10, 10, bmp.Width, bmp.Height), 0, bmp));
+                byte[] imageData = (byte[])TypeDescriptor.GetConverter(bmp.NativeBmp).ConvertTo(bmp.NativeBmp, typeof(byte[]));
+                de.AddFigure(new ImageFigure(new DRect(10, 10, bmp.Width, bmp.Height), 0, imageData));
 				de.UndoRedoCommit();
                 de.UpdateViewers();
             }
@@ -1051,8 +1050,9 @@ namespace WinFormsDemo
             else if (iData.GetDataPresent(DataFormats.Bitmap))
             {
                 de.UndoRedoStart("Paste Bitmap");
-                Image img = (Image)iData.GetData(DataFormats.Bitmap, true);
-                ImageFigure f = new ImageFigure(new DRect(10, 10, img.Width, img.Height), 0, new WFBitmap((Bitmap)img));
+                Bitmap bmp = (Bitmap)iData.GetData(DataFormats.Bitmap, true);
+                byte[] imageData = (byte[])TypeDescriptor.GetConverter(bmp).ConvertTo(bmp, typeof(byte[]));
+                ImageFigure f = new ImageFigure(new DRect(10, 10, bmp.Width, bmp.Height), 0, imageData);
                 de.PasteAsSelectedFigures(new List<Figure>(new Figure[] { f }));
                 de.UndoRedoCommit();
             }

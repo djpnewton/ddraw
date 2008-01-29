@@ -99,7 +99,6 @@ namespace DDraw
             get;
         }
         public abstract void Save(string filename);
-        public abstract byte[] GetData();
     }
 
     public enum DCompositingMode { SourceOver, SourceCopy };

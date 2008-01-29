@@ -98,11 +98,6 @@ namespace DDraw.WinForms
         {
             bmp.Save(filename);
         }
-
-        public override byte[] GetData()
-        {
-            return (byte[])TypeDescriptor.GetConverter(bmp).ConvertTo(bmp, typeof(byte[]));
-        }
     }
 
     public class WFGraphics : DGraphics

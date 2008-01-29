@@ -51,11 +51,11 @@ namespace DDraw
                 wr.WriteAttributeString("Value", ((IAlphaBlendable)f).Alpha.ToString());
                 wr.WriteEndElement();
             }
-            if (f is IBitmapable)
+            if (f is IImage)
             {
-                wr.WriteStartElement("Bitmap");
+                wr.WriteStartElement("Image");
                 wr.WriteAttributeString("Type", "base64");
-                wr.WriteString(Convert.ToBase64String(((IBitmapable)f).Bitmap.GetData()));
+                wr.WriteString(Convert.ToBase64String(((IImage)f).ImageData));
                 wr.WriteEndElement();
             }
             if (f is ITextable)
@@ -262,15 +262,12 @@ namespace DDraw
             }
         }
 
-        static void ApplyBitmap(XmlReader re, IBitmapable b)
+        static void ApplyImage(XmlReader re, IImage b)
         {
             re.MoveToContent();
             re.MoveToAttribute("Type");
             if (re.LocalName == "Type" && re.Value == "base64")
-            {
-                MemoryStream ms = new MemoryStream(Convert.FromBase64String(re.ReadString()));
-                b.Bitmap = GraphicsHelper.MakeBitmap(ms);
-            }
+                b.ImageData = Convert.FromBase64String(re.ReadString());
         }
 
         static void ApplyText(XmlReader re, ITextable t)
@@ -401,8 +398,8 @@ namespace DDraw
                             ApplyStroke(re.ReadSubtree(), (IStrokeable)result);
                         else if (re.LocalName == "Alpha" && result is IAlphaBlendable)
                             ApplyAlpha(re.ReadSubtree(), (IAlphaBlendable)result);
-                        else if (re.LocalName == "Bitmap" && result is IBitmapable)
-                            ApplyBitmap(re.ReadSubtree(), (IBitmapable)result);
+                        else if (re.LocalName == "Image" && result is IImage)
+                            ApplyImage(re.ReadSubtree(), (IImage)result);
                         else if (re.LocalName == "Text" && result is ITextable)
                             ApplyText(re.ReadSubtree(), (ITextable)result);
                         else if (re.LocalName == "ChildFigures" && result is IChildFigureable)

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.IO;
 
 using DejaVu;
 using DejaVu.Collections.Generic;
@@ -102,9 +103,14 @@ namespace DDraw
         }
     }
 
-    public interface IBitmapable
+    public interface IImage
     {
         DBitmap Bitmap
+        {
+            get;
+        }
+
+        byte[] ImageData
         {
             get;
             set;
@@ -1152,26 +1158,39 @@ namespace DDraw
         }
     }
 
-    public class ImageFigure : RectbaseFigure, IBitmapable
+    public class ImageFigure : RectbaseFigure, IImage
     {
-        UndoRedo<DBitmap> _bitmap = new UndoRedo<DBitmap>(null);
+        DBitmap bitmap = null;
         public DBitmap Bitmap
         {
-            get { return _bitmap.Value; }
-            set { if (_bitmap.Value == null || !value.Equals(_bitmap.Value)) _bitmap.Value = value; }
+            get { return bitmap; }
         }
 
-        public ImageFigure() : this(new DRect(), 0, null)
+        UndoRedo<byte[]> _imageData = new UndoRedo<byte[]>(null);
+        public Byte[] ImageData
+        {
+            get { return _imageData.Value; }
+            set 
+            {
+                if (!value.Equals(_imageData.Value))
+                {
+                    _imageData.Value = value;
+                    bitmap = GraphicsHelper.MakeBitmap(new MemoryStream(value));
+                }
+            }
+        }
+
+        public ImageFigure()
         { }
 
-        public ImageFigure(DRect rect, double rotation, DBitmap bitmap) : base(rect, rotation)
+        public ImageFigure(DRect rect, double rotation, byte[] imageData) : base(rect, rotation)
         {
-            Bitmap = bitmap;
+            ImageData = imageData;
         }
 
         protected override void PaintBody(DGraphics dg)
         {
-            dg.DrawBitmap(Bitmap, Rect, Alpha);
+            dg.DrawBitmap(bitmap, Rect, Alpha);
         }
     }
 
