@@ -108,13 +108,32 @@ namespace DDraw
             wr.WriteEndElement();
         }
 
-        public static string FormatToXml(IList<Figure> figures)
+        static XmlTextWriter CreateXmlWriter(MemoryStream ms)
         {
-            MemoryStream ms = new MemoryStream();
             XmlTextWriter wr = new XmlTextWriter(ms, null);
             wr.Formatting = Formatting.Indented;
             wr.Indentation = 2;
             wr.Namespaces = false;
+            return wr;
+        }
+
+        public static string FormatToXml(Figure f)
+        {
+            MemoryStream ms = new MemoryStream();
+            XmlTextWriter wr = CreateXmlWriter(ms);
+            wr.WriteStartDocument();
+            FormatToXml(f, wr);
+            wr.WriteEndDocument();
+            wr.Flush();
+            ms.Seek(0, SeekOrigin.Begin);
+            StreamReader sr = new StreamReader(ms);
+            return sr.ReadToEnd();
+        }
+
+        public static string FormatToXml(IList<Figure> figures)
+        {
+            MemoryStream ms = new MemoryStream();
+            XmlTextWriter wr = CreateXmlWriter(ms);
             wr.WriteStartDocument();
             wr.WriteStartElement("FigureList");
             foreach (Figure f in figures)

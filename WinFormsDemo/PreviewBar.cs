@@ -41,6 +41,13 @@ namespace WinFormsDemo
             return p;
         }
 
+        public void Clear()
+        {
+            for (int i = Controls.Count - 1; i >= 0; i--)
+                if (Controls[i] is Preview)
+                    Controls.Remove(Controls[i]);
+        }
+
         void p_Click(object sender, EventArgs e)
         {
             ((Preview)sender).Selected = true;

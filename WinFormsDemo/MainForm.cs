@@ -18,21 +18,53 @@ namespace WinFormsDemo
     {
         DAuthorProperties dap;
         DEngine de = null;
+        List<DEngine> dengines = new List<DEngine>();
 
         DViewer dvEditor;
+
+        bool beenSaved;
+        string fileName;
+        bool dirty
+        {
+            set
+            {
+                if (value == false)
+                    foreach (DEngine de in dengines)
+                        de.UndoRedoClearHistory();
+            }
+            get
+            {
+                foreach (DEngine de in dengines)
+                    if (de.CanUndo)
+                        return true;
+                return false;
+            }
+        }
+
+        const string ProgramName = "WinFormsDemo";
+        const string FileExt = ".ddraw";
+        const string FileTypeFilter = "DDraw files|*.ddraw";
 
         void CreateDEngine()
         {
             DEngine de = new DEngine(dap);
-            previewBar1.AddPreview(de, dvEditor);
+            dengines.Add(de);
             de.PageSize = new DPoint(500, 400);
+            InitDEngine(de);
+        }
+
+        void InitDEngine(DEngine de)
+        {
+            previewBar1.AddPreview(de, dvEditor);
             // DEngine events
             de.DebugMessage += new DebugMessageHandler(DebugMessage);
             de.SelectedFiguresChanged += new SelectedFiguresHandler(de_SelectedFiguresChanged);
             de.UndoRedoChanged += new EventHandler(de_UndoRedoChanged);
             de.ContextClick += new ContextClickHandler(de_ContextClick);
             de.HsmStateChanged += new HsmStateChangedHandler(de_HsmStateChanged);
-
+            // to update viewers
+            de.PageSize = de.PageSize;
+            // show it
             SetCurrentDe(de);
         }
 
@@ -64,8 +96,8 @@ namespace WinFormsDemo
             dvEditor.EditFigures = true;
             dvEditor.AntiAlias = true;
             dvEditor.DebugMessage += new DebugMessageHandler(DebugMessage);
-            // create ddraw engine 1
-            CreateDEngine();
+            // new document
+            New();
             // create initial figures
             de.UndoRedoStart("create initial figures");
             // rect figures
@@ -116,8 +148,15 @@ namespace WinFormsDemo
             de.UndoRedoCommit();
             de.UndoRedoClearHistory();
             UpdateUndoRedoControls();
+            UpdateTitleBar();
             // Init controls
             InitPropertyControls(de.HsmState);
+        }
+
+        private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (!CheckDirty())
+                e.Cancel = true;
         }
 
         void DebugMessage(string msg)
@@ -156,6 +195,7 @@ namespace WinFormsDemo
         void de_UndoRedoChanged(object sender, EventArgs e)
         {
             UpdateUndoRedoControls();
+            UpdateTitleBar();
         }
 
         void de_ContextClick(DEngine de, Figure clickedFigure, DPoint pt)
@@ -888,11 +928,6 @@ namespace WinFormsDemo
                 dvEditor.Scale = 1.5;
         }
 
-        private void notImplemented_Click(object sender, EventArgs e)
-        {
-            MessageBox.Show("Not yet implemented");
-        }
-
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Close();
@@ -1028,5 +1063,115 @@ namespace WinFormsDemo
             de.Delete(de.SelectedFigures);
         }
 
+        void UpdateTitleBar()
+        {
+            if (dirty)
+                Text = string.Format("{0} - {1}{2}", ProgramName, Path.GetFileNameWithoutExtension(fileName), "*");
+            else
+                Text = string.Format("{0} - {1}", ProgramName, Path.GetFileNameWithoutExtension(fileName));
+        }
+
+        void New()
+        {
+            fileName = "New Document";
+            beenSaved = false;
+
+            previewBar1.Clear();
+            dengines.Clear();
+            CreateDEngine();
+
+            UpdateTitleBar();
+        }
+
+        void Open()
+        {
+            OpenFileDialog ofd = new OpenFileDialog();
+            ofd.DefaultExt = FileExt;
+            ofd.Filter = FileTypeFilter;
+            if (ofd.ShowDialog() == DialogResult.OK)
+            {
+                fileName = ofd.FileName;
+                dengines = FileHelper.Load(fileName, dap);
+                // init new dengines
+                previewBar1.Clear();
+                foreach (DEngine newDe in dengines)
+                    InitDEngine(newDe);
+                // update vars
+                beenSaved = true;
+                UpdateTitleBar();
+            }
+        }
+
+        void Save()
+        {
+            FileHelper.Save(fileName, dengines);
+            dirty = false;
+            beenSaved = true;
+            UpdateTitleBar();
+        }
+
+        bool SaveAs()
+        {
+            SaveFileDialog sfd = new SaveFileDialog();
+            sfd.DefaultExt = FileExt;
+            sfd.Filter = FileTypeFilter;
+            sfd.FileName = fileName;
+            if (sfd.ShowDialog() == DialogResult.OK)
+            {
+                fileName = sfd.FileName;
+                Save();
+                return true;
+            }
+            else
+                return false;
+        }
+
+        bool CheckDirty()
+        {
+            if (dirty)
+            {
+                switch (MessageBox.Show(string.Format("Save changes to \"{0}\"?", fileName), ProgramName,
+                    MessageBoxButtons.YesNoCancel, MessageBoxIcon.Exclamation))
+                {
+                    case DialogResult.Yes:
+                        if (!beenSaved)
+                            return SaveAs();
+                        else
+                            Save();
+                        return true;
+                    case DialogResult.No:
+                        return true;
+                    default:
+                        return false;
+                }
+            }
+            else
+                return true;
+        }
+
+        private void actNew_Execute(object sender, EventArgs e)
+        {
+            if (CheckDirty())
+                New();
+        }
+
+        private void actOpen_Execute(object sender, EventArgs e)
+        {
+            if (CheckDirty())
+                Open();
+        }
+
+        private void actSave_Execute(object sender, EventArgs e)
+        {
+            if (!beenSaved)
+                SaveAs();
+            else
+                Save();
+        }
+
+        private void actSaveAs_Execute(object sender, EventArgs e)
+        {
+            SaveAs();
+        }
     }
 }

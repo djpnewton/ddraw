@@ -155,6 +155,10 @@ namespace DDraw
         {
             get { return figureHandler.SelectedFigures; }
         }
+        public List<Figure> Figures
+        {
+            get { return new List<Figure>(figureHandler.Figures.ToArray()); }
+        }
 
         DHsm hsm;
         public DHsmState HsmState
