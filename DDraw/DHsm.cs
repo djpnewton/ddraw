@@ -831,12 +831,11 @@ namespace DDraw
                         DRect updateRect2 = figureHandler.SelectionFigure.Rect;
                         List<Figure> selectFigs = new List<Figure>();
                         foreach (Figure f in figureHandler.Figures)
-                            if (figureHandler.SelectionFigure.Contains(f))
-                            {
+                            if (DGeom.PointInRect(f.Rect.Center, figureHandler.SelectionFigure.Rect))
                                 selectFigs.Add(f);
-                                updateRect = updateRect2.Union(GetBoundingBox(f));
-                            }
                         figureHandler.SelectFigures(selectFigs);
+                        foreach (Figure f in selectFigs)
+                            updateRect2 = updateRect2.Union(GetBoundingBox(f));
                         // update drawing
                         ((QMouseEvent)qevent).Dv.Update(updateRect2);
                         // transition back
