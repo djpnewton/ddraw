@@ -470,8 +470,14 @@ namespace DDraw
 
         #region ISelectable Members
 
-        protected const int S_INDENT = 4;
-        protected const int HANDLE_SZ = 5;
+        public static int _selectIndent = 4;
+        public static int _handleSize = 5;
+        public static int _handleBorder = 0;
+        public static int _rotateHandleStemLength = 5;
+        public static int HandleSize
+        {
+            get { return _handleSize + _handleBorder; }
+        }
 
         private bool selected;
         public bool Selected
@@ -490,16 +496,21 @@ namespace DDraw
                 ApplyTransforms(dg);
                 // draw selection rectangle
                 DRect r = GetSelectRect();
+                double selectRectY = r.Y;
                 dg.DrawRect(r.X, r.Y, r.Width, r.Height, DColor.White, 1, Scale);
                 dg.DrawRect(r.X, r.Y, r.Width, r.Height, DColor.Black, 1, Scale, DStrokeStyle.Dot, DStrokeJoin.Mitre);
                 // draw resize handle
                 r = GetResizeHandleRect();
+                if (_handleBorder != 0)
+                    r = r.Resize(_handleBorder, _handleBorder, -_handleBorder * 2, -_handleBorder * 2);
                 dg.FillEllipse(r, DColor.Red);
                 dg.DrawEllipse(r.X, r.Y, r.Width, r.Height, DColor.Black, 1, Scale, DStrokeStyle.Solid);
                 // draw rotate handle
                 r = GetRotateHandleRect();
+                if (_handleBorder != 0)
+                    r = r.Resize(_handleBorder, _handleBorder, -_handleBorder * 2, -_handleBorder * 2);
                 DPoint p1 = r.Center;
-                DPoint p2 = p1.Offset(0, 3 * HANDLE_SZ * Scale - S_INDENT * Scale);
+                DPoint p2 = new DPoint(p1.X, selectRectY);
                 dg.DrawLine(p1, p2, DColor.White, 1, DStrokeStyle.Solid, Scale, DStrokeCap.Butt);
                 dg.DrawLine(p1, p2, DColor.Black, 1, DStrokeStyle.Dot, Scale, DStrokeCap.Butt);
                 dg.FillEllipse(r, DColor.Blue);
@@ -513,22 +524,22 @@ namespace DDraw
 
         public virtual DRect GetSelectRect()
         {
-            double i = S_INDENT * Scale;
+            double i = _selectIndent * Scale;
             return Rect.Offset(-i, -i).Inflate(i + i, i + i);
         }
 
         public virtual DRect GetResizeHandleRect()
         {
             DRect selectRect = GetSelectRect();
-            double hs = HANDLE_SZ * Scale;
+            double hs = HandleSize * Scale;
             return new DRect(selectRect.Right - hs, selectRect.Bottom - hs, hs + hs, hs + hs);
         }
 
         public virtual DRect GetRotateHandleRect()
         {
             DRect selectRect = GetSelectRect();
-            double hs = HANDLE_SZ * Scale;
-            return new DRect(selectRect.Center.X - hs, selectRect.Y - hs * 3, hs + hs, hs + hs);
+            double hs = HandleSize * Scale;
+            return new DRect(selectRect.Center.X - hs, selectRect.Y - hs - hs - _rotateHandleStemLength, hs + hs, hs + hs);
         }
 
         public virtual DRect GetEncompassingRect()
@@ -731,7 +742,7 @@ namespace DDraw
             // add in stroke width spacing
             DRect r = StrokeHelper.SelectRectIncludingStrokeWidth(base.GetSelectRect(), StrokeWidth);
             // add in marker spacing
-            double i = S_INDENT * Scale;
+            double i = _selectIndent * Scale;
             if (StartMarker != DMarker.None)
                 r = r.Union(GetStartMarkerRect().Offset(-i, -i).Inflate(i + i, i + i));
             if (EndMarker != DMarker.None)
@@ -931,13 +942,13 @@ namespace DDraw
 
         public DRect GetPt1HandleRect()
         {
-            double hs = HANDLE_SZ * Scale;
+            double hs = HandleSize * Scale;
             return new DRect(Pt1.X - hs, Pt1.Y - hs, hs + hs, hs + hs);
         }
 
         public DRect GetPt2HandleRect()
         {
-            double hs = HANDLE_SZ * Scale;
+            double hs = HandleSize * Scale;
             return new DRect(Pt2.X - hs, Pt2.Y - hs, hs + hs, hs + hs);
         }
         
@@ -959,10 +970,14 @@ namespace DDraw
                 ApplyTransforms(dg);
                 // draw pt1 handle
                 DRect r = GetPt1HandleRect();
+                if (_handleBorder != 0)
+                    r = r.Resize(_handleBorder, _handleBorder, -_handleBorder * 2, -_handleBorder * 2);
                 dg.FillEllipse(r.X, r.Y, r.Width, r.Height, DColor.Red, 1);
                 dg.DrawEllipse(r.X, r.Y, r.Width, r.Height, DColor.Black, 1, Scale, DStrokeStyle.Solid);
                 // draw pt2 handle
                 r = GetPt2HandleRect();
+                if (_handleBorder != 0)
+                    r = r.Resize(_handleBorder, _handleBorder, -_handleBorder * 2, -_handleBorder * 2);
                 dg.FillEllipse(r.X, r.Y, r.Width, r.Height, DColor.Red, 1);
                 dg.DrawEllipse(r.X, r.Y, r.Width, r.Height, DColor.Black, 1, Scale, DStrokeStyle.Solid);
                 // view outline
@@ -988,7 +1003,7 @@ namespace DDraw
         {
             if (Pt1 != null && Pt2 != null)
             {
-                if (Selected && DGeom.PointInLine(pt, Pt1, Pt2, HANDLE_SZ * Scale))
+                if (Selected && DGeom.PointInLine(pt, Pt1, Pt2, HandleSize * Scale))
                     return DHitTest.SelectRect;
             }
             return DHitTest.None;

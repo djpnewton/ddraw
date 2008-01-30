@@ -108,6 +108,10 @@ namespace WinFormsDemo
             contextGlyph = new BitmapGlyph(new WFBitmap(ms));
             ms.Dispose();
             contextGlyph.Clicked += new GlyphClickedHandler(contextGlyph_Clicked);
+            // figure defaults
+            Figure._handleSize = 5;
+            Figure._handleBorder = 3;
+            Figure._rotateHandleStemLength -= Figure._handleBorder;
             // new document
             New();
             // create initial figures

@@ -242,6 +242,11 @@ namespace DDraw
             return new DRect(X, Y, Width + dX, Height + dY);
         }
 
+        public DRect Resize(double dX, double dY, double dWidth, double dHeight)
+        {
+            return new DRect(X + dX, Y + dY, Width + dWidth, Height + dHeight);
+        }
+
         public DRect Union(DRect r2)
         {
             if (r2.Width > 0 && r2.Height > 0)
