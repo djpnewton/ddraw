@@ -30,7 +30,6 @@ namespace WinFormsDemo
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
-            this.pnlPreviews = new System.Windows.Forms.Panel();
             this.tsEditorMode = new System.Windows.Forms.ToolStrip();
             this.btnSelect = new System.Windows.Forms.ToolStripButton();
             this.btnPen = new System.Windows.Forms.ToolStripButton();
@@ -133,7 +132,6 @@ namespace WinFormsDemo
             this.actBringToFront = new Burkovsky.Controls.Action();
             this.actSendBackward = new Burkovsky.Controls.Action();
             this.actBringForward = new Burkovsky.Controls.Action();
-            this.pnlPreviews.SuspendLayout();
             this.tsEditorMode.SuspendLayout();
             this.toolStripContainer1.ContentPanel.SuspendLayout();
             this.toolStripContainer1.TopToolStripPanel.SuspendLayout();
@@ -147,15 +145,6 @@ namespace WinFormsDemo
             this.tsFigureProps.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.actionListProvider1)).BeginInit();
             this.SuspendLayout();
-            // 
-            // pnlPreviews
-            // 
-            this.pnlPreviews.Controls.Add(this.previewBar1);
-            this.pnlPreviews.Dock = System.Windows.Forms.DockStyle.Right;
-            this.pnlPreviews.Location = new System.Drawing.Point(459, 0);
-            this.pnlPreviews.Name = "pnlPreviews";
-            this.pnlPreviews.Size = new System.Drawing.Size(81, 219);
-            this.pnlPreviews.TabIndex = 9;
             // 
             // tsEditorMode
             // 
@@ -173,7 +162,7 @@ namespace WinFormsDemo
             this.btnDiamond,
             this.btnPentagon,
             this.btnLine});
-            this.tsEditorMode.Location = new System.Drawing.Point(1, 24);
+            this.tsEditorMode.Location = new System.Drawing.Point(3, 24);
             this.tsEditorMode.Name = "tsEditorMode";
             this.tsEditorMode.Size = new System.Drawing.Size(288, 25);
             this.tsEditorMode.TabIndex = 0;
@@ -350,7 +339,7 @@ namespace WinFormsDemo
             // pnlViewer
             // 
             this.pnlViewer.Controls.Add(this.wfvcEditor);
-            this.pnlViewer.Controls.Add(this.pnlPreviews);
+            this.pnlViewer.Controls.Add(this.previewBar1);
             this.pnlViewer.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pnlViewer.Location = new System.Drawing.Point(0, 0);
             this.pnlViewer.Name = "pnlViewer";
@@ -638,7 +627,7 @@ namespace WinFormsDemo
             this.wfvcEditor.Dock = System.Windows.Forms.DockStyle.Fill;
             this.wfvcEditor.Location = new System.Drawing.Point(0, 0);
             this.wfvcEditor.Name = "wfvcEditor";
-            this.wfvcEditor.Size = new System.Drawing.Size(459, 219);
+            this.wfvcEditor.Size = new System.Drawing.Size(456, 219);
             this.wfvcEditor.TabIndex = 0;
             this.wfvcEditor.KeyUp += new System.Windows.Forms.KeyEventHandler(this.wfvcEditor_KeyUp);
             this.wfvcEditor.KeyDown += new System.Windows.Forms.KeyEventHandler(this.wfvcEditor_KeyDown);
@@ -646,10 +635,10 @@ namespace WinFormsDemo
             // previewBar1
             // 
             this.previewBar1.AutoScroll = true;
-            this.previewBar1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.previewBar1.Location = new System.Drawing.Point(0, 0);
+            this.previewBar1.Dock = System.Windows.Forms.DockStyle.Right;
+            this.previewBar1.Location = new System.Drawing.Point(456, 0);
             this.previewBar1.Name = "previewBar1";
-            this.previewBar1.Size = new System.Drawing.Size(81, 219);
+            this.previewBar1.Size = new System.Drawing.Size(84, 219);
             this.previewBar1.TabIndex = 0;
             this.previewBar1.PreviewSelected += new WinFormsDemo.PreviewSelectedHandler(this.previewBar1_PreviewSelected);
             this.previewBar1.PreviewAdd += new System.EventHandler(this.previewBar1_PreviewAdd);
@@ -789,7 +778,7 @@ namespace WinFormsDemo
             this.btnItalic,
             this.btnUnderline,
             this.btnStrikethrough});
-            this.tsFigureProps.Location = new System.Drawing.Point(0, 49);
+            this.tsFigureProps.Location = new System.Drawing.Point(3, 49);
             this.tsFigureProps.Name = "tsFigureProps";
             this.tsFigureProps.Size = new System.Drawing.Size(371, 25);
             this.tsFigureProps.TabIndex = 2;
@@ -1149,7 +1138,6 @@ namespace WinFormsDemo
             this.Name = "MainForm";
             this.Text = "WinFormsDemo";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
-            this.pnlPreviews.ResumeLayout(false);
             this.tsEditorMode.ResumeLayout(false);
             this.tsEditorMode.PerformLayout();
             this.toolStripContainer1.ContentPanel.ResumeLayout(false);
@@ -1176,7 +1164,6 @@ namespace WinFormsDemo
         #endregion
 
         private DDraw.WinForms.WFViewerControl wfvcEditor;
-        private System.Windows.Forms.Panel pnlPreviews;
         private System.Windows.Forms.ToolStrip tsEditorMode;
         private System.Windows.Forms.ToolStripContainer toolStripContainer1;
         private System.Windows.Forms.Panel pnlViewer;

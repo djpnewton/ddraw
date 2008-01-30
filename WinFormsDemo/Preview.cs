@@ -32,6 +32,9 @@ namespace WinFormsDemo
                         foreach (Control c in Parent.Controls)
                             if (c is Preview && c != this)
                                 ((Preview)c).Selected = false;
+                    // scroll into view
+                    if (Parent is ScrollableControl)
+                        ((ScrollableControl)Parent).ScrollControlIntoView(this);
                 }
                 else
                     viewerHolder.BackColor = Color.Empty;
