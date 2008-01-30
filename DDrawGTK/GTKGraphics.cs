@@ -17,6 +17,12 @@ namespace DDraw.GTK
         public GTKBitmap(int width, int height): base(width, height)
         {}
         
+        public GTKBitmap(string filename): base(filename)
+        { }
+        
+        public GTKBitmap(Stream s): base(s)
+        {}
+        
         protected override object MakeBitmap (int width, int height)
         {
             return new Cairo.ImageSurface(Format.ARGB32, width, height);
@@ -376,7 +382,7 @@ namespace DDraw.GTK
             ImageSurface surf = (ImageSurface)bitmap.NativeBmp;
             cr.Save();
             cr.Translate(rect.X, rect.Y);
-            cr.Scale(surf.Width / rect.Width, surf.Height / rect.Height);
+            cr.Scale(rect.Width / surf.Width, rect.Height / surf.Height);
             cr.SetSource(surf, 0, 0);
             cr.PaintWithAlpha(alpha);
             cr.Restore();
