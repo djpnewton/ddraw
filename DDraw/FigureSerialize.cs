@@ -26,6 +26,7 @@ namespace DDraw
                 wr.WriteAttributeString("Width", fd.Width.ToString());
                 wr.WriteAttributeString("Height", fd.Height.ToString());
                 wr.WriteAttributeString("Rotation", fd.Rotation.ToString());
+                wr.WriteAttributeString("LockAspectRatio", fd.LockAspectRatio.ToString());
                 wr.WriteEndElement();
             }
             if (f is IFillable)
@@ -193,6 +194,7 @@ namespace DDraw
         static void ApplyDimensions(XmlReader re, IDimension d)
         {
             double x = 0, y = 0, width = 10, height = 10, rot = 0;
+            bool lar = false;
             re.MoveToContent();
             for (int i = 0; i < re.AttributeCount; i++)
             {
@@ -207,12 +209,15 @@ namespace DDraw
                     double.TryParse(re.Value, out height);
                 else if (re.LocalName == "Rotation")
                     double.TryParse(re.Value, out rot);
+                else if (re.LocalName == "LockAspectRatio")
+                    bool.TryParse(re.Value, out lar);
             }
             d.X = x;
             d.Y = y;
             d.Width = width;
             d.Height = height;
             d.Rotation = rot;
+            d.LockAspectRatio = lar;
         }
 
         static void ApplyFill(XmlReader re, IFillable f)

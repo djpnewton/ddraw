@@ -22,6 +22,8 @@ namespace WinFormsDemo
 
         DViewer dvEditor;
 
+        BitmapGlyph contextGlyph;
+
         bool beenSaved;
         string fileName;
         bool dirty
@@ -62,6 +64,7 @@ namespace WinFormsDemo
             de.UndoRedoChanged += new EventHandler(de_UndoRedoChanged);
             de.ContextClick += new ContextClickHandler(de_ContextClick);
             de.HsmStateChanged += new HsmStateChangedHandler(de_HsmStateChanged);
+            de.AddedFigure += new AddedFigureHandler(de_AddedFigure);
             // to update viewers
             de.PageSize = de.PageSize;
             // show it
@@ -96,6 +99,12 @@ namespace WinFormsDemo
             dvEditor.EditFigures = true;
             dvEditor.AntiAlias = true;
             dvEditor.DebugMessage += new DebugMessageHandler(DebugMessage);
+            // glyphs
+            MemoryStream ms = new MemoryStream();
+            Resource1.arrow.Save(ms, ImageFormat.Png);
+            contextGlyph = new BitmapGlyph(new WFBitmap(ms));
+            ms.Dispose();
+            contextGlyph.Clicked += new GlyphClickedHandler(contextGlyph_Clicked);
             // new document
             New();
             // create initial figures
@@ -202,6 +211,11 @@ namespace WinFormsDemo
                 cmsFigure.Show(wfvcEditor, new Point((int)pt.X, (int)pt.Y));
             else
                 cmsCanvas.Show(wfvcEditor, new Point((int)pt.X, (int)pt.Y));
+        }
+
+        void contextGlyph_Clicked(IGlyph glyph, Figure figure, DPoint pt)
+        {
+            cmsFigure.Show(wfvcEditor, new Point((int)pt.X, (int)pt.Y));
         }
 
         Color GetFillMatch(List<Figure> figs)
@@ -589,6 +603,21 @@ namespace WinFormsDemo
             btnLine.Checked = de.HsmCurrentFigClassIs(typeof(LineFigure));
             btnEraser.Checked = state == DHsmState.Eraser;
             InitPropertyControls(state);
+        }
+
+        void de_AddedFigure(DEngine de, Figure fig)
+        {
+            // make sure fig.Glyphs is assigned
+            if (fig.Glyphs == null)
+                fig.Glyphs = new List<GlyphPair>();
+            // add context glyph if not already there
+            foreach (GlyphPair gp in fig.Glyphs)
+                if (gp.Glyph == contextGlyph)
+                    return;
+            GlyphPair contextGlyphPair = new GlyphPair(contextGlyph, DGlyphPosition.TopRight);
+            if (fig is LineSegmentbaseFigure) // if line segment then place context glyph at center
+                contextGlyphPair.Position = DGlyphPosition.Center;
+            fig.Glyphs.Add(contextGlyphPair);
         }
 
         private void antialiasToolStripMenuItem_Click(object sender, EventArgs e)

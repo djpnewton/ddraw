@@ -199,6 +199,7 @@ namespace DDraw
                 {
                     figure.Scale = invScale;
                     figure.PaintSelectionChrome(dg);
+                    figure.PaintGlyphs(dg);
                 }
                 foreach (Figure figure in controlFigures)
                 {

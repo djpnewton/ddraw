@@ -35,6 +35,11 @@ namespace DDraw
             get;
             set;
         }
+        bool LockAspectRatio
+        {
+            get;
+            set;
+        }
     }
 
     public interface IFillable
@@ -293,7 +298,19 @@ namespace DDraw
         DHitTest RotateHitTest(DPoint pt);
     }
 
-    public abstract class Figure: IDimension, ISelectable
+    public interface IGlyphable
+    {
+        List<GlyphPair> Glyphs
+        {
+            get;
+            set;
+        }
+        void PaintGlyphs(DGraphics dg);
+
+        DHitTest GlyphHitTest(DPoint pt, out IGlyph glyph);
+    }
+
+    public abstract class Figure: IDimension, ISelectable, IGlyphable
     {
         public double Scale = 1;
 
@@ -384,6 +401,7 @@ namespace DDraw
             set { lockAspectRatio = value; }
         }
 
+
         public Figure()
         { }
 
@@ -399,18 +417,22 @@ namespace DDraw
             return DGeom.RotatePoint(pt, Rect.Center, -Rotation);
         }
 
-        public DHitTest HitTest(DPoint pt)
+        public DHitTest HitTest(DPoint pt, out IGlyph glyph)
         {
             pt = RotatePointToFigure(pt);
-            DHitTest res = RotateHitTest(pt);
+            DHitTest res = GlyphHitTest(pt, out glyph);
             if (res == DHitTest.None)
             {
-                res = ResizeHitTest(pt);
+                res = RotateHitTest(pt);
                 if (res == DHitTest.None)
                 {
-                    res = SelectHitTest(pt);
+                    res = ResizeHitTest(pt);
                     if (res == DHitTest.None)
-                        res = _HitTest(pt);
+                    {
+                        res = SelectHitTest(pt);
+                        if (res == DHitTest.None)
+                            res = _HitTest(pt);
+                    }
                 }
             }
             return res;
@@ -535,6 +557,46 @@ namespace DDraw
         {
             if (selected && DGeom.PointInRect(pt, GetRotateHandleRect()))
                 return DHitTest.Rotate;
+            return DHitTest.None;
+        }
+
+        #endregion
+
+        #region IGlyphable Members
+
+        List<GlyphPair> glyphs = null;
+        public List<GlyphPair> Glyphs
+        {
+            get { return glyphs; }
+            set { glyphs = value; }
+        }
+
+        public void PaintGlyphs(DGraphics dg)
+        {
+            if (glyphs != null && glyphs.Count > 0)
+            {
+                DMatrix m = dg.SaveTransform();
+                ApplyTransforms(dg);
+                foreach (GlyphPair gp in glyphs)
+                    if (gp.Glyph.IsVisible(selected))
+                        gp.Glyph.Paint(dg, gp.Position, GetSelectRect(), Scale);
+                dg.LoadTransform(m);
+            }
+        }
+
+        public DHitTest GlyphHitTest(DPoint pt, out IGlyph glyph)
+        {
+            if (glyphs != null && glyphs.Count > 0)
+                foreach (GlyphPair gp in glyphs)
+                {
+                    DHitTest ht = gp.Glyph.HitTest(pt, gp.Position, GetSelectRect(), selected, Scale);
+                    if (ht != DHitTest.None)
+                    {
+                        glyph = gp.Glyph;
+                        return ht;
+                    }
+                }
+            glyph = null;
             return DHitTest.None;
         }
 
@@ -1739,9 +1801,10 @@ namespace DDraw
         protected override DHitTest _HitTest(DPoint pt)
         {
             DHitTest ht;
+            IGlyph glyph;
             foreach (Figure f in childFigs)
             {
-                ht = f.HitTest(pt);
+                ht = f.HitTest(pt, out glyph);
                 if (ht == DHitTest.Body)
                     return ht;
             }

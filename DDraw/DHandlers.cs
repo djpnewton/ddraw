@@ -56,9 +56,13 @@ namespace DDraw
 
         // public methods //
 
+        public event AddedFigureHandler AddedFigure;
+
         public void Add(Figure f)
         {
             figures.Add(f);
+            if (AddedFigure != null)
+                AddedFigure(null, f);
         }
 
         public void Insert(Figure f, Figure before)
@@ -188,7 +192,7 @@ namespace DDraw
             {
                 // make group
                 GroupFigure gf = new GroupFigure(figs);
-                figures.Add(gf);
+                Add(gf);
                 // change selected figures to the group
                 ClearSelectedFiguresList();
                 AddToSelected(gf);
@@ -219,14 +223,15 @@ namespace DDraw
             }
         }
 
-        public Figure HitTestFigures(DPoint pt, out DHitTest hitTest)
+        public Figure HitTestFigures(DPoint pt, out DHitTest hitTest, out IGlyph glyph)
         {
+            glyph = null;
             hitTest = DHitTest.None;
             // first hittest for selection chrome
             for (int i = figures.Count - 1; i >= 0; i--)
             {
                 Figure f = figures[i];
-                hitTest = f.HitTest(pt);
+                hitTest = f.HitTest(pt, out glyph);
                 if (hitTest != DHitTest.None && hitTest != DHitTest.Body)
                     return f;
             }
@@ -234,16 +239,16 @@ namespace DDraw
             for (int i = figures.Count - 1; i >= 0; i--)
             {
                 Figure f = figures[i];
-                hitTest = f.HitTest(pt);
+                hitTest = f.HitTest(pt, out glyph);
                 if (hitTest != DHitTest.None)
                     return f;
             }
             return null;
         }
 
-        public Figure HitTestSelect(DPoint pt, out DHitTest hitTest)
+        public Figure HitTestSelect(DPoint pt, out DHitTest hitTest, out IGlyph glyph)
         {
-            Figure f = HitTestFigures(pt, out hitTest);
+            Figure f = HitTestFigures(pt, out hitTest, out glyph);
             // update selected figures
             if (f != null)
             {
@@ -275,7 +280,7 @@ namespace DDraw
             }
             // add group figures to figure list
             foreach (Figure f in gf.ChildFigures)
-                figures.Add(f);
+                Add(f);
             // remove group
             figures.Remove(gf);
         }

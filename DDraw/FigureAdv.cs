@@ -64,7 +64,8 @@ namespace DDraw
         
         public void MouseDown (DViewer dv, DMouseButton btn, DPoint pt)
         {
-            if (editing && HitTest(pt) == DHitTest.Body)
+            IGlyph glyph;
+            if (editing && HitTest(pt, out glyph) == DHitTest.Body)
             {
                 DRect r = GetClockRect();
                 DPoint fhp = FirstHandPoint(r);
@@ -87,6 +88,7 @@ namespace DDraw
 
         public void MouseMove (DViewer dv, DPoint pt)
         {
+            IGlyph glyph;
             if (editingFirstHand)
             {
                 firstHandAngle.Value = DGeom.AngleBetweenPoints(GetClockRect().Center, pt);
@@ -97,7 +99,7 @@ namespace DDraw
                 secondHandAngle.Value = DGeom.AngleBetweenPoints(GetClockRect().Center, pt);
                 dv.Update(GetClockRect());
             }
-            else if (editing && HitTest(pt) == DHitTest.Body) 
+            else if (editing && HitTest(pt, out glyph) == DHitTest.Body) 
                 dv.SetCursor(DCursor.Crosshair);
             else
                 dv.SetCursor(DCursor.Default);

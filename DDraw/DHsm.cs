@@ -189,6 +189,7 @@ namespace DDraw
             QState Select;
                 QState SelectDefault;
                 QState DragFigure;
+                QState DragSelect;
             QState DrawLine;
                 QState DrawLineDefault;
                 QState DrawingLine;
@@ -435,9 +436,14 @@ namespace DDraw
             if (btn == DMouseButton.Left)
             {
                 // find and select clicked figure
-                Figure f = figureHandler.HitTestSelect(pt, out mouseHitTest);
+                IGlyph glyph;
+                Figure f = figureHandler.HitTestSelect(pt, out mouseHitTest, out glyph);
                 // update selected figures
-                if (f != null)
+                if (glyph != null)
+                {
+
+                }
+                else if (f != null)
                 {
                     // set drag infomation
                     currentFigure = f;
@@ -463,16 +469,19 @@ namespace DDraw
                                 dragRot = dragRot - (Math.PI * 2);
                             break;
                     }
+                    // transition
+                    TransitionTo(DragFigure);
                 }
                 else
                 {
                     figureHandler.ClearSelected();
                     dragPt = pt; // mouseHitTest = DHitTest.None
+                    // transition
+                    TransitionTo(DragSelect);
                 }
                 // update drawing
                 dv.Update();
-                // transition
-                TransitionTo(DragFigure);
+
             }
         }
 
@@ -480,7 +489,8 @@ namespace DDraw
         {
             // set cursor
             DHitTest hitTest;
-            figureHandler.HitTestFigures(pt, out hitTest);
+            IGlyph glyph;
+            figureHandler.HitTestFigures(pt, out hitTest, out glyph);
             switch (hitTest)
             {
                 case DHitTest.None:
@@ -501,16 +511,26 @@ namespace DDraw
                 case DHitTest.Rotate:
                     dv.SetCursor(DCursor.Rotate);
                     break;
+                case DHitTest.Glyph:
+                    dv.SetCursor(glyph.Cursor);
+                    break;
             }
             DoDebugMessage(string.Format("{0}, {1}", pt.X, pt.Y));
         }
 
         void DoSelectDefaultMouseUp(DViewer dv, DMouseButton btn, DPoint pt)
         {
-            if (btn == DMouseButton.Right)
+            DHitTest hitTest;
+            IGlyph glyph;
+            if (btn == DMouseButton.Left)
             {
-                DHitTest hitTest;
-                Figure f = figureHandler.HitTestSelect(pt, out hitTest);
+                Figure f = figureHandler.HitTestFigures(pt, out hitTest, out glyph);
+                if (hitTest == DHitTest.Glyph)
+                    glyph.CallClicked(f, dv.EngineToClient(pt));
+            }
+            else if (btn == DMouseButton.Right)
+            {
+                Figure f = figureHandler.HitTestSelect(pt, out hitTest, out glyph);
                 dv.SetCursor(DCursor.Default);
                 dv.Update();
                 if (ContextClick != null)
@@ -544,26 +564,6 @@ namespace DDraw
             // move selected figures
             switch (mouseHitTest)
             {
-                case DHitTest.None:
-                    // initial update rect
-                    updateRect = figureHandler.SelectionFigure.Rect;
-                    // drag select figure
-                    figureHandler.SelectionFigure.TopLeft = dragPt;
-                    figureHandler.SelectionFigure.BottomRight = pt;
-                    if (figureHandler.SelectionFigure.Width < 0)
-                    {
-                        figureHandler.SelectionFigure.X += figureHandler.SelectionFigure.Width;
-                        figureHandler.SelectionFigure.Width = -figureHandler.SelectionFigure.Width;
-                    }
-                    if (figureHandler.SelectionFigure.Height < 0)
-                    {
-                        figureHandler.SelectionFigure.Y += figureHandler.SelectionFigure.Height;
-                        figureHandler.SelectionFigure.Height = -figureHandler.SelectionFigure.Height;
-                    }
-                    drawSelection = true;
-                    // final update rect
-                    updateRect = updateRect.Union(figureHandler.SelectionFigure.Rect);
-                    break;
                 case DHitTest.Body:
                     System.Diagnostics.Trace.Assert(currentFigure != null, "currentFigure is null");
                     // initial update rect
@@ -746,21 +746,6 @@ namespace DDraw
             if (btn == DMouseButton.Left)
             {
                 currentFigure = null;
-                if (drawSelection)
-                {
-                    DRect updateRect = figureHandler.SelectionFigure.Rect;
-                    List<Figure> selectFigs = new List<Figure>();
-                    foreach (Figure f in figureHandler.Figures)
-                        if (figureHandler.SelectionFigure.Contains(f))
-                        {
-                            selectFigs.Add(f);
-                            updateRect = updateRect.Union(GetBoundingBox(f));
-                        }
-                    figureHandler.SelectFigures(selectFigs);
-                    drawSelection = false;
-                    // update drawing
-                    dv.Update(updateRect);
-                }
                 // transition
                 TransitionTo(SelectDefault);
             }
@@ -769,7 +754,8 @@ namespace DDraw
         void DoDragFigureDoubleClick(DViewer dv, DPoint pt)
         {
             DHitTest ht;
-            Figure f = figureHandler.HitTestFigures(pt, out ht);
+            IGlyph glyph;
+            Figure f = figureHandler.HitTestFigures(pt, out ht, out glyph);
             if (f is TextFigure)
             {
                 currentFigure = f;
@@ -799,6 +785,62 @@ namespace DDraw
                     return null;
                 case (int)DHsmSignals.MouseUp:
                     DoDragFigureMouseUp(((QMouseEvent)qevent).Dv, ((QMouseEvent)qevent).Button, ((QMouseEvent)qevent).Pt);
+                    return null;
+                case (int)DHsmSignals.DoubleClick:
+                    DoDragFigureDoubleClick(((QMouseEvent)qevent).Dv, ((QMouseEvent)qevent).Pt);
+                    return null;
+            }
+            return this.Select;
+        }
+
+        QState DoDragSelect(IQEvent qevent)
+        {
+            switch (qevent.QSignal)
+            {
+                case (int)QSignals.Entry:
+                    drawSelection = true;
+                    break;
+                case (int)QSignals.Exit:
+                    drawSelection = false;
+                    break;
+                case (int)DHsmSignals.MouseMove:
+                    // rectangular area to update with paint event
+                    DRect updateRect = new DRect();
+                    // initial update rect
+                    updateRect = figureHandler.SelectionFigure.Rect;
+                    // drag select figure
+                    figureHandler.SelectionFigure.TopLeft = dragPt;
+                    figureHandler.SelectionFigure.BottomRight = ((QMouseEvent)qevent).Pt;
+                    if (figureHandler.SelectionFigure.Width < 0)
+                    {
+                        figureHandler.SelectionFigure.X += figureHandler.SelectionFigure.Width;
+                        figureHandler.SelectionFigure.Width = -figureHandler.SelectionFigure.Width;
+                    }
+                    if (figureHandler.SelectionFigure.Height < 0)
+                    {
+                        figureHandler.SelectionFigure.Y += figureHandler.SelectionFigure.Height;
+                        figureHandler.SelectionFigure.Height = -figureHandler.SelectionFigure.Height;
+                    }
+                    // final update rect
+                    updateRect = updateRect.Union(figureHandler.SelectionFigure.Rect);
+                    // update drawing
+                    ((QMouseEvent)qevent).Dv.Update(updateRect);
+                    break;
+                    return null;
+                case (int)DHsmSignals.MouseUp:
+                        DRect updateRect2 = figureHandler.SelectionFigure.Rect;
+                        List<Figure> selectFigs = new List<Figure>();
+                        foreach (Figure f in figureHandler.Figures)
+                            if (figureHandler.SelectionFigure.Contains(f))
+                            {
+                                selectFigs.Add(f);
+                                updateRect = updateRect2.Union(GetBoundingBox(f));
+                            }
+                        figureHandler.SelectFigures(selectFigs);
+                        // update drawing
+                        ((QMouseEvent)qevent).Dv.Update(updateRect2);
+                        // transition back
+                        TransitionTo(SelectDefault);
                     return null;
                 case (int)DHsmSignals.DoubleClick:
                     DoDragFigureDoubleClick(((QMouseEvent)qevent).Dv, ((QMouseEvent)qevent).Pt);
@@ -971,7 +1013,8 @@ namespace DDraw
             if (btn == DMouseButton.Left)
             {
                 // find and select clicked figure
-                Figure f = figureHandler.HitTestSelect(pt, out mouseHitTest);
+                IGlyph glyph;
+                Figure f = figureHandler.HitTestSelect(pt, out mouseHitTest, out glyph);
                 // select the TextFigure from the TextEditFigure
                 TextEditFigure tef = (TextEditFigure)currentFigure;
                 if (f == tef)
@@ -1448,6 +1491,7 @@ namespace DDraw
             Select = new QState(this.DoSelect);
             SelectDefault = new QState(this.DoSelectDefault);
             DragFigure = new QState(this.DoDragFigure);
+            DragSelect = new QState(this.DoDragSelect);
             DrawLine = new QState(this.DoDrawLine);
             DrawLineDefault = new QState(this.DoDrawLineDefault);
             DrawingLine = new QState(this.DoDrawingLine);

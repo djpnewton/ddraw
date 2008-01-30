@@ -10,6 +10,7 @@ namespace DDraw
     public delegate void DebugMessageHandler(string msg);
     public delegate void PageSizeChangedHandler(DEngine de, DPoint pageSize);
     public delegate void ContextClickHandler(DEngine de, Figure clickedFigure, DPoint pt);
+    public delegate void AddedFigureHandler(DEngine de, Figure fig);
 
     public class DAuthorProperties
     {
@@ -214,6 +215,7 @@ namespace DDraw
         public event PageSizeChangedHandler PageSizeChanged;
         public event EventHandler UndoRedoChanged;
         public event HsmStateChangedHandler HsmStateChanged;
+        public event AddedFigureHandler AddedFigure;
 
         public DEngine(DAuthorProperties authorProps)
         {
@@ -226,6 +228,11 @@ namespace DDraw
             undoRedoManager.Start("create figure handler");
             figureHandler = new DFigureHandler();
             figureHandler.SelectedFiguresChanged += new SelectedFiguresHandler(DoSelectedFiguresChanged);
+            figureHandler.AddedFigure += delegate(DEngine de, Figure fig)
+            {
+                if (AddedFigure != null)
+                    AddedFigure(this, fig);
+            };
             undoRedoManager.Commit();
             undoRedoManager.ClearHistory();
             // create state machine
