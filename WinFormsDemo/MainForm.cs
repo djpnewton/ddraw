@@ -65,6 +65,9 @@ namespace WinFormsDemo
             de.ContextClick += new ContextClickHandler(de_ContextClick);
             de.HsmStateChanged += new HsmStateChangedHandler(de_HsmStateChanged);
             de.AddedFigure += new AddedFigureHandler(de_AddedFigure);
+            // add glyphs to figures
+            foreach (Figure f in de.Figures)
+                AddGlyphs(f);
             // to update viewers
             de.PageSize = de.PageSize;
             // show it
@@ -588,6 +591,21 @@ namespace WinFormsDemo
             actCopy.Enabled = de.CanCopy(figs);
         }
 
+        void AddGlyphs(Figure fig)
+        {
+            // make sure fig.Glyphs is assigned
+            if (fig.Glyphs == null)
+                fig.Glyphs = new List<GlyphPair>();
+            // add context glyph if not already there
+            foreach (GlyphPair gp in fig.Glyphs)
+                if (gp.Glyph == contextGlyph)
+                    return;
+            GlyphPair contextGlyphPair = new GlyphPair(contextGlyph, DGlyphPosition.TopRight);
+            if (fig is LineSegmentbaseFigure) // if line segment then place context glyph at center
+                contextGlyphPair.Position = DGlyphPosition.Center;
+            fig.Glyphs.Add(contextGlyphPair);
+        }
+
         void de_HsmStateChanged(DEngine de, DHsmState state)
         {
             btnSelect.Checked = state == DHsmState.Select;
@@ -607,17 +625,7 @@ namespace WinFormsDemo
 
         void de_AddedFigure(DEngine de, Figure fig)
         {
-            // make sure fig.Glyphs is assigned
-            if (fig.Glyphs == null)
-                fig.Glyphs = new List<GlyphPair>();
-            // add context glyph if not already there
-            foreach (GlyphPair gp in fig.Glyphs)
-                if (gp.Glyph == contextGlyph)
-                    return;
-            GlyphPair contextGlyphPair = new GlyphPair(contextGlyph, DGlyphPosition.TopRight);
-            if (fig is LineSegmentbaseFigure) // if line segment then place context glyph at center
-                contextGlyphPair.Position = DGlyphPosition.Center;
-            fig.Glyphs.Add(contextGlyphPair);
+            AddGlyphs(fig);
         }
 
         private void antialiasToolStripMenuItem_Click(object sender, EventArgs e)
