@@ -162,7 +162,6 @@ namespace DDraw.WinForms
             Pen p = new Pen(color, (float)strokeWidth);
             p.DashStyle = MakeDashStyle(strokeStyle);
             p.LineJoin = MakeLineJoin(strokeJoin);
-            p.SetLineCap(MakeLineCap(strokeCap), MakeLineCap(strokeCap), MakeDashCap(strokeCap));
             p.SetLineCap(MakeLineCap(strokeCap), MakeLineCap(strokeCap), DashCap.Flat);
             return p;
         }
@@ -261,27 +260,34 @@ namespace DDraw.WinForms
 
         public override void DrawRect(double x, double y, double width, double height, DColor color, double alpha, double strokeWidth, DStrokeStyle strokeStyle, DStrokeJoin strokeJoin)
         {
-            g.DrawRectangle(MakePen(WFHelper.MakeColor(color, alpha), strokeWidth, strokeStyle, strokeJoin, DStrokeCap.Butt), (float)x, (float)y, (float)width, (float)height);
+            // see:
+            // http://groups.google.com/group/microsoft.public.dotnet.framework.drawing/browse_thread/thread/c52a43702fccaab8/838a26535bf6e2e6?lnk=st&q=drawline+outofmemoryexception#838a26535bf6e2e6
+            // http://www.codeprof.com/dev-archive/123/2-8-1234065.shtm
+            try
+            {
+                g.DrawRectangle(MakePen(WFHelper.MakeColor(color, alpha), strokeWidth, strokeStyle, strokeJoin, DStrokeCap.Butt), (float)x, (float)y, (float)width, (float)height);
+            }
+            catch { }
         }
 
         public override void DrawRect(double x, double y, double width, double height, DColor color)
         {
-            g.DrawRectangle(new Pen(WFHelper.MakeColor(color)), (float)x, (float)y, (float)width, (float)height);
+            DrawRect(x, y, width, height, color, 1, 1);
         }
 
         public override void DrawRect(double x, double y, double width, double height, DColor color, double alpha, double strokeWidth)
         {
-            g.DrawRectangle(new Pen(WFHelper.MakeColor(color, alpha), (float)strokeWidth), (float)x, (float)y, (float)width, (float)height);
+            DrawRect(x, y, width, height, color, alpha, strokeWidth, DStrokeStyle.Solid, DStrokeJoin.Mitre);
         }
 
         public override void DrawRect(DRect rect, DColor color)
         {
-            g.DrawRectangle(new Pen(WFHelper.MakeColor(color)), MakeRect(rect));
+            DrawRect(rect.X, rect.Y, rect.Width, rect.Height, color);
         }
 
         public override void DrawRect(DRect rect, DColor color, double alpha)
         {
-            g.DrawRectangle(new Pen(WFHelper.MakeColor(color, alpha)), MakeRect(rect));
+            DrawRect(rect.X, rect.Y, rect.Width, rect.Height, color, alpha, 1);
         }
 
         public override void DrawRect(DRect rect, DColor color, double alpha, DStrokeStyle strokeStyle)
@@ -331,27 +337,34 @@ namespace DDraw.WinForms
 
         public override void DrawLine(DPoint pt1, DPoint pt2, DColor color)
         {
-            g.DrawLine(new Pen(WFHelper.MakeColor(color)), (float)pt1.X, (float)pt1.Y, (float)pt2.X, (float)pt2.Y);
+            DrawLine(pt1, pt2, color, 1);
         }
 
         public override void DrawLine(DPoint pt1, DPoint pt2, DColor color, double alpha)
         {
-            g.DrawLine(new Pen(WFHelper.MakeColor(color, alpha)), (float)pt1.X, (float)pt1.Y, (float)pt2.X, (float)pt2.Y);
+            DrawLine(pt1, pt2, color, alpha, DStrokeStyle.Solid);
         }
 
         public override void DrawLine(DPoint pt1, DPoint pt2, DColor color, DStrokeStyle strokeStyle)
         {
-            g.DrawLine(MakePen(WFHelper.MakeColor(color), strokeStyle), (float)pt1.X, (float)pt1.Y, (float)pt2.X, (float)pt2.Y);
+            DrawLine(pt1, pt2, color, 1, strokeStyle);
         }
 
         public override void DrawLine(DPoint pt1, DPoint pt2, DColor color, double alpha, DStrokeStyle strokeStyle)
         {
-            g.DrawLine(MakePen(WFHelper.MakeColor(color, alpha), strokeStyle), (float)pt1.X, (float)pt1.Y, (float)pt2.X, (float)pt2.Y);
+            DrawLine(pt1, pt2, color, alpha, strokeStyle, 1, DStrokeCap.Round);
         }
 
         public override void DrawLine(DPoint pt1, DPoint pt2, DColor color, double alpha, DStrokeStyle strokeStyle, double strokeWidth, DStrokeCap strokeCap)
         {
-            g.DrawLine(MakePen(WFHelper.MakeColor(color, alpha), strokeWidth, strokeStyle, DStrokeJoin.Mitre, strokeCap), (float)pt1.X, (float)pt1.Y, (float)pt2.X, (float)pt2.Y);
+            // see:
+            // http://groups.google.com/group/microsoft.public.dotnet.framework.drawing/browse_thread/thread/c52a43702fccaab8/838a26535bf6e2e6?lnk=st&q=drawline+outofmemoryexception#838a26535bf6e2e6
+            // http://www.codeprof.com/dev-archive/123/2-8-1234065.shtm
+            try
+            {
+                g.DrawLine(MakePen(WFHelper.MakeColor(color, alpha), strokeWidth, strokeStyle, DStrokeJoin.Mitre, strokeCap), (float)pt1.X, (float)pt1.Y, (float)pt2.X, (float)pt2.Y);
+            }
+            catch { }
         }
 
         public override void DrawPolyline(DPoints pts, DColor color)
