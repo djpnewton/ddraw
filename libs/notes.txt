@@ -6,3 +6,4 @@ dejavu website: http://www.codeplex.com/dejavu
 SharpZipLib website: http://www.icsharpcode.net/OpenSource/SharpZipLib/
 
 Nini website: http://nini.sourceforge.net/
+	(built library from svn rev 248)
