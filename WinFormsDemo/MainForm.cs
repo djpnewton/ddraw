@@ -8,6 +8,7 @@ using System.Drawing.Text;
 using System.Text;
 using System.Windows.Forms;
 using System.IO;
+using System.Drawing.Printing;
 
 using DDraw;
 using DDraw.WinForms;
@@ -1213,6 +1214,64 @@ namespace WinFormsDemo
         private void actSaveAs_Execute(object sender, EventArgs e)
         {
             SaveAs();
+        }
+
+        private void actPrint_Execute(object sender, EventArgs e)
+        {
+            if (dengines.Count > 0)
+            {
+                PrintDialog pf = new PrintDialog();
+                pf.UseEXDialog = true;
+                pf.AllowSelection = false;
+                if (dengines.Count > 1)
+                {
+                    pf.AllowCurrentPage = true;
+                    pf.AllowSomePages = true;
+                    pf.PrinterSettings.MinimumPage = 1;
+                    pf.PrinterSettings.MaximumPage = dengines.Count;
+                    pf.PrinterSettings.FromPage = 1;
+                    pf.PrinterSettings.ToPage = dengines.Count;
+                }
+                if (pf.ShowDialog() == DialogResult.OK)
+                {
+                    DViewer dvPrint = new WFViewer(wfvcEditor);
+                    dvPrint.Preview = true;
+                    // page iteration vars
+                    List<DEngine>.Enumerator engineEnumerator = dengines.GetEnumerator();
+                    engineEnumerator.MoveNext();
+                    int pageIdx = pf.PrinterSettings.FromPage - 1;
+                    // print document settings
+                    PrintDocument pd = new PrintDocument();
+                    pd.PrinterSettings = pf.PrinterSettings;
+                    pd.DocumentName = Path.GetFileNameWithoutExtension(fileName);
+                    pd.PrintPage += delegate(object s2, PrintPageEventArgs e2)
+                    {
+                        // set DEngine/page to print and whether we have more pages to go
+                        DEngine de = null;
+                        switch (pd.PrinterSettings.PrintRange)
+                        {
+                            case PrintRange.CurrentPage:
+                                e2.HasMorePages = false;
+                                de = this.de;
+                                break;
+                            case PrintRange.SomePages:
+                                de = dengines[pageIdx];
+                                pageIdx += 1;
+                                e2.HasMorePages = pageIdx < pd.PrinterSettings.ToPage;
+                                break;
+                            default: // PrintRange.AllPages
+                                de = engineEnumerator.Current;
+                                e2.HasMorePages = engineEnumerator.MoveNext();
+                                break;
+                        }
+                        // print the page using the e2.Graphics GDI+ object
+                        dvPrint.SetPageSize(de.PageSize);
+                        dvPrint.Paint(new WFGraphics(e2.Graphics), de.GetBackgroundFigure(), de.Figures, null);
+                    };
+                    // call print operation
+                    pd.Print();
+                }
+            }
         }
     }
 }

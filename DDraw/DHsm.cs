@@ -229,16 +229,20 @@ namespace DDraw
 
         void dv_NeedRepaint(DViewer dv)
         {
-            Figure[] controlFigures = new Figure[0];
-            if (drawSelection)
+            Figure[] controlFigures = null;
+            if (drawSelection || drawEraser)
             {
-                Array.Resize(ref controlFigures, controlFigures.Length + 1);
-                controlFigures[controlFigures.Length - 1] = figureHandler.SelectionFigure;
-            }
-            if (drawEraser)
-            {
-                Array.Resize(ref controlFigures, controlFigures.Length + 1);
-                controlFigures[controlFigures.Length - 1] = figureHandler.EraserFigure;
+                controlFigures = new Figure[0];
+                if (drawSelection)
+                {
+                    Array.Resize(ref controlFigures, controlFigures.Length + 1);
+                    controlFigures[controlFigures.Length - 1] = figureHandler.SelectionFigure;
+                }
+                if (drawEraser)
+                {
+                    Array.Resize(ref controlFigures, controlFigures.Length + 1);
+                    controlFigures[controlFigures.Length - 1] = figureHandler.EraserFigure;
+                }
             }
             dv.Paint(figureHandler.BackgroundFigure, figureHandler.Figures, controlFigures);
         }

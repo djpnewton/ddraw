@@ -176,6 +176,11 @@ namespace DDraw
 
         public void Paint(Figure backgroundFigure, IList<Figure> figures, Figure[] controlFigures)
         {
+            Paint(dg, backgroundFigure, figures, controlFigures);
+        }
+
+        public void Paint(DGraphics dg, Figure backgroundFigure, IList<Figure> figures, Figure[] controlFigures)
+        {
             // set antialias value
             dg.AntiAlias = AntiAlias;
             // draw backround and transform canvas accordind to the pagesize
@@ -189,23 +194,26 @@ namespace DDraw
                 dg.FillRect(SHADOW_OFFSET, SHADOW_OFFSET, PageSize.X, PageSize.Y, DColor.Black, 1); // draw black canvas shadow
             }
             // paint figures
-            backgroundFigure.Paint(dg);
+            if (backgroundFigure != null)
+                backgroundFigure.Paint(dg);
             foreach (Figure figure in figures)
                 figure.Paint(dg);
             if (editFigures)
             {
                 double invScale = 1 / scale;
-                foreach (Figure figure in figures)
-                {
-                    figure.Scale = invScale;
-                    figure.PaintSelectionChrome(dg);
-                    figure.PaintGlyphs(dg);
-                }
-                foreach (Figure figure in controlFigures)
-                {
-                    figure.Scale = invScale;
-                    figure.Paint(dg);
-                }
+                if (figures != null)
+                    foreach (Figure figure in figures)
+                    {
+                        figure.Scale = invScale;
+                        figure.PaintSelectionChrome(dg);
+                        figure.PaintGlyphs(dg);
+                    }
+                if (controlFigures != null)
+                    foreach (Figure figure in controlFigures)
+                    {
+                        figure.Scale = invScale;
+                        figure.Paint(dg);
+                    }
             }
         }
 
