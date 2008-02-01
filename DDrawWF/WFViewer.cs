@@ -278,4 +278,38 @@ namespace DDraw.WinForms
             }
         }
     }
+    
+    public class DWFPrinterSettings : DPrinterSettings
+    {
+        public double DpiX;
+        public double DpiY;
+        public DPoint PageSize; // 100'ths of an inch
+        public DRect Margins; // 100'ths of an inch
+
+        public DWFPrinterSettings(double dpiX, double dpiY, DPoint pageSize, DRect margins)
+        {
+            DpiX = dpiX;
+            DpiY = dpiY;
+            PageSize = pageSize;
+            Margins = margins;
+        }
+    }
+
+    public class DWFPrintViewer : DPrintViewer
+    {        
+        public void Paint(DGraphics dg, DWFPrinterSettings dps, Figure backgroundFigure, IList<Figure> figures)
+        {
+            // margin
+            dg.Translate(new DPoint(dps.Margins.Left, dps.Margins.Top));
+            // scale
+            double sx = (dps.PageSize.X - dps.Margins.Left - dps.Margins.Right) / PageSize.X;
+            double sy = (dps.PageSize.Y - dps.Margins.Top - dps.Margins.Bottom) / PageSize.Y;
+            if (sx > sy)
+                dg.Scale(sy, sy);
+            else
+                dg.Scale(sx, sx);
+            // paint figures
+            base.Paint(dg, backgroundFigure, figures);
+        }
+    }
 }

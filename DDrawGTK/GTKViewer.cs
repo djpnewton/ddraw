@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Gtk;
 
 namespace DDraw.GTK
@@ -272,6 +273,44 @@ namespace DDraw.GTK
                     control.GdkWindow.Cursor = new Gdk.Cursor(Gdk.CursorType.Xterm);
                     break;
             }
+        }
+    }
+    
+    public struct DGTKPrinterSettings
+    {
+        public double DpiX;
+        public double DpiY;
+        public PageSetup PageSetup;
+
+        public DGTKPrinterSettings(double dpiX, double dpiY, PageSetup pageSetup)
+        {
+            DpiX = dpiX;
+            DpiY = dpiY;
+            PageSetup = pageSetup;
+        }
+    }
+
+    public class DGTKPrintViewer : DPrintViewer
+    {
+        public void Paint(DGraphics dg, DGTKPrinterSettings dps, Figure backgroundFigure, IList<Figure> figures)
+        {
+            // margin
+            dg.Translate(new DPoint(dps.PageSetup.GetLeftMargin(Unit.Pixel),
+                                    dps.PageSetup.GetTopMargin(Unit.Pixel)));
+            // scale
+            
+            double sx = (dps.PageSetup.GetPageWidth(Unit.Pixel) - 
+                         dps.PageSetup.GetLeftMargin(Unit.Pixel) - 
+                         dps.PageSetup.GetRightMargin(Unit.Pixel)) / PageSize.X;
+            double sy = (dps.PageSetup.GetPageHeight(Unit.Pixel) - 
+                         dps.PageSetup.GetTopMargin(Unit.Pixel) - 
+                         dps.PageSetup.GetBottomMargin(Unit.Pixel)) / PageSize.Y;
+            if (sx > sy)
+                dg.Scale(sy, sy);
+            else
+                dg.Scale(sx, sx);
+            // paint figures
+            base.Paint(dg, backgroundFigure, figures);
         }
     }
 }

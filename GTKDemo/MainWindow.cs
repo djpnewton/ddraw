@@ -87,6 +87,8 @@ namespace GTKDemo
             de.AddFigure(f);
             de.UndoRedoCommit();
             de.UndoRedoClearHistory();
+            
+            de.PageSize = new DPoint(300, 1000);
             // resize window			
 			Resize(400, 300);
 		}
@@ -113,6 +115,9 @@ namespace GTKDemo
                 pop.Append(mi);
                 mi = new MenuItem("150%");
                 mi.ButtonPressEvent += new ButtonPressEventHandler(mi150pc_ButtonPressEvent);
+                pop.Append(mi);
+                mi = new MenuItem("Print");
+                mi.ButtonPressEvent += new ButtonPressEventHandler(miPrint_ButtonPressEvent);
                 pop.Append(mi);
             }
             else
@@ -163,6 +168,25 @@ namespace GTKDemo
         void mi150pc_ButtonPressEvent(object o, ButtonPressEventArgs args)
         {
             dv.Scale = 1.5;
+        }
+        
+        void miPrint_ButtonPressEvent(object o, ButtonPressEventArgs args)
+        {
+            PrintOperation po = new PrintOperation();
+            po.BeginPrint += delegate(object o2, BeginPrintArgs args2)
+            {
+                po.NPages = 1;                
+            };
+            po.DrawPage += delegate(object o2, DrawPageArgs args2)
+            {
+                GTKGraphics dg = new GTKGraphics(args2.Context.CairoContext);
+                DGTKPrintViewer dvPrint = new DGTKPrintViewer();
+                dvPrint.SetPageSize(de.PageSize);
+                DGTKPrinterSettings dps = 
+                    new DGTKPrinterSettings(args2.Context.DpiX, args2.Context.DpiY, args2.Context.PageSetup);                                                                                    
+                dvPrint.Paint(dg, dps, de.GetBackgroundFigure(), de.Figures);
+            };
+            po.Run(PrintOperationAction.PrintDialog, this);
         }
 		
         void miGroup_ButtonPressEvent(object o, ButtonPressEventArgs args)
