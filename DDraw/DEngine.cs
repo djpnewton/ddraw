@@ -290,13 +290,13 @@ namespace DDraw
             figureHandler.Select(figs);
         }
 
-        public void AddViewer(DViewer dv)
+        public void AddViewer(DTkViewer dv)
         {
             dv.SetPageSize(PageSize);
             viewerHandler.Add(dv);
         }
 
-        public void RemoveViewer(DViewer dv)
+        public void RemoveViewer(DTkViewer dv)
         {
             viewerHandler.Remove(dv);
         }

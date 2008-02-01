@@ -52,8 +52,8 @@ namespace WinFormsDemo
         {
             get { return de; }
         }
-        DViewer dv;
-        public DViewer DViewer
+        DTkViewer dv;
+        public DTkViewer DViewer
         {
             get { return dv; }
         }

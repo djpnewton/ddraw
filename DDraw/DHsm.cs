@@ -18,8 +18,8 @@ namespace DDraw
 
     public class QMouseEvent : QEvent
     {
-        DViewer dv;
-        public DViewer Dv
+        DTkViewer dv;
+        public DTkViewer Dv
         {
             get { return dv; }
         }
@@ -34,7 +34,7 @@ namespace DDraw
             get { return pt; } 
         }
 
-        public QMouseEvent(int qSignal, DViewer dv, DMouseButton button, DPoint pt) : base(qSignal)
+        public QMouseEvent(int qSignal, DTkViewer dv, DMouseButton button, DPoint pt) : base(qSignal)
         {
             this.dv = dv;
             this.button = button;
@@ -64,8 +64,8 @@ namespace DDraw
 
     public class QKeyPressEvent : QEvent
     {
-        DViewer dv;
-        public DViewer Dv
+        DTkViewer dv;
+        public DTkViewer Dv
         {
             get { return dv; }
         }
@@ -75,7 +75,8 @@ namespace DDraw
             get { return key; }
         }
 
-        public QKeyPressEvent(int qSignal, DViewer dv, int key) : base(qSignal)
+        public QKeyPressEvent(int qSignal, DTkViewer dv, int key)
+            : base(qSignal)
         {
             this.dv = dv;
             this.key = key;
@@ -227,7 +228,7 @@ namespace DDraw
 
         // viewer events
 
-        void dv_NeedRepaint(DViewer dv)
+        void dv_NeedRepaint(DTkViewer dv,DGraphics dg)
         {
             Figure[] controlFigures = null;
             if (drawSelection || drawEraser)
@@ -244,40 +245,40 @@ namespace DDraw
                     controlFigures[controlFigures.Length - 1] = figureHandler.EraserFigure;
                 }
             }
-            dv.Paint(figureHandler.BackgroundFigure, figureHandler.Figures, controlFigures);
+            dv.Paint(dg, figureHandler.BackgroundFigure, figureHandler.Figures, controlFigures);
         }
 
-        void dv_MouseDown(DViewer dv, DMouseButton btn, DPoint pt)
+        void dv_MouseDown(DTkViewer dv, DMouseButton btn, DPoint pt)
         {
             Dispatch(new QMouseEvent((int)DHsmSignals.MouseDown, dv, btn, pt));
         }
 
-        void dv_MouseMove(DViewer dv, DPoint pt)
+        void dv_MouseMove(DTkViewer dv, DPoint pt)
         {
             Dispatch(new QMouseEvent((int)DHsmSignals.MouseMove, dv, DMouseButton.NotApplicable, pt));
         }
 
-        void dv_MouseUp(DViewer dv, DMouseButton btn, DPoint pt)
+        void dv_MouseUp(DTkViewer dv, DMouseButton btn, DPoint pt)
         {
             Dispatch(new QMouseEvent((int)DHsmSignals.MouseUp, dv, btn, pt));
         }
 
-        void dv_DoubleClick(DViewer dv, DPoint pt)
+        void dv_DoubleClick(DTkViewer dv, DPoint pt)
         {
             Dispatch(new QMouseEvent((int)DHsmSignals.DoubleClick, dv, DMouseButton.NotApplicable, pt));
         }
 
-        void dv_KeyDown(DViewer dv, DKey k)
+        void dv_KeyDown(DTkViewer dv, DKey k)
         {
             Dispatch(new QKeyEvent((int)DHsmSignals.KeyDown, dv, k));
         }
 
-        void dv_KeyPress(DViewer dv, int k)
+        void dv_KeyPress(DTkViewer dv, int k)
         {
             Dispatch(new QKeyPressEvent((int)DHsmSignals.KeyPress, dv, k));
         }
 
-        void dv_KeyUp(DViewer dv, DKey k)
+        void dv_KeyUp(DTkViewer dv, DKey k)
         {
             Dispatch(new QKeyEvent((int)DHsmSignals.KeyUp, dv, k));
         }
@@ -435,7 +436,7 @@ namespace DDraw
             return this.Main;
         }
 
-        void DoSelectDefaultMouseDown(DViewer dv, DMouseButton btn, DPoint pt)
+        void DoSelectDefaultMouseDown(DTkViewer dv, DMouseButton btn, DPoint pt)
         {
             if (btn == DMouseButton.Left)
             {
@@ -489,7 +490,7 @@ namespace DDraw
             }
         }
 
-        void DoSelectDefaultMouseMove(DViewer dv, DPoint pt)
+        void DoSelectDefaultMouseMove(DTkViewer dv, DPoint pt)
         {
             // set cursor
             DHitTest hitTest;
@@ -522,7 +523,7 @@ namespace DDraw
             DoDebugMessage(string.Format("{0}, {1}", pt.X, pt.Y));
         }
 
-        void DoSelectDefaultMouseUp(DViewer dv, DMouseButton btn, DPoint pt)
+        void DoSelectDefaultMouseUp(DTkViewer dv, DMouseButton btn, DPoint pt)
         {
             DHitTest hitTest;
             IGlyph glyph;
@@ -561,7 +562,7 @@ namespace DDraw
 
         delegate void SetPointDelegate(DPoint pt);
         delegate double GetRotationalSnapDelegate(double ar);
-        void DoDragFigureMouseMove(DViewer dv, DPoint pt)
+        void DoDragFigureMouseMove(DTkViewer dv, DPoint pt)
         {
             // rectangular area to update with paint event
             DRect updateRect = new DRect();
@@ -745,7 +746,7 @@ namespace DDraw
             dv.Update(updateRect);
         }
 
-        void DoDragFigureMouseUp(DViewer dv, DMouseButton btn, DPoint pt)
+        void DoDragFigureMouseUp(DTkViewer dv, DMouseButton btn, DPoint pt)
         {
             if (btn == DMouseButton.Left)
             {
@@ -755,7 +756,7 @@ namespace DDraw
             }
         }
 
-        void DoDragFigureDoubleClick(DViewer dv, DPoint pt)
+        void DoDragFigureDoubleClick(DTkViewer dv, DPoint pt)
         {
             DHitTest ht;
             IGlyph glyph;
@@ -829,7 +830,6 @@ namespace DDraw
                     updateRect = updateRect.Union(figureHandler.SelectionFigure.Rect);
                     // update drawing
                     ((QMouseEvent)qevent).Dv.Update(updateRect);
-                    break;
                     return null;
                 case (int)DHsmSignals.MouseUp:
                         DRect updateRect2 = figureHandler.SelectionFigure.Rect;
@@ -869,7 +869,7 @@ namespace DDraw
             return this.Main;
         }
 
-        void DoDrawLineDefaultMouseDown(DViewer dv, DMouseButton btn, DPoint pt)
+        void DoDrawLineDefaultMouseDown(DTkViewer dv, DMouseButton btn, DPoint pt)
         {
             if (btn == DMouseButton.Left)
             {
@@ -893,7 +893,7 @@ namespace DDraw
             }
         }
 
-        void DoDrawLineDefaultMouseMove(DViewer dv, DPoint pt)
+        void DoDrawLineDefaultMouseMove(DTkViewer dv, DPoint pt)
         {
             // set cursor to draw
             dv.SetCursor(DCursor.Crosshair);
@@ -913,7 +913,7 @@ namespace DDraw
             return this.DrawLine;
         }
 
-        void DoDrawingLineMouseMove(DViewer dv, DPoint pt)
+        void DoDrawingLineMouseMove(DTkViewer dv, DPoint pt)
         {
             // initial update rect
             DRect updateRect = currentFigure.GetSelectRect();
@@ -937,7 +937,7 @@ namespace DDraw
             dv.Update(updateRect.Union(currentFigure.GetSelectRect()));
         }
 
-        void DoDrawingLineMouseUp(DViewer dv, DMouseButton btn, DPoint pt)
+        void DoDrawingLineMouseUp(DTkViewer dv, DMouseButton btn, DPoint pt)
         {
             undoRedoManager.Commit();
             // transition
@@ -958,7 +958,7 @@ namespace DDraw
             return this.DrawLine;
         }
 
-        void DoDrawTextMouseDown(DViewer dv, DMouseButton btn, DPoint pt)
+        void DoDrawTextMouseDown(DTkViewer dv, DMouseButton btn, DPoint pt)
         {
             if (btn == DMouseButton.Left)
             {
@@ -976,12 +976,12 @@ namespace DDraw
             }
         }
 
-        void DoDrawTextMouseMove(DViewer dv, DPoint pt)
+        void DoDrawTextMouseMove(DTkViewer dv, DPoint pt)
         {
 
         }
 
-        void DoDrawTextMouseUp(DViewer dv, DMouseButton btn, DPoint pt)
+        void DoDrawTextMouseUp(DTkViewer dv, DMouseButton btn, DPoint pt)
         {
 
         }
@@ -1011,7 +1011,7 @@ namespace DDraw
             return this.Main;
         }
 
-        void DoTextEditMouseDown(DViewer dv, DMouseButton btn, DPoint pt)
+        void DoTextEditMouseDown(DTkViewer dv, DMouseButton btn, DPoint pt)
         {
             if (btn == DMouseButton.Left)
             {
@@ -1035,12 +1035,12 @@ namespace DDraw
             }
         }
 
-        void DoTextEditMouseMove(DViewer dv, DPoint pt)
+        void DoTextEditMouseMove(DTkViewer dv, DPoint pt)
         {
             DoSelectDefaultMouseMove(dv, pt);
         }
 
-        void DoTextEditKeyPress(DViewer dv, int k)
+        void DoTextEditKeyPress(DTkViewer dv, int k)
         {
             if (currentFigure != null && currentFigure is TextEditFigure)
             {
@@ -1134,7 +1134,7 @@ namespace DDraw
             return this.Main;
         }
 
-        void DoDrawRectDefaultMouseDown(DViewer dv, DMouseButton btn, DPoint pt)
+        void DoDrawRectDefaultMouseDown(DTkViewer dv, DMouseButton btn, DPoint pt)
         {
             if (btn == DMouseButton.Left)
             {
@@ -1152,7 +1152,7 @@ namespace DDraw
             }
         }
 
-        void DoDrawRectDefaultMouseMove(DViewer dv, DPoint pt)
+        void DoDrawRectDefaultMouseMove(DTkViewer dv, DPoint pt)
         {
             // set cursor to draw
             dv.SetCursor(DCursor.Crosshair);
@@ -1172,7 +1172,7 @@ namespace DDraw
             return this.DrawRect;
         }
 
-        void DoDrawingRectMouseMove(DViewer dv, DPoint pt)
+        void DoDrawingRectMouseMove(DTkViewer dv, DPoint pt)
         {
             // initial update rect
             DRect updateRect = currentFigure.GetSelectRect();
@@ -1208,7 +1208,7 @@ namespace DDraw
             dv.Update(updateRect.Union(currentFigure.GetSelectRect()));
         }
 
-        void DoDrawingRectMouseUp(DViewer dv, DMouseButton btn, DPoint pt)
+        void DoDrawingRectMouseUp(DTkViewer dv, DMouseButton btn, DPoint pt)
         {
             undoRedoManager.Commit();
             // transition

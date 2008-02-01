@@ -21,7 +21,7 @@ namespace WinFormsDemo
         DEngine de = null;
         List<DEngine> dengines = new List<DEngine>();
 
-        DViewer dvEditor;
+        DTkViewer dvEditor;
 
         BitmapGlyph contextGlyph;
 
@@ -1234,8 +1234,7 @@ namespace WinFormsDemo
                 }
                 if (pf.ShowDialog() == DialogResult.OK)
                 {
-                    DViewer dvPrint = new WFViewer(wfvcEditor);
-                    dvPrint.Preview = true;
+                    DPrintViewer dvPrint = new DPrintViewer();
                     // page iteration vars
                     List<DEngine>.Enumerator engineEnumerator = dengines.GetEnumerator();
                     engineEnumerator.MoveNext();
@@ -1266,7 +1265,12 @@ namespace WinFormsDemo
                         }
                         // print the page using the e2.Graphics GDI+ object
                         dvPrint.SetPageSize(de.PageSize);
-                        dvPrint.Paint(new WFGraphics(e2.Graphics), de.GetBackgroundFigure(), de.Figures, null);
+                        DPrinterSettings dps = new DPrinterSettings(e2.PageSettings.PrinterResolution.X,
+                            e2.PageSettings.PrinterResolution.Y,
+                            new DPoint(e2.PageSettings.PaperSize.Width, e2.PageSettings.PaperSize.Height),
+                            new DRect(e2.PageSettings.Margins.Left, e2.PageSettings.Margins.Top,
+                                      e2.PageSettings.Margins.Right, e2.PageSettings.Margins.Bottom, 0));
+                        dvPrint.Paint(new WFGraphics(e2.Graphics), dps, de.GetBackgroundFigure(), de.Figures);
                     };
                     // call print operation
                     pd.Print();

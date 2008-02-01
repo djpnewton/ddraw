@@ -13,12 +13,12 @@ namespace DDraw
     {
         void StartEdit();
         void EndEdit();
-        event EditFinishedHandler EditFinished; 
-        void MouseDown(DViewer dv, DMouseButton btn, DPoint pt);
-        void MouseMove(DViewer dv, DPoint pt);
-        void MouseUp(DViewer dv, DMouseButton btn, DPoint pt);
-        void DoubleClick(DViewer dv, DPoint pt);
-        void KeyPress(DViewer dv, int k);
+        event EditFinishedHandler EditFinished;
+        void MouseDown(DTkViewer dv, DMouseButton btn, DPoint pt);
+        void MouseMove(DTkViewer dv, DPoint pt);
+        void MouseUp(DTkViewer dv, DMouseButton btn, DPoint pt);
+        void DoubleClick(DTkViewer dv, DPoint pt);
+        void KeyPress(DTkViewer dv, int k);
         string EditAttrsToString();
         void SetEditAttrsFromString(string s);
     }
@@ -61,8 +61,8 @@ namespace DDraw
         }
 
         public event EditFinishedHandler EditFinished;
-        
-        public void MouseDown (DViewer dv, DMouseButton btn, DPoint pt)
+
+        public void MouseDown(DTkViewer dv, DMouseButton btn, DPoint pt)
         {
             IGlyph glyph;
             if (editing && HitTest(pt, out glyph) == DHitTest.Body)
@@ -86,7 +86,7 @@ namespace DDraw
                 DoEditFinished();
         }
 
-        public void MouseMove (DViewer dv, DPoint pt)
+        public void MouseMove(DTkViewer dv, DPoint pt)
         {
             IGlyph glyph;
             if (editingFirstHand)
@@ -105,18 +105,18 @@ namespace DDraw
                 dv.SetCursor(DCursor.Default);
         }
 
-        public void MouseUp (DViewer dv, DMouseButton btn, DPoint pt)
+        public void MouseUp(DTkViewer dv, DMouseButton btn, DPoint pt)
         {
             editingFirstHand = false;
             editingSecondHand = false;
         }
 
-        public void DoubleClick (DViewer dv, DPoint pt)
+        public void DoubleClick(DTkViewer dv, DPoint pt)
         {
             
         }
-        
-        public void KeyPress (DViewer dv, int k)
+
+        public void KeyPress(DTkViewer dv, int k)
         {
             switch ((DKeys)k)
             {

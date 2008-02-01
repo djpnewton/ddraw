@@ -330,7 +330,7 @@ namespace DDraw
 
     public class DViewerHandler
     {
-        List<DViewer> viewers = new List<DViewer>();
+        List<DTkViewer> viewers = new List<DTkViewer>();
 
         public event DPaintEventHandler NeedRepaint;
         public event DMouseButtonEventHandler MouseDown;
@@ -343,7 +343,7 @@ namespace DDraw
 
         // public methods //
 
-        public void Add(DViewer dv)
+        public void Add(DTkViewer dv)
         {
             dv.NeedRepaint += new DPaintEventHandler(dv_NeedRepaint);
             dv.MouseDown += new DMouseButtonEventHandler(dv_MouseDown);
@@ -356,7 +356,7 @@ namespace DDraw
             viewers.Add(dv);
         }
 
-        public void Remove(DViewer dv)
+        public void Remove(DTkViewer dv)
         {
             if (viewers.Contains(dv))
             {
@@ -374,64 +374,64 @@ namespace DDraw
 
         public void Update()
         {
-            foreach (DViewer dv in viewers)
+            foreach (DTkViewer dv in viewers)
                 dv.Update();
         }
 
         public void SetPageSize(DPoint size)
         {
-            foreach (DViewer dv in viewers)
+            foreach (DTkViewer dv in viewers)
                 dv.SetPageSize(size);
         }
 
         // viewer events
 
-        void dv_NeedRepaint(DViewer dv)
+        void dv_NeedRepaint(DTkViewer dv, DGraphics dg)
         {
             if (NeedRepaint != null)
-                NeedRepaint(dv);
+                NeedRepaint(dv, dg);
         }
 
-        void dv_MouseDown(DViewer dv, DMouseButton btn, DPoint pt)
+        void dv_MouseDown(DTkViewer dv, DMouseButton btn, DPoint pt)
         {
             if (MouseDown != null)
                 MouseDown(dv, btn, pt);
         }
 
-        void dv_MouseMove(DViewer dv, DPoint pt)
+        void dv_MouseMove(DTkViewer dv, DPoint pt)
         {
             if (MouseMove != null)
                 MouseMove(dv, pt);
         }
 
-        void dv_MouseUp(DViewer dv, DMouseButton btn, DPoint pt)
+        void dv_MouseUp(DTkViewer dv, DMouseButton btn, DPoint pt)
         {
             if (MouseUp != null)
-                MouseUp(dv, btn, pt); 
-            foreach (DViewer dvOther in viewers)
+                MouseUp(dv, btn, pt);
+            foreach (DTkViewer dvOther in viewers)
                 if (dvOther != dv)
                     dvOther.Update();
         }
 
-        void dv_DoubleClick(DViewer dv, DPoint pt)
+        void dv_DoubleClick(DTkViewer dv, DPoint pt)
         {
             if (DoubleClick != null)
                 DoubleClick(dv, pt);
         }
 
-        void dv_KeyDown(DViewer dv, DKey k)
+        void dv_KeyDown(DTkViewer dv, DKey k)
         {
             if (KeyDown != null)
                 KeyDown(dv, k);
         }
 
-        void dv_KeyPress(DViewer dv, int k)
+        void dv_KeyPress(DTkViewer dv, int k)
         {
             if (KeyPress != null)
                 KeyPress(dv, k);
         }
 
-        void dv_KeyUp(DViewer dv, DKey k)
+        void dv_KeyUp(DTkViewer dv, DKey k)
         {
             if (KeyUp != null)
                 KeyUp(dv, k);

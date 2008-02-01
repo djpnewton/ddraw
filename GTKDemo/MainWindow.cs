@@ -18,7 +18,7 @@ namespace GTKDemo
 		Label l;
 
         DEngine de;
-        DViewer dv;
+        DTkViewer dv;
 		
 		public MainWindow(): base("MainWindow")
 		{          

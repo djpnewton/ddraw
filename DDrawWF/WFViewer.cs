@@ -7,7 +7,7 @@ using System.Drawing.Drawing2D;
 
 namespace DDraw.WinForms
 {
-    public class WFViewer : DViewer
+    public class WFViewer : DTkViewer
     {
         WFViewerControl control;
         Cursor RotateCursor;
@@ -119,9 +119,9 @@ namespace DDraw.WinForms
             // start stopwatch
 			stopWatch.Start();
             // create DGraphics object for the paint routine
-            dg = new WFGraphics(e.Graphics);
+            DGraphics dg = new WFGraphics(e.Graphics);
             // call paint events
-            DoNeedRepaint();
+            DoNeedRepaint(dg);
             // clear DGraphics
             dg = null; // no need to dispose (we did not create the base GDI graphics object)
             // stop stopwatch and report duration

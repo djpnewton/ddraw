@@ -3,7 +3,7 @@ using Gtk;
 
 namespace DDraw.GTK
 {
-    public class GTKViewer : DViewer
+    public class GTKViewer : DTkViewer
     {
         GTKViewerControl control;
 
@@ -96,9 +96,9 @@ namespace DDraw.GTK
                 return;
             // create DGraphics object for the paint routine
             Cairo.Context cr = Gdk.CairoHelper.Create(a.Event.Window);
-            dg = new GTKGraphics(cr);
+            DGraphics dg = new GTKGraphics(cr);
             // call paint events
-            DoNeedRepaint();
+            DoNeedRepaint(dg);
             // free graphics resources
             ((IDisposable)cr).Dispose();
             cr = null;

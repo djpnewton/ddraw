@@ -4,16 +4,50 @@ using System.Text;
 
 namespace DDraw
 {
-    public delegate void DPaintEventHandler(DViewer dv);
-    public delegate void DMouseButtonEventHandler(DViewer dv, DMouseButton btn, DPoint pt);
-    public delegate void DMouseMoveEventHandler(DViewer dv, DPoint pt);
-    public delegate void DKeyEventHandler(DViewer dv, DKey k);
-    public delegate void DKeyPressEventHandler(DViewer dv, int k);
+    public delegate void DPaintEventHandler(DTkViewer dv, DGraphics dg);
+    public delegate void DMouseButtonEventHandler(DTkViewer dv, DMouseButton btn, DPoint pt);
+    public delegate void DMouseMoveEventHandler(DTkViewer dv, DPoint pt);
+    public delegate void DKeyEventHandler(DTkViewer dv, DKey k);
+    public delegate void DKeyPressEventHandler(DTkViewer dv, int k);
 
     abstract public class DViewer
     {
-        protected DGraphics dg = null;
+        abstract public void SetPageSize(DPoint pageSize);
+        abstract protected DPoint PageSize
+        {
+            get;
+        }
 
+        public event DebugMessageHandler DebugMessage;
+
+        public DViewer()
+        {
+
+        }
+
+        public void Paint(DGraphics dg, Figure backgroundFigure, IList<Figure> figures)
+        {
+            // paint figures
+            if (backgroundFigure != null)
+                backgroundFigure.Paint(dg);
+            foreach (Figure figure in figures)
+                figure.Paint(dg);
+        }
+
+        // Other //
+
+        protected void DoDebugMessage(string msg)
+        {
+            if (DebugMessage != null)
+                DebugMessage(msg);
+        }
+    }
+
+    /// <summary>
+    /// base toolkit viewer/renderer class
+    /// </summary>
+    public abstract class DTkViewer : DViewer
+    {
         bool antiAlias = false;
         public bool AntiAlias
         {
@@ -29,8 +63,8 @@ namespace DDraw
         public bool EditFigures
         {
             get { return editFigures; }
-            set 
-            { 
+            set
+            {
                 editFigures = value;
                 Update();
             }
@@ -51,8 +85,8 @@ namespace DDraw
         public Zoom Zoom
         {
             get { return zoom; }
-            set 
-            { 
+            set
+            {
                 switch (value)
                 {
                     case Zoom.FitToPage:
@@ -62,7 +96,7 @@ namespace DDraw
                             Scale = (Height - MARGIN * 2) / PageSize.Y;
                         break;
                     case Zoom.FitToWidth:
-                        Scale = (Width - MARGIN * 2)/ PageSize.X;
+                        Scale = (Width - MARGIN * 2) / PageSize.X;
                         break;
                     case Zoom.Custom:
                         System.Diagnostics.Debug.Assert(false, "ERROR: to use a custom zoom use the ZoomPercent property");
@@ -73,7 +107,7 @@ namespace DDraw
         }
 
         abstract protected void UpdateAutoScroll();
-        
+
         abstract public bool Preview
         {
             get;
@@ -82,16 +116,11 @@ namespace DDraw
 
         protected const int SHADOW_OFFSET = 5;
         protected const int MARGIN = SHADOW_OFFSET * 2;
-        abstract public void SetPageSize(DPoint pageSize);
-        abstract protected DPoint PageSize
-        {
-            get;
-        }
+
         protected int PgSzX
         {
             get { return (int)Math.Round(PageSize.X * scale); }
         }
-        
         protected int PgSzY
         {
             get { return (int)Math.Round(PageSize.Y * scale); }
@@ -103,7 +132,7 @@ namespace DDraw
         abstract protected int OffsetY { get; }
         public DPoint EngineToClient(DPoint pt)
         {
-            pt = new DPoint(pt.X * scale, pt.Y * scale); 
+            pt = new DPoint(pt.X * scale, pt.Y * scale);
             return pt.Offset(-HortScroll + OffsetX, -VertScroll + OffsetY);
         }
 
@@ -119,17 +148,16 @@ namespace DDraw
         public event DKeyEventHandler KeyDown;
         public event DKeyPressEventHandler KeyPress;
         public event DKeyEventHandler KeyUp;
-        public event DebugMessageHandler DebugMessage;
 
-        public DViewer()
+        public DTkViewer(): base()
         {
 
         }
 
-        protected void DoNeedRepaint()
+        protected void DoNeedRepaint(DGraphics dg)
         {
             if (NeedRepaint != null)
-                NeedRepaint(this);
+                NeedRepaint(this, dg);
         }
 
         protected void DoMouseDown(DMouseButton btn, DPoint pt)
@@ -174,11 +202,6 @@ namespace DDraw
                 KeyUp(this, k);
         }
 
-        public void Paint(Figure backgroundFigure, IList<Figure> figures, Figure[] controlFigures)
-        {
-            Paint(dg, backgroundFigure, figures, controlFigures);
-        }
-
         public void Paint(DGraphics dg, Figure backgroundFigure, IList<Figure> figures, Figure[] controlFigures)
         {
             // set antialias value
@@ -193,11 +216,7 @@ namespace DDraw
                 dg.Scale(scale, scale); // scale canvas
                 dg.FillRect(SHADOW_OFFSET, SHADOW_OFFSET, PageSize.X, PageSize.Y, DColor.Black, 1); // draw black canvas shadow
             }
-            // paint figures
-            if (backgroundFigure != null)
-                backgroundFigure.Paint(dg);
-            foreach (Figure figure in figures)
-                figure.Paint(dg);
+            base.Paint(dg, backgroundFigure, figures);
             if (editFigures)
             {
                 double invScale = 1 / scale;
@@ -222,13 +241,56 @@ namespace DDraw
         abstract public void Update();
         abstract public void Update(DRect rect);
         abstract public void SetCursor(DCursor cursor);
+    }
 
-        // Other //
+    public struct DPrinterSettings
+    {
+        public int DpiX;
+        public int DpiY;
+        public DPoint PageSize; // 100'ths of an inch
+        public DRect Margins; // 100'ths of an inch
 
-        protected void DoDebugMessage(string msg)
+        public DPrinterSettings(int dpiX, int dpiY, DPoint pageSize, DRect margins)
         {
-            if (DebugMessage != null)
-                DebugMessage(msg);
+            DpiX = dpiX;
+            DpiY = dpiY;
+            PageSize = pageSize;
+            Margins = margins;
+        }
+    }
+
+    public class DPrintViewer : DViewer
+    {
+
+        DPoint pageSize;
+        public override void SetPageSize(DPoint pageSize)
+        {
+            this.pageSize = pageSize;
+        }
+        protected override DPoint PageSize
+        {
+            get { return pageSize; }
+        }
+
+        public DPrintViewer()
+        { }
+
+        ~DPrintViewer()
+        { }
+
+        public void Paint(DGraphics dg, DPrinterSettings dps, Figure backgroundFigure, IList<Figure> figures)
+        {
+            // margin
+            dg.Translate(new DPoint(dps.Margins.Left, dps.Margins.Top));
+            // scale
+            double sx = (dps.PageSize.X - dps.Margins.Left - dps.Margins.Right) / pageSize.X;
+            double sy = (dps.PageSize.Y - dps.Margins.Top - dps.Margins.Bottom) / pageSize.Y;
+            if (sx > sy)
+                dg.Scale(sy, sy);
+            else
+                dg.Scale(sx, sx);
+            // paint figures
+            base.Paint(dg, backgroundFigure, figures);
         }
     }
 }
