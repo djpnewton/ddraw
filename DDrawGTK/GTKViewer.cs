@@ -276,41 +276,42 @@ namespace DDraw.GTK
         }
     }
     
-    public struct DGTKPrinterSettings
+    public class GTKPrintSettings : DPrintSettings
     {
         public double DpiX;
         public double DpiY;
         public PageSetup PageSetup;
 
-        public DGTKPrinterSettings(double dpiX, double dpiY, PageSetup pageSetup)
+        public GTKPrintSettings(double dpiX, double dpiY, PageSetup pageSetup)
         {
             DpiX = dpiX;
             DpiY = dpiY;
             PageSetup = pageSetup;
         }
-    }
-
-    public class DGTKPrintViewer : DPrintViewer
-    {
-        public void Paint(DGraphics dg, DGTKPrinterSettings dps, Figure backgroundFigure, IList<Figure> figures)
+        
+        public override double MarginLeft
         {
-            // margin
-            dg.Translate(new DPoint(dps.PageSetup.GetLeftMargin(Unit.Pixel),
-                                    dps.PageSetup.GetTopMargin(Unit.Pixel)));
-            // scale
-            
-            double sx = (dps.PageSetup.GetPageWidth(Unit.Pixel) - 
-                         dps.PageSetup.GetLeftMargin(Unit.Pixel) - 
-                         dps.PageSetup.GetRightMargin(Unit.Pixel)) / PageSize.X;
-            double sy = (dps.PageSetup.GetPageHeight(Unit.Pixel) - 
-                         dps.PageSetup.GetTopMargin(Unit.Pixel) - 
-                         dps.PageSetup.GetBottomMargin(Unit.Pixel)) / PageSize.Y;
-            if (sx > sy)
-                dg.Scale(sy, sy);
-            else
-                dg.Scale(sx, sx);
-            // paint figures
-            base.Paint(dg, backgroundFigure, figures);
+            get { return PageSetup.GetLeftMargin(Unit.Pixel); }
+        }
+        public override double MarginTop
+        {
+            get { return PageSetup.GetTopMargin(Unit.Pixel); }
+        }
+        public override double MarginRight
+        {
+            get { return PageSetup.GetRightMargin(Unit.Pixel); }
+        }
+        public override double MarginBottom
+        {
+            get { return PageSetup.GetBottomMargin(Unit.Pixel); }
+        }
+        public override double PageWidth
+        {
+            get { return PageSetup.GetPageWidth(Unit.Pixel); }
+        }
+        public override double PageHeight
+        {
+            get { return PageSetup.GetPageHeight(Unit.Pixel); }
         }
     }
 }

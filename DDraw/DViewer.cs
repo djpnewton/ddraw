@@ -243,11 +243,35 @@ namespace DDraw
         abstract public void SetCursor(DCursor cursor);
     }
 
-    public abstract class DPrinterSettings
+    public abstract class DPrintSettings
     {
+        public abstract double MarginLeft
+        {
+            get;
+        }
+        public abstract double MarginTop
+        {
+            get;
+        }    
+        public abstract double MarginRight
+        {
+            get;
+        }
+        public abstract double MarginBottom
+        {
+            get;
+        }
+        public abstract double PageWidth
+        {
+            get;
+        }
+        public abstract double PageHeight
+        {
+            get;
+        }
     }
 
-    public abstract class DPrintViewer : DViewer
+    public class DPrintViewer : DViewer
     {
         DPoint pageSize;
         public override void SetPageSize(DPoint pageSize)
@@ -257,6 +281,21 @@ namespace DDraw
         protected override DPoint PageSize
         {
             get { return pageSize; }
+        }
+        
+        public void Paint(DGraphics dg, DPrintSettings dps, Figure backgroundFigure, IList<Figure> figures)
+        {
+            // margin
+            dg.Translate(new DPoint(dps.MarginLeft, dps.MarginTop));
+            // scale
+            double sx = (dps.PageWidth - dps.MarginLeft - dps.MarginRight) / PageSize.X;
+            double sy = (dps.PageHeight - dps.MarginTop - dps.MarginBottom) / PageSize.Y;
+            if (sx > sy)
+                dg.Scale(sy, sy);
+            else
+                dg.Scale(sx, sx);
+            // paint figures
+            base.Paint(dg, backgroundFigure, figures);
         }
     }
 }

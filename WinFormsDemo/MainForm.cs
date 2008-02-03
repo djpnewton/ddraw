@@ -1234,7 +1234,7 @@ namespace WinFormsDemo
                 }
                 if (pf.ShowDialog() == DialogResult.OK)
                 {
-                    DWFPrintViewer dvPrint = new DWFPrintViewer();
+                    DPrintViewer dvPrint = new DPrintViewer();
                     // page iteration vars
                     List<DEngine>.Enumerator engineEnumerator = dengines.GetEnumerator();
                     engineEnumerator.MoveNext();
@@ -1265,11 +1265,7 @@ namespace WinFormsDemo
                         }
                         // print the page using the e2.Graphics GDI+ object
                         dvPrint.SetPageSize(de.PageSize);
-                        DWFPrinterSettings dps = new DWFPrinterSettings(e2.PageSettings.PrinterResolution.X,
-                            e2.PageSettings.PrinterResolution.Y,
-                            new DPoint(e2.PageSettings.PaperSize.Width, e2.PageSettings.PaperSize.Height),
-                            new DRect(e2.PageSettings.Margins.Left, e2.PageSettings.Margins.Top,
-                                      e2.PageSettings.Margins.Right, e2.PageSettings.Margins.Bottom, 0));
+                        WFPrintSettings dps = new WFPrintSettings(e2.PageSettings);
                         dvPrint.Paint(new WFGraphics(e2.Graphics), dps, de.GetBackgroundFigure(), de.Figures);
                     };
                     // call print operation

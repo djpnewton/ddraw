@@ -87,8 +87,6 @@ namespace GTKDemo
             de.AddFigure(f);
             de.UndoRedoCommit();
             de.UndoRedoClearHistory();
-            
-            de.PageSize = new DPoint(300, 1000);
             // resize window			
 			Resize(400, 300);
 		}
@@ -180,10 +178,10 @@ namespace GTKDemo
             po.DrawPage += delegate(object o2, DrawPageArgs args2)
             {
                 GTKGraphics dg = new GTKGraphics(args2.Context.CairoContext);
-                DGTKPrintViewer dvPrint = new DGTKPrintViewer();
+                DPrintViewer dvPrint = new DPrintViewer();
                 dvPrint.SetPageSize(de.PageSize);
-                DGTKPrinterSettings dps = 
-                    new DGTKPrinterSettings(args2.Context.DpiX, args2.Context.DpiY, args2.Context.PageSetup);                                                                                    
+                GTKPrintSettings dps = 
+                    new GTKPrintSettings(args2.Context.DpiX, args2.Context.DpiY, args2.Context.PageSetup);                                                                                    
                 dvPrint.Paint(dg, dps, de.GetBackgroundFigure(), de.Figures);
             };
             po.Run(PrintOperationAction.PrintDialog, this);

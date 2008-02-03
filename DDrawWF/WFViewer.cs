@@ -4,6 +4,7 @@ using System.Text;
 using System.Windows.Forms;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.Drawing.Printing;
 
 namespace DDraw.WinForms
 {
@@ -279,37 +280,38 @@ namespace DDraw.WinForms
         }
     }
     
-    public class DWFPrinterSettings : DPrinterSettings
+    public class WFPrintSettings : DPrintSettings
     {
-        public double DpiX;
-        public double DpiY;
-        public DPoint PageSize; // 100'ths of an inch
-        public DRect Margins; // 100'ths of an inch
+        public PageSettings PageSettings;
 
-        public DWFPrinterSettings(double dpiX, double dpiY, DPoint pageSize, DRect margins)
+        public WFPrintSettings(PageSettings pageSettings)
         {
-            DpiX = dpiX;
-            DpiY = dpiY;
-            PageSize = pageSize;
-            Margins = margins;
+            pageSettings = pageSettings;
         }
-    }
-
-    public class DWFPrintViewer : DPrintViewer
-    {        
-        public void Paint(DGraphics dg, DWFPrinterSettings dps, Figure backgroundFigure, IList<Figure> figures)
+        
+        public override double MarginLeft
         {
-            // margin
-            dg.Translate(new DPoint(dps.Margins.Left, dps.Margins.Top));
-            // scale
-            double sx = (dps.PageSize.X - dps.Margins.Left - dps.Margins.Right) / PageSize.X;
-            double sy = (dps.PageSize.Y - dps.Margins.Top - dps.Margins.Bottom) / PageSize.Y;
-            if (sx > sy)
-                dg.Scale(sy, sy);
-            else
-                dg.Scale(sx, sx);
-            // paint figures
-            base.Paint(dg, backgroundFigure, figures);
+            get { return PageSettings.Margins.Left; }
+        }
+        public override double MarginTop
+        {
+            get { return PageSettings.Margins.Top; }
+        }
+        public override double MarginRight
+        {
+            get { return PageSettings.Margins.Right; }
+        }
+        public override double MarginBottom
+        {
+            get { return PageSettings.Margins.Bottom; }
+        }
+        public override double PageWidth
+        {
+            get { return PageSettings.PaperSize.Width; }
+        }
+        public override double PageHeight
+        {
+            get { return PageSettings.PaperSize.Height; }
         }
     }
 }
