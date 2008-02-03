@@ -137,6 +137,7 @@ namespace DDraw
         abstract public void DrawPolyline(DPoints pts, DColor color, double alpha, double strokeWidth, DStrokeStyle strokeStyle, DStrokeJoin strokeJoin, DStrokeCap strokeCap);
         abstract public void FillPolygon(DPoints pts, DColor color, double alpha);
         abstract public void DrawBitmap(DBitmap bitmap, DPoint pt);
+        abstract public void DrawBitmap(DBitmap bitmap, DPoint pt, double alpha);
         abstract public void DrawBitmap(DBitmap bitmap, DRect rect);
         abstract public void DrawBitmap(DBitmap bitmap, DRect rect, double alpha);
         abstract public void DrawText(string text, string fontName, double fontSize, DPoint pt, DColor color);
@@ -152,6 +153,9 @@ namespace DDraw
         abstract public void Translate(double tx, double ty);
         abstract public void ResetTransform();
 
+        abstract public void Clip(DRect r);
+        abstract public void ResetClip();
+
         abstract public DCompositingMode CompositingMode
         {
             get;
@@ -162,6 +166,9 @@ namespace DDraw
             get;
             set;
         }
+
+        abstract public void Save();
+        abstract public void Restore();
 
         public abstract void Dispose();
     }

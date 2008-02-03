@@ -389,6 +389,11 @@ namespace DDraw.WinForms
             g.DrawImage((Bitmap)bitmap.NativeBmp, new PointF((float)pt.X, (float)pt.Y));
         }
 
+        public override void DrawBitmap(DBitmap bitmap, DPoint pt, double alpha)
+        {
+            DrawBitmap(bitmap, new DRect(pt.X, pt.Y, bitmap.Width, bitmap.Height), alpha);
+        }
+
         public override void DrawBitmap(DBitmap bitmap, DRect rect)
         {
             g.DrawImage((Bitmap)bitmap.NativeBmp, MakeRect(rect.Inflate(1, 1)));
@@ -493,6 +498,16 @@ namespace DDraw.WinForms
             g.ResetTransform();
         }
 
+        public override void Clip(DRect r)
+        {
+            g.SetClip(MakeRect(r));
+        }
+
+        public override void ResetClip()
+        {
+            g.ResetClip();
+        }
+
         public override DCompositingMode CompositingMode
         {
             get
@@ -521,6 +536,18 @@ namespace DDraw.WinForms
                 else
                     g.SmoothingMode = SmoothingMode.None;
             }
+        }
+
+        Stack<GraphicsState> gsStack = new Stack<GraphicsState>();
+
+        public override void Save()
+        {
+            gsStack.Push(g.Save());
+        }
+
+        public override void Restore()
+        {
+            g.Restore(gsStack.Pop());
         }
 
         public override void Dispose()

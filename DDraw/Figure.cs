@@ -108,6 +108,8 @@ namespace DDraw
         }
     }
 
+    public enum DImagePosition { Stretch, Normal, Center, Tile, StretchWithAspectRatio }
+
     public interface IImage
     {
         DBitmap Bitmap
@@ -116,6 +118,12 @@ namespace DDraw
         }
 
         byte[] ImageData
+        {
+            get;
+            set;
+        }
+
+        DImagePosition Position
         {
             get;
             set;
@@ -1257,6 +1265,17 @@ namespace DDraw
             }
         }
 
+        UndoRedo<DImagePosition> _pos = new UndoRedo<DImagePosition>(DImagePosition.Stretch);
+        public DImagePosition Position
+        {
+            get { return _pos.Value; }
+            set
+            {
+                if (value != _pos.Value)
+                    _pos.Value = value;
+            }
+        }
+
         public ImageFigure()
         { }
 
@@ -1267,7 +1286,45 @@ namespace DDraw
 
         protected override void PaintBody(DGraphics dg)
         {
-            dg.DrawBitmap(bitmap, Rect, Alpha);
+            dg.Save();
+            dg.Clip(Rect);
+            switch (Position)
+            {
+                case DImagePosition.Stretch:
+                    dg.DrawBitmap(bitmap, Rect, Alpha);
+                    break;
+                case DImagePosition.Normal:
+                    dg.DrawBitmap(bitmap, TopLeft, Alpha);
+                    break;
+                case DImagePosition.Center:
+                    dg.DrawBitmap(bitmap, new DPoint(X + Width / 2 - bitmap.Width / 2,
+                                                     Y + Height / 2 - bitmap.Height / 2), Alpha);
+                    break;
+                case DImagePosition.Tile:
+                    int xTimes = (int)Math.Ceiling(Width / bitmap.Width);
+                    int YTimes = (int)Math.Ceiling(Height / bitmap.Height);
+                    for (int i = 0; i < xTimes; i++)
+                        for (int j = 0; j < YTimes; j++)
+                            dg.DrawBitmap(bitmap, new DPoint(X + i * bitmap.Width, Y + j * bitmap.Height), Alpha);
+                    break;
+                case DImagePosition.StretchWithAspectRatio:
+                    double sx = Width / bitmap.Width;
+                    double sy = Height / bitmap.Height;
+                    DRect bmpRect;
+                    if (sx > sy)
+                    {
+                        double w = sy * bitmap.Width;
+                        bmpRect = new DRect(X + Width / 2 - w / 2, Y, w, Height);
+                    }
+                    else
+                    {
+                        double h = sx * bitmap.Height;
+                        bmpRect = new DRect(X, Y + Height / 2 - h / 2, Width, h);
+                    }
+                    dg.DrawBitmap(bitmap, bmpRect, Alpha);
+                    break;
+            }
+            dg.Restore();
         }
     }
 

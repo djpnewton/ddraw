@@ -368,8 +368,13 @@ namespace DDraw.GTK
         
         public override void DrawBitmap(DBitmap bitmap, DPoint pt)
         {
+            DrawBitmap(bitmap, pt, 1);
+        }
+
+        public override void DrawBitmap(DBitmap bitmap, DPoint pt, double alpha)
+        {
             cr.SetSource((ImageSurface)bitmap.NativeBmp, pt.X, pt.Y);
-            cr.Paint();
+            cr.PaintWithAlpha(alpha);
         }
 
         public override void DrawBitmap(DBitmap bitmap, DRect rect)
@@ -503,6 +508,17 @@ namespace DDraw.GTK
         {
             cr.Matrix = new Matrix(1, 0, 0, 0, 1, 0); // identity matrix
         }
+
+        public override void Clip(DRect r)
+        {
+            cr.Rectangle(r.X, r.Y, r.Width, r.Height);
+            cr.Clip();
+        }
+
+        public override void ResetClip()
+        {
+            cr.ResetClip();
+        }
         
         public override DCompositingMode CompositingMode
         {
@@ -532,6 +548,16 @@ namespace DDraw.GTK
                 else
                     cr.Antialias = Cairo.Antialias.None;
             }
+        }
+
+        public override void Save()
+        {
+            cr.Save();
+        }
+
+        public override void Restore()
+        {
+            cr.Restore();
         }
 
         public override void Dispose()
