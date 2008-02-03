@@ -494,9 +494,9 @@ namespace DDraw.GTK
             cr.Translate(-center.X, -center.Y);
         }
 
-        public override void Translate(DPoint offset)
+        public override void Translate(double tx, double ty)
         {
-            cr.Translate(offset.X, offset.Y);
+            cr.Translate(tx, ty);
         }
 
         public override void ResetTransform()

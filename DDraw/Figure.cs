@@ -1836,7 +1836,7 @@ namespace DDraw
                     DBitmap bmp = GraphicsHelper.MakeBitmap(rS.Width, rS.Height);
                     DGraphics bmpGfx = GraphicsHelper.MakeGraphics(bmp);
                     bmpGfx.AntiAlias = dg.AntiAlias;
-                    bmpGfx.Translate(new DPoint(-rS.X , -rS.Y));
+                    bmpGfx.Translate(-rS.X , -rS.Y);
                     foreach (Figure f in childFigs)
                         f.Paint(bmpGfx);
                     dg.DrawBitmap(bmp, rS, Alpha);

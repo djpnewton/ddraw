@@ -182,7 +182,7 @@ namespace DDraw
                 DGraphics dg = GraphicsHelper.MakeGraphics(bmp);
                 dg.AntiAlias = antiAlias;
                 dg.FillRect(-1, -1, right - left + 2, bottom - top + 2, DColor.White, 1);
-                dg.Translate(new DPoint(-left, -top));
+                dg.Translate(-left, -top);
                 foreach (Figure f in figures)
                     f.Paint(dg);
                 return bmp;

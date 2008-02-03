@@ -286,7 +286,7 @@ namespace DDraw.WinForms
 
         public WFPrintSettings(PageSettings pageSettings)
         {
-            pageSettings = pageSettings;
+            PageSettings = pageSettings;
         }
         
         public override double MarginLeft

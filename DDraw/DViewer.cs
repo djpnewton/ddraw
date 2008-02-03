@@ -212,7 +212,8 @@ namespace DDraw
             else
             {
                 dg.FillRect(0, 0, Width, Height, new DColor(200, 200, 200), 1); // gray background
-                dg.Translate(CanvasOffset()); // center drawing
+                DPoint offset = CanvasOffset();
+                dg.Translate(offset.X, offset.Y); // center drawing
                 dg.Scale(scale, scale); // scale canvas
                 dg.FillRect(SHADOW_OFFSET, SHADOW_OFFSET, PageSize.X, PageSize.Y, DColor.Black, 1); // draw black canvas shadow
             }
@@ -286,16 +287,28 @@ namespace DDraw
         public void Paint(DGraphics dg, DPrintSettings dps, Figure backgroundFigure, IList<Figure> figures)
         {
             // margin
-            dg.Translate(new DPoint(dps.MarginLeft, dps.MarginTop));
-            // scale
-            double sx = (dps.PageWidth - dps.MarginLeft - dps.MarginRight) / PageSize.X;
-            double sy = (dps.PageHeight - dps.MarginTop - dps.MarginBottom) / PageSize.Y;
+            dg.Translate(dps.MarginLeft, dps.MarginTop);
+            // scale & center
+            double pgAreaX = dps.PageWidth - dps.MarginLeft - dps.MarginRight;
+            double pgAreaY = dps.PageHeight - dps.MarginTop - dps.MarginBottom;
+            double sx = pgAreaX / PageSize.X;
+            double sy = pgAreaY / PageSize.Y;
             if (sx > sy)
+            {
+                dg.Translate(pgAreaX / 2, 0);
                 dg.Scale(sy, sy);
+                dg.Translate(- PageSize.X / 2, 0);
+            }
             else
+            {
+                dg.Translate(0, pgAreaY / 2);
                 dg.Scale(sx, sx);
+                dg.Translate(0, - PageSize.Y / 2);
+            }
             // paint figures
             base.Paint(dg, backgroundFigure, figures);
+            // paint outline
+            dg.DrawRect(0, 0, pageSize.X, pageSize.Y, DColor.Black);
         }
     }
 }
