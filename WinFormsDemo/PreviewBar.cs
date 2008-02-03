@@ -57,6 +57,7 @@ namespace WinFormsDemo
         public void Clear()
         {
             pnlPreviews.Controls.Clear();
+            previews.Clear();
         }
 
         void p_Click(object sender, EventArgs e)
