@@ -81,7 +81,8 @@ namespace DDraw.WinForms
 
         public override void Dispose()
         {
-            ((Bitmap)nativeBmp).Dispose();
+            if (nativeBmp != null)
+                ((Bitmap)nativeBmp).Dispose();
         }
 
         public override int Width

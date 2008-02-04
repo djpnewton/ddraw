@@ -462,12 +462,12 @@ namespace DDraw
             UpdateViewers();
         }
 
-        public RectbaseFigure GetBackgroundFigure()
+        public BackgroundFigure GetBackgroundFigure()
         {
             return figureHandler.BackgroundFigure;
         }
 
-        public void SetBackgroundFigure(RectbaseFigure f)
+        public void SetBackgroundFigure(BackgroundFigure f)
         {
             f.Rect = new DRect(0, 0, PageSize.X, PageSize.Y);
             figureHandler.BackgroundFigure = f;

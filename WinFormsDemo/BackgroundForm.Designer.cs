@@ -36,6 +36,7 @@ namespace WinFormsDemo
             this.btnOk = new System.Windows.Forms.Button();
             this.btnCancel = new System.Windows.Forms.Button();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.cbImagePos = new System.Windows.Forms.ComboBox();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -43,7 +44,7 @@ namespace WinFormsDemo
             // 
             this.btnColor.Location = new System.Drawing.Point(12, 35);
             this.btnColor.Name = "btnColor";
-            this.btnColor.Size = new System.Drawing.Size(75, 23);
+            this.btnColor.Size = new System.Drawing.Size(59, 23);
             this.btnColor.TabIndex = 0;
             this.btnColor.Text = "Color";
             this.btnColor.UseVisualStyleBackColor = true;
@@ -64,7 +65,7 @@ namespace WinFormsDemo
             // rbImage
             // 
             this.rbImage.AutoSize = true;
-            this.rbImage.Location = new System.Drawing.Point(108, 12);
+            this.rbImage.Location = new System.Drawing.Point(162, 12);
             this.rbImage.Name = "rbImage";
             this.rbImage.Size = new System.Drawing.Size(54, 17);
             this.rbImage.TabIndex = 2;
@@ -75,9 +76,9 @@ namespace WinFormsDemo
             // 
             // btnImageBrowse
             // 
-            this.btnImageBrowse.Location = new System.Drawing.Point(108, 35);
+            this.btnImageBrowse.Location = new System.Drawing.Point(162, 35);
             this.btnImageBrowse.Name = "btnImageBrowse";
-            this.btnImageBrowse.Size = new System.Drawing.Size(75, 23);
+            this.btnImageBrowse.Size = new System.Drawing.Size(59, 23);
             this.btnImageBrowse.TabIndex = 3;
             this.btnImageBrowse.Text = "Browse..";
             this.btnImageBrowse.UseVisualStyleBackColor = true;
@@ -85,9 +86,9 @@ namespace WinFormsDemo
             // 
             // pictureBox1
             // 
-            this.pictureBox1.Location = new System.Drawing.Point(108, 64);
+            this.pictureBox1.Location = new System.Drawing.Point(162, 64);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(75, 76);
+            this.pictureBox1.Size = new System.Drawing.Size(144, 89);
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBox1.TabIndex = 4;
             this.pictureBox1.TabStop = false;
@@ -95,7 +96,7 @@ namespace WinFormsDemo
             // btnOk
             // 
             this.btnOk.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.btnOk.Location = new System.Drawing.Point(27, 159);
+            this.btnOk.Location = new System.Drawing.Point(150, 186);
             this.btnOk.Name = "btnOk";
             this.btnOk.Size = new System.Drawing.Size(75, 23);
             this.btnOk.TabIndex = 5;
@@ -105,7 +106,7 @@ namespace WinFormsDemo
             // btnCancel
             // 
             this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.btnCancel.Location = new System.Drawing.Point(108, 159);
+            this.btnCancel.Location = new System.Drawing.Point(231, 186);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(75, 23);
             this.btnCancel.TabIndex = 6;
@@ -116,8 +117,23 @@ namespace WinFormsDemo
             // 
             this.panel1.Location = new System.Drawing.Point(12, 64);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(75, 76);
+            this.panel1.Size = new System.Drawing.Size(144, 116);
             this.panel1.TabIndex = 7;
+            // 
+            // cbImagePos
+            // 
+            this.cbImagePos.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cbImagePos.FormattingEnabled = true;
+            this.cbImagePos.Items.AddRange(new object[] {
+            "Stretch",
+            "Top Left",
+            "Center",
+            "Tile",
+            "Stretch (Keep Aspect Ratio)"});
+            this.cbImagePos.Location = new System.Drawing.Point(162, 159);
+            this.cbImagePos.Name = "cbImagePos";
+            this.cbImagePos.Size = new System.Drawing.Size(144, 21);
+            this.cbImagePos.TabIndex = 8;
             // 
             // BackgroundForm
             // 
@@ -125,12 +141,13 @@ namespace WinFormsDemo
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btnCancel;
-            this.ClientSize = new System.Drawing.Size(195, 194);
+            this.ClientSize = new System.Drawing.Size(318, 218);
+            this.Controls.Add(this.pictureBox1);
+            this.Controls.Add(this.btnImageBrowse);
+            this.Controls.Add(this.cbImagePos);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.btnOk);
-            this.Controls.Add(this.pictureBox1);
-            this.Controls.Add(this.btnImageBrowse);
             this.Controls.Add(this.rbImage);
             this.Controls.Add(this.rbColor);
             this.Controls.Add(this.btnColor);
@@ -158,5 +175,6 @@ namespace WinFormsDemo
         private System.Windows.Forms.Button btnOk;
         private System.Windows.Forms.Button btnCancel;
         private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.ComboBox cbImagePos;
     }
 }

@@ -11,8 +11,8 @@ namespace DDraw
 
     public class DFigureHandler
     {
-        UndoRedo<RectbaseFigure> _backgroundFigure = new UndoRedo<RectbaseFigure>();
-        public RectbaseFigure BackgroundFigure
+        UndoRedo<BackgroundFigure> _backgroundFigure = new UndoRedo<BackgroundFigure>();
+        public BackgroundFigure BackgroundFigure
         {
             get { return _backgroundFigure.Value; }
             set 
@@ -47,9 +47,8 @@ namespace DDraw
 
         public DFigureHandler()
         {
-            BackgroundFigure = new RectFigure();
-            ((RectFigure)BackgroundFigure).Fill = DColor.White;
-            ((RectFigure)BackgroundFigure).StrokeWidth = 0;
+            BackgroundFigure = new BackgroundFigure();
+            BackgroundFigure.Fill = DColor.White;
             BackgroundFigure.Width = PageTools.DefaultPageWidth;
             BackgroundFigure.Height = PageTools.DefaultPageHeight;
         }

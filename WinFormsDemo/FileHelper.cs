@@ -108,8 +108,8 @@ namespace WinFormsDemo
                         if (data != null)
                         {
                             List<Figure> figs = FigureSerialize.FromXml(encoding.GetString(data));
-                            if (figs.Count == 1 && figs[0] is RectbaseFigure)
-                                de.SetBackgroundFigure((RectbaseFigure)figs[0]);
+                            if (figs.Count == 1 && figs[0] is BackgroundFigure)
+                                de.SetBackgroundFigure((BackgroundFigure)figs[0]);
                         }
                     }
                     // get rid of undo history

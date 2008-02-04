@@ -55,8 +55,12 @@ namespace DDraw
             if (f is IImage)
             {
                 wr.WriteStartElement("Image");
-                wr.WriteAttributeString("Type", "base64");
-                wr.WriteString(Convert.ToBase64String(((IImage)f).ImageData));
+                wr.WriteAttributeString("Position", ((IImage)f).Position.ToString());
+                if (((IImage)f).ImageData != null)
+                {
+                    wr.WriteAttributeString("Type", "base64");
+                    wr.WriteString(Convert.ToBase64String(((IImage)f).ImageData));
+                }
                 wr.WriteEndElement();
             }
             if (f is ITextable)
@@ -270,9 +274,18 @@ namespace DDraw
         static void ApplyImage(XmlReader re, IImage b)
         {
             re.MoveToContent();
-            re.MoveToAttribute("Type");
-            if (re.LocalName == "Type" && re.Value == "base64")
-                b.ImageData = Convert.FromBase64String(re.ReadString());
+            for (int i = 0; i < re.AttributeCount; i++)
+            {
+                re.MoveToAttribute(i);
+                if (re.LocalName == "Type" && re.Value == "base64")
+                {
+                    string data = re.ReadString();
+                    if (data.Length > 0)
+                        b.ImageData = Convert.FromBase64String(data);
+                }
+                else if (re.LocalName == "Position")
+                    b.Position = (DImagePosition)Enum.Parse(typeof(DImagePosition), re.Value, true);
+            }
         }
 
         static void ApplyText(XmlReader re, ITextable t)

@@ -15,8 +15,8 @@ namespace WinFormsDemo
 
     public partial class BackgroundForm : Form
     {
-        RectbaseFigure backgroundFigure;
-        public RectbaseFigure BackgroundFigure
+        BackgroundFigure backgroundFigure;
+        public BackgroundFigure BackgroundFigure
         {
             get { return backgroundFigure; }
             set 
@@ -30,13 +30,17 @@ namespace WinFormsDemo
         {
             get
             {
-                if (backgroundFigure is RectFigure)
+                if (backgroundFigure.ImageData == null)
                     return BackgroundType.Color;
-                else if (backgroundFigure is ImageFigure)
-                    return BackgroundType.Image;
                 else
-                    return BackgroundType.None;
+                    return BackgroundType.Image;
             }
+        }
+
+        DImagePosition ImagePosition
+        {
+            get { return (DImagePosition)cbImagePos.SelectedIndex; }
+            set { cbImagePos.SelectedIndex = (int)value; }
         }
 
         public BackgroundForm()
@@ -67,16 +71,16 @@ namespace WinFormsDemo
 
         private void BackgroundForm_Shown(object sender, EventArgs e)
         {
+            panel1.BackColor = WFHelper.MakeColor(backgroundFigure.Fill);
             pictureBox1.Image = pictureBox1.ErrorImage;
+            ImagePosition = DImagePosition.Stretch;
             if (BackgroundType == BackgroundType.Color)
-            {
-                panel1.BackColor = WFHelper.MakeColor(((RectFigure)backgroundFigure).Fill);
                 rbColor.Checked = true;
-            }
             else if (BackgroundType == BackgroundType.Image)
             {
-                if (((ImageFigure)backgroundFigure).Bitmap != null)
-                    pictureBox1.Image = (Bitmap)((ImageFigure)backgroundFigure).Bitmap.NativeBmp;
+                if (backgroundFigure.Bitmap != null)
+                    pictureBox1.Image = (Bitmap)backgroundFigure.Bitmap.NativeBmp;
+                ImagePosition = backgroundFigure.Position;
                 rbImage.Checked = true;
             }
             UpdateControls();
@@ -84,10 +88,10 @@ namespace WinFormsDemo
 
         void UpdateControls()
         {
-            btnColor.Enabled = rbColor.Checked;
             panel1.Enabled = rbColor.Checked;
             btnImageBrowse.Enabled = rbImage.Checked;
             pictureBox1.Enabled = rbImage.Checked;
+            cbImagePos.Enabled = rbImage.Checked;
         }
 
         private void rbColor_CheckedChanged(object sender, EventArgs e)
@@ -104,25 +108,19 @@ namespace WinFormsDemo
         {
             if (DialogResult == DialogResult.OK)
             {
+                backgroundFigure.Fill = WFHelper.MakeColor(panel1.BackColor);
                 if (rbColor.Checked)
-                {
-                    if (!(backgroundFigure is RectFigure) ||
-                        WFHelper.MakeColor(((RectFigure)backgroundFigure).Fill) != panel1.BackColor)
-                    {
-                        backgroundFigure = new RectFigure();
-                        ((RectFigure)backgroundFigure).Fill = WFHelper.MakeColor(panel1.BackColor);
-                        ((RectFigure)backgroundFigure).StrokeWidth = 0;
-                    }
-                }
+                    backgroundFigure.ImageData = null;
                 else if (rbImage.Checked)
                 {
-                    if (!(backgroundFigure is ImageFigure) ||
-                        ((ImageFigure)backgroundFigure).Bitmap == null ||
-                        ((ImageFigure)backgroundFigure).Bitmap.NativeBmp != pictureBox1.Image)
+                    if ((backgroundFigure.Bitmap == null) || 
+                        backgroundFigure.Bitmap.NativeBmp != (Bitmap)pictureBox1.Image ||
+                        backgroundFigure.Position != ImagePosition)
                     {
                         byte[] imageData = (byte[])TypeDescriptor.GetConverter((Bitmap)pictureBox1.Image).
                             ConvertTo((Bitmap)pictureBox1.Image, typeof(byte[]));
-                        backgroundFigure = new ImageFigure(new DRect(), 0, imageData);
+                        backgroundFigure.ImageData = imageData;
+                        backgroundFigure.Position = ImagePosition;
                     }
                 }
             }
