@@ -187,7 +187,10 @@ namespace DDraw
             string result = baseName;
             int i = 0;
             while (images.ContainsKey(result))
-                result = string.Concat(Path.GetFileNameWithoutExtension(baseName), i.ToString(), ".", Path.GetExtension(baseName));
+            {
+                result = string.Concat(Path.GetFileNameWithoutExtension(baseName), i.ToString(), Path.GetExtension(baseName));
+                i += 1;
+            }
             return result;
         }
 

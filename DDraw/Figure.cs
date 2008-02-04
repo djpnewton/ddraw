@@ -514,15 +514,17 @@ namespace DDraw
                 dg.DrawRect(r.X, r.Y, r.Width, r.Height, DColor.White, 1, Scale);
                 dg.DrawRect(r.X, r.Y, r.Width, r.Height, DColor.Black, 1, Scale, DStrokeStyle.Dot, DStrokeJoin.Mitre);
                 // draw resize handle
+                double hb = _handleBorder *Scale;
+                double hb2 = hb + hb;
                 r = GetResizeHandleRect();
-                if (_handleBorder != 0)
-                    r = r.Resize(_handleBorder, _handleBorder, -_handleBorder * 2, -_handleBorder * 2);
+                if (hb != 0)
+                    r = r.Resize(hb, hb, -hb2, -hb2);
                 dg.FillEllipse(r, DColor.Red);
                 dg.DrawEllipse(r.X, r.Y, r.Width, r.Height, DColor.Black, 1, Scale, DStrokeStyle.Solid);
                 // draw rotate handle
                 r = GetRotateHandleRect();
-                if (_handleBorder != 0)
-                    r = r.Resize(_handleBorder, _handleBorder, -_handleBorder * 2, -_handleBorder * 2);
+                if (hb != 0)
+                    r = r.Resize(hb, hb, -hb2, -hb2);
                 DPoint p1 = r.Center;
                 DPoint p2 = new DPoint(p1.X, selectRectY);
                 dg.DrawLine(p1, p2, DColor.White, 1, DStrokeStyle.Solid, Scale, DStrokeCap.Butt);
@@ -983,15 +985,17 @@ namespace DDraw
                 // apply transform
                 ApplyTransforms(dg);
                 // draw pt1 handle
+                double hb = _handleBorder * Scale;
+                double hb2 = hb + hb;
                 DRect r = GetPt1HandleRect();
-                if (_handleBorder != 0)
-                    r = r.Resize(_handleBorder, _handleBorder, -_handleBorder * 2, -_handleBorder * 2);
+                if (hb != 0)
+                    r = r.Resize(hb, hb, -hb2, -hb2);
                 dg.FillEllipse(r.X, r.Y, r.Width, r.Height, DColor.Red, 1);
                 dg.DrawEllipse(r.X, r.Y, r.Width, r.Height, DColor.Black, 1, Scale, DStrokeStyle.Solid);
                 // draw pt2 handle
                 r = GetPt2HandleRect();
-                if (_handleBorder != 0)
-                    r = r.Resize(_handleBorder, _handleBorder, -_handleBorder * 2, -_handleBorder * 2);
+                if (hb != 0)
+                    r = r.Resize(hb, hb, -hb2, -hb2);
                 dg.FillEllipse(r.X, r.Y, r.Width, r.Height, DColor.Red, 1);
                 dg.DrawEllipse(r.X, r.Y, r.Width, r.Height, DColor.Black, 1, Scale, DStrokeStyle.Solid);
                 // view outline
