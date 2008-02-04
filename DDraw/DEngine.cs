@@ -434,7 +434,7 @@ namespace DDraw
         public string Copy(List<Figure> figs, out DBitmap bmp, bool bmpAntiAlias)
         {
             bmp = FigureSerialize.FormatToBmp(figs, bmpAntiAlias);
-            return FigureSerialize.FormatToXml(figs);
+            return FigureSerialize.FormatToXml(figs, null);
         }
 
         public void PasteAsSelectedFigures(string data)

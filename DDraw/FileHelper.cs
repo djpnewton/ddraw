@@ -4,6 +4,7 @@ using System.Text;
 using System.IO;
 
 using DDraw;
+using DejaVu;
 using ICSharpCode.SharpZipLib.Zip;
 using Nini.Config;
 
@@ -15,6 +16,7 @@ namespace WinFormsDemo
         const string PAGESIZE = "PageSize";
         const string FIGURELIST = "figureList";
         const string BACKGROUNDFIGURE = "backgroundFigure";
+        const string IMAGES_DIR = "images";
 
         static void Write(ZipOutputStream zipOut, string entryName, byte[] data)
         {
@@ -32,20 +34,25 @@ namespace WinFormsDemo
             IniConfigSource source = new IniConfigSource();
             // write each page
             int i = 0;
+            Dictionary<string, byte[]> images = new Dictionary<string, byte[]>();
             foreach (DEngine de in dengines)
             {
                 IConfig config = source.AddConfig(string.Format("page{0}", i));
                 config.Set(PAGESIZE, DPoint.FormatToString(de.PageSize));
                 string figureListName = string.Format("figureList{0}.xml", i);
-                byte[] data = encoding.GetBytes(FigureSerialize.FormatToXml(de.Figures));
+                byte[] data = encoding.GetBytes(FigureSerialize.FormatToXml(de.Figures, images));
                 config.Set(FIGURELIST, figureListName);
                 Write(zipOut, figureListName, data);
                 string backgroundFigureName = string.Format("backgroundFigure{0}.xml", i);
                 config.Set(BACKGROUNDFIGURE, backgroundFigureName);
-                data = encoding.GetBytes(FigureSerialize.FormatToXml(de.GetBackgroundFigure()));
+                data = encoding.GetBytes(FigureSerialize.FormatToXml(de.GetBackgroundFigure(), images));
                 Write(zipOut, backgroundFigureName, data);
                 i += 1;
             }
+            // write images
+            foreach (KeyValuePair<string, byte[]> kvp in images)
+                if (kvp.Key != null && kvp.Key.Length > 0)
+                    Write(zipOut, IMAGES_DIR + Path.DirectorySeparatorChar + Path.GetFileName(kvp.Key), kvp.Value);
             // write pages ini
             Write(zipOut, PAGES_INI, encoding.GetBytes(source.ToString()));
             // finish
@@ -55,7 +62,15 @@ namespace WinFormsDemo
 
         static byte[] Read(ZipFile zf, string entryName)
         {
+            // search for entry name with forwardslash or backslash path seperators
+            entryName = entryName.Replace("/", @"\");
             int entryIdx = zf.FindEntry(entryName, true);
+            if (entryIdx == -1)
+            {
+                entryName = entryName.Replace(@"\", "/");
+                entryIdx = zf.FindEntry(entryName, true);
+            }
+            // read bytes if entry found
             if (entryIdx != -1)
             {
                 ZipEntry entry = zf[entryIdx];
@@ -97,7 +112,10 @@ namespace WinFormsDemo
                         {
                             List<Figure> figs = FigureSerialize.FromXml(encoding.GetString(data));
                             foreach (Figure f in figs)
+                            {
                                 de.AddFigure(f);
+                                LoadImage(zf, f);
+                            }
                         }
                     }
                     // set the background figure
@@ -109,7 +127,10 @@ namespace WinFormsDemo
                         {
                             List<Figure> figs = FigureSerialize.FromXml(encoding.GetString(data));
                             if (figs.Count == 1 && figs[0] is BackgroundFigure)
+                            {
+                                LoadImage(zf, figs[0]);
                                 de.SetBackgroundFigure((BackgroundFigure)figs[0]);
+                            }
                         }
                     }
                     // get rid of undo history
@@ -120,6 +141,15 @@ namespace WinFormsDemo
                 }
             }
             return res;
+        }
+
+        private static void LoadImage(ZipFile zf, Figure f)
+        {
+            if (f is IImage && ((IImage)f).FileName != null)
+                ((IImage)f).ImageData = Read(zf, string.Concat(IMAGES_DIR, Path.DirectorySeparatorChar, ((IImage)f).FileName));
+            if (f is IChildFigureable)
+                foreach (Figure child in ((IChildFigureable)f).ChildFigures)
+                    LoadImage(zf, child);
         }
     }
 }

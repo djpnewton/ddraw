@@ -135,9 +135,9 @@ namespace WinFormsDemo
             de.AddFigure(f);
             // bitmap images
             byte[] imageData = (byte[])TypeDescriptor.GetConverter(Resource1.technocolor).ConvertTo(Resource1.technocolor, typeof(byte[]));
-            f = new ImageFigure(new DRect(250, 50, 24, 16), 0, imageData);
+            f = new ImageFigure(new DRect(250, 50, 24, 16), 0, imageData, "technocolor.png");
             de.AddFigure(f);
-            f = new ImageFigure(new DRect(150, 150, 39, 50), 0, imageData);
+            f = new ImageFigure(new DRect(150, 150, 39, 50), 0, imageData, "technocolor.png");
             f.LockAspectRatio = true;
             de.AddFigure(f);
             // text figure
@@ -918,7 +918,7 @@ namespace WinFormsDemo
                 WFBitmap bmp = new WFBitmap(ofd.FileName);
 				de.UndoRedoStart("Add Image");
                 byte[] imageData = (byte[])TypeDescriptor.GetConverter(bmp.NativeBmp).ConvertTo(bmp.NativeBmp, typeof(byte[]));
-                de.AddFigure(new ImageFigure(new DRect(10, 10, bmp.Width, bmp.Height), 0, imageData));
+                de.AddFigure(new ImageFigure(new DRect(10, 10, bmp.Width, bmp.Height), 0, imageData, ofd.FileName));
 				de.UndoRedoCommit();
                 de.UpdateViewers();
             }
@@ -1094,7 +1094,7 @@ namespace WinFormsDemo
                 de.UndoRedoStart("Paste Bitmap");
                 Bitmap bmp = (Bitmap)iData.GetData(DataFormats.Bitmap, true);
                 byte[] imageData = (byte[])TypeDescriptor.GetConverter(bmp).ConvertTo(bmp, typeof(byte[]));
-                ImageFigure f = new ImageFigure(new DRect(10, 10, bmp.Width, bmp.Height), 0, imageData);
+                ImageFigure f = new ImageFigure(new DRect(10, 10, bmp.Width, bmp.Height), 0, imageData, "Clipboard.bmp");
                 de.PasteAsSelectedFigures(new List<Figure>(new Figure[] { f }));
                 de.UndoRedoCommit();
             }

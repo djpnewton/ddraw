@@ -13,104 +13,182 @@ namespace DDraw
     {
         public const string DDRAW_FIGURE_XML = "DDrawFigureXml";
 
-        static void FormatToXml(Figure f, XmlTextWriter wr)
+        public const string FIGURE_ELE = "Figure";
+        public const string TYPE_ATTR = "Type";
+        public const string DIMENSION_ELE = "Dimension";
+        public const string X_ATTR = "X";
+        public const string Y_ATTR = "Y";
+        public const string WIDTH_ATTR = "Width";
+        public const string HEIGHT_ATTR = "Height";
+        public const string ROTATION_ATTR = "Rotation";
+        public const string LOCKASPECTRATIO_ATTR = "LockAspectRatio";
+        public const string FILL_ELE = "Fill";
+        public const string COLOR_ATTR = "Color";
+        public const string STROKE_ELE = "Stroke";
+        public const string STROKEWIDTH_ATTR = "StrokeWidth";
+        public const string STROKESTYLE_ATTR = "StrokeStyle";
+        public const string STROKECAP_ATTR = "StrokeCap";
+        public const string STROKEJOIN_ATTR = "StrokeJoin";
+        public const string ALPHA_ELE = "Alpha";
+        public const string VALUE_ATTR = "Value";
+        public const string IMAGE_ELE = "Image";
+        public const string POSITION_ATTR = "Position";
+        public const string FILENAME_ATTR = "FileName";
+        public const string BASE64_VAL = "base64";
+        public const string TEXT_ELE = "Text";
+        public const string FONTNAME_ATTR = "FontName";
+        public const string FONTSIZE_ATTR = "FontSize";
+        public const string BOLD_ATTR = "Bold";
+        public const string ITALICS_ATTR = "Italics";
+        public const string UNDERLINE_ATTR = "Underline";
+        public const string STRIKETHROUGH_ATTR = "Strikethrough";
+        public const string CHILDFIGURES_ELE = "ChildFigures";
+        public const string LINESEGMENT_ELE = "LineSegment";
+        public const string PT1_ATTR = "Pt1";
+        public const string PT2_ATTR = "Pt2";
+        public const string POLYLINE_ELE = "Polyline";
+        public const string MARKER_ELE = "Marker";
+        public const string STARTMARKER_ATTR = "StartMarker";
+        public const string ENDMARKER_ATTR = "EndMarker";
+        public const string EDITABLEATTRIBUTES_ELE = "EditableAttributes";
+
+        static void FormatToXml(Figure f, XmlTextWriter wr, Dictionary<string, byte[]> images)
         {
-            wr.WriteStartElement("Figure");
-            wr.WriteAttributeString("Type", f.GetType().FullName);
+            wr.WriteStartElement(FIGURE_ELE);
+            wr.WriteAttributeString(TYPE_ATTR, f.GetType().FullName);
             if (f is IDimension)
             {
-                wr.WriteStartElement("Dimension");
+                wr.WriteStartElement(DIMENSION_ELE);
                 IDimension fd = (IDimension)f;
-                wr.WriteAttributeString("X", fd.X.ToString());
-                wr.WriteAttributeString("Y", fd.Y.ToString());
-                wr.WriteAttributeString("Width", fd.Width.ToString());
-                wr.WriteAttributeString("Height", fd.Height.ToString());
-                wr.WriteAttributeString("Rotation", fd.Rotation.ToString());
-                wr.WriteAttributeString("LockAspectRatio", fd.LockAspectRatio.ToString());
+                wr.WriteAttributeString(X_ATTR, fd.X.ToString());
+                wr.WriteAttributeString(Y_ATTR, fd.Y.ToString());
+                wr.WriteAttributeString(WIDTH_ATTR, fd.Width.ToString());
+                wr.WriteAttributeString(HEIGHT_ATTR, fd.Height.ToString());
+                wr.WriteAttributeString(ROTATION_ATTR, fd.Rotation.ToString());
+                wr.WriteAttributeString(LOCKASPECTRATIO_ATTR, fd.LockAspectRatio.ToString());
                 wr.WriteEndElement();
             }
             if (f is IFillable)
             {
-                wr.WriteStartElement("Fill");
-                wr.WriteAttributeString("Color", DColor.FormatToString(((IFillable)f).Fill));
+                wr.WriteStartElement(FILL_ELE);
+                wr.WriteAttributeString(COLOR_ATTR, DColor.FormatToString(((IFillable)f).Fill));
                 wr.WriteEndElement();
             }
             if (f is IStrokeable)
             {
-                wr.WriteStartElement("Stroke");
+                wr.WriteStartElement(STROKE_ELE);
                 IStrokeable fs = (IStrokeable)f;
-                wr.WriteAttributeString("Color", DColor.FormatToString(fs.Stroke));
-                wr.WriteAttributeString("StrokeWidth", fs.StrokeWidth.ToString());
-                wr.WriteAttributeString("StrokeStyle", fs.StrokeStyle.ToString());
-                wr.WriteAttributeString("StrokeCap", fs.StrokeCap.ToString());
-                wr.WriteAttributeString("StrokeJoin", fs.StrokeJoin.ToString());
+                wr.WriteAttributeString(COLOR_ATTR, DColor.FormatToString(fs.Stroke));
+                wr.WriteAttributeString(STROKEWIDTH_ATTR, fs.StrokeWidth.ToString());
+                wr.WriteAttributeString(STROKESTYLE_ATTR, fs.StrokeStyle.ToString());
+                wr.WriteAttributeString(STROKECAP_ATTR, fs.StrokeCap.ToString());
+                wr.WriteAttributeString(STROKEJOIN_ATTR, fs.StrokeJoin.ToString());
                 wr.WriteEndElement();
             }
             if (f is IAlphaBlendable)
             {
-                wr.WriteStartElement("Alpha");
-                wr.WriteAttributeString("Value", ((IAlphaBlendable)f).Alpha.ToString());
+                wr.WriteStartElement(ALPHA_ELE);
+                wr.WriteAttributeString(VALUE_ATTR, ((IAlphaBlendable)f).Alpha.ToString());
                 wr.WriteEndElement();
             }
             if (f is IImage)
             {
-                wr.WriteStartElement("Image");
-                wr.WriteAttributeString("Position", ((IImage)f).Position.ToString());
-                if (((IImage)f).ImageData != null)
+                wr.WriteStartElement(IMAGE_ELE);
+                IImage img = (IImage)f;
+                wr.WriteAttributeString(POSITION_ATTR, img.Position.ToString());
+                if (img.ImageData != null)
                 {
-                    wr.WriteAttributeString("Type", "base64");
-                    wr.WriteString(Convert.ToBase64String(((IImage)f).ImageData));
+                    if (images != null)
+                    {
+                        if (images.ContainsKey(img.FileName) && !BytesSame(images[img.FileName], img.ImageData))
+                        {
+                            string fileName = FindUniqueFileName(images, Path.GetFileName(img.FileName));
+                            images[fileName] = img.ImageData;
+                            wr.WriteAttributeString(FILENAME_ATTR, fileName);
+                        }
+                        else
+                        {
+                            images[img.FileName] = img.ImageData;
+                            wr.WriteAttributeString(FILENAME_ATTR, Path.GetFileName(img.FileName));
+                        }
+                    }
+                    else
+                    {
+                        wr.WriteAttributeString(FILENAME_ATTR, Path.GetFileName(img.FileName));
+                        wr.WriteAttributeString(TYPE_ATTR, BASE64_VAL);
+                        wr.WriteString(Convert.ToBase64String(img.ImageData));
+                    }
                 }
                 wr.WriteEndElement();
             }
             if (f is ITextable)
             {
-                wr.WriteStartElement("Text");
+                wr.WriteStartElement(TEXT_ELE);
                 ITextable ft = (ITextable)f;
-                wr.WriteAttributeString("FontName", ft.FontName);
-                wr.WriteAttributeString("FontSize", ft.FontSize.ToString());
-                wr.WriteAttributeString("Bold", ft.Bold.ToString());
-                wr.WriteAttributeString("Italics", ft.Italics.ToString());
-                wr.WriteAttributeString("Underline", ft.Underline.ToString());
-                wr.WriteAttributeString("Strikethrough", ft.Strikethrough.ToString());
+                wr.WriteAttributeString(FONTNAME_ATTR, ft.FontName);
+                wr.WriteAttributeString(FONTSIZE_ATTR, ft.FontSize.ToString());
+                wr.WriteAttributeString(BOLD_ATTR, ft.Bold.ToString());
+                wr.WriteAttributeString(ITALICS_ATTR, ft.Italics.ToString());
+                wr.WriteAttributeString(UNDERLINE_ATTR, ft.Underline.ToString());
+                wr.WriteAttributeString(STRIKETHROUGH_ATTR, ft.Strikethrough.ToString());
                 wr.WriteString(ft.Text);
                 wr.WriteEndElement();
             }
             if (f is IChildFigureable)
             {
-                wr.WriteStartElement("ChildFigures");
+                wr.WriteStartElement(CHILDFIGURES_ELE);
                 foreach (Figure childFigure in ((IChildFigureable)f).ChildFigures)
-                    FormatToXml(childFigure, wr);
+                    FormatToXml(childFigure, wr, images);
                 wr.WriteEndElement();
             }
             if (f is ILineSegment)
             {
-                wr.WriteStartElement("LineSegment");
+                wr.WriteStartElement(LINESEGMENT_ELE);
                 ILineSegment lf = (ILineSegment)f;
-                wr.WriteAttributeString("Pt1", DPoint.FormatToString(lf.Pt1));
-                wr.WriteAttributeString("Pt2", DPoint.FormatToString(lf.Pt2));
+                wr.WriteAttributeString(PT1_ATTR, DPoint.FormatToString(lf.Pt1));
+                wr.WriteAttributeString(PT2_ATTR, DPoint.FormatToString(lf.Pt2));
                 wr.WriteEndElement();
             }
             if (f is IPolyline)
             {
-                wr.WriteStartElement("Polyline");
+                wr.WriteStartElement(POLYLINE_ELE);
                 wr.WriteString(DPoints.FormatToString(((IPolyline)f).Points));
                 wr.WriteEndElement();
             }
             if (f is IMarkable)
             {
-                wr.WriteStartElement("Marker");
-                wr.WriteAttributeString("StartMarker", ((IMarkable)f).StartMarker.ToString());
-                wr.WriteAttributeString("EndMarker", ((IMarkable)f).EndMarker.ToString());
+                wr.WriteStartElement(MARKER_ELE);
+                wr.WriteAttributeString(STARTMARKER_ATTR, ((IMarkable)f).StartMarker.ToString());
+                wr.WriteAttributeString(ENDMARKER_ATTR, ((IMarkable)f).EndMarker.ToString());
                 wr.WriteEndElement();
             }
             if (f is IEditable)
             {
-                wr.WriteStartElement("EditableAttributes");
+                wr.WriteStartElement(EDITABLEATTRIBUTES_ELE);
                 wr.WriteString(((IEditable)f).EditAttrsToString());
                 wr.WriteEndElement();
             }
             wr.WriteEndElement();
+        }
+
+        private static bool BytesSame(byte[] a1, byte[] a2)
+        {
+            if (a1.Length != a2.Length)
+                return false;
+            else
+                for (int i = 0; i < a1.Length; i++)
+                    if (a1[i] != a2[i])
+                        return false;
+            return true;
+        }
+
+        private static string FindUniqueFileName(Dictionary<string, byte[]> images, string baseName)
+        {
+            string result = baseName;
+            int i = 0;
+            while (images.ContainsKey(result))
+                result = string.Concat(Path.GetFileNameWithoutExtension(baseName), i.ToString(), ".", Path.GetExtension(baseName));
+            return result;
         }
 
         static XmlTextWriter CreateXmlWriter(MemoryStream ms)
@@ -122,12 +200,12 @@ namespace DDraw
             return wr;
         }
 
-        public static string FormatToXml(Figure f)
+        public static string FormatToXml(Figure f, Dictionary<string, byte[]> images)
         {
             MemoryStream ms = new MemoryStream();
             XmlTextWriter wr = CreateXmlWriter(ms);
             wr.WriteStartDocument();
-            FormatToXml(f, wr);
+            FormatToXml(f, wr, images);
             wr.WriteEndDocument();
             wr.Flush();
             ms.Seek(0, SeekOrigin.Begin);
@@ -135,14 +213,14 @@ namespace DDraw
             return sr.ReadToEnd();
         }
 
-        public static string FormatToXml(IList<Figure> figures)
+        public static string FormatToXml(IList<Figure> figures, Dictionary<string, byte[]> images)
         {
             MemoryStream ms = new MemoryStream();
             XmlTextWriter wr = CreateXmlWriter(ms);
             wr.WriteStartDocument();
             wr.WriteStartElement("FigureList");
             foreach (Figure f in figures)
-                FormatToXml(f, wr);
+                FormatToXml(f, wr, images);
             wr.WriteEndElement();
             wr.WriteEndDocument();
             wr.Flush();
@@ -203,17 +281,17 @@ namespace DDraw
             for (int i = 0; i < re.AttributeCount; i++)
             {
                 re.MoveToAttribute(i);
-                if (re.LocalName == "X")
+                if (re.LocalName == X_ATTR)
                     double.TryParse(re.Value, out x);
-                else if (re.LocalName == "Y")
+                else if (re.LocalName == Y_ATTR)
                     double.TryParse(re.Value, out y);
-                else if (re.LocalName == "Width")
+                else if (re.LocalName == WIDTH_ATTR)
                     double.TryParse(re.Value, out width);
-                else if (re.LocalName == "Height")
+                else if (re.LocalName == HEIGHT_ATTR)
                     double.TryParse(re.Value, out height);
-                else if (re.LocalName == "Rotation")
+                else if (re.LocalName == ROTATION_ATTR)
                     double.TryParse(re.Value, out rot);
-                else if (re.LocalName == "LockAspectRatio")
+                else if (re.LocalName == LOCKASPECTRATIO_ATTR)
                     bool.TryParse(re.Value, out lar);
             }
             d.X = x;
@@ -227,8 +305,8 @@ namespace DDraw
         static void ApplyFill(XmlReader re, IFillable f)
         {
             re.MoveToContent();
-            re.MoveToAttribute("Color");
-            if (re.LocalName == "Color")
+            re.MoveToAttribute(COLOR_ATTR);
+            if (re.LocalName == COLOR_ATTR)
                 f.Fill = DColor.FromString(re.Value);
         }
 
@@ -240,19 +318,19 @@ namespace DDraw
                 re.MoveToAttribute(i);
                 try
                 {
-                    if (re.LocalName == "Color")
+                    if (re.LocalName == COLOR_ATTR)
                         s.Stroke = DColor.FromString(re.Value);
-                    else if (re.LocalName == "StrokeWidth")
+                    else if (re.LocalName == STROKEWIDTH_ATTR)
                     {
                         double sw = 1;
                         double.TryParse(re.Value, out sw);
                         s.StrokeWidth = sw;
                     }
-                    else if (re.LocalName == "StrokeStyle")
+                    else if (re.LocalName == STROKESTYLE_ATTR)
                         s.StrokeStyle = (DStrokeStyle)Enum.Parse(typeof(DStrokeStyle), re.Value, true);
-                    else if (re.LocalName == "StrokeCap")
+                    else if (re.LocalName == STROKECAP_ATTR)
                         s.StrokeCap = (DStrokeCap)Enum.Parse(typeof(DStrokeCap), re.Value, true);
-                    else if (re.LocalName == "StrokeJoin")
+                    else if (re.LocalName == STROKEJOIN_ATTR)
                         s.StrokeJoin = (DStrokeJoin)Enum.Parse(typeof(DStrokeJoin), re.Value, true);
                 }
                 catch { }
@@ -262,8 +340,8 @@ namespace DDraw
         static void ApplyAlpha(XmlReader re, IAlphaBlendable a)
         {
             re.MoveToContent();
-            re.MoveToAttribute("Value");
-            if (re.LocalName == "Value")
+            re.MoveToAttribute(VALUE_ATTR);
+            if (re.LocalName == VALUE_ATTR)
             {
                 double v = 1;
                 double.TryParse(re.Value, out v);
@@ -274,18 +352,20 @@ namespace DDraw
         static void ApplyImage(XmlReader re, IImage b)
         {
             re.MoveToContent();
+            bool base64Data = false;
             for (int i = 0; i < re.AttributeCount; i++)
             {
                 re.MoveToAttribute(i);
-                if (re.LocalName == "Type" && re.Value == "base64")
-                {
-                    string data = re.ReadString();
-                    if (data.Length > 0)
-                        b.ImageData = Convert.FromBase64String(data);
-                }
-                else if (re.LocalName == "Position")
+                if (re.LocalName == TYPE_ATTR && re.Value == BASE64_VAL)
+                    base64Data = true;
+                else if (re.LocalName == POSITION_ATTR)
                     b.Position = (DImagePosition)Enum.Parse(typeof(DImagePosition), re.Value, true);
+                else if (re.LocalName == FILENAME_ATTR)
+                    b.FileName = re.Value;
             }
+            string data = re.ReadString();
+            if (data.Length > 0)
+                b.ImageData = Convert.FromBase64String(data);
         }
 
         static void ApplyText(XmlReader re, ITextable t)
@@ -294,33 +374,33 @@ namespace DDraw
             for (int i = 0; i < re.AttributeCount; i++)
             {
                 re.MoveToAttribute(i);
-                if (re.LocalName == "FontName")
+                if (re.LocalName == FONTNAME_ATTR)
                     t.FontName = re.Value;
-                else if (re.LocalName == "FontSize")
+                else if (re.LocalName == FONTSIZE_ATTR)
                 {
                     double sz = 1;
                     double.TryParse(re.Value, out sz);
                     t.FontSize = sz;
                 }
-                else if (re.LocalName == "Bold")
+                else if (re.LocalName == BOLD_ATTR)
                 {
                     bool b = false;
                     bool.TryParse(re.Value, out b);
                     t.Bold = b;
                 }
-                else if (re.LocalName == "Italics")
+                else if (re.LocalName == ITALICS_ATTR)
                 {
                     bool b = false;
                     bool.TryParse(re.Value, out b);
                     t.Italics = b;
                 }
-                else if (re.LocalName == "Underline")
+                else if (re.LocalName == UNDERLINE_ATTR)
                 {
                     bool b = false;
                     bool.TryParse(re.Value, out b);
                     t.Underline = b;
                 }
-                else if (re.LocalName == "Strikethrough")
+                else if (re.LocalName == STRIKETHROUGH_ATTR)
                 {
                     bool b = false;
                     bool.TryParse(re.Value, out b);
@@ -335,7 +415,7 @@ namespace DDraw
             UndoRedoList<Figure> figs = new UndoRedoList<Figure>();
             while (re.Read())
             {
-                if (re.NodeType == XmlNodeType.Element && re.LocalName == "Figure")
+                if (re.NodeType == XmlNodeType.Element && re.LocalName == FIGURE_ELE)
                 {
                     Figure f = FromXml(re.ReadSubtree());
                     if (f != null)
@@ -351,9 +431,9 @@ namespace DDraw
             for (int i = 0; i < re.AttributeCount; i++)
             {
                 re.MoveToAttribute(i);
-                if (re.LocalName == "Pt1")
+                if (re.LocalName == PT1_ATTR)
                     ls.Pt1 = DPoint.FromString(re.Value);
-                else if (re.LocalName == "Pt2")
+                else if (re.LocalName == PT2_ATTR)
                     ls.Pt2 = DPoint.FromString(re.Value);
             }
         }
@@ -372,9 +452,9 @@ namespace DDraw
                 try
                 {
                     re.MoveToAttribute(i);
-                    if (re.LocalName == "StartMarker")
+                    if (re.LocalName == STARTMARKER_ATTR)
                         m.StartMarker = (DMarker)Enum.Parse(typeof(DMarker), re.Value, true);
-                    else if (re.LocalName == "EndMarker")
+                    else if (re.LocalName == ENDMARKER_ATTR)
                         m.EndMarker = (DMarker)Enum.Parse(typeof(DMarker), re.Value, true);
                 }
                 catch { }
@@ -391,7 +471,7 @@ namespace DDraw
         {
             Figure result = null;
             re.MoveToContent();
-            re.MoveToAttribute("Type");
+            re.MoveToAttribute(TYPE_ATTR);
             while (re.ReadAttributeValue())
             {
                 if (re.NodeType == XmlNodeType.Text)
@@ -408,27 +488,27 @@ namespace DDraw
                 {
                     if (re.NodeType == XmlNodeType.Element)
                     {
-                        if (re.LocalName == "Dimension" && result is IDimension)
+                        if (re.LocalName == DIMENSION_ELE && result is IDimension)
                             ApplyDimensions(re.ReadSubtree(), (IDimension)result);
-                        else if (re.LocalName == "Fill" && result is IFillable)
+                        else if (re.LocalName == FILL_ELE && result is IFillable)
                             ApplyFill(re.ReadSubtree(), (IFillable)result);
-                        else if (re.LocalName == "Stroke" && result is IStrokeable)
+                        else if (re.LocalName == STROKE_ELE && result is IStrokeable)
                             ApplyStroke(re.ReadSubtree(), (IStrokeable)result);
-                        else if (re.LocalName == "Alpha" && result is IAlphaBlendable)
+                        else if (re.LocalName == ALPHA_ELE && result is IAlphaBlendable)
                             ApplyAlpha(re.ReadSubtree(), (IAlphaBlendable)result);
-                        else if (re.LocalName == "Image" && result is IImage)
+                        else if (re.LocalName == IMAGE_ELE && result is IImage)
                             ApplyImage(re.ReadSubtree(), (IImage)result);
-                        else if (re.LocalName == "Text" && result is ITextable)
+                        else if (re.LocalName == TEXT_ELE && result is ITextable)
                             ApplyText(re.ReadSubtree(), (ITextable)result);
-                        else if (re.LocalName == "ChildFigures" && result is IChildFigureable)
+                        else if (re.LocalName == CHILDFIGURES_ELE && result is IChildFigureable)
                             ApplyChildren(re.ReadSubtree(), (IChildFigureable)result);
-                        else if (re.LocalName == "LineSegment" && result is ILineSegment)
+                        else if (re.LocalName == LINESEGMENT_ELE && result is ILineSegment)
                             ApplyLine(re.ReadSubtree(), (ILineSegment)result);
-                        else if (re.LocalName == "Polyline" && result is IPolyline)
+                        else if (re.LocalName == POLYLINE_ELE && result is IPolyline)
                             ApplyPolyline(re.ReadSubtree(), (IPolyline)result);
-                        else if (re.LocalName == "Marker" && result is IMarkable)
+                        else if (re.LocalName == MARKER_ELE && result is IMarkable)
                             ApplyMarkers(re.ReadSubtree(), (IMarkable)result);
-                        else if (re.LocalName == "EditableAttributes" && result is IEditable)
+                        else if (re.LocalName == EDITABLEATTRIBUTES_ELE && result is IEditable)
                             ApplyEditableAttributes(re.ReadSubtree(), (IEditable)result);
                     }
                 }
@@ -448,7 +528,7 @@ namespace DDraw
             Figure currentFig;
             while (re.Read())
             {
-                if (re.NodeType == XmlNodeType.Element && re.LocalName == "Figure")
+                if (re.NodeType == XmlNodeType.Element && re.LocalName == FIGURE_ELE)
                 {
                     currentFig = FromXml(re.ReadSubtree());
                     if (currentFig != null)

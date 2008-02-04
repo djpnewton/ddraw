@@ -15,6 +15,8 @@ namespace WinFormsDemo
 
     public partial class BackgroundForm : Form
     {
+        string imageFileName;
+
         BackgroundFigure backgroundFigure;
         public BackgroundFigure BackgroundFigure
         {
@@ -66,6 +68,7 @@ namespace WinFormsDemo
             if (ofd.ShowDialog() == DialogResult.OK)
             {
                 pictureBox1.Image = Image.FromFile(ofd.FileName);
+                imageFileName = ofd.FileName;
             }
         }
 
@@ -81,6 +84,7 @@ namespace WinFormsDemo
                 if (backgroundFigure.Bitmap != null)
                     pictureBox1.Image = (Bitmap)backgroundFigure.Bitmap.NativeBmp;
                 ImagePosition = backgroundFigure.Position;
+                imageFileName = backgroundFigure.FileName;
                 rbImage.Checked = true;
             }
             UpdateControls();
@@ -121,6 +125,7 @@ namespace WinFormsDemo
                             ConvertTo((Bitmap)pictureBox1.Image, typeof(byte[]));
                         backgroundFigure.ImageData = imageData;
                         backgroundFigure.Position = ImagePosition;
+                        backgroundFigure.FileName = imageFileName;
                     }
                 }
             }
