@@ -19,6 +19,7 @@ namespace WinFormsDemo
 
         public event PreviewSelectedHandler PreviewSelected;
         public event EventHandler PreviewAdd;
+        public event PreviewContextHandler PreviewContext;
 
         int baseWidth = -1;
 
@@ -48,6 +49,7 @@ namespace WinFormsDemo
             p.Parent = pnlPreviews;
             p.Anchor = AnchorStyles.Left | AnchorStyles.Top | AnchorStyles.Right;
             p.Click += new EventHandler(p_Click);
+            p.PreviewContext += new PreviewContextHandler(p_PreviewContext);
             previews.Add(p);
             InvokeOnClick(p, new EventArgs());
 
@@ -65,6 +67,12 @@ namespace WinFormsDemo
             ((Preview)sender).Selected = true;
             if (PreviewSelected != null)
                 PreviewSelected((Preview)sender);
+        }
+
+        void p_PreviewContext(Preview p, Point pt)
+        {
+            if (PreviewContext != null)
+                PreviewContext(p, pt);
         }
 
         private void btnAdd_Click(object sender, EventArgs e)

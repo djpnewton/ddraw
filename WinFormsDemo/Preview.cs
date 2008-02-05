@@ -11,6 +11,8 @@ using DDraw.WinForms;
 
 namespace WinFormsDemo
 {
+    public delegate void PreviewContextHandler(Preview p, Point pt);
+
     public class Preview : UserControl
     {
         bool radioSelect = true;
@@ -41,6 +43,8 @@ namespace WinFormsDemo
             }
         }
 
+        public event PreviewContextHandler PreviewContext;
+
         WFViewerControl viewerControl;
         public WFViewerControl ViewerControl
         {
@@ -60,6 +64,7 @@ namespace WinFormsDemo
         
         const int MARGIN = 1;
         Panel viewerHolder;
+        PictureBox pbContext;
 
         public Preview(DEngine de)
         {
@@ -74,7 +79,19 @@ namespace WinFormsDemo
             viewerControl.Size = new Size(Width - MARGIN * 2, Height - MARGIN * 2);
             viewerControl.Anchor = AnchorStyles.Left | AnchorStyles.Top | AnchorStyles.Right | AnchorStyles.Bottom;
             viewerControl.Click += new EventHandler(viewerControl_Click);
+            viewerControl.MouseUp += new MouseEventHandler(viewerControl_MouseUp);
             viewerHolder.Controls.Add(viewerControl);
+            // 
+            // pbContext
+            // 
+            pbContext = new PictureBox();
+            pbContext.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            pbContext.Image = global::WinFormsDemo.Resource1.arrow;
+            pbContext.BackColor = Color.Transparent;
+            pbContext.Size = new Size(pbContext.Image.Width, pbContext.Image.Height);
+            pbContext.Location = new Point(Width - pbContext.Image.Width - 2, 0);
+            pbContext.Click += new EventHandler(pbContext_Click);
+            viewerControl.Controls.Add(pbContext);
             // Preview
             this.de = de;
             dv = new WFViewer(viewerControl);
@@ -87,7 +104,19 @@ namespace WinFormsDemo
         {
             InvokeOnClick(this, e);
         }
-        
+
+        void viewerControl_MouseUp(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Right && PreviewContext != null)
+                PreviewContext(this, new Point(e.X, e.Y));
+        }
+
+        private void pbContext_Click(object sender, EventArgs e)
+        {
+            if (PreviewContext != null)
+                PreviewContext(this, new Point(pbContext.Left, pbContext.Bottom));
+        }
+
         private void de_PageSizeChanged(DEngine de, DPoint pageSize)
         {
             if (pageSize.X / Width > pageSize.Y / Height)

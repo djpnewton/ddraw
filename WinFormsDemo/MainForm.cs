@@ -911,6 +911,11 @@ namespace WinFormsDemo
             CreateDEngine();
         }
 
+        private void previewBar1_PreviewContext(Preview p, Point pt)
+        {
+            cmsPreview.Show(p, pt);
+        }
+
         private void imageToolStripMenuItem_Click(object sender, EventArgs e)
         {
             OpenFileDialog ofd = new OpenFileDialog();
