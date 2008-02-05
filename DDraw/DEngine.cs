@@ -177,6 +177,16 @@ namespace DDraw
             get { return hsm.FigureAlwaysSnapAngle; }
             set { hsm.FigureAlwaysSnapAngle = value; }
         }
+        public bool SimplifyPolylines
+        {
+            get { return hsm.SimplifyPolylines; }
+            set { hsm.SimplifyPolylines = value; }
+        }
+        public double SimplifyPolylinesTolerance
+        {
+            get { return hsm.SimplifyPolylinesTolerance; }
+            set { hsm.SimplifyPolylinesTolerance = value; }
+        }
 
         UndoRedo<DPoint> _pageSize = new UndoRedo<DPoint>(new DPoint(PageTools.DefaultPageWidth, PageTools.DefaultPageHeight));
         public DPoint PageSize

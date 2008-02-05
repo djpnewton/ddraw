@@ -146,7 +146,7 @@ namespace DDraw
         {
             return BoundingBoxOfRotatedRect(rect, angle, rect.Center);
         }
-        
+
         static DPoint CalcPositionDeltaFromAngleAndCoordDelta(double angle, double dX, double dY)
         {
             // x/y modification for rotation
@@ -161,7 +161,7 @@ namespace DDraw
             double mody = -r1 * costheta + r2 * sintheta;
             return new DPoint(modx, mody);
         }
-        
+
         public static void UpdateRotationPosition(Figure f, DRect oldRect, DRect newRect)
         {
             // update position of the figure depending on the change in rect and its rotation
@@ -171,6 +171,131 @@ namespace DDraw
             dPt = CalcPositionDeltaFromAngleAndCoordDelta(f.Rotation, newRect.Left - oldRect.Left, newRect.Top - oldRect.Top);
             f.X += dPt.X;
             f.Y += dPt.Y;
+        }
+
+        public static DPoints SimplifyPolyline(DPoints original, double tolerance)
+        {
+            // using the Douglas-Peucker polyline simplification algorithm
+            // see: http://geometryalgorithms.com/Archive/algorithm_0205/
+            //      http://www.simdesign.nl/Components/DouglasPeucker.html
+
+            if (original.Count <= 2)
+                return original;
+            // marker array
+            bool[] markers = new bool[original.Count];
+            // include first and last point
+            markers[0] = true;
+            markers[original.Count - 1] = true;
+            // exclude intermediate points for now
+            for (int i = 1; i < original.Count - 2; i++)
+                markers[i] = false;
+            // Simplify
+            SimplifyDP(original, tolerance, 0, original.Count - 1, markers);
+            // return simplified polyline
+            DPoints res = new DPoints();
+            for (int i = 0; i < original.Count; i++)
+                if (markers[i])
+                    res.Add(original[i]);
+            return res;
+        }
+
+        static DPoint VecSubtract(DPoint a, DPoint b)
+        {
+            // return A - B
+            return new DPoint(a.X - b.X, a.Y - b.Y);
+        }
+
+        static double DotProduct(DPoint a, DPoint b)
+        {
+            // return A * B
+            return a.X * b.X + a.Y * b.Y;
+        }
+
+        static double NormSquared(DPoint a)
+        {
+            // Square of the norm |A|
+            return a.X * a.X + a.Y * a.Y;
+        }
+
+        static double DistSquared(DPoint a, DPoint b)
+        {
+            // Square of the distance from A to B
+            return NormSquared(VecSubtract(a, b));
+        }
+
+        static void SimplifyDP(DPoints original, double tolerance, int j, int k, bool[] markers)
+        {
+            //  The Douglas-Peucker recursive simplification routine.
+            //  Mark each point that will be part of the simplified polyline.
+
+            // check if there is anything to simplify
+            if (k <= j + 1)
+                return;
+
+            DPoint p1 = original[j];
+            DPoint p2 = original[k];
+            DPoint u = VecSubtract(p2, p1); // segment direction vector
+            double cu = DotProduct(u, u);   // segment length squared
+            double maxD2 = 0;               // maximum value squared
+            int maxI = 0;                   // index at maximum value
+            double tol2 = tolerance * tolerance; // tolerance squared
+
+            // test each vertex for max distance from segment (p1, p2)
+            DPoint w;
+            DPoint Pb = new DPoint(0, 0); // base of perpendicular from v[i] to S
+            double b, cw, dv2;            // dv2 = distance original[i] to S squared
+
+            // Loop through points and detect the one furthest away
+            for (int i = j + 1; i < k; i++)
+            {
+                w = VecSubtract(original[i], p1);
+                cw = DotProduct(w, u);
+
+                // Distance of point original[i] from segment
+                if (cw <= 0)
+                    // Before segment
+                    dv2 = DistSquared(original[i], p1);
+                else
+                {
+                    if (cw > cu)
+                        // Past segment
+                        dv2 = DistSquared(original[i], p2);
+                    else
+                    {
+                        // Fraction of the segment
+                        try
+                        {
+                            b = cw / cu;
+                        }
+                        catch
+                        {
+                            b = 0; // in case CU = 0
+                        }
+                        Pb.X = Math.Round(p1.X + b * u.X);
+                        Pb.Y = Math.Round(p1.Y + b * u.Y);
+                        dv2 = DistSquared(original[i], Pb);
+                    }
+                }
+
+                // test with current max distance squared
+                if (dv2 > maxD2)
+                {
+                    // original[i] is a new max vertex
+                    maxI = i;
+                    maxD2 = dv2;
+                }
+            }
+
+            // If the furthest point is outside tolerance we must split
+            if (maxD2 > tol2)  // error is worse than the tolerance
+            {
+                // split the polyline at the farthest vertex from S
+                markers[maxI] = true;  // mark original[maxI] for the simplified polyline
+
+                // recursively simplify the two subpolylines at original[maxI]
+                SimplifyDP(original, tolerance, j, maxI, markers); // polyline original[j] to original[maxI]
+                SimplifyDP(original, tolerance, maxI, k, markers); // polyline original[maxI] to original[k]
+            }
         }
     }
 }

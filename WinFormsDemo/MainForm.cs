@@ -59,6 +59,9 @@ namespace WinFormsDemo
         void InitDEngine(DEngine de)
         {
             previewBar1.AddPreview(de, dvEditor);
+            // DEngine properties
+            de.SimplifyPolylines = true;
+            de.SimplifyPolylinesTolerance = 0.5;
             // DEngine events
             de.DebugMessage += new DebugMessageHandler(DebugMessage);
             de.SelectedFiguresChanged += new SelectedFiguresHandler(de_SelectedFiguresChanged);

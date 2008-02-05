@@ -366,9 +366,12 @@ namespace DDraw
                 else if (re.LocalName == FILENAME_ATTR)
                     b.FileName = re.Value;
             }
-            string data = re.ReadString();
-            if (data.Length > 0)
-                b.ImageData = Convert.FromBase64String(data);
+            if (base64Data)
+            {
+                string data = re.ReadString();
+                if (data.Length > 0)
+                    b.ImageData = Convert.FromBase64String(data);
+            }
         }
 
         static void ApplyText(XmlReader re, ITextable t)

@@ -140,6 +140,19 @@ namespace DDraw
             set { figureAlwaysSnapAngle = value; }
         }
 
+        bool simplifyPolylines = false;
+        public bool SimplifyPolylines
+        {
+            get { return simplifyPolylines; }
+            set { simplifyPolylines = value; }
+        }
+        double simplifyPolylinesTolerance = 5;
+        public double SimplifyPolylinesTolerance
+        {
+            get { return simplifyPolylinesTolerance; }
+            set { simplifyPolylinesTolerance = value; }
+        }
+
         bool drawSelection = false;
         bool drawEraser = false;
 
@@ -939,6 +952,13 @@ namespace DDraw
 
         void DoDrawingLineMouseUp(DTkViewer dv, DMouseButton btn, DPoint pt)
         {
+            // simplify polyline
+            if (SimplifyPolylines && currentFigure is IPolyline)
+            {
+                ((IPolyline)currentFigure).Points = DGeom.SimplifyPolyline(((IPolyline)currentFigure).Points, simplifyPolylinesTolerance);
+                dv.Update(currentFigure.GetSelectRect());
+            }
+            // commit to undo/redo
             undoRedoManager.Commit();
             // transition
             TransitionTo(DrawLineDefault);
