@@ -504,6 +504,15 @@ namespace DDraw
             hsm.SetStateByFigureClass(figureClass);
         }
 
+        public void ClearPage()
+        {
+            UndoRedoStart("Clear Page");
+            figureHandler.Figures.Clear();
+            UndoRedoCommit();
+            DoSelectedFiguresChanged();
+            UpdateViewers();
+        }
+
         // Other //
 
         void DoDebugMessage(string msg)

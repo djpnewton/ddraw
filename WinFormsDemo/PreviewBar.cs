@@ -28,7 +28,16 @@ namespace WinFormsDemo
             InitializeComponent();
         }
 
-        public Preview AddPreview(DEngine de, DViewer dv)
+        int GetPreviewIndex(DEngine de)
+        {
+            if (de != null)
+                for (int i = previews.Count - 1; i >= 0; i--)
+                    if (previews[i].DEngine == de)
+                        return i;
+            return -1;
+        }
+
+        public Preview AddPreview(DEngine de, DViewer dv, DEngine sibling)
         {
             if (baseWidth == -1)
             {
@@ -37,23 +46,67 @@ namespace WinFormsDemo
                 else
                     baseWidth = Width;
             }
-
+            // index of new preview
+            int idx = GetPreviewIndex(sibling) + 1;
+            // create preview
             Preview p = new Preview(de);
+            p.Parent = pnlPreviews;
+            pnlPreviews.Controls.SetChildIndex(p, idx);
+            // set preview properties
             p.Width = pnlPreviews.Width;
             p.Height = 65;
             p.Left = 0;
-            if (pnlPreviews.Controls.Count > 0)
-                p.Top = pnlPreviews.Controls[pnlPreviews.Controls.Count - 1].Bottom;
-            else
-                p.Top = 0;
-            p.Parent = pnlPreviews;
+            SetPreviewTops(idx); 
             p.Anchor = AnchorStyles.Left | AnchorStyles.Top | AnchorStyles.Right;
             p.Click += new EventHandler(p_Click);
             p.PreviewContext += new PreviewContextHandler(p_PreviewContext);
-            previews.Add(p);
-            InvokeOnClick(p, new EventArgs());
-
+            // add to preview list
+            previews.Insert(idx, p);
+            // select it
+            p.Selected = true;
+            DoPreviewSelected(p);
+            // return p
             return p;
+        }
+
+        public void RemovePreview(DEngine de)
+        {
+            int idx = GetPreviewIndex(de);
+            if (idx > -1)
+            {
+                Preview p = previews[idx];
+                // remove from preview list and pnlPreview.Controls
+                previews.Remove(p);
+                pnlPreviews.Controls.Remove(p);
+                // set the preview positions
+                SetPreviewTops(idx);
+                // select a new preview
+                if (p.Selected)
+                {
+                    if (idx < previews.Count)
+                    {
+                        previews[idx].Selected = true;
+                        DoPreviewSelected(previews[idx]);
+                    }
+                    else if (idx > 0)
+                    {
+                        previews[idx - 1].Selected = true;
+                        DoPreviewSelected(previews[idx - 1]);
+                    }
+                }
+            }
+        }
+        
+        void SetPreviewTops(int idx)
+        {
+            while (idx < pnlPreviews.Controls.Count)
+            {
+                if (idx == 0)
+                    pnlPreviews.Controls[idx].Top = 0;
+                else
+                    pnlPreviews.Controls[idx].Top = pnlPreviews.Controls[idx - 1].Bottom;
+                idx++;
+            }
         }
 
         public void Clear()
@@ -65,8 +118,7 @@ namespace WinFormsDemo
         void p_Click(object sender, EventArgs e)
         {
             ((Preview)sender).Selected = true;
-            if (PreviewSelected != null)
-                PreviewSelected((Preview)sender);
+            DoPreviewSelected((Preview)sender);
         }
 
         void p_PreviewContext(Preview p, Point pt)
@@ -93,8 +145,7 @@ namespace WinFormsDemo
                     else
                         pToSelect = previews[previews.Count - 1];
                     pToSelect.Selected = true;
-                    if (PreviewSelected != null)
-                        PreviewSelected(pToSelect);
+                    DoPreviewSelected(pToSelect);
                     break;
                 }
         }
@@ -111,10 +162,15 @@ namespace WinFormsDemo
                     else
                         pToSelect = previews[0];
                     pToSelect.Selected = true;
-                    if (PreviewSelected != null)
-                        PreviewSelected(pToSelect);
+                    DoPreviewSelected(pToSelect);
                     break;
                 }
+        }
+
+        void DoPreviewSelected(Preview p)
+        {
+            if (PreviewSelected != null)
+                PreviewSelected(p);
         }
 
         private void pnlPreviews_Resize(object sender, EventArgs e)

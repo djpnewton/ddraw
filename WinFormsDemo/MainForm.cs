@@ -48,17 +48,26 @@ namespace WinFormsDemo
         const string FileExt = ".ddraw";
         const string FileTypeFilter = "DDraw files|*.ddraw";
 
-        void CreateDEngine()
+        void CreateDEngine(DEngine sibling)
         {
             DEngine de = new DEngine(dap);
-            dengines.Add(de);
+            if (sibling != null)
+            {
+                int idx = dengines.IndexOf(sibling);
+                if (idx >= 0)
+                    dengines.Insert(idx + 1, de);
+                else
+                    dengines.Add(de);
+            }
+            else
+                dengines.Add(de);
             de.PageSize = new DPoint(500, 400);
-            InitDEngine(de);
+            InitDEngine(de, sibling);
         }
 
-        void InitDEngine(DEngine de)
+        void InitDEngine(DEngine de, DEngine sibling)
         {
-            previewBar1.AddPreview(de, dvEditor);
+            previewBar1.AddPreview(de, dvEditor, sibling);
             // DEngine properties
             de.SimplifyPolylines = true;
             de.SimplifyPolylinesTolerance = 0.5;
@@ -908,7 +917,7 @@ namespace WinFormsDemo
 
         private void previewBar1_PreviewAdd(object sender, EventArgs e)
         {
-            CreateDEngine();
+            CreateDEngine(de);
         }
 
         private void previewBar1_PreviewContext(Preview p, Point pt)
@@ -1128,7 +1137,7 @@ namespace WinFormsDemo
 
             previewBar1.Clear();
             dengines.Clear();
-            CreateDEngine();
+            CreateDEngine(null);
 
             UpdateTitleBar();
         }
@@ -1145,7 +1154,7 @@ namespace WinFormsDemo
                 // init new dengines
                 previewBar1.Clear();
                 foreach (DEngine newDe in dengines)
-                    InitDEngine(newDe);
+                    InitDEngine(newDe, null);
                 // update vars
                 beenSaved = true;
                 UpdateTitleBar();
@@ -1280,6 +1289,43 @@ namespace WinFormsDemo
                     pd.Print();
                 }
             }
+        }
+
+        private void actNewPage_Execute(object sender, EventArgs e)
+        {
+            CreateDEngine(de);
+        }
+
+        private void actDeletePage_Execute(object sender, EventArgs e)
+        {
+            dengines.Remove(de);
+            previewBar1.RemovePreview(de);
+            if (dengines.Count == 0)
+                CreateDEngine(de);
+        }
+
+
+        private void actClonePage_Execute(object sender, EventArgs e)
+        {
+            // clone data
+            string clonedFigures = FigureSerialize.FormatToXml(de.Figures, null);
+            string clonedBackground = FigureSerialize.FormatToXml(de.GetBackgroundFigure(), null);
+            // create new DEngine
+            DPoint sz = de.PageSize;
+            CreateDEngine(de);
+            de.PageSize = sz;
+            // add figures from clone data
+            de.UndoRedoStart("Clone Page");
+            de.SetBackgroundFigure((BackgroundFigure)FigureSerialize.FromXml(clonedBackground)[0]);
+            List<Figure> figs = FigureSerialize.FromXml(clonedFigures);
+            foreach (Figure f in figs)
+                de.AddFigure(f);
+            de.UndoRedoCommit();
+        }
+
+        private void actClearPage_Execute(object sender, EventArgs e)
+        {
+            de.ClearPage();
         }
     }
 }
