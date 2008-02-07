@@ -12,6 +12,7 @@ using DDraw.WinForms;
 namespace WinFormsDemo
 {
     public delegate void PreviewContextHandler(Preview p, Point pt);
+    public delegate void PreviewMoveHandler(Preview p, Preview to);
 
     public class Preview : UserControl
     {
@@ -44,6 +45,7 @@ namespace WinFormsDemo
         }
 
         public event PreviewContextHandler PreviewContext;
+        public event PreviewMoveHandler PreviewMove;
 
         WFViewerControl viewerControl;
         public WFViewerControl ViewerControl
@@ -71,14 +73,13 @@ namespace WinFormsDemo
             viewerHolder = new Panel();
             viewerHolder.Location = new Point(0, 0);
             viewerHolder.Size = Size;
-            viewerHolder.Click += new EventHandler(viewerControl_Click);
             Controls.Add(viewerHolder);
             // viewerControl
             viewerControl = new WFViewerControl();
             viewerControl.Location = new Point(MARGIN, MARGIN);
             viewerControl.Size = new Size(Width - MARGIN * 2, Height - MARGIN * 2);
             viewerControl.Anchor = AnchorStyles.Left | AnchorStyles.Top | AnchorStyles.Right | AnchorStyles.Bottom;
-            viewerControl.Click += new EventHandler(viewerControl_Click);
+            viewerControl.MouseDown += new MouseEventHandler(viewerControl_MouseDown);
             viewerControl.MouseUp += new MouseEventHandler(viewerControl_MouseUp);
             viewerHolder.Controls.Add(viewerControl);
             // 
@@ -93,6 +94,10 @@ namespace WinFormsDemo
             pbContext.Click += new EventHandler(pbContext_Click);
             viewerControl.Controls.Add(pbContext);
             // Preview
+            AllowDrop = true;
+            DragEnter += new DragEventHandler(Preview_DragEnter);
+            DragDrop += new DragEventHandler(Preview_DragDrop);
+            // DEngine
             this.de = de;
             dv = new WFViewer(viewerControl);
             dv.Preview = true;
@@ -100,21 +105,42 @@ namespace WinFormsDemo
             de.AddViewer(dv);
         }
 
-        private void viewerControl_Click(object sender, EventArgs e)
+        void viewerControl_MouseDown(object sender, MouseEventArgs e)
         {
-            InvokeOnClick(this, e);
+            if (e.Button == MouseButtons.Left)
+            {
+                InvokeOnClick(this, e);
+                DoDragDrop(this, DragDropEffects.Move);
+            }
         }
 
         void viewerControl_MouseUp(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Right && PreviewContext != null)
+            {
+                InvokeOnClick(this, e);
                 PreviewContext(this, new Point(e.X, e.Y));
+            }
         }
 
         private void pbContext_Click(object sender, EventArgs e)
         {
+            InvokeOnClick(this, e);
             if (PreviewContext != null)
                 PreviewContext(this, new Point(pbContext.Left, pbContext.Bottom));
+        }
+
+        void Preview_DragEnter(object sender, DragEventArgs e)
+        {
+            if ((e.AllowedEffect & DragDropEffects.Move) == DragDropEffects.Move && e.Data.GetDataPresent(this.GetType()))
+                e.Effect = DragDropEffects.Move;
+        }
+
+        void Preview_DragDrop(object sender, DragEventArgs e)
+        {
+            Preview pDrag = (Preview)e.Data.GetData(this.GetType());
+            if (pDrag != this && PreviewMove != null)
+                PreviewMove(pDrag, this);
         }
 
         private void de_PageSizeChanged(DEngine de, DPoint pageSize)

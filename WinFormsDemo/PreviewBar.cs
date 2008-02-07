@@ -15,11 +15,10 @@ namespace WinFormsDemo
 
     public partial class PreviewBar : UserControl
     {
-        List<Preview> previews = new List<Preview>();
-
         public event PreviewSelectedHandler PreviewSelected;
         public event EventHandler PreviewAdd;
         public event PreviewContextHandler PreviewContext;
+        public event PreviewMoveHandler PreviewMove;
 
         int baseWidth = -1;
 
@@ -31,8 +30,8 @@ namespace WinFormsDemo
         int GetPreviewIndex(DEngine de)
         {
             if (de != null)
-                for (int i = previews.Count - 1; i >= 0; i--)
-                    if (previews[i].DEngine == de)
+                for (int i = pnlPreviews.Controls.Count - 1; i >= 0; i--)
+                    if (((Preview)pnlPreviews.Controls[i]).DEngine == de)
                         return i;
             return -1;
         }
@@ -47,7 +46,11 @@ namespace WinFormsDemo
                     baseWidth = Width;
             }
             // index of new preview
-            int idx = GetPreviewIndex(sibling) + 1;
+            int idx;
+            if (sibling != null)
+                idx = GetPreviewIndex(sibling) + 1;
+            else
+                idx = pnlPreviews.Controls.Count;
             // create preview
             Preview p = new Preview(de);
             p.Parent = pnlPreviews;
@@ -60,8 +63,7 @@ namespace WinFormsDemo
             p.Anchor = AnchorStyles.Left | AnchorStyles.Top | AnchorStyles.Right;
             p.Click += new EventHandler(p_Click);
             p.PreviewContext += new PreviewContextHandler(p_PreviewContext);
-            // add to preview list
-            previews.Insert(idx, p);
+            p.PreviewMove += new PreviewMoveHandler(p_PreviewMove);
             // select it
             p.Selected = true;
             DoPreviewSelected(p);
@@ -74,24 +76,23 @@ namespace WinFormsDemo
             int idx = GetPreviewIndex(de);
             if (idx > -1)
             {
-                Preview p = previews[idx];
-                // remove from preview list and pnlPreview.Controls
-                previews.Remove(p);
+                Preview p = (Preview)pnlPreviews.Controls[idx];
+                // remove from pnlPreview.Controls
                 pnlPreviews.Controls.Remove(p);
                 // set the preview positions
                 SetPreviewTops(idx);
                 // select a new preview
                 if (p.Selected)
                 {
-                    if (idx < previews.Count)
+                    if (idx < pnlPreviews.Controls.Count)
                     {
-                        previews[idx].Selected = true;
-                        DoPreviewSelected(previews[idx]);
+                        ((Preview)pnlPreviews.Controls[idx]).Selected = true;
+                        DoPreviewSelected((Preview)pnlPreviews.Controls[idx]);
                     }
                     else if (idx > 0)
                     {
-                        previews[idx - 1].Selected = true;
-                        DoPreviewSelected(previews[idx - 1]);
+                        ((Preview)pnlPreviews.Controls[idx - 1]).Selected = true;
+                        DoPreviewSelected((Preview)pnlPreviews.Controls[idx - 1]);
                     }
                 }
             }
@@ -112,19 +113,29 @@ namespace WinFormsDemo
         public void Clear()
         {
             pnlPreviews.Controls.Clear();
-            previews.Clear();
         }
 
         void p_Click(object sender, EventArgs e)
         {
-            ((Preview)sender).Selected = true;
-            DoPreviewSelected((Preview)sender);
+            if (!((Preview)sender).Selected)
+            {
+                ((Preview)sender).Selected = true;
+                DoPreviewSelected((Preview)sender);
+            }
         }
 
         void p_PreviewContext(Preview p, Point pt)
         {
             if (PreviewContext != null)
                 PreviewContext(p, pt);
+        }
+
+        void p_PreviewMove(Preview p, Preview to)
+        {
+            pnlPreviews.Controls.SetChildIndex(p, pnlPreviews.Controls.IndexOf(to));
+            SetPreviewTops(0);
+            if (PreviewMove != null)
+                PreviewMove(p, to);
         }
 
         private void btnAdd_Click(object sender, EventArgs e)
@@ -135,15 +146,15 @@ namespace WinFormsDemo
 
         private void btnPrev_Click(object sender, EventArgs e)
         {
-            foreach (Preview p in previews)
+            foreach (Preview p in pnlPreviews.Controls)
                 if (p.Selected)
                 {
-                    int idx = previews.IndexOf(p);
+                    int idx = pnlPreviews.Controls.IndexOf(p);
                     Preview pToSelect;
                     if (idx > 0)
-                        pToSelect = previews[idx - 1];
+                        pToSelect = (Preview)pnlPreviews.Controls[idx - 1];
                     else
-                        pToSelect = previews[previews.Count - 1];
+                        pToSelect = (Preview)pnlPreviews.Controls[pnlPreviews.Controls.Count - 1];
                     pToSelect.Selected = true;
                     DoPreviewSelected(pToSelect);
                     break;
@@ -152,15 +163,15 @@ namespace WinFormsDemo
 
         private void btnNext_Click(object sender, EventArgs e)
         {
-            foreach (Preview p in previews)
+            foreach (Preview p in pnlPreviews.Controls)
                 if (p.Selected)
                 {
-                    int idx = previews.IndexOf(p);
+                    int idx = pnlPreviews.Controls.IndexOf(p);
                     Preview pToSelect;
-                    if (idx < previews.Count-1)
-                        pToSelect = previews[idx + 1];
+                    if (idx < pnlPreviews.Controls.Count - 1)
+                        pToSelect = (Preview)pnlPreviews.Controls[idx + 1];
                     else
-                        pToSelect = previews[0];
+                        pToSelect = (Preview)pnlPreviews.Controls[0];
                     pToSelect.Selected = true;
                     DoPreviewSelected(pToSelect);
                     break;

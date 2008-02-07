@@ -30,7 +30,8 @@ namespace WinFormsDemo
         public static void Save(string fileName, List<DEngine> dengines)
         {
             System.Text.ASCIIEncoding encoding = new System.Text.ASCIIEncoding();
-            ZipOutputStream zipOut = new ZipOutputStream(File.Create(fileName));
+            FileStream fs = File.Create(fileName);
+            ZipOutputStream zipOut = new ZipOutputStream(fs);
             IniConfigSource source = new IniConfigSource();
             // write each page
             int i = 0;
@@ -56,8 +57,10 @@ namespace WinFormsDemo
             // write pages ini
             Write(zipOut, PAGES_INI, encoding.GetBytes(source.ToString()));
             // finish
-            zipOut.Finish();
             zipOut.Close();
+            zipOut.Dispose();
+            fs.Close();
+            fs.Dispose();
         }
 
         static byte[] Read(ZipFile zf, string entryName)

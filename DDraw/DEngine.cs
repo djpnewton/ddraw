@@ -462,14 +462,22 @@ namespace DDraw
             UpdateViewers();
         }
 
-        public void Delete(List<Figure> figs)
+        public bool CanDelete(IList<Figure> figs)
         {
-            UndoRedoStart("Delete Figures");
-            foreach (Figure f in figs)
-                RemoveFigure(f);
-            UndoRedoCommit();
-            ClearSelected();
-            UpdateViewers();
+            return figs.Count > 0;
+        }
+
+        public void Delete(IList<Figure> figs)
+        {
+            if (CanDelete(figs))
+            {
+                UndoRedoStart("Delete Figures");
+                foreach (Figure f in figs)
+                    RemoveFigure(f);
+                UndoRedoCommit();
+                ClearSelected();
+                UpdateViewers();
+            }
         }
 
         public BackgroundFigure GetBackgroundFigure()

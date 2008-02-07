@@ -603,9 +603,10 @@ namespace WinFormsDemo
             actBringToFront.Enabled = de.CanBringForward(figs);
             actSendBackward.Enabled = de.CanSendBackward(figs);
             actBringForward.Enabled = de.CanBringForward(figs);
-            // update cut/copy actions
+            // update cut/copy/delete actions
             actCut.Enabled = de.CanCopy(figs);
             actCopy.Enabled = de.CanCopy(figs);
+            actDelete.Enabled = de.CanDelete(figs);
         }
 
         void AddGlyphs(Figure fig)
@@ -925,6 +926,13 @@ namespace WinFormsDemo
             cmsPreview.Show(p, pt);
         }
 
+        private void previewBar1_PreviewMove(Preview p, Preview to)
+        {
+            int idx = dengines.IndexOf(to.DEngine);
+            dengines.Remove(p.DEngine);
+            dengines.Insert(idx, p.DEngine);
+        }
+
         private void imageToolStripMenuItem_Click(object sender, EventArgs e)
         {
             OpenFileDialog ofd = new OpenFileDialog();
@@ -1117,9 +1125,22 @@ namespace WinFormsDemo
             }
         }
 
+        void DoDelete()
+        {
+            if (wfvcEditor.Focused)
+                de.Delete(de.SelectedFigures);
+            else 
+            {
+                dengines.Remove(de);
+                previewBar1.RemovePreview(de);
+                if (dengines.Count == 0)
+                    CreateDEngine(de);
+            }
+        }
+
         private void actDelete_Execute(object sender, EventArgs e)
         {
-            de.Delete(de.SelectedFigures);
+            DoDelete();   
         }
 
         void UpdateTitleBar()
@@ -1298,12 +1319,8 @@ namespace WinFormsDemo
 
         private void actDeletePage_Execute(object sender, EventArgs e)
         {
-            dengines.Remove(de);
-            previewBar1.RemovePreview(de);
-            if (dengines.Count == 0)
-                CreateDEngine(de);
+            DoDelete();
         }
-
 
         private void actClonePage_Execute(object sender, EventArgs e)
         {
