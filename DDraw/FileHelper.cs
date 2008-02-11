@@ -27,7 +27,7 @@ namespace WinFormsDemo
             zipOut.Write(data, 0, data.Length);
         }
 
-        public static void Save(string fileName, List<DEngine> dengines)
+        public static void Save(string fileName, List<DEngine> engines)
         {
             System.Text.ASCIIEncoding encoding = new System.Text.ASCIIEncoding();
             FileStream fs = File.Create(fileName);
@@ -36,7 +36,7 @@ namespace WinFormsDemo
             // write each page
             int i = 0;
             Dictionary<string, byte[]> images = new Dictionary<string, byte[]>();
-            foreach (DEngine de in dengines)
+            foreach (DEngine de in engines)
             {
                 IConfig config = source.AddConfig(string.Format("page{0}", i));
                 config.Set(PAGESIZE, DPoint.FormatToString(de.PageSize));
@@ -84,7 +84,7 @@ namespace WinFormsDemo
                 return null;
         }
 
-        public static List<DEngine> Load(string fileName, DAuthorProperties dap)
+        public static List<DEngine> Load(string fileName, DAuthorProperties dap, bool usingEngineManager)
         {
             System.Text.ASCIIEncoding encoding = new System.Text.ASCIIEncoding();
             List<DEngine> res = new List<DEngine>();
@@ -100,9 +100,10 @@ namespace WinFormsDemo
                 foreach (IConfig config in source.Configs)
                 {
                     // create new DEngine for page
-                    DEngine de = new DEngine(dap);
-                    // start recording undo history (it is a pain that we have to do this)
-                    de.UndoRedoStart("loading file");
+                    DEngine de = new DEngine(dap, usingEngineManager);
+                    if (!usingEngineManager)
+                        // start recording undo history (it is a pain that we have to do this)
+                        de.UndoRedoStart("loading file");
                     // set page size
                     if (config.Contains(PAGESIZE))
                         de.PageSize = DPoint.FromString(config.Get(PAGESIZE));
@@ -136,9 +137,12 @@ namespace WinFormsDemo
                             }
                         }
                     }
-                    // get rid of undo history
-                    de.UndoRedoCommit();
-                    de.UndoRedoClearHistory();
+                    if (!usingEngineManager)
+                    {
+                        // get rid of undo history
+                        de.UndoRedoCommit();
+                        de.UndoRedoClearHistory();
+                    }
                     // add to list of DEngines
                     res.Add(de);
                 }

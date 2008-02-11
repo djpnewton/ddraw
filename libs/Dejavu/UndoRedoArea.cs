@@ -129,6 +129,16 @@ namespace DejaVu
 			history.Clear();
 		}
 
+        /// <summary>
+        /// Clears all redo history. It does not affect current data but redos only. 
+        /// </summary>
+        public void ClearRedos()
+        {
+            currentCommand = null;
+            int count = history.Count - currentPosition - 1;
+            history.RemoveRange(currentPosition + 1, count);
+        }
+
 		/// <summary>Checks that there is no command started in current thread</summary>
 		internal void AssertNoCommand()
 		{
@@ -161,22 +171,22 @@ namespace DejaVu
 		#region Commands Lists
 		/// <summary>Gets an enumeration of commands captions that can be undone.</summary>
 		/// <remarks>The first command in the enumeration will be undone first</remarks>
-		public IEnumerable<string> UndoCommands
+		public IEnumerable<CommandId> UndoCommands
 		{
 			get
 			{
 				for (int i = currentPosition; i >= 0; i--)
-					yield return history[i].Caption;
+					yield return history[i].CommandId;
 			}
 		}
 		/// <summary>Gets an enumeration of commands captions that can be redone.</summary>
 		/// <remarks>The first command in the enumeration will be redone first</remarks>
-		public IEnumerable<string> RedoCommands
+        public IEnumerable<CommandId> RedoCommands
 		{
 			get
 			{
 				for (int i = currentPosition + 1; i < history.Count; i++)
-					yield return history[i].Caption;
+                    yield return history[i].CommandId;
 			}
 		}
 		#endregion

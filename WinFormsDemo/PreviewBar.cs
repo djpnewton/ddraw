@@ -194,5 +194,43 @@ namespace WinFormsDemo
                     Width = baseWidth;
             }
         }
+
+        public void MatchPreviewsToEngines(List<DEngine> engines, DViewer dv)
+        {
+            // Remove previews that dont have a matching preview
+            for (int i = pnlPreviews.Controls.Count-1; i >= 0; i--)
+            {
+                Preview p = (Preview)pnlPreviews.Controls[i];
+
+                if (engines.IndexOf(p.DEngine) == -1)
+                    RemovePreview(p.DEngine);
+            }
+            // Add previews for engines that dont have them
+            for (int i = 0; i < engines.Count; i++)
+            {
+                if (GetPreviewIndex(engines[i]) == -1)
+                {
+                    if (i > 0)
+                        AddPreview(engines[i], dv, engines[i - 1]);
+                    else
+                        AddPreview(engines[i], dv, null);
+                    // to update viewers
+                    engines[i].PageSize = engines[i].PageSize;                    
+                }
+            }
+            // Move previews that dont match engine order
+            bool reorder = false;
+            for (int i = 0; i < engines.Count; i++)
+            {
+                int idx = GetPreviewIndex(engines[i]);
+                if (idx != i)
+                {
+                    pnlPreviews.Controls.SetChildIndex(pnlPreviews.Controls[idx], i);
+                    reorder = true;
+                }
+            }
+            if (reorder)
+                SetPreviewTops(0);
+        }
     }
 }

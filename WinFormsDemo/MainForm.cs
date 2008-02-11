@@ -17,9 +17,9 @@ namespace WinFormsDemo
 {
     public partial class MainForm : Form
     {
+        DEngineManager dem;
         DAuthorProperties dap;
         DEngine de = null;
-        List<DEngine> dengines = new List<DEngine>();
 
         DTkViewer dvEditor;
 
@@ -27,22 +27,6 @@ namespace WinFormsDemo
 
         bool beenSaved;
         string fileName;
-        bool dirty
-        {
-            set
-            {
-                if (value == false)
-                    foreach (DEngine de in dengines)
-                        de.UndoRedoClearHistory();
-            }
-            get
-            {
-                foreach (DEngine de in dengines)
-                    if (de.CanUndo)
-                        return true;
-                return false;
-            }
-        }
 
         const string ProgramName = "WinFormsDemo";
         const string FileExt = ".ddraw";
@@ -50,39 +34,35 @@ namespace WinFormsDemo
 
         void CreateDEngine(DEngine sibling)
         {
-            DEngine de = new DEngine(dap);
+            DEngine de = new DEngine(dap, true);
             if (sibling != null)
             {
-                int idx = dengines.IndexOf(sibling);
+                int idx = dem.IndexOfEngine(sibling);
                 if (idx >= 0)
-                    dengines.Insert(idx + 1, de);
+                    dem.InsertEngine(idx + 1, de);
                 else
-                    dengines.Add(de);
+                    dem.AddEngine(de);
             }
             else
-                dengines.Add(de);
+                dem.AddEngine(de);
             de.PageSize = new DPoint(500, 400);
-            InitDEngine(de, sibling);
+            InitDEngine(de);
         }
 
-        void InitDEngine(DEngine de, DEngine sibling)
+        void InitDEngine(DEngine de)
         {
-            previewBar1.AddPreview(de, dvEditor, sibling);
             // DEngine properties
             de.SimplifyPolylines = true;
             de.SimplifyPolylinesTolerance = 0.5;
             // DEngine events
             de.DebugMessage += new DebugMessageHandler(DebugMessage);
             de.SelectedFiguresChanged += new SelectedFiguresHandler(de_SelectedFiguresChanged);
-            de.UndoRedoChanged += new EventHandler(de_UndoRedoChanged);
             de.ContextClick += new ContextClickHandler(de_ContextClick);
             de.HsmStateChanged += new HsmStateChangedHandler(de_HsmStateChanged);
             de.AddedFigure += new AddedFigureHandler(de_AddedFigure);
             // add glyphs to figures
             foreach (Figure f in de.Figures)
                 AddGlyphs(f);
-            // to update viewers
-            de.PageSize = de.PageSize;
             // show it
             SetCurrentDe(de);
         }
@@ -108,6 +88,9 @@ namespace WinFormsDemo
             InitializeComponent();
             // Initialze DGraphics
             WFGraphics.Init();
+            // DEngine Manager
+            dem = new DEngineManager();
+            dem.UndoRedoChanged += new EventHandler(dem_UndoRedoChanged);
             // create author properties
             dap = new DAuthorProperties(DColor.Blue, DColor.Red, 3, DStrokeStyle.Solid, DMarker.None, DMarker.None, 1, "Arial", false, false, false, false);
             // edit viewer
@@ -127,6 +110,7 @@ namespace WinFormsDemo
             Figure._rotateHandleStemLength -= Figure._handleBorder;
             // new document
             New();
+            dem.UndoRedoClearHistory();
             // create initial figures
             de.UndoRedoStart("create initial figures");
             // rect figures
@@ -199,30 +183,24 @@ namespace WinFormsDemo
 
         void UpdateUndoRedoControls()
         {
-            undoToolStripMenuItem.Enabled = de.CanUndo;
+            undoToolStripMenuItem.Enabled = dem.CanUndo(de);
             if (undoToolStripMenuItem.Enabled)
-            {
-                IEnumerator<string> en = de.UndoCommands.GetEnumerator();
-                en.MoveNext();
-                undoToolStripMenuItem.Text = string.Format("Undo \"{0}\"", en.Current);
-            }
+                undoToolStripMenuItem.Text = string.Format("Undo \"{0}\"", dem.UndoCaption(de));
             else
                 undoToolStripMenuItem.Text = "Undo";
-            redoToolStripMenuItem.Enabled = de.CanRedo;
+            redoToolStripMenuItem.Enabled = dem.CanRedo(de);
             if (redoToolStripMenuItem.Enabled)
-            {
-                IEnumerator<string> en = de.RedoCommands.GetEnumerator();
-                en.MoveNext();
-                redoToolStripMenuItem.Text = string.Format("Redo \"{0}\"", en.Current);
-            }
+                redoToolStripMenuItem.Text = string.Format("Redo \"{0}\"", dem.RedoCaption(de));
             else
                 redoToolStripMenuItem.Text = "Redo";
         }
 
-        void de_UndoRedoChanged(object sender, EventArgs e)
+        void dem_UndoRedoChanged(object sender, EventArgs e)
         {
             UpdateUndoRedoControls();
             UpdateTitleBar();
+            if (sender == dem)
+                previewBar1.MatchPreviewsToEngines(dem.GetEngines(), dvEditor);
         }
 
         void de_ContextClick(DEngine de, Figure clickedFigure, DPoint pt)
@@ -918,7 +896,7 @@ namespace WinFormsDemo
 
         private void previewBar1_PreviewAdd(object sender, EventArgs e)
         {
-            CreateDEngine(de);
+            actNewPage_Execute(sender, e);
         }
 
         private void previewBar1_PreviewContext(Preview p, Point pt)
@@ -928,9 +906,9 @@ namespace WinFormsDemo
 
         private void previewBar1_PreviewMove(Preview p, Preview to)
         {
-            int idx = dengines.IndexOf(to.DEngine);
-            dengines.Remove(p.DEngine);
-            dengines.Insert(idx, p.DEngine);
+            dem.UndoRedoStart("Move Page");
+            dem.MoveEngine(p.DEngine, to.DEngine);
+            dem.UndoRedoCommit();
         }
 
         private void imageToolStripMenuItem_Click(object sender, EventArgs e)
@@ -963,12 +941,12 @@ namespace WinFormsDemo
 
         private void undoToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            de.Undo();
+            dem.Undo(de);
         }
 
         private void redoToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            de.Redo();
+            dem.Redo(de);
         }
 
         private void zoomToolStripMenuItem_DropDownOpening(object sender, EventArgs e)
@@ -1131,10 +1109,11 @@ namespace WinFormsDemo
                 de.Delete(de.SelectedFigures);
             else 
             {
-                dengines.Remove(de);
-                previewBar1.RemovePreview(de);
-                if (dengines.Count == 0)
+                dem.UndoRedoStart("Delete Page");
+                dem.RemoveEngine(de);
+                if (dem.EngineCount == 0)
                     CreateDEngine(de);
+                dem.UndoRedoCommit();
             }
         }
 
@@ -1145,7 +1124,7 @@ namespace WinFormsDemo
 
         void UpdateTitleBar()
         {
-            if (dirty)
+            if (dem.Dirty)
                 Text = string.Format("{0} - {1}{2}", ProgramName, Path.GetFileNameWithoutExtension(fileName), "*");
             else
                 Text = string.Format("{0} - {1}", ProgramName, Path.GetFileNameWithoutExtension(fileName));
@@ -1156,9 +1135,11 @@ namespace WinFormsDemo
             fileName = "New Document";
             beenSaved = false;
 
-            previewBar1.Clear();
-            dengines.Clear();
+            dem.UndoRedoStart("New Document");
+            dem.Clear();
             CreateDEngine(null);
+            dem.UndoRedoCommit();
+            dem.Dirty = false;
 
             UpdateTitleBar();
         }
@@ -1170,12 +1151,18 @@ namespace WinFormsDemo
             ofd.Filter = FileTypeFilter;
             if (ofd.ShowDialog() == DialogResult.OK)
             {
+                // start undo/redo
+                dem.UndoRedoStart("Open Document");
+                // load new engines
                 fileName = ofd.FileName;
-                dengines = FileHelper.Load(fileName, dap);
+                List<DEngine> engines = FileHelper.Load(fileName, dap, true);
+                dem.SetEngines(engines);
                 // init new dengines
-                previewBar1.Clear();
-                foreach (DEngine newDe in dengines)
-                    InitDEngine(newDe, null);
+                foreach (DEngine newDe in dem.GetEngines())
+                    InitDEngine(newDe);
+                // commit undo/redo
+                dem.UndoRedoCommit();
+                dem.Dirty = false;
                 // update vars
                 beenSaved = true;
                 UpdateTitleBar();
@@ -1184,8 +1171,8 @@ namespace WinFormsDemo
 
         void Save()
         {
-            FileHelper.Save(fileName, dengines);
-            dirty = false;
+            FileHelper.Save(fileName, dem.GetEngines());
+            dem.Dirty = false;
             beenSaved = true;
             UpdateTitleBar();
         }
@@ -1208,7 +1195,7 @@ namespace WinFormsDemo
 
         bool CheckDirty()
         {
-            if (dirty)
+            if (dem.Dirty)
             {
                 switch (MessageBox.Show(string.Format("Save changes to \"{0}\"?", fileName), ProgramName,
                     MessageBoxButtons.YesNoCancel, MessageBoxIcon.Exclamation))
@@ -1256,25 +1243,25 @@ namespace WinFormsDemo
 
         private void actPrint_Execute(object sender, EventArgs e)
         {
-            if (dengines.Count > 0)
+            if (dem.EngineCount > 0)
             {
                 PrintDialog pf = new PrintDialog();
                 pf.UseEXDialog = true;
                 pf.AllowSelection = false;
-                if (dengines.Count > 1)
+                if (dem.EngineCount > 1)
                 {
                     pf.AllowCurrentPage = true;
                     pf.AllowSomePages = true;
                     pf.PrinterSettings.MinimumPage = 1;
-                    pf.PrinterSettings.MaximumPage = dengines.Count;
+                    pf.PrinterSettings.MaximumPage = dem.EngineCount;
                     pf.PrinterSettings.FromPage = 1;
-                    pf.PrinterSettings.ToPage = dengines.Count;
+                    pf.PrinterSettings.ToPage = dem.EngineCount;
                 }
                 if (pf.ShowDialog() == DialogResult.OK)
                 {
                     DPrintViewer dvPrint = new DPrintViewer();
                     // page iteration vars
-                    List<DEngine>.Enumerator engineEnumerator = dengines.GetEnumerator();
+                    IEnumerator<DEngine> engineEnumerator = dem.GetEngines().GetEnumerator();
                     engineEnumerator.MoveNext();
                     int pageIdx = pf.PrinterSettings.FromPage - 1;
                     // print document settings
@@ -1292,7 +1279,7 @@ namespace WinFormsDemo
                                 de = this.de;
                                 break;
                             case PrintRange.SomePages:
-                                de = dengines[pageIdx];
+                                de = dem.GetEngine(pageIdx);
                                 pageIdx += 1;
                                 e2.HasMorePages = pageIdx < pd.PrinterSettings.ToPage;
                                 break;
@@ -1314,7 +1301,9 @@ namespace WinFormsDemo
 
         private void actNewPage_Execute(object sender, EventArgs e)
         {
+            dem.UndoRedoStart("New Page");
             CreateDEngine(de);
+            dem.UndoRedoCommit();
         }
 
         private void actDeletePage_Execute(object sender, EventArgs e)
@@ -1324,6 +1313,7 @@ namespace WinFormsDemo
 
         private void actClonePage_Execute(object sender, EventArgs e)
         {
+            dem.UndoRedoStart("Clone Page");
             // clone data
             string clonedFigures = FigureSerialize.FormatToXml(de.Figures, null);
             string clonedBackground = FigureSerialize.FormatToXml(de.GetBackgroundFigure(), null);
@@ -1332,12 +1322,11 @@ namespace WinFormsDemo
             CreateDEngine(de);
             de.PageSize = sz;
             // add figures from clone data
-            de.UndoRedoStart("Clone Page");
             de.SetBackgroundFigure((BackgroundFigure)FigureSerialize.FromXml(clonedBackground)[0]);
             List<Figure> figs = FigureSerialize.FromXml(clonedFigures);
             foreach (Figure f in figs)
                 de.AddFigure(f);
-            de.UndoRedoCommit();
+            dem.UndoRedoCommit();
         }
 
         private void actClearPage_Execute(object sender, EventArgs e)

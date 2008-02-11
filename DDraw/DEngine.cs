@@ -116,11 +116,11 @@ namespace DDraw
         {
             get { return undoRedoManager.CanRedo; }
         }
-        public IEnumerable<string> UndoCommands
+        public IEnumerable<CommandId> UndoCommands
         {
             get { return undoRedoManager.UndoCommands; }
         }
-        public IEnumerable<string> RedoCommands
+        public IEnumerable<CommandId> RedoCommands
         {
             get { return undoRedoManager.RedoCommands; }
         }
@@ -139,6 +139,10 @@ namespace DDraw
         public void UndoRedoClearHistory()
         {
             undoRedoManager.ClearHistory();
+        }
+        public void UndoRedoClearRedos()
+        {
+            undoRedoManager.ClearRedos();
         }
         public void Undo()
         {
@@ -224,10 +228,11 @@ namespace DDraw
         public event ContextClickHandler ContextClick;
         public event PageSizeChangedHandler PageSizeChanged;
         public event EventHandler UndoRedoChanged;
+        public event EventHandler<CommandDoneEventArgs> UndoRedoCommandDone;
         public event HsmStateChangedHandler HsmStateChanged;
         public event AddedFigureHandler AddedFigure;
 
-        public DEngine(DAuthorProperties authorProps)
+        public DEngine(DAuthorProperties authorProps, bool usingEngineManager)
         {
             // create the undo/redo manager
             undoRedoManager = new UndoRedoManager();
@@ -235,7 +240,8 @@ namespace DDraw
             // create viewer handler
             viewerHandler = new DViewerHandler();
             // create figure handler
-            undoRedoManager.Start("create figure handler");
+            if (!usingEngineManager)
+                undoRedoManager.Start("create figure handler");
             figureHandler = new DFigureHandler();
             figureHandler.SelectedFiguresChanged += new SelectedFiguresHandler(DoSelectedFiguresChanged);
             figureHandler.AddedFigure += delegate(DEngine de, Figure fig)
@@ -243,8 +249,11 @@ namespace DDraw
                 if (AddedFigure != null)
                     AddedFigure(this, fig);
             };
-            undoRedoManager.Commit();
-            undoRedoManager.ClearHistory();
+            if (!usingEngineManager)
+            {
+                undoRedoManager.Commit();
+                undoRedoManager.ClearHistory();
+            }
             // create state machine
             hsm = new DHsm(undoRedoManager, viewerHandler, figureHandler, authorProps);
             hsm.DebugMessage += new DebugMessageHandler(hsm_DebugMessage);
@@ -261,6 +270,8 @@ namespace DDraw
                 // in case the page size was undooed
                 PageSize = PageSize;
             }
+            if (UndoRedoCommandDone != null)
+                UndoRedoCommandDone(this, e);
             if (UndoRedoChanged != null)
                 UndoRedoChanged(this, e);
         }

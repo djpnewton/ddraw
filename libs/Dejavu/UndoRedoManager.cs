@@ -79,7 +79,7 @@ namespace DejaVu
 		}
 		/// <summary>Gets an enumeration of commands captions that can be undone.</summary>
 		/// <remarks>The first command in the enumeration will be undone first</remarks>
-		public static IEnumerable<string> UndoCommands
+        public static IEnumerable<CommandId> UndoCommands
 		{
 			get
 			{
@@ -88,7 +88,7 @@ namespace DejaVu
 		}
 		/// <summary>Gets an enumeration of commands captions that can be redone.</summary>
 		/// <remarks>The first command in the enumeration will be redone first</remarks>
-		public static IEnumerable<string> RedoCommands
+        public static IEnumerable<CommandId> RedoCommands
 		{
 			get
 			{

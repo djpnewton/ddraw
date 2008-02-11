@@ -6,14 +6,27 @@ using System.Diagnostics;
 
 namespace DejaVu
 {
+    public struct CommandId
+    {
+        public int Id;
+        public string Caption;
+        public CommandId(int id, string caption)
+        {
+            Id = id;
+            Caption = caption;
+        }
+    }
+
     class Command : IDisposable
     {
 		readonly UndoRedoArea parentArea;
-        public readonly string Caption;
+        public readonly CommandId CommandId;
+
+        static int _currentId = 0;
 
 		public Command(string caption, UndoRedoArea parentArea)
         {
-            Caption = caption;
+            CommandId = new CommandId(_currentId++, caption);
 			this.parentArea = parentArea;
         }
 
