@@ -140,6 +140,8 @@ namespace WinFormsDemo
             this.actCopy = new Burkovsky.Controls.Action();
             this.actPaste = new Burkovsky.Controls.Action();
             this.actDelete = new Burkovsky.Controls.Action();
+            this.actClearPage = new Burkovsky.Controls.Action();
+            this.actDeletePage = new Burkovsky.Controls.Action();
             this.actNewPage = new Burkovsky.Controls.Action();
             this.actPageSize = new Burkovsky.Controls.Action();
             this.actBackground = new Burkovsky.Controls.Action();
@@ -148,8 +150,6 @@ namespace WinFormsDemo
             this.actBringToFront = new Burkovsky.Controls.Action();
             this.actSendBackward = new Burkovsky.Controls.Action();
             this.actBringForward = new Burkovsky.Controls.Action();
-            this.actClearPage = new Burkovsky.Controls.Action();
-            this.actDeletePage = new Burkovsky.Controls.Action();
             this.actClonePage = new Burkovsky.Controls.Action();
             this.tsEditorMode.SuspendLayout();
             this.toolStripContainer1.ContentPanel.SuspendLayout();
@@ -371,7 +371,7 @@ namespace WinFormsDemo
             this.wfvcEditor.Dock = System.Windows.Forms.DockStyle.Fill;
             this.wfvcEditor.Location = new System.Drawing.Point(0, 0);
             this.wfvcEditor.Name = "wfvcEditor";
-            this.wfvcEditor.Size = new System.Drawing.Size(456, 219);
+            this.wfvcEditor.Size = new System.Drawing.Size(439, 219);
             this.wfvcEditor.TabIndex = 0;
             this.wfvcEditor.KeyUp += new System.Windows.Forms.KeyEventHandler(this.wfvcEditor_KeyUp);
             this.wfvcEditor.KeyDown += new System.Windows.Forms.KeyEventHandler(this.wfvcEditor_KeyDown);
@@ -380,9 +380,9 @@ namespace WinFormsDemo
             // 
             this.previewBar1.AutoScroll = true;
             this.previewBar1.Dock = System.Windows.Forms.DockStyle.Right;
-            this.previewBar1.Location = new System.Drawing.Point(456, 0);
+            this.previewBar1.Location = new System.Drawing.Point(439, 0);
             this.previewBar1.Name = "previewBar1";
-            this.previewBar1.Size = new System.Drawing.Size(84, 219);
+            this.previewBar1.Size = new System.Drawing.Size(101, 219);
             this.previewBar1.TabIndex = 0;
             this.previewBar1.PreviewMove += new WinFormsDemo.PreviewMoveHandler(this.previewBar1_PreviewMove);
             this.previewBar1.PreviewSelected += new WinFormsDemo.PreviewSelectedHandler(this.previewBar1_PreviewSelected);
@@ -1228,6 +1228,18 @@ namespace WinFormsDemo
             this.actDelete.Text = "Delete";
             this.actDelete.Execute += new System.EventHandler(this.actDelete_Execute);
             // 
+            // actClearPage
+            // 
+            this.actClearPage.ShortcutKeys = System.Windows.Forms.Keys.None;
+            this.actClearPage.Text = "Clear Page";
+            this.actClearPage.Execute += new System.EventHandler(this.actClearPage_Execute);
+            // 
+            // actDeletePage
+            // 
+            this.actDeletePage.ShortcutKeys = System.Windows.Forms.Keys.Delete;
+            this.actDeletePage.Text = "Delete Page";
+            this.actDeletePage.Execute += new System.EventHandler(this.actDeletePage_Execute);
+            // 
             // actNewPage
             // 
             this.actNewPage.ShortcutKeys = System.Windows.Forms.Keys.None;
@@ -1277,18 +1289,6 @@ namespace WinFormsDemo
             this.actBringForward.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.PageUp)));
             this.actBringForward.Text = "Bring Forward";
             this.actBringForward.Execute += new System.EventHandler(this.actBringForward_Execute);
-            // 
-            // actClearPage
-            // 
-            this.actClearPage.ShortcutKeys = System.Windows.Forms.Keys.None;
-            this.actClearPage.Text = "Clear Page";
-            this.actClearPage.Execute += new System.EventHandler(this.actClearPage_Execute);
-            // 
-            // actDeletePage
-            // 
-            this.actDeletePage.ShortcutKeys = System.Windows.Forms.Keys.Delete;
-            this.actDeletePage.Text = "Delete Page";
-            this.actDeletePage.Execute += new System.EventHandler(this.actDeletePage_Execute);
             // 
             // actClonePage
             // 

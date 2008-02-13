@@ -20,8 +20,6 @@ namespace WinFormsDemo
         public event PreviewContextHandler PreviewContext;
         public event PreviewMoveHandler PreviewMove;
 
-        int baseWidth = -1;
-
         public PreviewBar()
         {
             InitializeComponent();
@@ -38,13 +36,6 @@ namespace WinFormsDemo
 
         public Preview AddPreview(DEngine de, DViewer dv, DEngine sibling)
         {
-            if (baseWidth == -1)
-            {
-                if (pnlPreviews.VerticalScroll.Visible)
-                    baseWidth = Width - SystemInformation.VerticalScrollBarWidth;
-                else
-                    baseWidth = Width;
-            }
             // index of new preview
             int idx;
             if (sibling != null)
@@ -56,11 +47,10 @@ namespace WinFormsDemo
             p.Parent = pnlPreviews;
             pnlPreviews.Controls.SetChildIndex(p, idx);
             // set preview properties
-            p.Width = pnlPreviews.Width;
+            p.Width = pnlPreviews.Width - SystemInformation.VerticalScrollBarWidth;
             p.Height = 65;
             p.Left = 0;
             SetPreviewTops(idx); 
-            p.Anchor = AnchorStyles.Left | AnchorStyles.Top | AnchorStyles.Right;
             p.Click += new EventHandler(p_Click);
             p.PreviewContext += new PreviewContextHandler(p_PreviewContext);
             p.PreviewMove += new PreviewMoveHandler(p_PreviewMove);
@@ -103,7 +93,7 @@ namespace WinFormsDemo
             while (idx < pnlPreviews.Controls.Count)
             {
                 if (idx == 0)
-                    pnlPreviews.Controls[idx].Top = 0;
+                    pnlPreviews.Controls[idx].Top = 0 - pnlPreviews.VerticalScroll.Value;
                 else
                     pnlPreviews.Controls[idx].Top = pnlPreviews.Controls[idx - 1].Bottom;
                 idx++;
@@ -182,17 +172,6 @@ namespace WinFormsDemo
         {
             if (PreviewSelected != null)
                 PreviewSelected(p);
-        }
-
-        private void pnlPreviews_Resize(object sender, EventArgs e)
-        {
-            if (baseWidth != -1)
-            {
-                if (pnlPreviews.VerticalScroll.Visible)
-                    Width = baseWidth + SystemInformation.VerticalScrollBarWidth;
-                else
-                    Width = baseWidth;
-            }
         }
 
         public void MatchPreviewsToEngines(List<DEngine> engines, DViewer dv)
