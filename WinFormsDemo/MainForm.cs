@@ -100,7 +100,6 @@ namespace WinFormsDemo
             // edit viewer
             dvEditor = new WFViewer(wfvcEditor);
             dvEditor.EditFigures = true;
-            dvEditor.AntiAlias = true;
             dvEditor.DebugMessage += new DebugMessageHandler(DebugMessage);
             // glyphs
             MemoryStream ms = new MemoryStream();
@@ -166,12 +165,43 @@ namespace WinFormsDemo
             UpdateTitleBar();
             // Init controls
             InitPropertyControls(de.HsmState);
+            // read program options
+            ReadOptions();
+        }
+
+        void ReadOptions()
+        {
+            ProgramOptions options = new ProgramOptions();
+            // MainForm options
+            Rectangle r = options.FormRect;
+            SetBounds(r.Left, r.Top, r.Width, r.Height);
+            // dvEditor options
+            dvEditor.AntiAlias = options.AntiAlias;
+            if (options.Zoom == Zoom.Custom)
+                dvEditor.Scale = options.Scale;
+            else
+                dvEditor.Zoom = options.Zoom;
+        }
+
+        void WriteOptions()
+        {
+            ProgramOptions options = new ProgramOptions();
+            // MainForm options
+            options.FormRect = new Rectangle(Left, Top, Width, Height);
+            // dvEditor options
+            options.Zoom = dvEditor.Zoom;
+            options.Scale = dvEditor.Scale;
+            options.AntiAlias = dvEditor.AntiAlias;
+            // write to file
+            options.WriteIni();
         }
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
             if (!CheckDirty())
                 e.Cancel = true;
+            else
+                WriteOptions();
         }
 
         void DebugMessage(string msg)
@@ -628,12 +658,6 @@ namespace WinFormsDemo
             AddGlyphs(fig);
         }
 
-        private void antialiasToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            dvEditor.AntiAlias = !dvEditor.AntiAlias;
-            antialiasToolStripMenuItem.Checked = dvEditor.AntiAlias;
-        }
-
         private void btnFill_Click(object sender, EventArgs e)
         {
             Point pt = new Point(btnFill.Bounds.Left, btnFill.Bounds.Bottom);
@@ -953,13 +977,17 @@ namespace WinFormsDemo
             dem.Redo(de);
         }
 
-        private void zoomToolStripMenuItem_DropDownOpening(object sender, EventArgs e)
+
+        private void viewToolStripMenuItem_DropDownOpening(object sender, EventArgs e)
         {
+            // zoom
             fitToPageToolStripMenuItem.Checked = dvEditor.Zoom == Zoom.FitToPage;
             fitToWidthToolStripMenuItem.Checked = dvEditor.Zoom == Zoom.FitToWidth;
             _050PcToolStripMenuItem.Checked = dvEditor.Scale == 0.5;
             _100PcToolStripMenuItem.Checked = dvEditor.Scale == 1.0;
             _150PcToolStripMenuItem.Checked = dvEditor.Scale == 1.5;
+            // anti alias
+            antialiasToolStripMenuItem.Checked = dvEditor.AntiAlias;
         }
 
         private void ZoomToolStripMenuItem_Click(object sender, EventArgs e)
@@ -974,6 +1002,11 @@ namespace WinFormsDemo
                 dvEditor.Scale = 1.0;
             else if (sender == _150PcToolStripMenuItem)
                 dvEditor.Scale = 1.5;
+        }
+
+        private void antialiasToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            dvEditor.AntiAlias = !dvEditor.AntiAlias;
         }
 
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)

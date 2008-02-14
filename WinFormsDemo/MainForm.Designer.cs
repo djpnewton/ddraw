@@ -602,6 +602,7 @@ namespace WinFormsDemo
             this.viewToolStripMenuItem.Name = "viewToolStripMenuItem";
             this.viewToolStripMenuItem.Size = new System.Drawing.Size(41, 20);
             this.viewToolStripMenuItem.Text = "View";
+            this.viewToolStripMenuItem.DropDownOpening += new System.EventHandler(this.viewToolStripMenuItem_DropDownOpening);
             // 
             // zoomToolStripMenuItem
             // 
@@ -615,7 +616,6 @@ namespace WinFormsDemo
             this.zoomToolStripMenuItem.Name = "zoomToolStripMenuItem";
             this.zoomToolStripMenuItem.Size = new System.Drawing.Size(125, 22);
             this.zoomToolStripMenuItem.Text = "Zoom";
-            this.zoomToolStripMenuItem.DropDownOpening += new System.EventHandler(this.zoomToolStripMenuItem_DropDownOpening);
             // 
             // fitToPageToolStripMenuItem
             // 
@@ -660,8 +660,6 @@ namespace WinFormsDemo
             // antialiasToolStripMenuItem
             // 
             this.actionListProvider1.SetAction(this.antialiasToolStripMenuItem, null);
-            this.antialiasToolStripMenuItem.Checked = true;
-            this.antialiasToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.antialiasToolStripMenuItem.Name = "antialiasToolStripMenuItem";
             this.antialiasToolStripMenuItem.Size = new System.Drawing.Size(125, 22);
             this.antialiasToolStripMenuItem.Text = "Antialias";
@@ -1304,6 +1302,7 @@ namespace WinFormsDemo
             this.Controls.Add(this.toolStripContainer1);
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "MainForm";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Text = "WinFormsDemo";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
             this.tsEditorMode.ResumeLayout(false);

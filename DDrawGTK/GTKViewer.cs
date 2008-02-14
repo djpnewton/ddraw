@@ -27,7 +27,7 @@ namespace DDraw.GTK
             }
         }
 
-        DPoint pageSize;
+        DPoint pageSize = new DPoint(100, 100);
         public override void SetPageSize(DPoint pageSize)
         {
             this.pageSize = pageSize;
