@@ -211,6 +211,11 @@ namespace DDraw
             get { return hsm.AutoGroupPolylinesYLimit; }
             set { hsm.AutoGroupPolylinesYLimit = value; }
         }
+        public bool UsePolylineDots
+        {
+            get { return hsm.UsePolylineDots; }
+            set { hsm.UsePolylineDots = value; }
+        }
 
         UndoRedo<DPoint> _pageSize = new UndoRedo<DPoint>(new DPoint(PageTools.DefaultPageWidth, PageTools.DefaultPageHeight));
         public DPoint PageSize

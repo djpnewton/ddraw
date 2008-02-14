@@ -184,6 +184,13 @@ namespace DDraw
             set { autoGroupPolylinesYLimit = value; }
         }
 
+        bool usePolylineDots = true;
+        public bool UsePolylineDots
+        {
+            get { return usePolylineDots; }
+            set { usePolylineDots = value; }
+        }
+
         bool drawSelection = false;
         bool drawEraser = false;
 
@@ -1004,36 +1011,56 @@ namespace DDraw
 
         void DoDrawingLineMouseUp(DTkViewer dv, DMouseButton btn, DPoint pt)
         {
-            // simplify polyline
-            if (SimplifyPolylines && currentFigure is IPolyline)
+            // test for finished line
+            bool lineNotFinished = false;
+            if (currentFigure is ILineSegment && ((ILineSegment)currentFigure).Pt2 == null)
+                lineNotFinished = true;
+            else if (currentFigure is IPolyline && ((IPolyline)currentFigure).Points.Count < 2)
             {
-                ((IPolyline)currentFigure).Points = DGeom.SimplifyPolyline(((IPolyline)currentFigure).Points, simplifyPolylinesTolerance);
-                dv.Update(currentFigure.GetSelectRect());
-            }
-            // auto group
-            if (autoGroupPolylineTimeoutMet)
-            {
-                autoGroupPolylineXLimitMet = DGeom.DistXBetweenRects(autoGroupPolylineFigure.GetEncompassingRect(), 
-                    currentFigure.GetEncompassingRect()) < autoGroupPolylinesXLimit;
-                autoGroupPolylineYLimitMet = DGeom.DistYBetweenRects(autoGroupPolylineFigure.GetEncompassingRect(), 
-                    currentFigure.GetEncompassingRect()) < autoGroupPolylinesYLimit;
-                if (autoGroupPolylineXLimitMet && autoGroupPolylineYLimitMet)
+                if (UsePolylineDots)
                 {
-                    if (autoGroupPolylineFigure is GroupFigure)
+                    DPoint currentPt = ((IPolyline)currentFigure).Points[0];
+                    DPoint newPt = new DPoint(currentPt.X + 0.01, currentPt.Y + 0.01);
+                    ((IPolyline)currentFigure).Points.Add(newPt);
+                }
+                else
+                    lineNotFinished = true;
+            }
+            if (!lineNotFinished)
+            {
+                // simplify polyline
+                if (SimplifyPolylines && currentFigure is IPolyline)
+                {
+                    ((IPolyline)currentFigure).Points = DGeom.SimplifyPolyline(((IPolyline)currentFigure).Points, simplifyPolylinesTolerance);
+                    dv.Update(currentFigure.GetSelectRect());
+                }
+                // auto group
+                if (autoGroupPolylineTimeoutMet)
+                {
+                    autoGroupPolylineXLimitMet = DGeom.DistXBetweenRects(autoGroupPolylineFigure.GetEncompassingRect(),
+                        currentFigure.GetEncompassingRect()) < autoGroupPolylinesXLimit;
+                    autoGroupPolylineYLimitMet = DGeom.DistYBetweenRects(autoGroupPolylineFigure.GetEncompassingRect(),
+                        currentFigure.GetEncompassingRect()) < autoGroupPolylinesYLimit;
+                    if (autoGroupPolylineXLimitMet && autoGroupPolylineYLimitMet)
                     {
-                        figureHandler.Remove(currentFigure);
-                        IChildFigureable cf = (IChildFigureable)autoGroupPolylineFigure;
-                        cf.ChildFigures.Add(currentFigure);
-                        cf.ChildFigures = cf.ChildFigures;
+                        if (autoGroupPolylineFigure is GroupFigure)
+                        {
+                            figureHandler.Remove(currentFigure);
+                            IChildFigureable cf = (IChildFigureable)autoGroupPolylineFigure;
+                            cf.ChildFigures.Add(currentFigure);
+                            cf.ChildFigures = cf.ChildFigures;
+                        }
+                        else if (autoGroupPolylineFigure is IPolyline)
+                        {
+                            figureHandler.Remove(autoGroupPolylineFigure);
+                            figureHandler.Remove(currentFigure);
+                            GroupFigure gf = new GroupFigure(new List<Figure>(new Figure[] { autoGroupPolylineFigure, currentFigure }));
+                            figureHandler.Add(gf);
+                            autoGroupPolylineFigure = gf;
+                        }
                     }
-                    else if (autoGroupPolylineFigure is IPolyline)
-                    {
-                        figureHandler.Remove(autoGroupPolylineFigure);
-                        figureHandler.Remove(currentFigure);
-                        GroupFigure gf = new GroupFigure(new List<Figure>(new Figure[] { autoGroupPolylineFigure, currentFigure }));
-                        figureHandler.Add(gf);
-                        autoGroupPolylineFigure = gf;
-                    }
+                    else
+                        autoGroupPolylineFigure = currentFigure;
                 }
             }
             autoGroupPolylineStart = Environment.TickCount;
