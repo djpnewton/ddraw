@@ -121,6 +121,12 @@ namespace DDraw
         const double figureSnapAngle = Math.PI / 4;        // 45 degrees
         const double figureSnapRange = Math.PI / (4 * 18); // 2.5  degrees (each way)
 
+        Figure autoGroupPolylineFigure = null;
+        bool autoGroupPolylineTimeoutMet;
+        bool autoGroupPolylineXLimitMet;
+        bool autoGroupPolylineYLimitMet;
+        int autoGroupPolylineStart;
+
         // properties
         bool figureLockAspectRatio = false;
         public bool FigureLockAspectRatio
@@ -151,6 +157,31 @@ namespace DDraw
         {
             get { return simplifyPolylinesTolerance; }
             set { simplifyPolylinesTolerance = value; }
+        }
+
+        bool autoGroupPolylines = false;
+        public bool AutoGroupPolylines
+        {
+            get { return autoGroupPolylines; }
+            set { autoGroupPolylines = value; }
+        }
+        int autoGroupPolylinesTimeout = 1000;
+        public int AutoGroupPolylinesTimeout
+        {
+            get { return autoGroupPolylinesTimeout; }
+            set { autoGroupPolylinesTimeout = value; }
+        }
+        int autoGroupPolylinesXLimit = 100;
+        public int AutoGroupPolylinesXLimit
+        {
+            get { return autoGroupPolylinesXLimit; }
+            set { autoGroupPolylinesXLimit = value; }
+        }
+        int autoGroupPolylinesYLimit = 50;
+        public int AutoGroupPolylinesYLimit
+        {
+            get { return autoGroupPolylinesYLimit; }
+            set { autoGroupPolylinesYLimit = value; }
         }
 
         bool drawSelection = false;
@@ -897,7 +928,28 @@ namespace DDraw
                         ((ILineSegment)currentFigure).Pt2 = pt;
                 }
                 else if (currentFigure is IPolyline)
+                {
                     ((IPolyline)currentFigure).AddPoint(pt);
+                    // auto grouping stuff
+                    if (AutoGroupPolylines)
+                    {
+                        if (autoGroupPolylineFigure == null)
+                        {
+                            autoGroupPolylineFigure = currentFigure;
+                            autoGroupPolylineTimeoutMet = false;
+                        }
+                        else
+                        {
+                            if (Environment.TickCount <= autoGroupPolylineStart + AutoGroupPolylinesTimeout)
+                                autoGroupPolylineTimeoutMet = true;
+                            else
+                            {
+                                autoGroupPolylineTimeoutMet = false;
+                                autoGroupPolylineFigure = currentFigure;
+                            }
+                        }
+                    }
+                }
                 authorProps.ApplyPropertiesToFigure(currentFigure);
                 // add to list of figures
                 figureHandler.Add(currentFigure);
@@ -958,6 +1010,33 @@ namespace DDraw
                 ((IPolyline)currentFigure).Points = DGeom.SimplifyPolyline(((IPolyline)currentFigure).Points, simplifyPolylinesTolerance);
                 dv.Update(currentFigure.GetSelectRect());
             }
+            // auto group
+            if (autoGroupPolylineTimeoutMet)
+            {
+                autoGroupPolylineXLimitMet = DGeom.DistXBetweenRects(autoGroupPolylineFigure.GetEncompassingRect(), 
+                    currentFigure.GetEncompassingRect()) < autoGroupPolylinesXLimit;
+                autoGroupPolylineYLimitMet = DGeom.DistYBetweenRects(autoGroupPolylineFigure.GetEncompassingRect(), 
+                    currentFigure.GetEncompassingRect()) < autoGroupPolylinesYLimit;
+                if (autoGroupPolylineXLimitMet && autoGroupPolylineYLimitMet)
+                {
+                    if (autoGroupPolylineFigure is GroupFigure)
+                    {
+                        figureHandler.Remove(currentFigure);
+                        IChildFigureable cf = (IChildFigureable)autoGroupPolylineFigure;
+                        cf.ChildFigures.Add(currentFigure);
+                        cf.ChildFigures = cf.ChildFigures;
+                    }
+                    else if (autoGroupPolylineFigure is IPolyline)
+                    {
+                        figureHandler.Remove(autoGroupPolylineFigure);
+                        figureHandler.Remove(currentFigure);
+                        GroupFigure gf = new GroupFigure(new List<Figure>(new Figure[] { autoGroupPolylineFigure, currentFigure }));
+                        figureHandler.Add(gf);
+                        autoGroupPolylineFigure = gf;
+                    }
+                }
+            }
+            autoGroupPolylineStart = Environment.TickCount;
             // commit to undo/redo
             undoRedoManager.Commit();
             // transition

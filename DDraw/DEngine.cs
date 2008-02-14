@@ -191,6 +191,26 @@ namespace DDraw
             get { return hsm.SimplifyPolylinesTolerance; }
             set { hsm.SimplifyPolylinesTolerance = value; }
         }
+        public bool AutoGroupPolylines
+        {
+            get { return hsm.AutoGroupPolylines; }
+            set { hsm.AutoGroupPolylines = value; }
+        }
+        public int AutoGroupPolylinesTimeout
+        {
+            get { return hsm.AutoGroupPolylinesTimeout; }
+            set { hsm.AutoGroupPolylinesTimeout = value; }
+        }
+        public int AutoGroupPolylinesXLimit
+        {
+            get { return hsm.AutoGroupPolylinesXLimit; }
+            set { hsm.AutoGroupPolylinesXLimit = value; }
+        }
+        public int AutoGroupPolylinesYLimit
+        {
+            get { return hsm.AutoGroupPolylinesYLimit; }
+            set { hsm.AutoGroupPolylinesYLimit = value; }
+        }
 
         UndoRedo<DPoint> _pageSize = new UndoRedo<DPoint>(new DPoint(PageTools.DefaultPageWidth, PageTools.DefaultPageHeight));
         public DPoint PageSize

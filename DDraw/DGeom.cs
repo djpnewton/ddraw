@@ -65,6 +65,26 @@ namespace DDraw
             return DistBetweenTwoPts(linept, pt);
         }
 
+        public static double DistXBetweenRects(DRect r1, DRect r2)
+        {
+            if (r1.Right < r2.Left)
+                return r2.Left - r1.Right;
+            else if (r1.Left > r2.Right)
+                return r1.Left - r2.Right;
+            else
+                return 0;
+        }
+
+        public static double DistYBetweenRects(DRect r1, DRect r2)
+        {
+            if (r1.Bottom < r2.Top)
+                return r2.Top - r1.Bottom;
+            else if (r1.Top > r2.Bottom)
+                return r1.Top - r2.Bottom;
+            else
+                return 0;
+        }
+
         public static bool PointInRect(DPoint pt, DRect rect)
         {
             return (pt.X >= rect.X && pt.X <= rect.Right && pt.Y >= rect.Y && pt.Y <= rect.Bottom);

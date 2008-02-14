@@ -54,6 +54,10 @@ namespace WinFormsDemo
             // DEngine properties
             de.SimplifyPolylines = true;
             de.SimplifyPolylinesTolerance = 0.5;
+            de.AutoGroupPolylines = true;
+            de.AutoGroupPolylinesTimeout = 2000;
+            de.AutoGroupPolylinesXLimit = 100;
+            de.AutoGroupPolylinesYLimit = 50;
             // DEngine events
             de.DebugMessage += new DebugMessageHandler(DebugMessage);
             de.SelectedFiguresChanged += new SelectedFiguresHandler(de_SelectedFiguresChanged);
