@@ -76,7 +76,10 @@ namespace WinFormsDemo
             if (this.de != null)
             {
                 this.de.RemoveViewer(dvEditor);
-                de.HsmState = this.de.HsmState;
+                if (this.de.CurrentFigureClass != null)
+                    de.HsmSetStateByFigureClass(this.de.CurrentFigureClass);
+                else
+                    de.HsmState = this.de.HsmState;
             }
             de.AddViewer(dvEditor);
             if (dvEditor.Zoom != Zoom.Custom)

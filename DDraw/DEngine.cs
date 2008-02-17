@@ -171,6 +171,10 @@ namespace DDraw
             get { return hsm.State; }
             set { hsm.State = value; }
         }
+        public Type CurrentFigureClass
+        {
+            get { return hsm.CurrentFigureClass; }
+        }
         public bool FigureLockAspectRatio
         {
             get { return hsm.FigureLockAspectRatio; }

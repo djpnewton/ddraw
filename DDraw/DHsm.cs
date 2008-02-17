@@ -128,6 +128,11 @@ namespace DDraw
         int autoGroupPolylineStart;
 
         // properties
+        public Type CurrentFigureClass
+        {
+            get { return currentFigureClass; }
+        }
+
         bool figureLockAspectRatio = false;
         public bool FigureLockAspectRatio
         {
