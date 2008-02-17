@@ -173,8 +173,9 @@ namespace WinFormsDemo
         {
             ProgramOptions options = new ProgramOptions();
             // MainForm options
-            Rectangle r = options.FormRect;
-            SetBounds(r.Left, r.Top, r.Width, r.Height);
+            SetBounds(options.FormRect.Left, options.FormRect.Top, options.FormRect.Width, options.FormRect.Height);
+            if (options.FormWindowState != FormWindowState.Minimized)
+                WindowState = options.FormWindowState;
             // dvEditor options
             dvEditor.AntiAlias = options.AntiAlias;
             if (options.Zoom == Zoom.Custom)
@@ -187,7 +188,11 @@ namespace WinFormsDemo
         {
             ProgramOptions options = new ProgramOptions();
             // MainForm options
-            options.FormRect = new Rectangle(Left, Top, Width, Height);
+            if (WindowState != FormWindowState.Normal)
+                options.FormRect = RestoreBounds;
+            else
+                options.FormRect = new Rectangle(Left, Top, Width, Height);
+            options.FormWindowState = WindowState;
             // dvEditor options
             options.Zoom = dvEditor.Zoom;
             options.Scale = dvEditor.Scale;
