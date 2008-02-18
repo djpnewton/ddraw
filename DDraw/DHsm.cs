@@ -377,16 +377,16 @@ namespace DDraw
 
         // private methods
 
-        void ClearCurrentFigure()
+        void CommitOrRollback()
         {
-            if (currentFigure != null)
-            {
-                // remove current figure if it was not sized by a mouse drag
-                if (currentFigure.Width == 0 || currentFigure.Height == 0)
-                    figureHandler.Remove(currentFigure);
-                // null currentfigure
-                currentFigure = null;
-            }
+            // roll back if current figure has zero areasize
+            if (currentFigure.Width == 0 || currentFigure.Height == 0)
+                undoRedoManager.Cancel();
+            else
+                // commit to undo/redo
+                undoRedoManager.Commit();
+            // null currentfigure
+            currentFigure = null;
         }
 
         DPoint CalcDragDelta(DPoint pt)
@@ -479,12 +479,9 @@ namespace DDraw
                 case (int)QSignals.Entry:
                     // clear currentFigureClass
                     currentFigureClass = null;
-                    // dont clear currentfigure and selected if we have transitioned from TextEdit state
+                    // dont clear selected if we have transitioned from TextEdit state
                     if (!IsInState(TextEdit))
-                    {
-                        ClearCurrentFigure();
                         figureHandler.ClearSelected();
-                    }
                     viewerHandler.Update();
                     DoStateChanged(DHsmState.Select);
                     return null;
@@ -916,7 +913,6 @@ namespace DDraw
                     InitializeState(DrawLineDefault);
                     return Main;
                 case (int)QSignals.Entry:
-                    ClearCurrentFigure();
                     figureHandler.ClearSelected();
                     viewerHandler.Update();
                     DoStateChanged(DHsmState.DrawLine);
@@ -1070,7 +1066,7 @@ namespace DDraw
             }
             autoGroupPolylineStart = Environment.TickCount;
             // commit to undo/redo
-            undoRedoManager.Commit();
+            CommitOrRollback();
             // transition
             TransitionTo(DrawLineDefault);
         }
@@ -1093,7 +1089,6 @@ namespace DDraw
         {
             if (btn == DMouseButton.Left)
             {
-                ClearCurrentFigure();
                 undoRedoManager.Start("Add Text");
                 // create TextFigure
                 currentFigure = new TextFigure(pt, "", 0);
@@ -1124,7 +1119,6 @@ namespace DDraw
                 case (int)QSignals.Init:
                     return Main;
                 case (int)QSignals.Entry:
-                    ClearCurrentFigure();
                     figureHandler.ClearSelected();
                     viewerHandler.Update();
                     DoStateChanged(DHsmState.DrawText);
@@ -1256,7 +1250,6 @@ namespace DDraw
                     InitializeState(DrawRectDefault);
                     return Main;
                 case (int)QSignals.Entry:
-                    ClearCurrentFigure();
                     figureHandler.ClearSelected();
                     viewerHandler.Update();
                     DoStateChanged(DHsmState.DrawRect);
@@ -1341,7 +1334,7 @@ namespace DDraw
 
         void DoDrawingRectMouseUp(DTkViewer dv, DMouseButton btn, DPoint pt)
         {
-            undoRedoManager.Commit();
+            CommitOrRollback();
             // transition
             TransitionTo(DrawRectDefault);
             // update drawing
@@ -1425,8 +1418,7 @@ namespace DDraw
                 case (int)QSignals.Entry:
                     // clear currentFigureClass
                     currentFigureClass = null;
-                    // clear currentfigure and selected
-                    ClearCurrentFigure();
+                    // clear selected
                     figureHandler.ClearSelected();
                     // update
                     viewerHandler.Update();
