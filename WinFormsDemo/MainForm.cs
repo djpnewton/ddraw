@@ -1077,10 +1077,12 @@ namespace WinFormsDemo
             f.PageFormat = de.PageFormat;
             if (f.ShowDialog() == DialogResult.OK)
             {
+                de.UndoRedoStart("Change Page Size");
                 if (f.PageFormat == PageFormat.Custom)
                     de.PageSize = f.PageSize;
                 else
                     de.PageFormat = f.PageFormat;
+                de.UndoRedoCommit();
             }
         }
 

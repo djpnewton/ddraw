@@ -192,9 +192,7 @@ namespace WinFormsDemo
                     if (i > 0)
                         AddPreview(engines[i], dv, engines[i - 1]);
                     else
-                        AddPreview(engines[i], dv, null);
-                    // to update viewers
-                    engines[i].PageSize = engines[i].PageSize;                    
+                        AddPreview(engines[i], dv, null);                  
                 }
             }
             // Move previews that dont match engine order

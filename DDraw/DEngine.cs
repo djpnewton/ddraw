@@ -229,13 +229,8 @@ namespace DDraw
             {
                 if (!value.Equals(_pageSize.Value))
                 {
-                    bool meStartCommand = !undoRedoManager.IsCommandStarted;
-                    if (meStartCommand)
-                        undoRedoManager.Start("Set Page Size");
                     _pageSize.Value = value;
                     figureHandler.SetBackgroundFigureSize(value);
-                    if (meStartCommand)
-                        undoRedoManager.Commit();
                 }
                 if (PageSizeChanged != null)
                     PageSizeChanged(this, value);

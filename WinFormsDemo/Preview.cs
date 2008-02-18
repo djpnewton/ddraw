@@ -97,11 +97,13 @@ namespace WinFormsDemo
             AllowDrop = true;
             DragEnter += new DragEventHandler(Preview_DragEnter);
             DragDrop += new DragEventHandler(Preview_DragDrop);
+            SizeChanged += new EventHandler(Preview_SizeChanged);
             // DEngine
             this.de = de;
             dv = new WFViewer(viewerControl);
             dv.Preview = true;
             de.PageSizeChanged += new PageSizeChangedHandler(de_PageSizeChanged);
+            UpdateScale();
             de.AddViewer(dv);
         }
 
@@ -143,22 +145,32 @@ namespace WinFormsDemo
                 PreviewMove(pDrag, this);
         }
 
-        private void de_PageSizeChanged(DEngine de, DPoint pageSize)
+        void Preview_SizeChanged(object sender, EventArgs e)
         {
-            if (pageSize.X / Width > pageSize.Y / Height)
+            UpdateScale();
+        }
+
+        void UpdateScale()
+        {
+            if (de.PageSize.X / Width > de.PageSize.Y / Height)
             {
                 viewerHolder.Left = 0;
                 viewerHolder.Width = Width;
-                viewerHolder.Height = (int)Math.Round(Height * ((Width / pageSize.X) / (Height / pageSize.Y)));
-                viewerHolder.Top = Height / 2 - viewerHolder.Height / 2; 
+                viewerHolder.Height = (int)Math.Round(Height * ((Width / de.PageSize.X) / (Height / de.PageSize.Y)));
+                viewerHolder.Top = Height / 2 - viewerHolder.Height / 2;
             }
             else
             {
-                viewerHolder.Width = (int)Math.Round(Width * ((Height / pageSize.Y) / (Width / pageSize.X)));
+                viewerHolder.Width = (int)Math.Round(Width * ((Height / de.PageSize.Y) / (Width / de.PageSize.X)));
                 viewerHolder.Left = Width / 2 - viewerHolder.Width / 2;
                 viewerHolder.Top = 0;
                 viewerHolder.Height = Height;
             }
+        }
+
+        private void de_PageSizeChanged(DEngine de, DPoint pageSize)
+        {
+            UpdateScale();
         }
     }
 }
