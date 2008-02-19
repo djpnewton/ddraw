@@ -67,6 +67,13 @@ namespace WinFormsDemo {
             }
         }
         
+        internal static System.Drawing.Bitmap star {
+            get {
+                object obj = ResourceManager.GetObject("star", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
         internal static System.Drawing.Bitmap technocolor {
             get {
                 object obj = ResourceManager.GetObject("technocolor", resourceCulture);

@@ -243,6 +243,7 @@ namespace WinFormsDemo
             UpdateTitleBar();
             if (sender == dem)
                 previewBar1.MatchPreviewsToEngines(dem.GetEngines(), dvEditor);
+            previewBar1.UpdatePreviewsDirtyProps();
         }
 
         void de_ContextClick(DEngine de, Figure clickedFigure, DPoint pt)

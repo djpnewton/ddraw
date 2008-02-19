@@ -98,7 +98,7 @@ namespace DDraw
                 wr.WriteAttributeString(POSITION_ATTR, img.Position.ToString());
                 if (img.ImageData != null)
                 {
-                    if (images != null)
+                    if (images != null && img.FileName != null)
                     {
                         if (images.ContainsKey(img.FileName) && !BytesSame(images[img.FileName], img.ImageData))
                         {
@@ -114,7 +114,6 @@ namespace DDraw
                     }
                     else
                     {
-                        wr.WriteAttributeString(FILENAME_ATTR, Path.GetFileName(img.FileName));
                         wr.WriteAttributeString(TYPE_ATTR, BASE64_VAL);
                         wr.WriteString(Convert.ToBase64String(img.ImageData));
                     }

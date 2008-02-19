@@ -44,6 +44,12 @@ namespace WinFormsDemo
             }
         }
 
+        public bool Dirty
+        {
+            get { return pbDirty.Visible; }
+            set { pbDirty.Visible = value; }
+        }
+
         public event PreviewContextHandler PreviewContext;
         public event PreviewMoveHandler PreviewMove;
 
@@ -67,6 +73,7 @@ namespace WinFormsDemo
         const int MARGIN = 1;
         Panel viewerHolder;
         PictureBox pbContext;
+        PictureBox pbDirty;
 
         public Preview(DEngine de)
         {
@@ -93,6 +100,13 @@ namespace WinFormsDemo
             pbContext.Location = new Point(Width - pbContext.Image.Width - 2, 0);
             pbContext.Click += new EventHandler(pbContext_Click);
             viewerControl.Controls.Add(pbContext);
+            // pbDirty
+            pbDirty = new PictureBox();
+            pbDirty.Image = global::WinFormsDemo.Resource1.star;
+            pbDirty.BackColor = Color.Transparent;
+            pbDirty.Size = new Size(pbDirty.Image.Width, pbDirty.Image.Height);
+            pbDirty.Location = new Point(1, 1);
+            viewerControl.Controls.Add(pbDirty);
             // Preview
             AllowDrop = true;
             DragEnter += new DragEventHandler(Preview_DragEnter);

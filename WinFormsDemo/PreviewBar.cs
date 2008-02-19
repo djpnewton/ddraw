@@ -209,5 +209,11 @@ namespace WinFormsDemo
             if (reorder)
                 SetPreviewTops(0);
         }
+
+        public void UpdatePreviewsDirtyProps()
+        {
+            foreach (Preview p in pnlPreviews.Controls)
+                p.Dirty = p.DEngine.CanUndo;
+        }
     }
 }
