@@ -985,7 +985,6 @@ namespace WinFormsDemo
             dem.Redo(de);
         }
 
-
         private void viewToolStripMenuItem_DropDownOpening(object sender, EventArgs e)
         {
             // zoom

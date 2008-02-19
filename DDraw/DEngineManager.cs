@@ -118,7 +118,7 @@ namespace DDraw
         {
             this.engines.Clear();
             foreach (DEngine de in engines)
-                this.engines.Add(de);
+                AddEngine(de);
         }
 
         public void UndoRedoStart(string name)
