@@ -220,6 +220,11 @@ namespace DDraw
             get { return hsm.UsePolylineDots; }
             set { hsm.UsePolylineDots = value; }
         }
+        public bool FiguresBoundToPage
+        {
+            get { return hsm.FiguresBoundToPage; }
+            set { hsm.FiguresBoundToPage = value; }
+        }
 
         UndoRedo<DPoint> _pageSize = new UndoRedo<DPoint>(new DPoint(PageTools.DefaultPageWidth, PageTools.DefaultPageHeight));
         public DPoint PageSize
@@ -235,6 +240,7 @@ namespace DDraw
                 if (PageSizeChanged != null)
                     PageSizeChanged(this, value);
                 viewerHandler.SetPageSize(value);
+                hsm.SetPageSize(value);
             }
         }       
         public PageFormat PageFormat

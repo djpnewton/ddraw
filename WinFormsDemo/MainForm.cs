@@ -58,6 +58,7 @@ namespace WinFormsDemo
             de.AutoGroupPolylinesTimeout = 2000;
             de.AutoGroupPolylinesXLimit = 100;
             de.AutoGroupPolylinesYLimit = 50;
+            de.FiguresBoundToPage = true;
             // DEngine events
             de.DebugMessage += new DebugMessageHandler(DebugMessage);
             de.SelectedFiguresChanged += new SelectedFiguresHandler(de_SelectedFiguresChanged);

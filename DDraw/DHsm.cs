@@ -196,6 +196,18 @@ namespace DDraw
             set { usePolylineDots = value; }
         }
 
+        DPoint pageSize = new DPoint(PageTools.DefaultPageWidth, PageTools.DefaultPageHeight);
+        public void SetPageSize(DPoint pageSize)
+        {
+            this.pageSize = pageSize;
+        }
+        bool figuresBoundToPage = false;
+        public bool FiguresBoundToPage
+        {
+            get { return figuresBoundToPage; }
+            set { figuresBoundToPage = value; }
+        }
+
         bool drawSelection = false;
         bool drawEraser = false;
 
@@ -387,6 +399,21 @@ namespace DDraw
                 undoRedoManager.Commit();
             // null currentfigure
             currentFigure = null;
+        }
+
+        void BoundPtToPage(DPoint pt)
+        {
+            if (figuresBoundToPage)
+            {
+                if (pt.X < 0)
+                    pt.X = 0;
+                else if (pt.X > pageSize.X)
+                    pt.X = pageSize.X;
+                if (pt.Y < 0)
+                    pt.Y = 0;
+                else if (pt.Y > pageSize.Y)
+                    pt.Y = pageSize.Y;
+            }
         }
 
         DPoint CalcDragDelta(DPoint pt)
@@ -624,6 +651,8 @@ namespace DDraw
             {
                 case DHitTest.Body:
                     System.Diagnostics.Trace.Assert(currentFigure != null, "currentFigure is null");
+                    // bound pt to canvas
+                    BoundPtToPage(pt);
                     // initial update rect
                     updateRect = GetBoundingBox(currentFigure);
                     foreach (Figure f in figureHandler.SelectedFigures)
@@ -646,6 +675,8 @@ namespace DDraw
                     goto case DHitTest.Body;
                 case DHitTest.Resize:
                     System.Diagnostics.Trace.Assert(currentFigure != null, "currentFigure is null");
+                    // bound pt to canvas
+                    BoundPtToPage(pt);
                     // alert figure we are going to resize it
                     currentFigure.BeforeResize();
                     // inital update rect
@@ -689,6 +720,8 @@ namespace DDraw
                     break;
                 case DHitTest.ReposLinePt1:
                     System.Diagnostics.Trace.Assert(currentFigure != null, "currentFigure is null");
+                    // bound pt to canvas
+                    BoundPtToPage(pt);
                     // inital update rect
                     updateRect = GetBoundingBox(currentFigure);
                     // get our line segment interface
@@ -924,8 +957,10 @@ namespace DDraw
         void DoDrawLineDefaultMouseDown(DTkViewer dv, DMouseButton btn, DPoint pt)
         {
             if (btn == DMouseButton.Left)
-            {
+            {                
                 undoRedoManager.Start("Add Line");
+                // bound pt to canvas
+                BoundPtToPage(pt);
                 // create line figure
                 currentFigure = (Figure)Activator.CreateInstance(currentFigureClass);
                 if (currentFigure is ILineSegment)
@@ -990,6 +1025,8 @@ namespace DDraw
         {
             // initial update rect
             DRect updateRect = currentFigure.GetSelectRect();
+            // bound pt to canvas
+            BoundPtToPage(pt);
             // add point
             if (figureAlwaysSnapAngle && currentFigure is ILineSegment)
             {
@@ -1090,6 +1127,8 @@ namespace DDraw
             if (btn == DMouseButton.Left)
             {
                 undoRedoManager.Start("Add Text");
+                // bound pt to canvas
+                BoundPtToPage(pt);
                 // create TextFigure
                 currentFigure = new TextFigure(pt, "", 0);
                 authorProps.ApplyPropertiesToFigure((TextFigure)currentFigure);
@@ -1263,6 +1302,8 @@ namespace DDraw
             if (btn == DMouseButton.Left)
             {
                 undoRedoManager.Start(string.Format("Add {0}", currentFigureClass.Name));
+                // bound pt to canvas
+                BoundPtToPage(pt);
                 // create Figure
                 currentFigure = (Figure)Activator.CreateInstance(currentFigureClass);
                 currentFigure.TopLeft = pt;
@@ -1300,6 +1341,8 @@ namespace DDraw
         {
             // initial update rect
             DRect updateRect = currentFigure.GetSelectRect();
+            // bound pt to canvas
+            BoundPtToPage(pt);
             // change dimensions
             if (pt.X >= dragPt.X)
                 currentFigure.Right = pt.X;
