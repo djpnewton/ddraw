@@ -1768,7 +1768,7 @@ namespace DDraw
     {
         public override double X
         {
-            get { return GetBoundingBox().X; }
+            get { return boundingBox.X; }
             set
             {
                 double dX = value - X;
@@ -1780,12 +1780,13 @@ namespace DDraw
                     f.X += dX;
                     i += 1;
                 }
+                CreateBoundingBox();
             }
         }
 
         public override double Y
         {
-            get { return GetBoundingBox().Y; }
+            get { return boundingBox.Y; }
             set
             {
                 double dY = value - Y;
@@ -1797,6 +1798,7 @@ namespace DDraw
                     f.Y += dY;
                     i += 1;
                 }
+                CreateBoundingBox();
             }
         }
 
@@ -1814,6 +1816,7 @@ namespace DDraw
                     f.Width = sx * ocr.Width;
                     i++;
                 }
+                CreateBoundingBox(); 
             }
         }
 
@@ -1831,19 +1834,19 @@ namespace DDraw
                     f.Height = sy * ocr.Height;
                     i++;
                 }
+                CreateBoundingBox(); 
             }
         }
 
         public override double Right
         {
-            get { return GetBoundingBox().Right; }
-            set
-            { Width = value - X; }
+            get { return boundingBox.Right; }
+            set { Width = value - X; }
         }
 
         public override double Bottom
         {
-            get { return GetBoundingBox().Bottom; }
+            get { return boundingBox.Bottom; }
             set { Height = value - Y; }
         }
 
@@ -1852,7 +1855,7 @@ namespace DDraw
             get { return true; }
         }
 
-        public bool UseRealAlpha = true;
+        public bool UseGroupAlpha = false;
 
         UndoRedoList<Figure> childFigs;
         public UndoRedoList<Figure> ChildFigures
@@ -1867,6 +1870,7 @@ namespace DDraw
 
         DRect[] originalChildRects;
         DRect originalRect;
+        DRect boundingBox = new DRect();
 
         public GroupFigure() : this(new List<Figure>())
         { }
@@ -1891,7 +1895,8 @@ namespace DDraw
                 originalChildRects[i] = f.Rect;
                 i++;
             }
-            originalRect = Rect;
+            CreateBoundingBox();
+            originalRect = boundingBox;
         }
 
         protected override DHitTest _HitTest(DPoint pt)
@@ -1909,7 +1914,7 @@ namespace DDraw
 
         protected override void PaintBody(DGraphics dg)
         {
-            if (UseRealAlpha)
+            if (UseGroupAlpha)
             {
                 if (Width > 0 && Height > 0)
                 {
@@ -1934,7 +1939,7 @@ namespace DDraw
         {
             get
             {
-                if (UseRealAlpha)
+                if (UseGroupAlpha)
                     return base.Alpha;
                 else
                 {
@@ -1955,7 +1960,7 @@ namespace DDraw
             }
             set
             {
-                if (UseRealAlpha)
+                if (UseGroupAlpha)
                     base.Alpha = value;
                 else
                 {
@@ -1966,20 +1971,17 @@ namespace DDraw
             }
         }
 
-        DRect GetBoundingBox()
+        void CreateBoundingBox()
         {
             if (childFigs.Count > 0)
             {
-                DRect r = DGeom.BoundingBoxOfRotatedRect(childFigs[0].Rect, childFigs[0].Rotation);
+                boundingBox = DGeom.BoundingBoxOfRotatedRect(childFigs[0].Rect, childFigs[0].Rotation);
                 foreach (Figure f in childFigs)
                 {
                     DRect r2 = DGeom.BoundingBoxOfRotatedRect(f.Rect, f.Rotation);
-                    r = r.Union(r2);
+                    boundingBox = boundingBox.Union(r2);
                 }
-                return r;
             }
-            else
-                return new DRect();
         }
         
         public override DRect GetSelectRect()

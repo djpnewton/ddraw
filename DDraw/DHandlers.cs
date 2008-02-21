@@ -274,7 +274,7 @@ namespace DDraw
                 f.Y += rotpt.Y - fcpt.Y;
                 f.Rotation += gf.Rotation;
                 // alpha
-                if (gf.UseRealAlpha && f is IAlphaBlendable)
+                if (gf.UseGroupAlpha && f is IAlphaBlendable)
                     ((IAlphaBlendable)f).Alpha *= gf.Alpha;
             }
             // add group figures to figure list

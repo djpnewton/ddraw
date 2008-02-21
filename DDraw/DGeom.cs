@@ -185,12 +185,15 @@ namespace DDraw
         public static void UpdateRotationPosition(Figure f, DRect oldRect, DRect newRect)
         {
             // update position of the figure depending on the change in rect and its rotation
-            DPoint dPt = CalcPositionDeltaFromAngleAndCoordDelta(f.Rotation, newRect.Right - oldRect.Right, newRect.Bottom - oldRect.Bottom);
-            f.X += dPt.X;
-            f.Y += dPt.Y;
-            dPt = CalcPositionDeltaFromAngleAndCoordDelta(f.Rotation, newRect.Left - oldRect.Left, newRect.Top - oldRect.Top);
-            f.X += dPt.X;
-            f.Y += dPt.Y;
+            if (f.Rotation != 0)
+            {
+                DPoint dPt = CalcPositionDeltaFromAngleAndCoordDelta(f.Rotation, newRect.Right - oldRect.Right, newRect.Bottom - oldRect.Bottom);
+                f.X += dPt.X;
+                f.Y += dPt.Y;
+                dPt = CalcPositionDeltaFromAngleAndCoordDelta(f.Rotation, newRect.Left - oldRect.Left, newRect.Top - oldRect.Top);
+                f.X += dPt.X;
+                f.Y += dPt.Y;
+            }
         }
 
         public static DPoints SimplifyPolyline(DPoints original, double tolerance)
