@@ -13,6 +13,7 @@ namespace WinFormsDemo
 {
     public delegate void PreviewContextHandler(Preview p, Point pt);
     public delegate void PreviewMoveHandler(Preview p, Preview to);
+    public delegate void PreivewFigureDropHandler(Preview p, List<Figure> figs);
 
     public class Preview : UserControl
     {
@@ -52,6 +53,7 @@ namespace WinFormsDemo
 
         public event PreviewContextHandler PreviewContext;
         public event PreviewMoveHandler PreviewMove;
+        public event PreivewFigureDropHandler PreviewFigureDrop;
 
         WFViewerControl viewerControl;
         public WFViewerControl ViewerControl
@@ -148,15 +150,24 @@ namespace WinFormsDemo
 
         void Preview_DragEnter(object sender, DragEventArgs e)
         {
-            if ((e.AllowedEffect & DragDropEffects.Move) == DragDropEffects.Move && e.Data.GetDataPresent(this.GetType()))
+            if ((e.AllowedEffect & DragDropEffects.Move) == DragDropEffects.Move && 
+                (e.Data.GetDataPresent(this.GetType()) || e.Data.GetDataPresent(typeof(List<Figure>))))
                 e.Effect = DragDropEffects.Move;
         }
 
         void Preview_DragDrop(object sender, DragEventArgs e)
         {
-            Preview pDrag = (Preview)e.Data.GetData(this.GetType());
-            if (pDrag != this && PreviewMove != null)
-                PreviewMove(pDrag, this);
+            if (e.Data.GetDataPresent(this.GetType()))
+            {
+                Preview pDrag = (Preview)e.Data.GetData(this.GetType());
+                if (pDrag != this && PreviewMove != null)
+                    PreviewMove(pDrag, this);
+            }
+            else if (e.Data.GetDataPresent(typeof(List<Figure>)))
+            {
+                if (PreviewFigureDrop != null)
+                    PreviewFigureDrop(this, (List<Figure>)e.Data.GetData(typeof(List<Figure>)));
+            }
         }
 
         void Preview_SizeChanged(object sender, EventArgs e)

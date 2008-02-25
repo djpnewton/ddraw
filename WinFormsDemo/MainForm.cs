@@ -63,6 +63,9 @@ namespace WinFormsDemo
             de.DebugMessage += new DebugMessageHandler(DebugMessage);
             de.SelectedFiguresChanged += new SelectedFiguresHandler(de_SelectedFiguresChanged);
             de.ContextClick += new ContextClickHandler(de_ContextClick);
+            de.DragFigureStart += new DragFigureHandler(de_DragFigureStart);
+            de.DragFigureEvt += new DragFigureHandler(de_DragFigureEvt);
+            de.DragFigureEnd += new DragFigureHandler(de_DragFigureEnd);
             de.HsmStateChanged += new HsmStateChangedHandler(de_HsmStateChanged);
             de.AddedFigure += new AddedFigureHandler(de_AddedFigure);
             // add glyphs to figures
@@ -243,7 +246,11 @@ namespace WinFormsDemo
             UpdateUndoRedoControls();
             UpdateTitleBar();
             if (sender == dem)
+            {
                 previewBar1.MatchPreviewsToEngines(dem.GetEngines(), dvEditor);
+                foreach (DEngine de in dem.GetEngines())
+                    de.UpdateViewers();
+            }
             previewBar1.UpdatePreviewsDirtyProps();
         }
 
@@ -253,6 +260,24 @@ namespace WinFormsDemo
                 cmsFigure.Show(wfvcEditor, new Point((int)pt.X, (int)pt.Y));
             else
                 cmsCanvas.Show(wfvcEditor, new Point((int)pt.X, (int)pt.Y));
+        }
+
+        void de_DragFigureStart(DEngine de, Figure dragFigure, DPoint pt)
+        {
+        }
+
+        void de_DragFigureEvt(DEngine de, Figure dragFigure, DPoint pt)
+        {
+            if (pt.X < 0 || pt.Y < 0 || pt.X > wfvcEditor.Width || pt.Y > wfvcEditor.Height)
+            {
+                de.CancelFigureDrag();
+                dvEditor.Update();
+                wfvcEditor.DoDragDrop(de.SelectedFigures, DragDropEffects.Move);
+            }
+        }
+
+        void de_DragFigureEnd(DEngine de, Figure dragFigure, DPoint pt)
+        {
         }
 
         void contextGlyph_Clicked(IGlyph glyph, Figure figure, DPoint pt)
@@ -947,6 +972,23 @@ namespace WinFormsDemo
             dem.UndoRedoStart("Move Page");
             dem.MoveEngine(p.DEngine, to.DEngine);
             dem.UndoRedoCommit();
+        }
+
+        private void previewBar1_PreviewFigureDrop(Preview p, List<Figure> figs)
+        {
+            if (!p.Selected)
+            {
+                dem.UndoRedoStart("Drag to New Page");
+                foreach (Figure f in figs)
+                {
+                    de.RemoveFigure(f);
+                    p.DEngine.AddFigure(f);
+                }
+                de.ClearSelected();
+                dem.UndoRedoCommit();
+                de.UpdateViewers();
+                p.DEngine.UpdateViewers();
+            }
         }
 
         private void imageToolStripMenuItem_Click(object sender, EventArgs e)

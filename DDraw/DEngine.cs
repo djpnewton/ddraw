@@ -10,6 +10,7 @@ namespace DDraw
     public delegate void DebugMessageHandler(string msg);
     public delegate void PageSizeChangedHandler(DEngine de, DPoint pageSize);
     public delegate void ContextClickHandler(DEngine de, Figure clickedFigure, DPoint pt);
+    public delegate void DragFigureHandler(DEngine de, Figure dragFigure, DPoint pt);
     public delegate void AddedFigureHandler(DEngine de, Figure fig);
 
     public class DAuthorProperties
@@ -256,6 +257,9 @@ namespace DDraw
         public event DebugMessageHandler DebugMessage;
         public event SelectedFiguresHandler SelectedFiguresChanged;
         public event ContextClickHandler ContextClick;
+        public event DragFigureHandler DragFigureStart;
+        public event DragFigureHandler DragFigureEvt;
+        public event DragFigureHandler DragFigureEnd;
         public event PageSizeChangedHandler PageSizeChanged;
         public event EventHandler UndoRedoChanged;
         public event EventHandler<CommandDoneEventArgs> UndoRedoCommandDone;
@@ -288,6 +292,9 @@ namespace DDraw
             hsm = new DHsm(undoRedoManager, viewerHandler, figureHandler, authorProps);
             hsm.DebugMessage += new DebugMessageHandler(hsm_DebugMessage);
             hsm.ContextClick += new ContextClickHandler(hsm_ContextClick);
+            hsm.DragFigureStart += new DragFigureHandler(hsm_DragFigureStart);
+            hsm.DragFigureEvt += new DragFigureHandler(hsm_DragFigureEvt);
+            hsm.DragFigureEnd += new DragFigureHandler(hsm_DragFigureEnd);
             hsm.StateChanged += new HsmStateChangedHandler(hsm_StateChanged);
         }
 
@@ -316,6 +323,24 @@ namespace DDraw
         {
             if (ContextClick != null)
                 ContextClick(this, clickedFigure, pt);
+        }
+
+        void hsm_DragFigureStart(DEngine de, Figure dragFigure, DPoint pt)
+        {
+            if (DragFigureStart != null)
+                DragFigureStart(this, dragFigure, pt);
+        }
+
+        void hsm_DragFigureEvt(DEngine de, Figure dragFigure, DPoint pt)
+        {
+            if (DragFigureEvt != null)
+                DragFigureEvt(this, dragFigure, pt);
+        }
+
+        void hsm_DragFigureEnd(DEngine de, Figure dragFigure, DPoint pt)
+        {
+            if (DragFigureEnd != null)
+                DragFigureEnd(this, dragFigure, pt);
         }
 
         void hsm_DebugMessage(string msg)
@@ -560,6 +585,11 @@ namespace DDraw
             UndoRedoCommit();
             DoSelectedFiguresChanged();
             UpdateViewers();
+        }
+
+        public void CancelFigureDrag()
+        {
+            hsm.CancelFigureDrag();
         }
 
         // Other //

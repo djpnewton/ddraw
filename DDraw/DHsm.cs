@@ -10,19 +10,28 @@ namespace DDraw
     public enum DHsmSignals : int
     {
         //enum values must start at UserSig value or greater
-        GSelect = QSignals.UserSig, GDrawLine, GDrawText, GDrawRect, GEraser,
+        GSelect = QSignals.UserSig, GDrawLine, GDrawText, GDrawRect, GEraser, GCancelFigureDrag,
         TextEdit, FigureEdit,
         MouseDown, MouseMove, MouseUp, DoubleClick,
         KeyDown, KeyPress, KeyUp
     }
 
-    public class QMouseEvent : QEvent
+    public class QViewerEvent : QEvent
     {
         DTkViewer dv;
         public DTkViewer Dv
         {
             get { return dv; }
         }
+
+        public QViewerEvent(int qSignal, DTkViewer dv) : base(qSignal)
+        {
+            this.dv = dv;
+        }
+    }
+
+    public class QMouseEvent : QViewerEvent
+    {
         DMouseButton button;
         public DMouseButton Button
         {
@@ -34,9 +43,8 @@ namespace DDraw
             get { return pt; } 
         }
 
-        public QMouseEvent(int qSignal, DTkViewer dv, DMouseButton button, DPoint pt) : base(qSignal)
+        public QMouseEvent(int qSignal, DTkViewer dv, DMouseButton button, DPoint pt) : base(qSignal, dv)
         {
-            this.dv = dv;
             this.button = button;
             this.pt = pt;
         }
@@ -252,6 +260,9 @@ namespace DDraw
 
         public event DebugMessageHandler DebugMessage;
         public event ContextClickHandler ContextClick;
+        public event DragFigureHandler DragFigureStart;
+        public event DragFigureHandler DragFigureEvt;
+        public event DragFigureHandler DragFigureEnd;
 
         // state variables (showing state hierachy here)
         QState Main;
@@ -387,6 +398,11 @@ namespace DDraw
                 return false;
         }
 
+        public void CancelFigureDrag()
+        {
+            Dispatch(new QEvent((int)DHsmSignals.GCancelFigureDrag));
+        }
+
         // private methods
 
         void CommitOrRollback()
@@ -502,7 +518,7 @@ namespace DDraw
             {
                 case (int)QSignals.Init:
                     InitializeState(SelectDefault);
-                    return Main;
+                    return null;
                 case (int)QSignals.Entry:
                     // clear currentFigureClass
                     currentFigureClass = null;
@@ -536,6 +552,9 @@ namespace DDraw
                     {
                         case DHitTest.Body:
                             dragPt = pt;
+                            // drag figure start event
+                            if (DragFigureStart != null)
+                                DragFigureStart(null, f, dv.EngineToClient(pt));
                             break;
                         case DHitTest.SelectRect:
                             goto case DHitTest.Body;
@@ -651,6 +670,9 @@ namespace DDraw
             {
                 case DHitTest.Body:
                     System.Diagnostics.Trace.Assert(currentFigure != null, "currentFigure is null");
+                    // drag figure event
+                    if (DragFigureEvt != null)
+                        DragFigureEvt(null, currentFigure, dv.EngineToClient(pt));
                     // bound pt to canvas
                     BoundPtToPage(pt);
                     // initial update rect
@@ -836,6 +858,10 @@ namespace DDraw
         {
             if (btn == DMouseButton.Left)
             {
+                // drag figure end event
+                if ((mouseHitTest == DHitTest.Body || mouseHitTest == DHitTest.SelectRect) && DragFigureEnd != null)
+                    DragFigureEnd(null, currentFigure, dv.EngineToClient(pt));
+                // nullify currentFigure
                 currentFigure = null;
                 // transition
                 TransitionTo(SelectDefault);
@@ -866,11 +892,12 @@ namespace DDraw
                 case (int)QSignals.Entry:
                     // record state for undo/redo manager
                     undoRedoManager.Start("Select Operation");
-                    break;
+                    return null;
                 case (int)QSignals.Exit:
                     // commit undo changes
-                    undoRedoManager.Commit();
-                    break;
+                    if (undoRedoManager.IsCommandStarted)
+                        undoRedoManager.Commit();
+                    return null;
                 case (int)DHsmSignals.MouseMove:
                     DoDragFigureMouseMove(((QMouseEvent)qevent).Dv, ((QMouseEvent)qevent).Pt);
                     return null;
@@ -879,6 +906,14 @@ namespace DDraw
                     return null;
                 case (int)DHsmSignals.DoubleClick:
                     DoDragFigureDoubleClick(((QMouseEvent)qevent).Dv, ((QMouseEvent)qevent).Pt);
+                    return null;
+                case (int)DHsmSignals.GCancelFigureDrag:
+                    // nullify currentFigure
+                    currentFigure = null;
+                    // cancel changes
+                    undoRedoManager.Cancel();
+                    // transition
+                    TransitionTo(SelectDefault);
                     return null;
             }
             return this.Select;
@@ -890,10 +925,10 @@ namespace DDraw
             {
                 case (int)QSignals.Entry:
                     drawSelection = true;
-                    break;
+                    return null;
                 case (int)QSignals.Exit:
                     drawSelection = false;
-                    break;
+                    return null;
                 case (int)DHsmSignals.MouseMove:
                     // rectangular area to update with paint event
                     DRect updateRect = new DRect();
@@ -944,7 +979,7 @@ namespace DDraw
             {
                 case (int)QSignals.Init:
                     InitializeState(DrawLineDefault);
-                    return Main;
+                    return null;
                 case (int)QSignals.Entry:
                     figureHandler.ClearSelected();
                     viewerHandler.Update();
@@ -1155,8 +1190,6 @@ namespace DDraw
         {
             switch (qevent.QSignal)
             {
-                case (int)QSignals.Init:
-                    return Main;
                 case (int)QSignals.Entry:
                     figureHandler.ClearSelected();
                     viewerHandler.Update();
@@ -1242,8 +1275,6 @@ namespace DDraw
         {
             switch (qevent.QSignal)
             {
-                case (int)QSignals.Init:
-                    return Main;
                 case (int)QSignals.Entry:
                     // start undo record
                     undoRedoManager.Start("Text Edit");
@@ -1287,7 +1318,7 @@ namespace DDraw
             {
                 case (int)QSignals.Init:
                     InitializeState(DrawRectDefault);
-                    return Main;
+                    return null;
                 case (int)QSignals.Entry:
                     figureHandler.ClearSelected();
                     viewerHandler.Update();
@@ -1412,8 +1443,6 @@ namespace DDraw
         {
             switch (qevent.QSignal)
             {
-                case (int)QSignals.Init:
-                    return Main;
                 case (int)QSignals.Entry:
                     DoStateChanged(DHsmState.FigureEdit);
                     // start undo record
@@ -1457,7 +1486,7 @@ namespace DDraw
             {
                 case (int)QSignals.Init:
                     InitializeState(EraserDefault);
-                    return Main;
+                    return null;
                 case (int)QSignals.Entry:
                     // clear currentFigureClass
                     currentFigureClass = null;
@@ -1627,14 +1656,14 @@ namespace DDraw
                 case (int)QSignals.Entry:
                     // record state for undo/redo manager
                     undoRedoManager.Start("Erase Operation");
-                    break;
+                    return null;
                 case (int)QSignals.Exit:
                     // commit undo changes
                     undoRedoManager.Commit();
                     // hide eraser
                     drawEraser = false;
                     viewerHandler.Update(); // and show updated polylines in other viewers too
-                    break;
+                    return null;
                 case (int)DHsmSignals.MouseMove:
                     QMouseEvent me = (QMouseEvent)qevent;
                     DRect updateRect = GetBoundingBox(figureHandler.EraserFigure);

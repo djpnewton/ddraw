@@ -19,6 +19,7 @@ namespace WinFormsDemo
         public event EventHandler PreviewAdd;
         public event PreviewContextHandler PreviewContext;
         public event PreviewMoveHandler PreviewMove;
+        public event PreivewFigureDropHandler PreviewFigureDrop;
 
         public PreviewBar()
         {
@@ -54,6 +55,7 @@ namespace WinFormsDemo
             p.Click += new EventHandler(p_Click);
             p.PreviewContext += new PreviewContextHandler(p_PreviewContext);
             p.PreviewMove += new PreviewMoveHandler(p_PreviewMove);
+            p.PreviewFigureDrop += new PreivewFigureDropHandler(p_PreviewFigureDrop);
             // select it
             p.Selected = true;
             DoPreviewSelected(p);
@@ -126,6 +128,12 @@ namespace WinFormsDemo
             SetPreviewTops(0);
             if (PreviewMove != null)
                 PreviewMove(p, to);
+        }
+
+        void p_PreviewFigureDrop(Preview p, List<Figure> figs)
+        {
+            if (PreviewFigureDrop != null)
+                PreviewFigureDrop(p, figs);
         }
 
         private void btnAdd_Click(object sender, EventArgs e)
