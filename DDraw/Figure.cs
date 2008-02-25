@@ -850,95 +850,80 @@ namespace DDraw
 
     public abstract class LineSegmentbaseFigure : LinebaseFigure, ILineSegment
     {
-        UndoRedo<DPoint> _pt1 = new UndoRedo<DPoint>();
+        UndoRedo<double> _pt1x = new UndoRedo<double>();
+        UndoRedo<double> _pt1y = new UndoRedo<double>();
         public DPoint Pt1
         {
-            get { return _pt1.Value; }
-            set { if (value != _pt1.Value) _pt1.Value = value; }
+            get { return new DPoint(_pt1x.Value, _pt1y.Value); }
+            set
+            {
+                DPoint pt = Pt1;
+                if (value.X != pt.X || value.Y != pt.Y)
+                {
+                    _pt1x.Value = value.X;
+                    _pt1y.Value = value.Y;
+                }
+            }
         }
-        UndoRedo<DPoint> _pt2 = new UndoRedo<DPoint>();
+        UndoRedo<double> _pt2x = new UndoRedo<double>();
+        UndoRedo<double> _pt2y = new UndoRedo<double>();
         public DPoint Pt2
         {
-            get { return _pt2.Value; }
-            set { if (value != _pt2.Value) _pt2.Value = value; }
+            get { return new DPoint(_pt2x.Value, _pt2y.Value); }
+            set
+            {
+                DPoint pt = Pt2;
+                if (value.X != pt.X || value.Y != pt.Y)
+                {
+                    _pt2x.Value = value.X;
+                    _pt2y.Value = value.Y;
+                }
+            }
         }
 
         public override double X
         {
-            get
-            {
-                if (Pt1 != null && Pt2 != null)
-                    return Math.Min(Pt1.X, Pt2.X);
-                else
-                    return 0;
-            }
+            get { return Math.Min(Pt1.X, Pt2.X); }
             set
             {
                 double dX = value - X;
-                if (Pt1 != null)
-                    Pt1.X += dX;
-                if (Pt2 != null)
-                    Pt2.X += dX;
+                Pt1 = new DPoint(Pt1.X + dX, Pt1.Y);
+                Pt2 = new DPoint(Pt2.X + dX, Pt2.Y);
             }
         }
 
         public override double Y
         {
-            get
-            {
-                if (Pt1 != null && Pt2 != null)
-                    return Math.Min(Pt1.Y, Pt2.Y);
-                else return 0;
-            }
+            get { return Math.Min(Pt1.Y, Pt2.Y); }
             set
             {
                 double dY = value - Y;
-                if (Pt1 != null)
-                    Pt1.Y += dY;
-                if (Pt2 != null)
-                    Pt2.Y += dY;
+                Pt1 = new DPoint(Pt1.X, Pt1.Y + dY);
+                Pt2 = new DPoint(Pt2.X, Pt2.Y + dY);
             }
         }
 
         public override double Width
         {
-            get
-            {
-                if (Pt1 != null && Pt2 != null)
-                    return Math.Abs(Pt1.X - Pt2.X);
-                else
-                    return 0;
-            }
+            get { return Math.Abs(Pt1.X - Pt2.X); }
             set
             {
-                if (Pt1 != null && Pt2 != null)
-                {
-                    if (Pt1.X > Pt2.X)
-                        Pt1.X = Pt2.X + value;
-                    else
-                        Pt2.X = Pt1.X + value;
-                }
+                if (Pt1.X > Pt2.X)
+                    Pt1 = new DPoint(Pt2.X + value, Pt1.Y);
+                else
+                    Pt2 = new DPoint(Pt1.X + value, Pt2.Y);
             }
         }
 
         public override double Height
         {
-            get
-            {
-                if (Pt1 != null && Pt2 != null)
-                    return Math.Abs(Pt1.Y - Pt2.Y);
-                else
-                    return 0;
-            }
+            get { return Math.Abs(Pt1.Y - Pt2.Y); }
             set
             {
-                if (Pt1 != null && Pt2 != null)
-                {
-                    if (Pt1.Y > Pt2.Y)
-                        Pt1.Y = Pt2.Y + value;
-                    else
-                        Pt2.Y = Pt1.Y + value;
-                }
+                if (Pt1.Y > Pt2.Y)
+                    Pt1 = new DPoint(Pt1.X, Pt2.Y + value);
+                else
+                    Pt2 = new DPoint(Pt2.X, Pt1.Y + value);
             }
         }
 
