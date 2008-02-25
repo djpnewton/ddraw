@@ -3,12 +3,11 @@ using System.Collections.Generic;
 using System.Text;
 using System.IO;
 
-using DDraw;
 using DejaVu;
 using ICSharpCode.SharpZipLib.Zip;
 using Nini.Config;
 
-namespace WinFormsDemo
+namespace DDraw
 {
     public static class FileHelper
     {
@@ -30,37 +29,33 @@ namespace WinFormsDemo
         public static void Save(string fileName, List<DEngine> engines)
         {
             System.Text.ASCIIEncoding encoding = new System.Text.ASCIIEncoding();
-            FileStream fs = File.Create(fileName);
-            ZipOutputStream zipOut = new ZipOutputStream(fs);
-            IniConfigSource source = new IniConfigSource();
-            // write each page
-            int i = 0;
-            Dictionary<string, byte[]> images = new Dictionary<string, byte[]>();
-            foreach (DEngine de in engines)
+            using (ZipOutputStream zipOut = new ZipOutputStream(File.Create(fileName)))
             {
-                IConfig config = source.AddConfig(string.Format("page{0}", i));
-                config.Set(PAGESIZE, DPoint.FormatToString(de.PageSize));
-                string figureListName = string.Format("figureList{0}.xml", i);
-                byte[] data = encoding.GetBytes(FigureSerialize.FormatToXml(de.Figures, images));
-                config.Set(FIGURELIST, figureListName);
-                Write(zipOut, figureListName, data);
-                string backgroundFigureName = string.Format("backgroundFigure{0}.xml", i);
-                config.Set(BACKGROUNDFIGURE, backgroundFigureName);
-                data = encoding.GetBytes(FigureSerialize.FormatToXml(de.GetBackgroundFigure(), images));
-                Write(zipOut, backgroundFigureName, data);
-                i += 1;
+                IniConfigSource source = new IniConfigSource();
+                // write each page
+                int i = 0;
+                Dictionary<string, byte[]> images = new Dictionary<string, byte[]>();
+                foreach (DEngine de in engines)
+                {
+                    IConfig config = source.AddConfig(string.Format("page{0}", i));
+                    config.Set(PAGESIZE, DPoint.FormatToString(de.PageSize));
+                    string figureListName = string.Format("figureList{0}.xml", i);
+                    byte[] data = encoding.GetBytes(FigureSerialize.FormatToXml(de.Figures, images));
+                    config.Set(FIGURELIST, figureListName);
+                    Write(zipOut, figureListName, data);
+                    string backgroundFigureName = string.Format("backgroundFigure{0}.xml", i);
+                    config.Set(BACKGROUNDFIGURE, backgroundFigureName);
+                    data = encoding.GetBytes(FigureSerialize.FormatToXml(de.GetBackgroundFigure(), images));
+                    Write(zipOut, backgroundFigureName, data);
+                    i += 1;
+                }
+                // write images
+                foreach (KeyValuePair<string, byte[]> kvp in images)
+                    if (kvp.Key != null && kvp.Key.Length > 0)
+                        Write(zipOut, IMAGES_DIR + Path.DirectorySeparatorChar + Path.GetFileName(kvp.Key), kvp.Value);
+                // write pages ini
+                Write(zipOut, PAGES_INI, encoding.GetBytes(source.ToString()));
             }
-            // write images
-            foreach (KeyValuePair<string, byte[]> kvp in images)
-                if (kvp.Key != null && kvp.Key.Length > 0)
-                    Write(zipOut, IMAGES_DIR + Path.DirectorySeparatorChar + Path.GetFileName(kvp.Key), kvp.Value);
-            // write pages ini
-            Write(zipOut, PAGES_INI, encoding.GetBytes(source.ToString()));
-            // finish
-            zipOut.Close();
-            zipOut.Dispose();
-            fs.Close();
-            fs.Dispose();
         }
 
         static byte[] Read(ZipFile zf, string entryName)

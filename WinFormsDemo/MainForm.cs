@@ -1243,28 +1243,43 @@ namespace WinFormsDemo
             {
                 // start undo/redo
                 dem.UndoRedoStart("Open Document");
-                // load new engines
-                fileName = ofd.FileName;
-                List<DEngine> engines = FileHelper.Load(fileName, dap, true);
-                dem.SetEngines(engines);
-                // init new dengines
-                foreach (DEngine newDe in dem.GetEngines())
-                    InitDEngine(newDe);
-                // commit undo/redo
-                dem.UndoRedoCommit();
-                dem.Dirty = false;
-                // update vars
-                beenSaved = true;
-                UpdateTitleBar();
+                try
+                {
+                    // load new engines
+                    List<DEngine> engines = FileHelper.Load(ofd.FileName, dap, true);
+                    dem.SetEngines(engines);
+                    fileName = ofd.FileName;
+                    // init new dengines
+                    foreach (DEngine newDe in dem.GetEngines())
+                        InitDEngine(newDe);
+                    // commit undo/redo
+                    dem.UndoRedoCommit();
+                    dem.Dirty = false;
+                    // update vars
+                    beenSaved = true;
+                    UpdateTitleBar();
+                }
+                catch (Exception e)
+                {
+                    dem.UndoRedoCancel();
+                    MessageBox.Show(e.Message, "Error Reading File", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
         }
 
         void Save()
         {
-            FileHelper.Save(fileName, dem.GetEngines());
-            dem.Dirty = false;
-            beenSaved = true;
-            UpdateTitleBar();
+            try
+            {
+                FileHelper.Save(fileName, dem.GetEngines());
+                dem.Dirty = false;
+                beenSaved = true;
+                UpdateTitleBar();
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message, "Error Writing File", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         bool SaveAs()
