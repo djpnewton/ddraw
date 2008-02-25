@@ -999,12 +999,7 @@ namespace DDraw
                 // create line figure
                 currentFigure = (Figure)Activator.CreateInstance(currentFigureClass);
                 if (currentFigure is ILineSegment)
-                {
-                    if (((ILineSegment)currentFigure).Pt1 == null)
-                        ((ILineSegment)currentFigure).Pt1 = pt;
-                    else
-                        ((ILineSegment)currentFigure).Pt2 = pt;
-                }
+                    ((ILineSegment)currentFigure).Pt1 = pt;
                 else if (currentFigure is IPolyline)
                 {
                     ((IPolyline)currentFigure).AddPoint(pt);
