@@ -124,6 +124,10 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resource1.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <EmbeddedResource Include="TransparentForm.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>TransparentForm.cs</DependentUpon>
+    </EmbeddedResource>
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
@@ -141,6 +145,12 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Resource1.resx</DependentUpon>
+    </Compile>
+    <Compile Include="TransparentForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="TransparentForm.Designer.cs">
+      <DependentUpon>TransparentForm.cs</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>

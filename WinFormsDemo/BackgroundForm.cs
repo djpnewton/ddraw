@@ -121,9 +121,7 @@ namespace WinFormsDemo
                         backgroundFigure.Bitmap.NativeBmp != (Bitmap)pictureBox1.Image ||
                         backgroundFigure.Position != ImagePosition)
                     {
-                        byte[] imageData = (byte[])TypeDescriptor.GetConverter((Bitmap)pictureBox1.Image).
-                            ConvertTo((Bitmap)pictureBox1.Image, typeof(byte[]));
-                        backgroundFigure.ImageData = imageData;
+                        backgroundFigure.ImageData = WFHelper.ToImageData((Bitmap)pictureBox1.Image);
                         backgroundFigure.Position = ImagePosition;
                         backgroundFigure.FileName = imageFileName;
                     }

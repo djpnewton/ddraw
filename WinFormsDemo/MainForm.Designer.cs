@@ -92,6 +92,8 @@ namespace WinFormsDemo
             this.bringToFrontToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.sendBackwardToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.bringForwardToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.screenAnnotateTestToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tsFigureProps = new System.Windows.Forms.ToolStrip();
@@ -184,7 +186,7 @@ namespace WinFormsDemo
             this.btnLine});
             this.tsEditorMode.Location = new System.Drawing.Point(3, 24);
             this.tsEditorMode.Name = "tsEditorMode";
-            this.tsEditorMode.Size = new System.Drawing.Size(288, 25);
+            this.tsEditorMode.Size = new System.Drawing.Size(319, 25);
             this.tsEditorMode.TabIndex = 0;
             this.tsEditorMode.Text = "toolStrip1";
             // 
@@ -415,6 +417,7 @@ namespace WinFormsDemo
             this.viewToolStripMenuItem,
             this.insertToolStripMenuItem,
             this.formatToolStripMenuItem,
+            this.toolsToolStripMenuItem,
             this.helpToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
@@ -775,6 +778,23 @@ namespace WinFormsDemo
             this.bringForwardToolStripMenuItem1.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.PageUp)));
             this.bringForwardToolStripMenuItem1.Size = new System.Drawing.Size(238, 22);
             this.bringForwardToolStripMenuItem1.Text = "Bring Forward";
+            // 
+            // toolsToolStripMenuItem
+            // 
+            this.actionListProvider1.SetAction(this.toolsToolStripMenuItem, null);
+            this.toolsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.screenAnnotateTestToolStripMenuItem});
+            this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
+            this.toolsToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
+            this.toolsToolStripMenuItem.Text = "Tools";
+            // 
+            // screenAnnotateTestToolStripMenuItem
+            // 
+            this.actionListProvider1.SetAction(this.screenAnnotateTestToolStripMenuItem, null);
+            this.screenAnnotateTestToolStripMenuItem.Name = "screenAnnotateTestToolStripMenuItem";
+            this.screenAnnotateTestToolStripMenuItem.Size = new System.Drawing.Size(190, 22);
+            this.screenAnnotateTestToolStripMenuItem.Text = "Screen Annotate Test";
+            this.screenAnnotateTestToolStripMenuItem.Click += new System.EventHandler(this.screenAnnotateTestToolStripMenuItem_Click);
             // 
             // helpToolStripMenuItem
             // 
@@ -1453,6 +1473,8 @@ namespace WinFormsDemo
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator9;
         private System.Windows.Forms.ToolStripMenuItem clearPageToolStripMenuItem2;
         private System.Windows.Forms.ToolStripMenuItem deletePageToolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem toolsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem screenAnnotateTestToolStripMenuItem;
     }
 }
 

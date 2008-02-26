@@ -26,6 +26,11 @@ namespace DDraw.WinForms
         {
             return Color.FromArgb((int)(color.A * alpha), color.R, color.G, color.B);
         }
+
+        public static byte[] ToImageData(Bitmap bmp)
+        {
+            return (byte[])TypeDescriptor.GetConverter((Bitmap)bmp).ConvertTo((Bitmap)bmp, typeof(byte[]));
+        }
     }
 
     public class WFBitmap : DBitmap

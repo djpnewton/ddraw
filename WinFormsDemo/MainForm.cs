@@ -140,7 +140,7 @@ namespace WinFormsDemo
             f = new PolylineFigure(pts);
             de.AddFigure(f);
             // bitmap images
-            byte[] imageData = (byte[])TypeDescriptor.GetConverter(Resource1.technocolor).ConvertTo(Resource1.technocolor, typeof(byte[]));
+            byte[] imageData = WFHelper.ToImageData(Resource1.technocolor);
             f = new ImageFigure(new DRect(250, 50, 24, 16), 0, imageData, "technocolor.png");
             de.AddFigure(f);
             f = new ImageFigure(new DRect(150, 150, 39, 50), 0, imageData, "technocolor.png");
@@ -1000,7 +1000,7 @@ namespace WinFormsDemo
                 de.ClearSelected();
                 WFBitmap bmp = new WFBitmap(ofd.FileName);
 				de.UndoRedoStart("Add Image");
-                byte[] imageData = (byte[])TypeDescriptor.GetConverter(bmp.NativeBmp).ConvertTo(bmp.NativeBmp, typeof(byte[]));
+                byte[] imageData = WFHelper.ToImageData((Bitmap)bmp.NativeBmp);
                 de.AddFigure(new ImageFigure(new DRect(10, 10, bmp.Width, bmp.Height), 0, imageData, ofd.FileName));
 				de.UndoRedoCommit();
                 de.UpdateViewers();
@@ -1186,7 +1186,7 @@ namespace WinFormsDemo
             {
                 de.UndoRedoStart("Paste Bitmap");
                 Bitmap bmp = (Bitmap)iData.GetData(DataFormats.Bitmap, true);
-                byte[] imageData = (byte[])TypeDescriptor.GetConverter(bmp).ConvertTo(bmp, typeof(byte[]));
+                byte[] imageData = WFHelper.ToImageData(bmp);
                 ImageFigure f = new ImageFigure(new DRect(10, 10, bmp.Width, bmp.Height), 0, imageData, "Clipboard.bmp");
                 de.PasteAsSelectedFigures(new List<Figure>(new Figure[] { f }));
                 de.UndoRedoCommit();
@@ -1437,6 +1437,11 @@ namespace WinFormsDemo
         private void actClearPage_Execute(object sender, EventArgs e)
         {
             de.ClearPage();
+        }
+
+        private void screenAnnotateTestToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            new TransparentForm().Show();
         }
     }
 }

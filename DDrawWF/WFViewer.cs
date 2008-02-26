@@ -65,6 +65,8 @@ namespace DDraw.WinForms
         {
             get 
             {
+                if (preview)
+                    return 0;
                 if (control.Width > PgSzX + MARGIN * 2) return (control.Width - PgSzX) / 2;
                 else return MARGIN;
             }
@@ -73,6 +75,8 @@ namespace DDraw.WinForms
         {
             get 
             {
+                if (preview)
+                    return 0;
                 if (control.Height > PgSzY + MARGIN * 2) return (control.Height - PgSzY) / 2;
                 else return MARGIN;
             }

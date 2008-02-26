@@ -49,6 +49,8 @@ namespace DDraw.GTK
         {
             get 
             {
+                if (preview)
+                    return 0;
                 int width = control.Allocation.Width;
                 if (width > PgSzX + MARGIN * 2) return (width - PgSzX) / 2;
                 else return MARGIN;
@@ -58,6 +60,8 @@ namespace DDraw.GTK
         {
             get 
             {
+                if (preview)
+                    return 0;
                 int height = control.Allocation.Height;
                 if (height > PgSzY + MARGIN * 2) return (height - PgSzY) / 2;
                 else return MARGIN;
