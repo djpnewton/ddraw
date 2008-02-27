@@ -11,7 +11,7 @@ using DDraw.WinForms;
 
 namespace WinFormsDemo
 {
-    public partial class TransparentForm : Form
+    public partial class AnnotationForm : Form
     {
         DEngine de;
         public DEngine De
@@ -19,7 +19,7 @@ namespace WinFormsDemo
             get { return de; }
         }
 
-        public TransparentForm()
+        public AnnotationForm()
         {
             InitializeComponent();
             // screen size
@@ -46,6 +46,7 @@ namespace WinFormsDemo
             de.AddFigure(new TextFigure(new DPoint(screenSize.Width / 2 - 50, screenSize.Height / 4), "Drag ME", 0)); // text figure
             BackgroundFigure bf = new BackgroundFigure(); // background figure
             bf.ImageData = WFHelper.ToImageData(bmp);
+            bf.FileName = "screen_capture.png";
             bf.Position = DImagePosition.Normal;
             de.SetBackgroundFigure(bf);
             de.UndoRedoCommit();

@@ -1442,9 +1442,21 @@ namespace WinFormsDemo
         private void floatingToolsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             FloatingToolsForm ff = FloatingToolsForm.FloatingTools;
+            ff.ImportAnnotations += new ImportAnnotationsHandler(FloatingTools_ImportAnnotations);
             ff.Owner = this;
             ff.Show();
             ff.Focus();
+        }
+
+        void FloatingTools_ImportAnnotations(DEngine de)
+        {
+            dem.UndoRedoStart("Import Annotations");
+            CreateDEngine(null);
+            this.de.PageSize = de.PageSize;
+            this.de.SetBackgroundFigure(de.GetBackgroundFigure());
+            foreach (Figure f in de.Figures)
+                this.de.AddFigure(f);
+            dem.UndoRedoCommit();
         }
     }
 }

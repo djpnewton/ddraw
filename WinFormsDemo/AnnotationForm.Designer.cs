@@ -1,6 +1,6 @@
 namespace WinFormsDemo
 {
-    partial class TransparentForm
+    partial class AnnotationForm
     {
         /// <summary>
         /// Required designer variable.
