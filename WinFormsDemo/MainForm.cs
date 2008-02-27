@@ -1439,9 +1439,12 @@ namespace WinFormsDemo
             de.ClearPage();
         }
 
-        private void screenAnnotateTestToolStripMenuItem_Click(object sender, EventArgs e)
+        private void floatingToolsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            new TransparentForm().Show();
+            FloatingToolsForm ff = FloatingToolsForm.FloatingTools;
+            ff.Owner = this;
+            ff.Show();
+            ff.Focus();
         }
     }
 }

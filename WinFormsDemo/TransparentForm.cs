@@ -13,6 +13,12 @@ namespace WinFormsDemo
 {
     public partial class TransparentForm : Form
     {
+        DEngine de;
+        public DEngine De
+        {
+            get { return de; }
+        }
+
         public TransparentForm()
         {
             InitializeComponent();
@@ -27,11 +33,15 @@ namespace WinFormsDemo
             DTkViewer dv = new WFViewer(wfViewerControl1);
             dv.Preview = true;
             dv.EditFigures = true;
-            DEngine de = new DEngine(new DAuthorProperties(), false);
+            dv.AntiAlias = true;
+            DAuthorProperties ap = new DAuthorProperties();
+            de = new DEngine(ap, false);
             de.AddViewer(dv);
+            // setup author props
+            ap.StrokeWidth = 2;
             // setup undo/redo sensitive stuff
             de.UndoRedoStart("initial setup");
-            de.PageSize = new DPoint(screenSize.Width, screenSize.Height);
+            de.PageSize = new DPoint(screenSize.Width + 1, screenSize.Height + 1);
             de.AddFigure(new RectFigure(new DRect(screenSize.Width / 2 - 50, screenSize.Height / 2 - 50, 100, 100), Math.PI / 4)); // rect figure
             de.AddFigure(new TextFigure(new DPoint(screenSize.Width / 2 - 50, screenSize.Height / 4), "Drag ME", 0)); // text figure
             BackgroundFigure bf = new BackgroundFigure(); // background figure

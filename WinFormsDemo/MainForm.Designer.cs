@@ -93,7 +93,7 @@ namespace WinFormsDemo
             this.sendBackwardToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.bringForwardToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.screenAnnotateTestToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.floatingToolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tsFigureProps = new System.Windows.Forms.ToolStrip();
@@ -186,7 +186,7 @@ namespace WinFormsDemo
             this.btnLine});
             this.tsEditorMode.Location = new System.Drawing.Point(3, 24);
             this.tsEditorMode.Name = "tsEditorMode";
-            this.tsEditorMode.Size = new System.Drawing.Size(319, 25);
+            this.tsEditorMode.Size = new System.Drawing.Size(288, 25);
             this.tsEditorMode.TabIndex = 0;
             this.tsEditorMode.Text = "toolStrip1";
             // 
@@ -783,18 +783,18 @@ namespace WinFormsDemo
             // 
             this.actionListProvider1.SetAction(this.toolsToolStripMenuItem, null);
             this.toolsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.screenAnnotateTestToolStripMenuItem});
+            this.floatingToolsToolStripMenuItem});
             this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
             this.toolsToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
             this.toolsToolStripMenuItem.Text = "Tools";
             // 
-            // screenAnnotateTestToolStripMenuItem
+            // floatingToolsToolStripMenuItem
             // 
-            this.actionListProvider1.SetAction(this.screenAnnotateTestToolStripMenuItem, null);
-            this.screenAnnotateTestToolStripMenuItem.Name = "screenAnnotateTestToolStripMenuItem";
-            this.screenAnnotateTestToolStripMenuItem.Size = new System.Drawing.Size(190, 22);
-            this.screenAnnotateTestToolStripMenuItem.Text = "Screen Annotate Test";
-            this.screenAnnotateTestToolStripMenuItem.Click += new System.EventHandler(this.screenAnnotateTestToolStripMenuItem_Click);
+            this.actionListProvider1.SetAction(this.floatingToolsToolStripMenuItem, null);
+            this.floatingToolsToolStripMenuItem.Name = "floatingToolsToolStripMenuItem";
+            this.floatingToolsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.floatingToolsToolStripMenuItem.Text = "Floating Tools";
+            this.floatingToolsToolStripMenuItem.Click += new System.EventHandler(this.floatingToolsToolStripMenuItem_Click);
             // 
             // helpToolStripMenuItem
             // 
@@ -1474,7 +1474,7 @@ namespace WinFormsDemo
         private System.Windows.Forms.ToolStripMenuItem clearPageToolStripMenuItem2;
         private System.Windows.Forms.ToolStripMenuItem deletePageToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem toolsToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem screenAnnotateTestToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem floatingToolsToolStripMenuItem;
     }
 }
 
