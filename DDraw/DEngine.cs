@@ -11,6 +11,7 @@ namespace DDraw
     public delegate void PageSizeChangedHandler(DEngine de, DPoint pageSize);
     public delegate void ContextClickHandler(DEngine de, Figure clickedFigure, DPoint pt);
     public delegate void DragFigureHandler(DEngine de, Figure dragFigure, DPoint pt);
+    public delegate void SelectMeasureHandler(DEngine de, DRect rect);
     public delegate void AddedFigureHandler(DEngine de, Figure fig);
 
     public class DAuthorProperties
@@ -265,6 +266,7 @@ namespace DDraw
         public event EventHandler<CommandDoneEventArgs> UndoRedoCommandDone;
         public event HsmStateChangedHandler HsmStateChanged;
         public event AddedFigureHandler AddedFigure;
+        public event SelectMeasureHandler MeasureRect;
 
         public DEngine(DAuthorProperties authorProps, bool usingEngineManager)
         {
@@ -295,6 +297,7 @@ namespace DDraw
             hsm.DragFigureStart += new DragFigureHandler(hsm_DragFigureStart);
             hsm.DragFigureEvt += new DragFigureHandler(hsm_DragFigureEvt);
             hsm.DragFigureEnd += new DragFigureHandler(hsm_DragFigureEnd);
+            hsm.MeasureRect += new SelectMeasureHandler(hsm_MeasureRect);
             hsm.StateChanged += new HsmStateChangedHandler(hsm_StateChanged);
         }
 
@@ -341,6 +344,12 @@ namespace DDraw
         {
             if (DragFigureEnd != null)
                 DragFigureEnd(this, dragFigure, pt);
+        }
+
+        void hsm_MeasureRect(DEngine de, DRect rect)
+        {
+            if (MeasureRect != null)
+                MeasureRect(this, rect);
         }
 
         void hsm_DebugMessage(string msg)

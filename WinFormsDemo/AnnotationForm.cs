@@ -19,6 +19,12 @@ namespace WinFormsDemo
             get { return de; }
         }
 
+        DTkViewer dv;
+        public DTkViewer Dv
+        {
+            get { return dv; }
+        }
+
         public AnnotationForm()
         {
             InitializeComponent();
@@ -30,7 +36,7 @@ namespace WinFormsDemo
             g.CopyFromScreen(0, 0, 0, 0, screenSize);
             g.Dispose();
             // create dv & de
-            DTkViewer dv = new WFViewer(wfViewerControl1);
+            dv = new WFViewer(wfViewerControl1);
             dv.Preview = true;
             dv.EditFigures = true;
             dv.AntiAlias = true;

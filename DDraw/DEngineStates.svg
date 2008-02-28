@@ -96,16 +96,16 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="0.79022223"
-     inkscape:cx="349.37075"
-     inkscape:cy="406.6986"
+     inkscape:cx="498.53657"
+     inkscape:cy="342.05568"
      inkscape:document-units="px"
-     inkscape:current-layer="layer3"
+     inkscape:current-layer="layer1"
      width="1052.3622px"
      height="744.09448px"
      inkscape:window-width="1280"
      inkscape:window-height="744"
-     inkscape:window-x="-4"
-     inkscape:window-y="-4" />
+     inkscape:window-x="0"
+     inkscape:window-y="22" />
   <metadata
      id="metadata7">
     <rdf:RDF>
@@ -1035,6 +1035,51 @@
         </g>
       </g>
     </g>
+    <g
+       id="g3262"
+       transform="translate(40.247469,-131.40494)">
+      <rect
+         ry="23.703915"
+         y="682.4209"
+         x="23.552996"
+         height="146.12556"
+         width="290.77365"
+         id="rect3067"
+         style="fill:#ffc200;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:1.69785428;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <path
+         sodipodi:nodetypes="cc"
+         id="path3069"
+         d="M 26.658095,709.7024 L 312.57733,710.82533"
+         style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:2.22019792;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <text
+         id="text3071"
+         y="702.87665"
+         x="58.783161"
+         style="font-size:20px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+         xml:space="preserve"><tspan
+           y="702.87665"
+           x="58.783161"
+           id="tspan3073"
+           sodipodi:role="line">SelectMeasure</tspan></text>
+      <text
+         id="text3075"
+         y="725.03827"
+         x="31.920519"
+         style="font-size:12px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+         xml:space="preserve"><tspan
+           id="tspan3077"
+           y="725.03827"
+           x="31.920519"
+           sodipodi:role="line">entry / ClearSelection()</tspan><tspan
+           id="tspan3079"
+           y="740.03827"
+           x="31.920519"
+           sodipodi:role="line" /><tspan
+           id="tspan3081"
+           y="755.03827"
+           x="31.920519"
+           sodipodi:role="line" /></text>
+    </g>
   </g>
   <g
      inkscape:groupmode="layer"
@@ -1397,5 +1442,21 @@
        d="M 232.27464,339.38081 L 264.1246,242.89869"
        id="path2650"
        sodipodi:nodetypes="cs" />
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;marker-start:url(#Arrow1Lstart);stroke-opacity:1;display:inline"
+       d="M 144.78599,698.22704 C 167.6287,727.23726 254.38445,721.67744 277.76523,730.99117"
+       id="path3288"
+       sodipodi:nodetypes="cc" />
+    <text
+       xml:space="preserve"
+       style="font-size:12px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;display:inline;font-family:Bitstream Vera Sans"
+       x="268.93958"
+       y="676.88556"
+       id="text3290"
+       transform="matrix(0.9891051,0.1472114,-0.1472114,0.9891051,0,0)"><tspan
+         sodipodi:role="line"
+         id="tspan3292"
+         x="268.93958"
+         y="676.88556">GUI_SELECTMEASURE</tspan></text>
   </g>
 </svg>

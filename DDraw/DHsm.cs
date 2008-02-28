@@ -10,7 +10,7 @@ namespace DDraw
     public enum DHsmSignals : int
     {
         //enum values must start at UserSig value or greater
-        GSelect = QSignals.UserSig, GDrawLine, GDrawText, GDrawRect, GEraser, GCancelFigureDrag,
+        GSelect = QSignals.UserSig, GSelectMeasure, GDrawLine, GDrawText, GDrawRect, GEraser, GCancelFigureDrag,
         TextEdit, FigureEdit,
         MouseDown, MouseMove, MouseUp, DoubleClick,
         KeyDown, KeyPress, KeyUp
@@ -105,7 +105,7 @@ namespace DDraw
         }
     }
 
-    public enum DHsmState { Select, DrawLine, DrawText, TextEdit, DrawRect, FigureEdit, Eraser };
+    public enum DHsmState { Select, SelectMeasure, DrawLine, DrawText, TextEdit, DrawRect, FigureEdit, Eraser };
 
     public delegate void HsmStateChangedHandler(DEngine de, DHsmState state);
 
@@ -248,6 +248,9 @@ namespace DDraw
                     case DHsmState.Select:
                         Dispatch(new QEvent((int)DHsmSignals.GSelect));
                         break;
+                    case DHsmState.SelectMeasure:
+                        Dispatch(new QEvent((int)DHsmSignals.GSelectMeasure));
+                        break;
                     case DHsmState.Eraser:
                         Dispatch(new QEvent((int)DHsmSignals.GEraser));
                         break;
@@ -263,6 +266,7 @@ namespace DDraw
         public event DragFigureHandler DragFigureStart;
         public event DragFigureHandler DragFigureEvt;
         public event DragFigureHandler DragFigureEnd;
+        public event SelectMeasureHandler MeasureRect;
 
         // state variables (showing state hierachy here)
         QState Main;
@@ -270,6 +274,7 @@ namespace DDraw
                 QState SelectDefault;
                 QState DragFigure;
                 QState DragSelect;
+            QState SelectMeasure;
             QState DrawLine;
                 QState DrawLineDefault;
                 QState DrawingLine;
@@ -492,6 +497,9 @@ namespace DDraw
                     return null;
                 case (int)DHsmSignals.GSelect:
                     TransitionTo(Select);
+                    return null;
+                case (int)DHsmSignals.GSelectMeasure:
+                    TransitionTo(SelectMeasure);
                     return null;
                 case (int)DHsmSignals.GDrawLine:
                     currentFigureClass = ((QGDrawFigureEvent)qevent).FigureClass;
@@ -919,6 +927,31 @@ namespace DDraw
             return this.Select;
         }
 
+        void DoDragSelectMouseMove(DTkViewer dv, DPoint pt)
+        {
+            // rectangular area to update with paint event
+            DRect updateRect = new DRect();
+            // initial update rect
+            updateRect = figureHandler.SelectionFigure.Rect;
+            // drag select figure
+            figureHandler.SelectionFigure.TopLeft = dragPt;
+            figureHandler.SelectionFigure.BottomRight = pt;
+            if (figureHandler.SelectionFigure.Width < 0)
+            {
+                figureHandler.SelectionFigure.X += figureHandler.SelectionFigure.Width;
+                figureHandler.SelectionFigure.Width = -figureHandler.SelectionFigure.Width;
+            }
+            if (figureHandler.SelectionFigure.Height < 0)
+            {
+                figureHandler.SelectionFigure.Y += figureHandler.SelectionFigure.Height;
+                figureHandler.SelectionFigure.Height = -figureHandler.SelectionFigure.Height;
+            }
+            // final update rect
+            updateRect = updateRect.Union(figureHandler.SelectionFigure.Rect);
+            // update drawing
+            dv.Update(updateRect);
+        }
+
         QState DoDragSelect(IQEvent qevent)
         {
             switch (qevent.QSignal)
@@ -930,27 +963,7 @@ namespace DDraw
                     drawSelection = false;
                     return null;
                 case (int)DHsmSignals.MouseMove:
-                    // rectangular area to update with paint event
-                    DRect updateRect = new DRect();
-                    // initial update rect
-                    updateRect = figureHandler.SelectionFigure.Rect;
-                    // drag select figure
-                    figureHandler.SelectionFigure.TopLeft = dragPt;
-                    figureHandler.SelectionFigure.BottomRight = ((QMouseEvent)qevent).Pt;
-                    if (figureHandler.SelectionFigure.Width < 0)
-                    {
-                        figureHandler.SelectionFigure.X += figureHandler.SelectionFigure.Width;
-                        figureHandler.SelectionFigure.Width = -figureHandler.SelectionFigure.Width;
-                    }
-                    if (figureHandler.SelectionFigure.Height < 0)
-                    {
-                        figureHandler.SelectionFigure.Y += figureHandler.SelectionFigure.Height;
-                        figureHandler.SelectionFigure.Height = -figureHandler.SelectionFigure.Height;
-                    }
-                    // final update rect
-                    updateRect = updateRect.Union(figureHandler.SelectionFigure.Rect);
-                    // update drawing
-                    ((QMouseEvent)qevent).Dv.Update(updateRect);
+                    DoDragSelectMouseMove(((QMouseEvent)qevent).Dv, ((QMouseEvent)qevent).Pt);
                     return null;
                 case (int)DHsmSignals.MouseUp:
                         DRect updateRect2 = figureHandler.SelectionFigure.Rect;
@@ -971,6 +984,39 @@ namespace DDraw
                     return null;
             }
             return this.Select;
+        }
+
+        QState DoSelectMeasure(IQEvent qevent)
+        {
+            switch (qevent.QSignal)
+            {
+                case (int)QSignals.Entry:
+                    // clear currentFigureClass
+                    currentFigureClass = null;
+                    // clear selected
+                    figureHandler.ClearSelected();
+                    viewerHandler.Update();
+                    DoStateChanged(DHsmState.SelectMeasure);
+                    return null;
+                case (int)DHsmSignals.MouseDown:
+                    // store drag point
+                    dragPt = ((QMouseEvent)qevent).Pt;
+                    // show the selection figure
+                    drawSelection = true;
+                    return null;
+                case (int)DHsmSignals.MouseMove:
+                    DoDragSelectMouseMove(((QMouseEvent)qevent).Dv, ((QMouseEvent)qevent).Pt);
+                    return null;
+                case (int)DHsmSignals.MouseUp:
+                    // hide the selection figure
+                    drawSelection = false;
+                    ((QMouseEvent)qevent).Dv.Update();
+                    // call SelectMeasure event
+                    if (MeasureRect != null)
+                        MeasureRect(null, figureHandler.SelectionFigure.Rect);
+                    break;
+            }
+            return this.Main;
         }
 
         QState DoDrawLine(IQEvent qevent)
@@ -1685,6 +1731,7 @@ namespace DDraw
             SelectDefault = new QState(this.DoSelectDefault);
             DragFigure = new QState(this.DoDragFigure);
             DragSelect = new QState(this.DoDragSelect);
+            SelectMeasure = new QState(this.DoSelectMeasure);
             DrawLine = new QState(this.DoDrawLine);
             DrawLineDefault = new QState(this.DoDrawLineDefault);
             DrawingLine = new QState(this.DoDrawingLine);

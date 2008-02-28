@@ -30,11 +30,15 @@ namespace WinFormsDemo
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FloatingToolsForm));
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
-            this.btnScreenAnnotate = new System.Windows.Forms.ToolStripButton();
             this.btnMouse = new System.Windows.Forms.ToolStripButton();
+            this.btnScreenAnnotate = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.btnSelect = new System.Windows.Forms.ToolStripButton();
             this.btnPolyline = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            this.btnImportArea = new System.Windows.Forms.ToolStripButton();
+            this.btnImportPage = new System.Windows.Forms.ToolStripButton();
+            this.btnUndo = new System.Windows.Forms.ToolStripButton();
             this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -47,22 +51,16 @@ namespace WinFormsDemo
             this.btnScreenAnnotate,
             this.toolStripSeparator1,
             this.btnSelect,
-            this.btnPolyline});
+            this.btnPolyline,
+            this.btnUndo,
+            this.toolStripSeparator2,
+            this.btnImportArea,
+            this.btnImportPage});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Size = new System.Drawing.Size(221, 25);
+            this.toolStrip1.Size = new System.Drawing.Size(361, 25);
             this.toolStrip1.TabIndex = 0;
             this.toolStrip1.Text = "toolStrip1";
-            // 
-            // btnScreenAnnotate
-            // 
-            this.btnScreenAnnotate.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.btnScreenAnnotate.Image = ((System.Drawing.Image)(resources.GetObject("btnScreenAnnotate.Image")));
-            this.btnScreenAnnotate.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btnScreenAnnotate.Name = "btnScreenAnnotate";
-            this.btnScreenAnnotate.Size = new System.Drawing.Size(92, 22);
-            this.btnScreenAnnotate.Text = "Screen Annotate";
-            this.btnScreenAnnotate.Click += new System.EventHandler(this.btnScreenAnnotate_Click);
             // 
             // btnMouse
             // 
@@ -73,6 +71,16 @@ namespace WinFormsDemo
             this.btnMouse.Size = new System.Drawing.Size(42, 22);
             this.btnMouse.Text = "Mouse";
             this.btnMouse.Click += new System.EventHandler(this.btnMouse_Click);
+            // 
+            // btnScreenAnnotate
+            // 
+            this.btnScreenAnnotate.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.btnScreenAnnotate.Image = ((System.Drawing.Image)(resources.GetObject("btnScreenAnnotate.Image")));
+            this.btnScreenAnnotate.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnScreenAnnotate.Name = "btnScreenAnnotate";
+            this.btnScreenAnnotate.Size = new System.Drawing.Size(92, 22);
+            this.btnScreenAnnotate.Text = "Screen Annotate";
+            this.btnScreenAnnotate.Click += new System.EventHandler(this.btnScreenAnnotate_Click);
             // 
             // toolStripSeparator1
             // 
@@ -99,11 +107,46 @@ namespace WinFormsDemo
             this.btnPolyline.Text = "Pen";
             this.btnPolyline.Click += new System.EventHandler(this.btnPolyline_Click);
             // 
+            // toolStripSeparator2
+            // 
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(6, 25);
+            // 
+            // btnImportArea
+            // 
+            this.btnImportArea.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.btnImportArea.Image = ((System.Drawing.Image)(resources.GetObject("btnImportArea.Image")));
+            this.btnImportArea.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnImportArea.Name = "btnImportArea";
+            this.btnImportArea.Size = new System.Drawing.Size(69, 22);
+            this.btnImportArea.Text = "Import Area";
+            this.btnImportArea.Click += new System.EventHandler(this.btnImportArea_Click);
+            // 
+            // btnImportPage
+            // 
+            this.btnImportPage.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.btnImportPage.Image = ((System.Drawing.Image)(resources.GetObject("btnImportPage.Image")));
+            this.btnImportPage.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnImportPage.Name = "btnImportPage";
+            this.btnImportPage.Size = new System.Drawing.Size(70, 17);
+            this.btnImportPage.Text = "Import Page";
+            this.btnImportPage.Click += new System.EventHandler(this.btnImportPage_Click);
+            // 
+            // btnUndo
+            // 
+            this.btnUndo.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.btnUndo.Image = ((System.Drawing.Image)(resources.GetObject("btnUndo.Image")));
+            this.btnUndo.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnUndo.Name = "btnUndo";
+            this.btnUndo.Size = new System.Drawing.Size(23, 22);
+            this.btnUndo.Text = "Undo";
+            this.btnUndo.Click += new System.EventHandler(this.btnUndo_Click);
+            // 
             // FloatingToolsForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(221, 25);
+            this.ClientSize = new System.Drawing.Size(361, 25);
             this.Controls.Add(this.toolStrip1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             this.Name = "FloatingToolsForm";
@@ -124,5 +167,9 @@ namespace WinFormsDemo
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripButton btnSelect;
         private System.Windows.Forms.ToolStripButton btnPolyline;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
+        private System.Windows.Forms.ToolStripButton btnImportArea;
+        private System.Windows.Forms.ToolStripButton btnImportPage;
+        private System.Windows.Forms.ToolStripButton btnUndo;
     }
 }

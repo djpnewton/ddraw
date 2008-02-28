@@ -1442,13 +1442,14 @@ namespace WinFormsDemo
         private void floatingToolsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             FloatingToolsForm ff = FloatingToolsForm.FloatingTools;
-            ff.ImportAnnotations += new ImportAnnotationsHandler(FloatingTools_ImportAnnotations);
+            ff.ImportAnnotationsPage += new ImportAnnotationsPageHandler(FloatingTools_ImportAnnotationsPage);
+            ff.ImportAnnotationsArea += new ImportAnnotationsImageHandler(FloatingTools_ImportAnnotationsArea);
             ff.Owner = this;
             ff.Show();
             ff.Focus();
         }
 
-        void FloatingTools_ImportAnnotations(DEngine de)
+        void FloatingTools_ImportAnnotationsPage(DEngine de)
         {
             dem.UndoRedoStart("Import Annotations");
             CreateDEngine(null);
@@ -1457,6 +1458,15 @@ namespace WinFormsDemo
             foreach (Figure f in de.Figures)
                 this.de.AddFigure(f);
             dem.UndoRedoCommit();
+        }
+
+        void FloatingTools_ImportAnnotationsArea(DBitmap bmp)
+        {
+            de.UndoRedoStart("Import Annotations");
+            ImageFigure f = new ImageFigure(new DRect(10, 10, bmp.Width, bmp.Height), 0, WFHelper.ToImageData((Bitmap)bmp.NativeBmp), "annotations.png");
+            de.AddFigure(f);
+            dvEditor.Update();
+            de.UndoRedoCommit();
         }
     }
 }
