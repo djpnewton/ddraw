@@ -74,6 +74,9 @@
       <DependentUpon>FloatingToolsForm.cs</DependentUpon>
     </Compile>
     <Compile Include="ProgramOptions.cs" />
+    <Compile Include="ToolStripState.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="ToolStripExtras.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -141,6 +144,7 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -162,6 +166,7 @@
     <Compile Include="AnnotationForm.Designer.cs">
       <DependentUpon>AnnotationForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="WorkBookUtils.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DDrawWF\DDrawWF.csproj">
@@ -181,6 +186,54 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\star.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\cursor.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\pencil.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\eraser.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\shape_square.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\ellipse.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\style.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\clock.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\tri.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\tri2.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\dia.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\pent.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\line.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\text_bold.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\text_italic.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\text_underline.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\text_strikethrough.png" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -38,15 +38,17 @@ namespace WinFormsDemo
             this.wfViewerControl1.Name = "wfViewerControl1";
             this.wfViewerControl1.Size = new System.Drawing.Size(292, 266);
             this.wfViewerControl1.TabIndex = 0;
+            this.wfViewerControl1.KeyUp += new System.Windows.Forms.KeyEventHandler(this.wfViewerControl1_KeyUp);
+            this.wfViewerControl1.KeyDown += new System.Windows.Forms.KeyEventHandler(this.wfViewerControl1_KeyDown);
             // 
-            // TransparentForm
+            // AnnotationForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(292, 266);
             this.Controls.Add(this.wfViewerControl1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
-            this.Name = "TransparentForm";
+            this.Name = "AnnotationForm";
             this.Text = "TransparentForm";
             this.ResumeLayout(false);
 

@@ -67,6 +67,69 @@ namespace WinFormsDemo {
             }
         }
         
+        internal static System.Drawing.Bitmap clock {
+            get {
+                object obj = ResourceManager.GetObject("clock", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap cursor {
+            get {
+                object obj = ResourceManager.GetObject("cursor", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap dia {
+            get {
+                object obj = ResourceManager.GetObject("dia", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap ellipse {
+            get {
+                object obj = ResourceManager.GetObject("ellipse", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap eraser {
+            get {
+                object obj = ResourceManager.GetObject("eraser", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap line {
+            get {
+                object obj = ResourceManager.GetObject("line", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap pencil {
+            get {
+                object obj = ResourceManager.GetObject("pencil", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap pent {
+            get {
+                object obj = ResourceManager.GetObject("pent", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap rect {
+            get {
+                object obj = ResourceManager.GetObject("rect", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
         internal static System.Drawing.Bitmap star {
             get {
                 object obj = ResourceManager.GetObject("star", resourceCulture);
@@ -74,9 +137,58 @@ namespace WinFormsDemo {
             }
         }
         
+        internal static System.Drawing.Bitmap style {
+            get {
+                object obj = ResourceManager.GetObject("style", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
         internal static System.Drawing.Bitmap technocolor {
             get {
                 object obj = ResourceManager.GetObject("technocolor", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap text_bold {
+            get {
+                object obj = ResourceManager.GetObject("text_bold", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap text_italic {
+            get {
+                object obj = ResourceManager.GetObject("text_italic", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap text_strikethrough {
+            get {
+                object obj = ResourceManager.GetObject("text_strikethrough", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap text_underline {
+            get {
+                object obj = ResourceManager.GetObject("text_underline", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap tri {
+            get {
+                object obj = ResourceManager.GetObject("tri", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap tri2 {
+            get {
+                object obj = ResourceManager.GetObject("tri2", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

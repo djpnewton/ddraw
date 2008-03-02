@@ -13,8 +13,8 @@ namespace WinFormsDemo
     {
         public static Image BlankImage
         {
-            // single pixel transparent png
-            get { return Image.FromStream(new MemoryStream(Convert.FromBase64String("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAAOpgAABdwnLpRPAAAAAtJREFUGFdjYAACAAAFAAGq1chRAAAAAElFTkSuQmCC"))); }
+            // 16x16 transparent png
+            get { return Image.FromStream(new MemoryStream(Convert.FromBase64String("iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAAOpgAABdwnLpRPAAAABVJREFUOE9jYBgFoyEwGgKjIQAJAQAEEAABcqUTdgAAAABJRU5ErkJggg=="))); }
         }
 
         public static void DrawStrokeWidthIcon(Graphics g, Rectangle r, Color color, int strokeWidth)
@@ -541,7 +541,6 @@ namespace WinFormsDemo
         
         public ToolStripMarkerButton() : base()
         {
-            
             ShowDropDownArrow = false;
             DropDown.Items.Add(new MarkerMenuItem(DMarker.None, new EventHandler(MenuItem_OnClick)));
             DropDown.Items.Add(new MarkerMenuItem(DMarker.Arrow, new EventHandler(MenuItem_OnClick)));

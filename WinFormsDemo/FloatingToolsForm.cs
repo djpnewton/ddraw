@@ -64,15 +64,12 @@ namespace WinFormsDemo
             btnScreenAnnotate.Checked = false;
             // hide annotation tools
             toolStripSeparator1.Visible = false;
-            btnSelect.Visible = false;
-            btnPolyline.Visible = false;
             btnUndo.Visible = false;
-            toolStripSeparator2.Visible = false;
             btnImportArea.Visible = false;
             btnImportPage.Visible = false;
-            // uncheck annotation tools
-            btnSelect.Checked = false;
-            btnPolyline.Checked = false;
+            // hide state tools
+            tsEngineState.Visible = false;
+            tsPropState.Visible = false;
         }
 
         private void btnScreenAnnotate_Click(object sender, EventArgs e)
@@ -97,16 +94,17 @@ namespace WinFormsDemo
                 btnMouse.Checked = false;
                 btnScreenAnnotate.Checked = true;
                 // show annotation tools
-                toolStripSeparator1.Visible = true;
-                btnSelect.Visible = true;
-                btnPolyline.Visible = true;
                 btnUndo.Visible = true;
-                toolStripSeparator2.Visible = true;
+                toolStripSeparator1.Visible = true;
                 btnImportArea.Visible = true;
                 btnImportPage.Visible = true;
-                // check the selection tool
-                btnSelect.Checked = true;
-                btnPolyline.Checked = false;
+                // show DEngine state tools
+                tsEngineState.Visible = true;
+                tsEngineState.De = annotationForm.De;
+                tsPropState.Visible = true;
+                tsPropState.Dap = DAuthorProperties.GlobalAP;
+                tsPropState.De = annotationForm.De;
+                tsPropState.Dv = annotationForm.Dv;
             }
         }
 
@@ -120,24 +118,6 @@ namespace WinFormsDemo
             }
         }
 
-        private void btnSelect_Click(object sender, EventArgs e)
-        {
-            // set annotation DEngine state to select
-            annotationForm.De.HsmState = DHsmState.Select;
-            btnSelect.Checked = true;
-            btnPolyline.Checked = false;
-            btnImportArea.Checked = false;
-        }
-
-        private void btnPolyline_Click(object sender, EventArgs e)
-        {
-            // set annotation DEngine state to DrawLine[Polyline]
-            annotationForm.De.HsmSetStateByFigureClass(typeof(PolylineFigure));
-            btnSelect.Checked = false;
-            btnPolyline.Checked = true;
-            btnImportArea.Checked = false;
-        }
-
         private void btnUndo_Click(object sender, EventArgs e)
         {
             annotationForm.De.Undo();
@@ -147,10 +127,15 @@ namespace WinFormsDemo
         {
             // set annotation DEngine state to SelectMeasure
             annotationForm.De.HsmState = DHsmState.SelectMeasure;
-            btnSelect.Checked = false;
-            btnPolyline.Checked = false;
             btnImportArea.Checked = true;
+            annotationForm.De.HsmStateChanged += new HsmStateChangedHandler(De_HsmStateChanged);
             annotationForm.De.MeasureRect += new SelectMeasureHandler(De_MeasureRect);
+        }
+
+        void De_HsmStateChanged(DEngine de, DHsmState state)
+        {
+            de.HsmStateChanged -= De_HsmStateChanged;
+            btnImportArea.Checked = false;
         }
 
         void De_MeasureRect(DEngine de, DRect rect)
@@ -175,7 +160,7 @@ namespace WinFormsDemo
                 ImportAnnotationsArea(new WFBitmap(croppedBmp));
             }
             // select the selection tool
-            btnSelect.PerformClick();
+            annotationForm.De.HsmState = DHsmState.Select;
         }
 
         private void btnImportPage_Click(object sender, EventArgs e)

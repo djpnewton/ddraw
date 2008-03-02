@@ -51,14 +51,8 @@ namespace WinFormsDemo
 
         void InitDEngine(DEngine de)
         {
-            // DEngine properties
-            de.SimplifyPolylines = true;
-            de.SimplifyPolylinesTolerance = 0.5;
-            de.AutoGroupPolylines = true;
-            de.AutoGroupPolylinesTimeout = 2000;
-            de.AutoGroupPolylinesXLimit = 100;
-            de.AutoGroupPolylinesYLimit = 50;
-            de.FiguresBoundToPage = true;
+            // DEngine settings
+            WorkBookUtils.SetupDEngine(de);
             // DEngine events
             de.DebugMessage += new DebugMessageHandler(DebugMessage);
             de.SelectedFiguresChanged += new SelectedFiguresHandler(de_SelectedFiguresChanged);
@@ -66,7 +60,6 @@ namespace WinFormsDemo
             de.DragFigureStart += new DragFigureHandler(de_DragFigureStart);
             de.DragFigureEvt += new DragFigureHandler(de_DragFigureEvt);
             de.DragFigureEnd += new DragFigureHandler(de_DragFigureEnd);
-            de.HsmStateChanged += new HsmStateChangedHandler(de_HsmStateChanged);
             de.AddedFigure += new AddedFigureHandler(de_AddedFigure);
             // add glyphs to figures
             foreach (Figure f in de.Figures)
@@ -88,10 +81,13 @@ namespace WinFormsDemo
             de.AddViewer(dvEditor);
             if (dvEditor.Zoom != Zoom.Custom)
                 dvEditor.Zoom = dvEditor.Zoom; 
-            dvEditor.Update();
+            dvEditor.Update();            
             this.de = de;
             de_SelectedFiguresChanged();
             UpdateUndoRedoControls();
+            // update toolstrips
+            tsEngineState.De = de;
+            tsPropState.De = de;
         }
 
         public MainForm()
@@ -103,7 +99,8 @@ namespace WinFormsDemo
             dem = new DEngineManager();
             dem.UndoRedoChanged += new EventHandler(dem_UndoRedoChanged);
             // create author properties
-            dap = new DAuthorProperties(DColor.Blue, DColor.Red, 3, DStrokeStyle.Solid, DMarker.None, DMarker.None, 1, "Arial", false, false, false, false);
+            dap = DAuthorProperties.GlobalAP;
+            dap.SetProperties(DColor.Blue, DColor.Red, 3, DStrokeStyle.Solid, DMarker.None, DMarker.None, 1, "Arial", false, false, false, false);
             // edit viewer
             dvEditor = new WFViewer(wfvcEditor);
             dvEditor.EditFigures = true;
@@ -170,8 +167,9 @@ namespace WinFormsDemo
             de.UndoRedoClearHistory();
             UpdateUndoRedoControls();
             UpdateTitleBar();
-            // Init controls
-            InitPropertyControls(de.HsmState);
+            // set toolstrip properties
+            tsPropState.Dap = dap;
+            tsPropState.Dv = dvEditor;
             // read program options
             ReadOptions();
         }
@@ -223,7 +221,6 @@ namespace WinFormsDemo
 
         void de_SelectedFiguresChanged()
         {
-            InitPropertyControls(de.HsmState);
             InitActions();
         }
 
@@ -285,355 +282,6 @@ namespace WinFormsDemo
             cmsFigure.Show(wfvcEditor, new Point((int)pt.X, (int)pt.Y));
         }
 
-        Color GetFillMatch(List<Figure> figs)
-        {
-            Color fill = Color.Empty;
-            foreach (Figure f in figs)
-                if (f is IFillable)
-                {
-                    fill = WFHelper.MakeColor(((IFillable)f).Fill);
-                    break;
-                }
-            if (fill != Color.Empty)
-                foreach (Figure f in figs)
-                    if (f is IFillable)
-                    {
-                        if (fill != WFHelper.MakeColor(((IFillable)f).Fill))
-                            return Color.Empty;
-                    }
-            return fill;
-        }
-
-        Color GetStrokeMatch(List<Figure> figs)
-        {
-            Color stroke = Color.Empty;
-            foreach (Figure f in figs)
-                if (f is IStrokeable)
-                {
-                    stroke = WFHelper.MakeColor(((IStrokeable)f).Stroke);
-                    break;
-                }
-            if (stroke != Color.Empty)
-                foreach (Figure f in figs)
-                    if (f is IStrokeable)
-                    {
-                        if (stroke != WFHelper.MakeColor(((IStrokeable)f).Stroke))
-                            return Color.Empty;
-                    }
-            return stroke;
-        }
-
-        double GetStrokeWidthMatch(List<Figure> figs)
-        {
-            double strokeWidth = ToolStripStrokeWidthButton.Empty;
-            foreach (Figure f in figs)
-                if (f is IStrokeable)
-                {
-                    strokeWidth = ((IStrokeable)f).StrokeWidth;
-                    break;
-                }
-            if (strokeWidth != ToolStripStrokeWidthButton.Empty)
-                foreach (Figure f in figs)
-                    if (f is IStrokeable)
-                    {
-                        if (strokeWidth != ((IStrokeable)f).StrokeWidth)
-                            return ToolStripStrokeWidthButton.Empty;
-                    }
-            return strokeWidth;
-        }
-
-        DStrokeStyle GetStrokeStyleMatch(List<Figure> figs)
-        {
-            DStrokeStyle strokeStyle = DStrokeStyle.Solid;
-            foreach (Figure f in figs)
-                if (f is IStrokeable)
-                {
-                    strokeStyle = ((IStrokeable)f).StrokeStyle;
-                    break;
-                }
-            if (strokeStyle != DStrokeStyle.Solid)
-                foreach (Figure f in figs)
-                    if (f is IStrokeable)
-                    {
-                        if (strokeStyle != ((IStrokeable)f).StrokeStyle)
-                            return DStrokeStyle.Solid;
-                    }
-            return strokeStyle;
-        }
-
-        DMarker GetMarkerMatch(List<Figure> figs, bool start)
-        {
-            DMarker marker = DMarker.None;
-            foreach (Figure f in figs)
-                if (f is IMarkable)
-                {
-                    if (start)
-                        marker = ((IMarkable)f).StartMarker;
-                    else
-                        marker = ((IMarkable)f).EndMarker;
-                    break;
-                }
-            if (marker != DMarker.None)
-                foreach (Figure f in figs)
-                    if (f is IMarkable)
-                    {
-                        if (start)
-                        {
-                            if (marker != ((IMarkable)f).StartMarker)
-                                return DMarker.None;
-                        }
-                        else
-                        {
-                            if (marker != ((IMarkable)f).EndMarker)
-                                return DMarker.None;
-                        }
-                    }
-            return marker;
-        }
-
-        double GetAlphaMatch(List<Figure> figs)
-        {
-            double alpha = ToolStripAlphaButton.Empty;
-            foreach (Figure f in figs)
-                if (f is IAlphaBlendable)
-                {
-                    alpha = ((IAlphaBlendable)f).Alpha;
-                    break;
-                }
-            if (alpha != ToolStripAlphaButton.Empty)
-                foreach (Figure f in figs)
-                    if (f is IAlphaBlendable)
-                    {
-                        if (alpha != ((IAlphaBlendable)f).Alpha)
-                            return ToolStripAlphaButton.Empty;
-                    }
-            return alpha;
-        }
-
-        string GetFontNameMatch(List<Figure> figs)
-        {
-            string fontName = null;
-            foreach (Figure f in figs)
-                if (f is ITextable)
-                {
-                    fontName = ((ITextable)f).FontName;
-                    break;
-                }
-            if (fontName != null)
-                foreach (Figure f in figs)
-                    if (f is ITextable)
-                    {
-                        if (fontName != ((ITextable)f).FontName)
-                            return null;
-                    }
-            return fontName;
-        }
-
-        bool GetBoldMatch(List<Figure> figs)
-        {
-            bool bold = false;
-            foreach (Figure f in figs)
-                if (f is ITextable)
-                {
-                    bold = ((ITextable)f).Bold;
-                    break;
-                }
-            if (bold != false)
-                foreach (Figure f in figs)
-                    if (f is ITextable)
-                    {
-                        if (bold != ((ITextable)f).Bold)
-                            return false;
-                    }
-            return bold;
-        }
-
-        bool GetItalicMatch(List<Figure> figs)
-        {
-            bool italic = false;
-            foreach (Figure f in figs)
-                if (f is ITextable)
-                {
-                    italic = ((ITextable)f).Italics;
-                    break;
-                }
-            if (italic != false)
-                foreach (Figure f in figs)
-                    if (f is ITextable)
-                    {
-                        if (italic != ((ITextable)f).Italics)
-                            return false;
-                    }
-            return italic;
-        }
-
-        bool GetUnderlineMatch(List<Figure> figs)
-        {
-            bool underline = false;
-            foreach (Figure f in figs)
-                if (f is ITextable)
-                {
-                    underline = ((ITextable)f).Underline;
-                    break;
-                }
-            if (underline != false)
-                foreach (Figure f in figs)
-                    if (f is ITextable)
-                    {
-                        if (underline != ((ITextable)f).Underline)
-                            return false;
-                    }
-            return underline;
-        }
-
-        bool GetStrikethroughMatch(List<Figure> figs)
-        {
-            bool strikethrough = false;
-            foreach (Figure f in figs)
-                if (f is ITextable)
-                {
-                    strikethrough = ((ITextable)f).Strikethrough;
-                    break;
-                }
-            if (strikethrough != false)
-                foreach (Figure f in figs)
-                    if (f is ITextable)
-                    {
-                        if (strikethrough != ((ITextable)f).Strikethrough)
-                            return false;
-                    }
-            return strikethrough;
-        }
-
-        private void InitPropertyControls(DHsmState state)
-        {
-            // disable events
-            cbFontName.FontNameChanged -= cbFontName_FontNameChanged;
-            // set default (blank) values for property controls
-            btnFill.Color = Color.Empty;
-            btnStroke.Color = Color.Empty;
-            btnStrokeWidth.Value = ToolStripStrokeWidthButton.Empty;
-            btnStrokeStyle.Value = DStrokeStyle.Solid;
-            btnStartMarker.Value = DMarker.None;
-            btnEndMarker.Value = DMarker.None;
-            btnAlpha.Value = ToolStripAlphaButton.Empty;
-            cbFontName.Value = "";
-            btnBold.Checked = false;
-            btnItalic.Checked = false;
-            btnUnderline.Checked = false;
-            btnStrikethrough.Checked = false;
-            // deselect controls
-            btnFill.Enabled = false;
-            btnStroke.Enabled = false;
-            btnStrokeWidth.Enabled = false;
-            btnStrokeStyle.Enabled = false;
-            btnStartMarker.Enabled = false;
-            btnEndMarker.Enabled = false;
-            btnAlpha.Enabled = false;
-            cbFontName.Enabled = false;
-            btnBold.Enabled = false;
-            btnItalic.Enabled = false;
-            btnUnderline.Enabled = false;
-            btnStrikethrough.Enabled = false;
-            // update controls based on the state of DEngine
-            switch (state)
-            {
-                case DHsmState.Select:
-                    // get selected figures
-                    List<Figure> figs = de.SelectedFigures;
-                    // test to enable property controls
-                    foreach (Figure f in figs)
-                        if (f is IFillable)
-                            btnFill.Enabled = true;
-                    foreach (Figure f in figs)
-                        if (f is IStrokeable)
-                        {
-                            btnStroke.Enabled = true;
-                            btnStrokeWidth.Enabled = true;
-                            btnStrokeStyle.Enabled = true;
-                        }
-                    foreach (Figure f in figs)
-                        if (f is IMarkable)
-                        {
-                            btnStartMarker.Enabled = true;
-                            btnEndMarker.Enabled = true;
-                        }
-                    foreach (Figure f in figs)
-                        if (f is IAlphaBlendable)
-                            btnAlpha.Enabled = true;
-                    foreach (Figure f in figs)
-                        if (f is ITextable)
-                        {
-                            cbFontName.Enabled = true;
-                            btnBold.Enabled = true;
-                            btnItalic.Enabled = true;
-                            btnUnderline.Enabled = true;
-                            btnStrikethrough.Enabled = true;
-                        }
-                    // set property controls to match selected figure/s
-                    if (figs.Count > 0)
-                    {
-                        btnFill.Color = GetFillMatch(figs);
-                        btnStroke.Color = GetStrokeMatch(figs);
-                        btnStrokeWidth.Value = (int)Math.Round(GetStrokeWidthMatch(figs));
-                        btnStrokeStyle.Value = GetStrokeStyleMatch(figs);
-                        btnStartMarker.Value = GetMarkerMatch(figs, true);
-                        btnEndMarker.Value = GetMarkerMatch(figs, false);
-                        btnAlpha.Value = GetAlphaMatch(figs);
-                        cbFontName.Value = GetFontNameMatch(figs);
-                        btnBold.Checked = GetBoldMatch(figs);
-                        btnItalic.Checked = GetItalicMatch(figs);
-                        btnUnderline.Checked = GetUnderlineMatch(figs);
-                        btnStrikethrough.Checked = GetStrikethroughMatch(figs);
-                    }
-                    break;
-                default:
-                    // enable relavant controls and update values to match dap
-                    if (de.HsmCurrentFigClassImpls(typeof(IFillable)))
-                    {
-                        btnFill.Enabled = true;
-                        btnFill.Color = WFHelper.MakeColor(dap.Fill);
-                    }
-                    if (de.HsmCurrentFigClassImpls(typeof(IStrokeable)))
-                    {
-                        btnStroke.Enabled = true;
-                        btnStroke.Color = WFHelper.MakeColor(dap.Stroke);
-                        btnStrokeWidth.Enabled = true;
-                        btnStrokeWidth.Value = (int)dap.StrokeWidth;
-                        btnStrokeStyle.Enabled = true;
-                        btnStrokeStyle.Value = dap.StrokeStyle;
-                    }
-                    if (de.HsmCurrentFigClassImpls(typeof(IMarkable)))
-                    {
-                        btnStartMarker.Enabled = true;
-                        btnStartMarker.Value = dap.StartMarker;
-                        btnEndMarker.Enabled = true;
-                        btnEndMarker.Value = dap.EndMarker;
-                    }
-                    if (de.HsmCurrentFigClassImpls(typeof(IAlphaBlendable)))
-                    {
-                        btnAlpha.Enabled = true;
-                        btnAlpha.Value = dap.Alpha;
-                    }
-                    if (de.HsmCurrentFigClassImpls(typeof(ITextable)))
-                    {
-                        cbFontName.Enabled = true;
-                        cbFontName.Value = dap.FontName;
-                        btnBold.Enabled = true;
-                        btnBold.Checked = dap.Bold;
-                        btnItalic.Enabled = true;
-                        btnItalic.Checked = dap.Italics;
-                        btnUnderline.Enabled = true;
-                        btnUnderline.Checked = dap.Underline;
-                        btnStrikethrough.Enabled = true;
-                        btnStrikethrough.Checked = dap.Strikethrough;
-                    }                        
-                    break;
-            }
-            // re-enable events
-            cbFontName.FontNameChanged += cbFontName_FontNameChanged;
-        }
-
         void InitActions()
         {
             List<Figure> figs = de.SelectedFigures;
@@ -671,285 +319,9 @@ namespace WinFormsDemo
             fig.Glyphs.Add(contextGlyphPair);
         }
 
-        void de_HsmStateChanged(DEngine de, DHsmState state)
-        {
-            btnSelect.Checked = state == DHsmState.Select;
-            btnPen.Checked = de.HsmCurrentFigClassIs(typeof(PolylineFigure));
-            btnRect.Checked = de.HsmCurrentFigClassIs(typeof(RectFigure));
-            btnEllipse.Checked = de.HsmCurrentFigClassIs(typeof(EllipseFigure));
-            btnText.Checked = state == DHsmState.DrawText;
-            btnClock.Checked = de.HsmCurrentFigClassIs(typeof(ClockFigure));
-            btnTriangle.Checked = de.HsmCurrentFigClassIs(typeof(TriangleFigure));
-            btnRATriangle.Checked = de.HsmCurrentFigClassIs(typeof(RightAngleTriangleFigure));
-            btnDiamond.Checked = de.HsmCurrentFigClassIs(typeof(DiamondFigure));
-            btnPentagon.Checked = de.HsmCurrentFigClassIs(typeof(PentagonFigure));
-            btnLine.Checked = de.HsmCurrentFigClassIs(typeof(LineFigure));
-            btnEraser.Checked = state == DHsmState.Eraser;
-            InitPropertyControls(state);
-        }
-
         void de_AddedFigure(DEngine de, Figure fig)
         {
             AddGlyphs(fig);
-        }
-
-        private void btnFill_Click(object sender, EventArgs e)
-        {
-            Point pt = new Point(btnFill.Bounds.Left, btnFill.Bounds.Bottom);
-            pt = btnFill.Owner.PointToScreen(pt);
-            ColorPicker f = new ColorPicker(pt.X, pt.Y);
-            f.ColorSelected += delegate(object sender2, EventArgs ea)
-            {
-                btnFill.Color = ((ColorPicker)sender2).SelectedColor;
-                switch (de.HsmState)
-                {
-                    case DHsmState.Select:
-                        UpdateSelectedFigures(btnFill);
-                        break;
-                    default:
-                        dap.Fill = WFHelper.MakeColor(btnFill.Color);
-                        break;
-                }
-            };
-            f.Show();
-        }
-
-        private void btnStroke_Click(object sender, EventArgs e)
-        {
-            Point pt = new Point(btnStroke.Bounds.Left, btnStroke.Bounds.Bottom);
-            pt = btnStroke.Owner.PointToScreen(pt);
-            ColorPicker f = new ColorPicker(pt.X, pt.Y);
-            f.ColorSelected += delegate(object sender2, EventArgs ea)
-            {
-                btnStroke.Color = ((ColorPicker)sender2).SelectedColor;
-                switch (de.HsmState)
-                {
-                    case DHsmState.Select:
-                        UpdateSelectedFigures(btnStroke);
-                        break;
-                    default:
-                        dap.Stroke = WFHelper.MakeColor(btnStroke.Color);
-                        break;
-                }
-            };
-            f.Show();
-        }
-
-        private void btnAlpha_AlphaChanged(object sender, double alpha)
-        {
-            switch (de.HsmState)
-            {
-                case DHsmState.Select:
-                    UpdateSelectedFigures(btnAlpha);
-                    break;
-                default:
-                    dap.Alpha = btnAlpha.Value;
-                    break;
-            }
-        }
-
-        private void btnStrokeWidth_StrokeWidthChanged(object sender, int strokeWidth)
-        {
-            switch (de.HsmState)
-            {
-                case DHsmState.Select:
-                    UpdateSelectedFigures(btnStrokeWidth);
-                    break;
-                default:
-                    dap.StrokeWidth = btnStrokeWidth.Value;
-                    break;
-            }
-        }
-
-        private void btnStrokeStyle_StrokeStyleChanged(object sender, DStrokeStyle strokeStyle)
-        {
-            switch (de.HsmState)
-            {
-                case DHsmState.Select:
-                    UpdateSelectedFigures(btnStrokeStyle);
-                    break;
-                default:
-                    dap.StrokeStyle = btnStrokeStyle.Value;
-                    break;
-            }
-        }
-
-        private void btnMarker_MarkerChanged(object sender, DMarker marker)
-        {
-            if (sender == btnStartMarker)
-                switch (de.HsmState)
-                {
-                    case DHsmState.Select:
-                        UpdateSelectedFigures(btnStartMarker);
-                        break;
-                    default:
-                        dap.StartMarker = btnStartMarker.Value;
-                        break;
-                }
-            else if (sender == btnEndMarker)
-                switch (de.HsmState)
-                {
-                    case DHsmState.Select:
-                        UpdateSelectedFigures(btnEndMarker);
-                        break;
-                    default:
-                        dap.EndMarker = btnEndMarker.Value;
-                        break;
-                }
-        }
-
-        private void cbFontName_FontNameChanged(object sender, EventArgs e)
-        {
-            switch (de.HsmState)
-            {
-                case DHsmState.Select:
-                    UpdateSelectedFigures(cbFontName);
-                    break;
-                default:
-                    dap.FontName = cbFontName.Value;
-                    break;
-            }
-        }
-
-        private void btnFontProp_Changed(object sender, EventArgs e)
-        {
-            if (sender == btnBold)
-                switch (de.HsmState)
-                {
-                    case DHsmState.Select:
-                        UpdateSelectedFigures(btnBold);
-                        break;
-                    default:
-                        dap.Bold = btnBold.Checked;
-                        break;
-                }
-            if (sender == btnItalic)
-                switch (de.HsmState)
-                {
-                    case DHsmState.Select:
-                        UpdateSelectedFigures(btnItalic);
-                        break;
-                    default:
-                        dap.Italics = btnItalic.Checked;
-                        break;
-                }
-            if (sender == btnUnderline)
-                switch (de.HsmState)
-                {
-                    case DHsmState.Select:
-                        UpdateSelectedFigures(btnUnderline);
-                        break;
-                    default:
-                        dap.Underline = btnUnderline.Checked;
-                        break;
-                }
-            if (sender == btnStrikethrough)
-                switch (de.HsmState)
-                {
-                    case DHsmState.Select:
-                        UpdateSelectedFigures(btnStrikethrough);
-                        break;
-                    default:
-                        dap.Strikethrough = btnStrikethrough.Checked;
-                        break;
-                }
-        }
-
-        private void UpdateSelectedFigures(object sender)
-        {
-            de.UndoRedoStart("Change Property");
-            List<Figure> figs = de.SelectedFigures;
-            foreach (Figure f in figs)
-            {
-                if (sender == btnFill && f is IFillable)
-                    ((IFillable)f).Fill = WFHelper.MakeColor(btnFill.Color);
-                if (f is IStrokeable)
-                {
-                    if (sender == btnStroke)
-                        ((IStrokeable)f).Stroke = WFHelper.MakeColor(btnStroke.Color);
-                    if (sender == btnStrokeWidth)
-                        ((IStrokeable)f).StrokeWidth = btnStrokeWidth.Value;
-                    if (sender == btnStrokeStyle)
-                        ((IStrokeable)f).StrokeStyle = btnStrokeStyle.Value;
-                }
-                if (f is IMarkable)
-                {
-                    if (sender == btnStartMarker)
-                        ((IMarkable)f).StartMarker = btnStartMarker.Value;
-                    if (sender == btnEndMarker)
-                        ((IMarkable)f).EndMarker = btnEndMarker.Value;
-                }
-                if (sender == btnAlpha && f is IAlphaBlendable)
-                    ((IAlphaBlendable)f).Alpha = btnAlpha.Value;
-                if (f is ITextable)
-                {
-                    if (sender == cbFontName)
-                        ((ITextable)f).FontName = cbFontName.Value;
-                    if (sender == btnBold)
-                        ((ITextable)f).Bold = btnBold.Checked;
-                    if (sender == btnItalic)
-                        ((ITextable)f).Italics = btnItalic.Checked;
-                    if (sender == btnUnderline)
-                        ((ITextable)f).Underline = btnUnderline.Checked;
-                    if (sender == btnStrikethrough)
-                        ((ITextable)f).Strikethrough = btnStrikethrough.Checked;
-                }
-            }
-            de.UndoRedoCommit();
-            dvEditor.Update();
-        }
-
-        private void btnSelect_Click(object sender, EventArgs e)
-        {
-            de.HsmState = DHsmState.Select;
-        }
-
-        private void btnPen_Click(object sender, EventArgs e)
-        {
-            de.HsmSetStateByFigureClass(typeof(PolylineFigure));
-        }
-
-        private void btnRect_Click(object sender, EventArgs e)
-        {
-            de.HsmSetStateByFigureClass(typeof(RectFigure));
-        }
-
-        private void btnEllipse_Click(object sender, EventArgs e)
-        {
-            de.HsmSetStateByFigureClass(typeof(EllipseFigure));
-        }
-
-        private void btnText_Click(object sender, EventArgs e)
-        {
-            de.HsmSetStateByFigureClass(typeof(TextFigure));
-        }
-
-        private void btnClock_Click(object sender, EventArgs e)
-        {
-            de.HsmSetStateByFigureClass(typeof(ClockFigure));
-        }
-
-        private void btnPolygon_Click(object sender, EventArgs e)
-        {
-            if (sender == btnTriangle)
-                de.HsmSetStateByFigureClass(typeof(TriangleFigure));
-            else if (sender == btnRATriangle)
-                de.HsmSetStateByFigureClass(typeof(RightAngleTriangleFigure));
-            else if (sender == btnDiamond)
-                de.HsmSetStateByFigureClass(typeof(DiamondFigure));
-            else if (sender == btnPentagon)
-                de.HsmSetStateByFigureClass(typeof(PentagonFigure));
-        }
-
-        private void btnLine_Click(object sender, EventArgs e)
-        {
-            de.HsmSetStateByFigureClass(typeof(LineFigure));
-        }
-
-        private void btn_Eraser_Click(object sender, EventArgs e)
-        {
-            de.HsmState = DHsmState.Eraser;
-            de.SetEraserSize(25);
         }
 
         private void previewBar1_PreviewSelected(Preview p)
@@ -1067,14 +439,12 @@ namespace WinFormsDemo
 
         private void wfvcEditor_KeyDown(object sender, KeyEventArgs e)
         {
-            de.FigureLockAspectRatio = e.Shift;
-            de.FigureAlwaysSnapAngle = e.Shift;
+            WorkBookUtils.ViewerKeyDown(de, e);
         }
 
         private void wfvcEditor_KeyUp(object sender, KeyEventArgs e)
         {
-            de.FigureLockAspectRatio = e.Shift;
-            de.FigureAlwaysSnapAngle = e.Shift;
+            WorkBookUtils.ViewerKeyUp(de, e);
         }
 
         // action methods //
@@ -1463,10 +833,15 @@ namespace WinFormsDemo
         void FloatingTools_ImportAnnotationsArea(DBitmap bmp)
         {
             de.UndoRedoStart("Import Annotations");
-            ImageFigure f = new ImageFigure(new DRect(10, 10, bmp.Width, bmp.Height), 0, WFHelper.ToImageData((Bitmap)bmp.NativeBmp), "annotations.png");
+            ImageFigure f = new ImageFigure(new DRect(10, 10, bmp.Width - 1, bmp.Height - 1), 0, WFHelper.ToImageData((Bitmap)bmp.NativeBmp), "annotations.png");
             de.AddFigure(f);
             dvEditor.Update();
             de.UndoRedoCommit();
+        }
+
+        private void previewBar1_PreviewFigureDrop(Preview p)
+        {
+
         }
     }
 }

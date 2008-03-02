@@ -29,20 +29,6 @@ namespace WinFormsDemo
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
-            this.tsEditorMode = new System.Windows.Forms.ToolStrip();
-            this.btnSelect = new System.Windows.Forms.ToolStripButton();
-            this.btnPen = new System.Windows.Forms.ToolStripButton();
-            this.btnEraser = new System.Windows.Forms.ToolStripButton();
-            this.btnRect = new System.Windows.Forms.ToolStripButton();
-            this.btnEllipse = new System.Windows.Forms.ToolStripButton();
-            this.btnText = new System.Windows.Forms.ToolStripButton();
-            this.btnClock = new System.Windows.Forms.ToolStripButton();
-            this.btnTriangle = new System.Windows.Forms.ToolStripButton();
-            this.btnRATriangle = new System.Windows.Forms.ToolStripButton();
-            this.btnDiamond = new System.Windows.Forms.ToolStripButton();
-            this.btnPentagon = new System.Windows.Forms.ToolStripButton();
-            this.btnLine = new System.Windows.Forms.ToolStripButton();
             this.toolStripContainer1 = new System.Windows.Forms.ToolStripContainer();
             this.pnlMain = new System.Windows.Forms.Panel();
             this.pnlViewer = new System.Windows.Forms.Panel();
@@ -96,19 +82,6 @@ namespace WinFormsDemo
             this.floatingToolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.tsFigureProps = new System.Windows.Forms.ToolStrip();
-            this.btnFill = new WinFormsDemo.ToolStripColorButton();
-            this.btnStroke = new WinFormsDemo.ToolStripColorButton();
-            this.btnStrokeWidth = new WinFormsDemo.ToolStripStrokeWidthButton();
-            this.btnStrokeStyle = new WinFormsDemo.ToolStripStrokeStyleButton();
-            this.btnStartMarker = new WinFormsDemo.ToolStripMarkerButton();
-            this.btnEndMarker = new WinFormsDemo.ToolStripMarkerButton();
-            this.btnAlpha = new WinFormsDemo.ToolStripAlphaButton();
-            this.cbFontName = new WinFormsDemo.ToolStripFontNameChooser();
-            this.btnBold = new System.Windows.Forms.ToolStripButton();
-            this.btnItalic = new System.Windows.Forms.ToolStripButton();
-            this.btnUnderline = new System.Windows.Forms.ToolStripButton();
-            this.btnStrikethrough = new System.Windows.Forms.ToolStripButton();
             this.cmsFigure = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.cutToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.copyToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
@@ -153,7 +126,8 @@ namespace WinFormsDemo
             this.actSendBackward = new Burkovsky.Controls.Action();
             this.actBringForward = new Burkovsky.Controls.Action();
             this.actClonePage = new Burkovsky.Controls.Action();
-            this.tsEditorMode.SuspendLayout();
+            this.tsEngineState = new WinFormsDemo.ToolStripDEngineState();
+            this.tsPropState = new WinFormsDemo.ToolStripDAuthorPropsState();
             this.toolStripContainer1.ContentPanel.SuspendLayout();
             this.toolStripContainer1.TopToolStripPanel.SuspendLayout();
             this.toolStripContainer1.SuspendLayout();
@@ -161,172 +135,11 @@ namespace WinFormsDemo
             this.pnlViewer.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
-            this.tsFigureProps.SuspendLayout();
             this.cmsFigure.SuspendLayout();
             this.cmsCanvas.SuspendLayout();
             this.cmsPreview.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.actionListProvider1)).BeginInit();
             this.SuspendLayout();
-            // 
-            // tsEditorMode
-            // 
-            this.tsEditorMode.Dock = System.Windows.Forms.DockStyle.None;
-            this.tsEditorMode.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.btnSelect,
-            this.btnPen,
-            this.btnEraser,
-            this.btnRect,
-            this.btnEllipse,
-            this.btnText,
-            this.btnClock,
-            this.btnTriangle,
-            this.btnRATriangle,
-            this.btnDiamond,
-            this.btnPentagon,
-            this.btnLine});
-            this.tsEditorMode.Location = new System.Drawing.Point(3, 24);
-            this.tsEditorMode.Name = "tsEditorMode";
-            this.tsEditorMode.Size = new System.Drawing.Size(288, 25);
-            this.tsEditorMode.TabIndex = 0;
-            this.tsEditorMode.Text = "toolStrip1";
-            // 
-            // btnSelect
-            // 
-            this.actionListProvider1.SetAction(this.btnSelect, null);
-            this.btnSelect.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.btnSelect.Image = ((System.Drawing.Image)(resources.GetObject("btnSelect.Image")));
-            this.btnSelect.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btnSelect.Name = "btnSelect";
-            this.btnSelect.Size = new System.Drawing.Size(23, 22);
-            this.btnSelect.Text = "Select";
-            this.btnSelect.Click += new System.EventHandler(this.btnSelect_Click);
-            // 
-            // btnPen
-            // 
-            this.actionListProvider1.SetAction(this.btnPen, null);
-            this.btnPen.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.btnPen.Image = ((System.Drawing.Image)(resources.GetObject("btnPen.Image")));
-            this.btnPen.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btnPen.Name = "btnPen";
-            this.btnPen.Size = new System.Drawing.Size(23, 22);
-            this.btnPen.Text = "Pen";
-            this.btnPen.Click += new System.EventHandler(this.btnPen_Click);
-            // 
-            // btnEraser
-            // 
-            this.actionListProvider1.SetAction(this.btnEraser, null);
-            this.btnEraser.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.btnEraser.Image = ((System.Drawing.Image)(resources.GetObject("btnEraser.Image")));
-            this.btnEraser.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
-            this.btnEraser.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btnEraser.Name = "btnEraser";
-            this.btnEraser.Size = new System.Drawing.Size(23, 22);
-            this.btnEraser.Text = "Eraser";
-            this.btnEraser.Click += new System.EventHandler(this.btn_Eraser_Click);
-            // 
-            // btnRect
-            // 
-            this.actionListProvider1.SetAction(this.btnRect, null);
-            this.btnRect.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.btnRect.Image = ((System.Drawing.Image)(resources.GetObject("btnRect.Image")));
-            this.btnRect.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btnRect.Name = "btnRect";
-            this.btnRect.Size = new System.Drawing.Size(23, 22);
-            this.btnRect.Text = "Rectangle";
-            this.btnRect.Click += new System.EventHandler(this.btnRect_Click);
-            // 
-            // btnEllipse
-            // 
-            this.actionListProvider1.SetAction(this.btnEllipse, null);
-            this.btnEllipse.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.btnEllipse.Image = ((System.Drawing.Image)(resources.GetObject("btnEllipse.Image")));
-            this.btnEllipse.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btnEllipse.Name = "btnEllipse";
-            this.btnEllipse.Size = new System.Drawing.Size(23, 22);
-            this.btnEllipse.Text = "Ellipse";
-            this.btnEllipse.Click += new System.EventHandler(this.btnEllipse_Click);
-            // 
-            // btnText
-            // 
-            this.actionListProvider1.SetAction(this.btnText, null);
-            this.btnText.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.btnText.Image = ((System.Drawing.Image)(resources.GetObject("btnText.Image")));
-            this.btnText.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btnText.Name = "btnText";
-            this.btnText.Size = new System.Drawing.Size(23, 22);
-            this.btnText.Text = "Text";
-            this.btnText.Click += new System.EventHandler(this.btnText_Click);
-            // 
-            // btnClock
-            // 
-            this.actionListProvider1.SetAction(this.btnClock, null);
-            this.btnClock.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.btnClock.Image = ((System.Drawing.Image)(resources.GetObject("btnClock.Image")));
-            this.btnClock.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btnClock.Name = "btnClock";
-            this.btnClock.Size = new System.Drawing.Size(23, 22);
-            this.btnClock.Text = "Clock";
-            this.btnClock.Click += new System.EventHandler(this.btnClock_Click);
-            // 
-            // btnTriangle
-            // 
-            this.actionListProvider1.SetAction(this.btnTriangle, null);
-            this.btnTriangle.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.btnTriangle.Image = ((System.Drawing.Image)(resources.GetObject("btnTriangle.Image")));
-            this.btnTriangle.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
-            this.btnTriangle.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btnTriangle.Name = "btnTriangle";
-            this.btnTriangle.Size = new System.Drawing.Size(23, 22);
-            this.btnTriangle.Text = "Triangle";
-            this.btnTriangle.Click += new System.EventHandler(this.btnPolygon_Click);
-            // 
-            // btnRATriangle
-            // 
-            this.actionListProvider1.SetAction(this.btnRATriangle, null);
-            this.btnRATriangle.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.btnRATriangle.Image = ((System.Drawing.Image)(resources.GetObject("btnRATriangle.Image")));
-            this.btnRATriangle.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
-            this.btnRATriangle.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btnRATriangle.Name = "btnRATriangle";
-            this.btnRATriangle.Size = new System.Drawing.Size(23, 22);
-            this.btnRATriangle.Text = "RA Triangle";
-            this.btnRATriangle.Click += new System.EventHandler(this.btnPolygon_Click);
-            // 
-            // btnDiamond
-            // 
-            this.actionListProvider1.SetAction(this.btnDiamond, null);
-            this.btnDiamond.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.btnDiamond.Image = ((System.Drawing.Image)(resources.GetObject("btnDiamond.Image")));
-            this.btnDiamond.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
-            this.btnDiamond.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btnDiamond.Name = "btnDiamond";
-            this.btnDiamond.Size = new System.Drawing.Size(23, 22);
-            this.btnDiamond.Text = "Diamond";
-            this.btnDiamond.Click += new System.EventHandler(this.btnPolygon_Click);
-            // 
-            // btnPentagon
-            // 
-            this.actionListProvider1.SetAction(this.btnPentagon, null);
-            this.btnPentagon.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.btnPentagon.Image = ((System.Drawing.Image)(resources.GetObject("btnPentagon.Image")));
-            this.btnPentagon.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
-            this.btnPentagon.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btnPentagon.Name = "btnPentagon";
-            this.btnPentagon.Size = new System.Drawing.Size(23, 22);
-            this.btnPentagon.Text = "Pentagon";
-            this.btnPentagon.Click += new System.EventHandler(this.btnPolygon_Click);
-            // 
-            // btnLine
-            // 
-            this.actionListProvider1.SetAction(this.btnLine, null);
-            this.btnLine.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.btnLine.Image = ((System.Drawing.Image)(resources.GetObject("btnLine.Image")));
-            this.btnLine.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
-            this.btnLine.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btnLine.Name = "btnLine";
-            this.btnLine.Size = new System.Drawing.Size(23, 22);
-            this.btnLine.Text = "Line";
-            this.btnLine.Click += new System.EventHandler(this.btnLine_Click);
             // 
             // toolStripContainer1
             // 
@@ -346,8 +159,8 @@ namespace WinFormsDemo
             // toolStripContainer1.TopToolStripPanel
             // 
             this.toolStripContainer1.TopToolStripPanel.Controls.Add(this.menuStrip1);
-            this.toolStripContainer1.TopToolStripPanel.Controls.Add(this.tsEditorMode);
-            this.toolStripContainer1.TopToolStripPanel.Controls.Add(this.tsFigureProps);
+            this.toolStripContainer1.TopToolStripPanel.Controls.Add(this.tsEngineState);
+            this.toolStripContainer1.TopToolStripPanel.Controls.Add(this.tsPropState);
             // 
             // pnlMain
             // 
@@ -792,7 +605,7 @@ namespace WinFormsDemo
             // 
             this.actionListProvider1.SetAction(this.floatingToolsToolStripMenuItem, null);
             this.floatingToolsToolStripMenuItem.Name = "floatingToolsToolStripMenuItem";
-            this.floatingToolsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.floatingToolsToolStripMenuItem.Size = new System.Drawing.Size(151, 22);
             this.floatingToolsToolStripMenuItem.Text = "Floating Tools";
             this.floatingToolsToolStripMenuItem.Click += new System.EventHandler(this.floatingToolsToolStripMenuItem_Click);
             // 
@@ -813,174 +626,6 @@ namespace WinFormsDemo
             this.aboutToolStripMenuItem.Size = new System.Drawing.Size(133, 22);
             this.aboutToolStripMenuItem.Text = "About";
             this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
-            // 
-            // tsFigureProps
-            // 
-            this.tsFigureProps.Dock = System.Windows.Forms.DockStyle.None;
-            this.tsFigureProps.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.btnFill,
-            this.btnStroke,
-            this.btnStrokeWidth,
-            this.btnStrokeStyle,
-            this.btnStartMarker,
-            this.btnEndMarker,
-            this.btnAlpha,
-            this.cbFontName,
-            this.btnBold,
-            this.btnItalic,
-            this.btnUnderline,
-            this.btnStrikethrough});
-            this.tsFigureProps.Location = new System.Drawing.Point(3, 49);
-            this.tsFigureProps.Name = "tsFigureProps";
-            this.tsFigureProps.Size = new System.Drawing.Size(371, 25);
-            this.tsFigureProps.TabIndex = 2;
-            // 
-            // btnFill
-            // 
-            this.actionListProvider1.SetAction(this.btnFill, null);
-            this.btnFill.Color = System.Drawing.Color.Empty;
-            this.btnFill.ColorType = WinFormsDemo.ColorType.Fill;
-            this.btnFill.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.None;
-            this.btnFill.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btnFill.Name = "btnFill";
-            this.btnFill.Size = new System.Drawing.Size(23, 22);
-            this.btnFill.Text = "Fill";
-            this.btnFill.Click += new System.EventHandler(this.btnFill_Click);
-            // 
-            // btnStroke
-            // 
-            this.actionListProvider1.SetAction(this.btnStroke, null);
-            this.btnStroke.Color = System.Drawing.Color.Empty;
-            this.btnStroke.ColorType = WinFormsDemo.ColorType.Stroke;
-            this.btnStroke.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.None;
-            this.btnStroke.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btnStroke.Name = "btnStroke";
-            this.btnStroke.Size = new System.Drawing.Size(23, 22);
-            this.btnStroke.Text = "Stroke";
-            this.btnStroke.Click += new System.EventHandler(this.btnStroke_Click);
-            // 
-            // btnStrokeWidth
-            // 
-            this.actionListProvider1.SetAction(this.btnStrokeWidth, null);
-            this.btnStrokeWidth.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.btnStrokeWidth.Image = ((System.Drawing.Image)(resources.GetObject("btnStrokeWidth.Image")));
-            this.btnStrokeWidth.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btnStrokeWidth.Name = "btnStrokeWidth";
-            this.btnStrokeWidth.ShowDropDownArrow = false;
-            this.btnStrokeWidth.Size = new System.Drawing.Size(20, 22);
-            this.btnStrokeWidth.Text = "Stroke Width";
-            this.btnStrokeWidth.Value = 1;
-            this.btnStrokeWidth.StrokeWidthChanged += new WinFormsDemo.StrokeWidthChangedHandler(this.btnStrokeWidth_StrokeWidthChanged);
-            // 
-            // btnStrokeStyle
-            // 
-            this.actionListProvider1.SetAction(this.btnStrokeStyle, null);
-            this.btnStrokeStyle.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.btnStrokeStyle.Image = ((System.Drawing.Image)(resources.GetObject("btnStrokeStyle.Image")));
-            this.btnStrokeStyle.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btnStrokeStyle.Name = "btnStrokeStyle";
-            this.btnStrokeStyle.ShowDropDownArrow = false;
-            this.btnStrokeStyle.Size = new System.Drawing.Size(20, 22);
-            this.btnStrokeStyle.Text = "Stroke Style";
-            this.btnStrokeStyle.Value = DDraw.DStrokeStyle.DashDotDot;
-            this.btnStrokeStyle.StrokeStyleChanged += new WinFormsDemo.StrokeStyleChangedHandler(this.btnStrokeStyle_StrokeStyleChanged);
-            // 
-            // btnStartMarker
-            // 
-            this.actionListProvider1.SetAction(this.btnStartMarker, null);
-            this.btnStartMarker.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.btnStartMarker.Image = ((System.Drawing.Image)(resources.GetObject("btnStartMarker.Image")));
-            this.btnStartMarker.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btnStartMarker.Name = "btnStartMarker";
-            this.btnStartMarker.ShowDropDownArrow = false;
-            this.btnStartMarker.Size = new System.Drawing.Size(20, 22);
-            this.btnStartMarker.Start = true;
-            this.btnStartMarker.Text = "toolStripMarkerButton1";
-            this.btnStartMarker.Value = DDraw.DMarker.None;
-            this.btnStartMarker.MarkerChanged += new WinFormsDemo.MarkerChangedHandler(this.btnMarker_MarkerChanged);
-            // 
-            // btnEndMarker
-            // 
-            this.actionListProvider1.SetAction(this.btnEndMarker, null);
-            this.btnEndMarker.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.btnEndMarker.Image = ((System.Drawing.Image)(resources.GetObject("btnEndMarker.Image")));
-            this.btnEndMarker.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btnEndMarker.Name = "btnEndMarker";
-            this.btnEndMarker.ShowDropDownArrow = false;
-            this.btnEndMarker.Size = new System.Drawing.Size(20, 22);
-            this.btnEndMarker.Start = false;
-            this.btnEndMarker.Text = "toolStripMarkerButton2";
-            this.btnEndMarker.Value = DDraw.DMarker.None;
-            this.btnEndMarker.MarkerChanged += new WinFormsDemo.MarkerChangedHandler(this.btnMarker_MarkerChanged);
-            // 
-            // btnAlpha
-            // 
-            this.actionListProvider1.SetAction(this.btnAlpha, null);
-            this.btnAlpha.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.btnAlpha.Image = ((System.Drawing.Image)(resources.GetObject("btnAlpha.Image")));
-            this.btnAlpha.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btnAlpha.Name = "btnAlpha";
-            this.btnAlpha.ShowDropDownArrow = false;
-            this.btnAlpha.Size = new System.Drawing.Size(20, 22);
-            this.btnAlpha.Text = "Alpha";
-            this.btnAlpha.Value = 1;
-            this.btnAlpha.AlphaChanged += new WinFormsDemo.AlphaChangedHandler(this.btnAlpha_AlphaChanged);
-            // 
-            // cbFontName
-            // 
-            this.actionListProvider1.SetAction(this.cbFontName, null);
-            this.cbFontName.Name = "cbFontName";
-            this.cbFontName.Size = new System.Drawing.Size(121, 22);
-            this.cbFontName.Value = null;
-            this.cbFontName.FontNameChanged += new System.EventHandler(this.cbFontName_FontNameChanged);
-            // 
-            // btnBold
-            // 
-            this.actionListProvider1.SetAction(this.btnBold, null);
-            this.btnBold.CheckOnClick = true;
-            this.btnBold.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.btnBold.Image = ((System.Drawing.Image)(resources.GetObject("btnBold.Image")));
-            this.btnBold.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btnBold.Name = "btnBold";
-            this.btnBold.Size = new System.Drawing.Size(23, 22);
-            this.btnBold.Text = "Bold";
-            this.btnBold.Click += new System.EventHandler(this.btnFontProp_Changed);
-            // 
-            // btnItalic
-            // 
-            this.actionListProvider1.SetAction(this.btnItalic, null);
-            this.btnItalic.CheckOnClick = true;
-            this.btnItalic.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.btnItalic.Image = ((System.Drawing.Image)(resources.GetObject("btnItalic.Image")));
-            this.btnItalic.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btnItalic.Name = "btnItalic";
-            this.btnItalic.Size = new System.Drawing.Size(23, 22);
-            this.btnItalic.Text = "Italic";
-            this.btnItalic.Click += new System.EventHandler(this.btnFontProp_Changed);
-            // 
-            // btnUnderline
-            // 
-            this.actionListProvider1.SetAction(this.btnUnderline, null);
-            this.btnUnderline.CheckOnClick = true;
-            this.btnUnderline.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.btnUnderline.Image = ((System.Drawing.Image)(resources.GetObject("btnUnderline.Image")));
-            this.btnUnderline.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btnUnderline.Name = "btnUnderline";
-            this.btnUnderline.Size = new System.Drawing.Size(23, 22);
-            this.btnUnderline.Text = "Underline";
-            this.btnUnderline.Click += new System.EventHandler(this.btnFontProp_Changed);
-            // 
-            // btnStrikethrough
-            // 
-            this.actionListProvider1.SetAction(this.btnStrikethrough, null);
-            this.btnStrikethrough.CheckOnClick = true;
-            this.btnStrikethrough.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.btnStrikethrough.Image = ((System.Drawing.Image)(resources.GetObject("btnStrikethrough.Image")));
-            this.btnStrikethrough.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btnStrikethrough.Name = "btnStrikethrough";
-            this.btnStrikethrough.Size = new System.Drawing.Size(23, 22);
-            this.btnStrikethrough.Text = "Strikethrough";
-            this.btnStrikethrough.Click += new System.EventHandler(this.btnFontProp_Changed);
             // 
             // cmsFigure
             // 
@@ -1315,6 +960,22 @@ namespace WinFormsDemo
             this.actClonePage.Text = "Clone Page";
             this.actClonePage.Execute += new System.EventHandler(this.actClonePage_Execute);
             // 
+            // tsEngineState
+            // 
+            this.tsEngineState.Dock = System.Windows.Forms.DockStyle.None;
+            this.tsEngineState.Location = new System.Drawing.Point(3, 24);
+            this.tsEngineState.Name = "tsEngineState";
+            this.tsEngineState.Size = new System.Drawing.Size(288, 25);
+            this.tsEngineState.TabIndex = 2;
+            // 
+            // tsPropState
+            // 
+            this.tsPropState.Dock = System.Windows.Forms.DockStyle.None;
+            this.tsPropState.Location = new System.Drawing.Point(3, 49);
+            this.tsPropState.Name = "tsPropState";
+            this.tsPropState.Size = new System.Drawing.Size(322, 25);
+            this.tsPropState.TabIndex = 4;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1326,8 +987,6 @@ namespace WinFormsDemo
             this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Text = "WinFormsDemo";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
-            this.tsEditorMode.ResumeLayout(false);
-            this.tsEditorMode.PerformLayout();
             this.toolStripContainer1.ContentPanel.ResumeLayout(false);
             this.toolStripContainer1.ContentPanel.PerformLayout();
             this.toolStripContainer1.TopToolStripPanel.ResumeLayout(false);
@@ -1340,8 +999,6 @@ namespace WinFormsDemo
             this.statusStrip1.PerformLayout();
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
-            this.tsFigureProps.ResumeLayout(false);
-            this.tsFigureProps.PerformLayout();
             this.cmsFigure.ResumeLayout(false);
             this.cmsCanvas.ResumeLayout(false);
             this.cmsPreview.ResumeLayout(false);
@@ -1353,17 +1010,12 @@ namespace WinFormsDemo
         #endregion
 
         private DDraw.WinForms.WFViewerControl wfvcEditor;
-        private System.Windows.Forms.ToolStrip tsEditorMode;
         private System.Windows.Forms.ToolStripContainer toolStripContainer1;
         private System.Windows.Forms.Panel pnlViewer;
         private System.Windows.Forms.StatusStrip statusStrip1;
         private System.Windows.Forms.Panel pnlMain;
         private System.Windows.Forms.ToolStripStatusLabel lbInfo;
-        private System.Windows.Forms.ToolStripButton btnSelect;
-        private System.Windows.Forms.ToolStripButton btnPen;
         private PreviewBar previewBar1;
-        private System.Windows.Forms.ToolStripButton btnRect;
-        private System.Windows.Forms.ToolStripButton btnEllipse;
         private System.Windows.Forms.MenuStrip menuStrip1;
         private System.Windows.Forms.ToolStripMenuItem insertToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem imageToolStripMenuItem;
@@ -1379,13 +1031,6 @@ namespace WinFormsDemo
         private System.Windows.Forms.ToolStripMenuItem bringToFrontToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem sendBackwardToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem bringForwardToolStripMenuItem;
-        private System.Windows.Forms.ToolStripButton btnText;
-        private System.Windows.Forms.ToolStrip tsFigureProps;
-        private ToolStripColorButton btnFill;
-        private ToolStripColorButton btnStroke;
-        private ToolStripStrokeWidthButton btnStrokeWidth;
-        private ToolStripAlphaButton btnAlpha;
-        private ToolStripFontNameChooser cbFontName;
         private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem newToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem openToolStripMenuItem;
@@ -1397,20 +1042,6 @@ namespace WinFormsDemo
         private System.Windows.Forms.ToolStripMenuItem cutToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem copyToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem pasteToolStripMenuItem;
-        private System.Windows.Forms.ToolStripButton btnClock;
-        private System.Windows.Forms.ToolStripButton btnTriangle;
-        private System.Windows.Forms.ToolStripButton btnRATriangle;
-        private System.Windows.Forms.ToolStripButton btnDiamond;
-        private System.Windows.Forms.ToolStripButton btnPentagon;
-        private System.Windows.Forms.ToolStripButton btnLine;
-        private ToolStripStrokeStyleButton btnStrokeStyle;
-        private ToolStripMarkerButton btnStartMarker;
-        private ToolStripMarkerButton btnEndMarker;
-        private System.Windows.Forms.ToolStripButton btnBold;
-        private System.Windows.Forms.ToolStripButton btnItalic;
-        private System.Windows.Forms.ToolStripButton btnUnderline;
-        private System.Windows.Forms.ToolStripButton btnStrikethrough;
-        private System.Windows.Forms.ToolStripButton btnEraser;
         private System.Windows.Forms.ToolStripMenuItem viewToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem formatToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem zoomToolStripMenuItem;
@@ -1475,6 +1106,8 @@ namespace WinFormsDemo
         private System.Windows.Forms.ToolStripMenuItem deletePageToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem toolsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem floatingToolsToolStripMenuItem;
+        private ToolStripDEngineState tsEngineState;
+        private ToolStripDAuthorPropsState tsPropState;
     }
 }
 
