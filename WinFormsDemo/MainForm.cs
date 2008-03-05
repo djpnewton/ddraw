@@ -28,6 +28,9 @@ namespace WinFormsDemo
         bool beenSaved;
         string fileName;
 
+        WorkBookArguments cmdArguments = WorkBookArguments.GlobalWbArgs;
+        Ipc ipc = Ipc.GlobalIpc;
+
         const string ProgramName = "WinFormsDemo";
         const string FileExt = ".ddraw";
         const string FileTypeFilter = "DDraw files|*.ddraw";
@@ -172,6 +175,10 @@ namespace WinFormsDemo
             tsPropState.Dv = dvEditor;
             // read program options
             ReadOptions();
+            // get command line arguments
+            ActionCommandLine();
+            // connect to ipc messages
+            ipc.MessageReceived += new MessageReceivedHandler(ipc_MessageReceived);
         }
 
         void ReadOptions()
@@ -204,6 +211,30 @@ namespace WinFormsDemo
             options.AntiAlias = dvEditor.AntiAlias;
             // write to file
             options.WriteIni();
+        }
+
+        void ActionCommandLine()
+        {
+            if (cmdArguments.FloatingTools)
+                ShowFloatingTools();
+        }
+
+        void ipc_MessageReceived(IpcMessage msg)
+        {
+            if (InvokeRequired)
+                Invoke(new MessageReceivedHandler(ipc_MessageReceived), new object[] { msg });
+            else
+                switch (msg)
+                {
+                    case IpcMessage.Show:
+                        if (WindowState == FormWindowState.Minimized)
+                            WindowState = FormWindowState.Normal;
+                        Activate();
+                        break;
+                    case IpcMessage.FloatingTools:
+                        ShowFloatingTools();
+                        break;
+                }
         }
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
@@ -809,7 +840,12 @@ namespace WinFormsDemo
             de.ClearPage();
         }
 
-        private void floatingToolsToolStripMenuItem_Click(object sender, EventArgs e)
+        private void actFloatingTools_Execute(object sender, EventArgs e)
+        {
+            ShowFloatingTools();
+        }
+
+        void ShowFloatingTools()
         {
             FloatingToolsForm ff = FloatingToolsForm.FloatingTools;
             ff.ImportAnnotationsPage += new ImportAnnotationsPageHandler(FloatingTools_ImportAnnotationsPage);
@@ -837,11 +873,6 @@ namespace WinFormsDemo
             de.AddFigure(f);
             dvEditor.Update();
             de.UndoRedoCommit();
-        }
-
-        private void previewBar1_PreviewFigureDrop(Preview p)
-        {
-
         }
     }
 }

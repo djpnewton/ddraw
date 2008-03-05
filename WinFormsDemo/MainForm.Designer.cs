@@ -82,6 +82,8 @@ namespace WinFormsDemo
             this.floatingToolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.tsEngineState = new WinFormsDemo.ToolStripDEngineState();
+            this.tsPropState = new WinFormsDemo.ToolStripDAuthorPropsState();
             this.cmsFigure = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.cutToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.copyToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
@@ -126,8 +128,7 @@ namespace WinFormsDemo
             this.actSendBackward = new Burkovsky.Controls.Action();
             this.actBringForward = new Burkovsky.Controls.Action();
             this.actClonePage = new Burkovsky.Controls.Action();
-            this.tsEngineState = new WinFormsDemo.ToolStripDEngineState();
-            this.tsPropState = new WinFormsDemo.ToolStripDAuthorPropsState();
+            this.actFloatingTools = new Burkovsky.Controls.Action();
             this.toolStripContainer1.ContentPanel.SuspendLayout();
             this.toolStripContainer1.TopToolStripPanel.SuspendLayout();
             this.toolStripContainer1.SuspendLayout();
@@ -603,11 +604,10 @@ namespace WinFormsDemo
             // 
             // floatingToolsToolStripMenuItem
             // 
-            this.actionListProvider1.SetAction(this.floatingToolsToolStripMenuItem, null);
+            this.actionListProvider1.SetAction(this.floatingToolsToolStripMenuItem, this.actFloatingTools);
             this.floatingToolsToolStripMenuItem.Name = "floatingToolsToolStripMenuItem";
-            this.floatingToolsToolStripMenuItem.Size = new System.Drawing.Size(151, 22);
+            this.floatingToolsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.floatingToolsToolStripMenuItem.Text = "Floating Tools";
-            this.floatingToolsToolStripMenuItem.Click += new System.EventHandler(this.floatingToolsToolStripMenuItem_Click);
             // 
             // helpToolStripMenuItem
             // 
@@ -626,6 +626,22 @@ namespace WinFormsDemo
             this.aboutToolStripMenuItem.Size = new System.Drawing.Size(133, 22);
             this.aboutToolStripMenuItem.Text = "About";
             this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
+            // 
+            // tsEngineState
+            // 
+            this.tsEngineState.Dock = System.Windows.Forms.DockStyle.None;
+            this.tsEngineState.Location = new System.Drawing.Point(3, 24);
+            this.tsEngineState.Name = "tsEngineState";
+            this.tsEngineState.Size = new System.Drawing.Size(288, 25);
+            this.tsEngineState.TabIndex = 2;
+            // 
+            // tsPropState
+            // 
+            this.tsPropState.Dock = System.Windows.Forms.DockStyle.None;
+            this.tsPropState.Location = new System.Drawing.Point(3, 49);
+            this.tsPropState.Name = "tsPropState";
+            this.tsPropState.Size = new System.Drawing.Size(291, 25);
+            this.tsPropState.TabIndex = 4;
             // 
             // cmsFigure
             // 
@@ -837,6 +853,7 @@ namespace WinFormsDemo
             this.actionListProvider1.Actions.Add(this.actDeletePage);
             this.actionListProvider1.Actions.Add(this.actClonePage);
             this.actionListProvider1.Actions.Add(this.actClearPage);
+            this.actionListProvider1.Actions.Add(this.actFloatingTools);
             // 
             // actNew
             // 
@@ -960,21 +977,11 @@ namespace WinFormsDemo
             this.actClonePage.Text = "Clone Page";
             this.actClonePage.Execute += new System.EventHandler(this.actClonePage_Execute);
             // 
-            // tsEngineState
+            // actFloatingTools
             // 
-            this.tsEngineState.Dock = System.Windows.Forms.DockStyle.None;
-            this.tsEngineState.Location = new System.Drawing.Point(3, 24);
-            this.tsEngineState.Name = "tsEngineState";
-            this.tsEngineState.Size = new System.Drawing.Size(288, 25);
-            this.tsEngineState.TabIndex = 2;
-            // 
-            // tsPropState
-            // 
-            this.tsPropState.Dock = System.Windows.Forms.DockStyle.None;
-            this.tsPropState.Location = new System.Drawing.Point(3, 49);
-            this.tsPropState.Name = "tsPropState";
-            this.tsPropState.Size = new System.Drawing.Size(322, 25);
-            this.tsPropState.TabIndex = 4;
+            this.actFloatingTools.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.F)));
+            this.actFloatingTools.Text = "Floating Tools";
+            this.actFloatingTools.Execute += new System.EventHandler(this.actFloatingTools_Execute);
             // 
             // MainForm
             // 
@@ -1108,6 +1115,7 @@ namespace WinFormsDemo
         private System.Windows.Forms.ToolStripMenuItem floatingToolsToolStripMenuItem;
         private ToolStripDEngineState tsEngineState;
         private ToolStripDAuthorPropsState tsPropState;
+        private Burkovsky.Controls.Action actFloatingTools;
     }
 }
 
