@@ -226,6 +226,8 @@ namespace DDraw
             {
                 if (IsInState(Select))
                     return DHsmState.Select;
+                if (IsInState(SelectMeasure))
+                    return DHsmState.SelectMeasure;
                 if (IsInState(DrawLine))
                     return DHsmState.DrawLine;
                 if (IsInState(DrawText))

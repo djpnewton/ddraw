@@ -14,50 +14,124 @@ namespace DDraw
     public delegate void SelectMeasureHandler(DEngine de, DRect rect);
     public delegate void AddedFigureHandler(DEngine de, Figure fig);
 
+    public delegate void AuthorPropertyChanged(DAuthorProperties dap);
+
     public class DAuthorProperties
     {
-        public DColor Fill;
-        public DColor Stroke;
-        public double StrokeWidth;
-        public DStrokeStyle StrokeStyle;
-        public DMarker StartMarker;
-        public DMarker EndMarker;
-        public double Alpha;
-        public string FontName;
-        public bool Bold, Italics, Underline, Strikethrough;
+        DColor fill;
+        public DColor Fill
+        {
+            get { return fill; }
+            set { fill = value; DoPropertyChanged(); }
+        }
+        DColor stroke;
+        public DColor Stroke
+        {
+            get { return stroke; }
+            set { stroke = value; DoPropertyChanged(); }
+        }
+        double strokeWidth;
+        public double StrokeWidth
+        {
+            get { return strokeWidth; }
+            set { strokeWidth = value; DoPropertyChanged(); }
+        }
+        DStrokeStyle strokeStyle;
+        public DStrokeStyle StrokeStyle
+        {
+            get { return strokeStyle; }
+            set { strokeStyle = value; DoPropertyChanged(); }
+        }
+        DMarker startMarker;
+        public DMarker StartMarker
+        {
+            get { return startMarker; }
+            set { startMarker = value; DoPropertyChanged(); }
+        }
+        DMarker endMarker;
+        public DMarker EndMarker
+        {
+            get { return endMarker; }
+            set { endMarker = value; DoPropertyChanged(); }
+        }
+        double alpha;
+        public double Alpha
+        {
+            get { return alpha; }
+            set { alpha = value; DoPropertyChanged(); }
+        }
+        string fontName;
+        public string FontName
+        {
+            get { return fontName; }
+            set { fontName = value; DoPropertyChanged(); }
+        }
+        bool bold;
+        public bool Bold
+        {
+            get { return bold; }
+            set { bold = value; DoPropertyChanged(); }
+        }
+        bool italics;
+        public bool Italics
+        {
+            get { return italics; }
+            set { italics = value; DoPropertyChanged(); }
+        }
+        bool underline;
+        public bool Underline
+        {
+            get { return underline; }
+            set { underline = value; DoPropertyChanged(); }
+        }
+        bool strikethrough;
+        public bool Strikethrough
+        {
+            get { return strikethrough; }
+            set { strikethrough = value; DoPropertyChanged(); }
+        }
+
+        public event AuthorPropertyChanged PropertyChanged;
         
         public DAuthorProperties()
         {
-        	Fill = DColor.Red;
-        	Stroke = DColor.Blue;
-        	StrokeWidth = 1;
-            StrokeStyle = DStrokeStyle.Solid;
-            StartMarker = DMarker.None;
-            EndMarker = DMarker.None;
-        	Alpha = 1;
-        	FontName = "Arial";
-            Bold = false;
-            Italics = false;
-            Underline = false;
-            Strikethrough = false;
+        	fill = DColor.Red;
+        	stroke = DColor.Blue;
+        	strokeWidth = 1;
+            strokeStyle = DStrokeStyle.Solid;
+            startMarker = DMarker.None;
+            endMarker = DMarker.None;
+        	alpha = 1;
+        	fontName = "Arial";
+            bold = false;
+            italics = false;
+            underline = false;
+            strikethrough = false;
         }
 
-        public DAuthorProperties(DColor fill, DColor stroke, double strokeWidth, DStrokeStyle strokeStyle, 
+        public void SetProperties(DColor fill, DColor stroke, double strokeWidth, DStrokeStyle strokeStyle, 
             DMarker startMarker, DMarker endMarker, double alpha, string fontName, bool bold, bool italics,
             bool underline, bool strikethrough)
         {
-            Fill = fill;
-            Stroke = stroke;
-            StrokeWidth = strokeWidth;
-            StrokeStyle = strokeStyle;
-            StartMarker = startMarker;
-            EndMarker = endMarker;
-            Alpha = alpha;
-            FontName = fontName;
-            Bold = bold;
-            Italics = italics;
-            Underline = underline;
-            Strikethrough = strikethrough;
+            this.fill = fill;
+            this.stroke = stroke;
+            this.strokeWidth = strokeWidth;
+            this.strokeStyle = strokeStyle;
+            this.startMarker = startMarker;
+            this.endMarker = endMarker;
+            this.alpha = alpha;
+            this.fontName = fontName;
+            this.bold = bold;
+            this.italics = italics;
+            this.underline = underline;
+            this.strikethrough = strikethrough;
+            DoPropertyChanged();
+        }
+
+        void DoPropertyChanged()
+        {
+            if (PropertyChanged != null)
+                PropertyChanged(this);
         }
 
         public void ApplyPropertiesToFigure(Figure f)
@@ -84,6 +158,17 @@ namespace DDraw
                 ((ITextable)f).Italics = Italics;
                 ((ITextable)f).Underline = Underline;
                 ((ITextable)f).Strikethrough = Strikethrough;
+            }
+        }
+
+        static DAuthorProperties ap = null;
+        public static DAuthorProperties GlobalAP
+        {
+            get
+            {
+                if (ap == null)
+                    ap = new DAuthorProperties();
+                return ap;
             }
         }
     }

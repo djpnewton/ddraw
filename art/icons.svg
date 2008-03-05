@@ -15,6 +15,7 @@
    sodipodi:version="0.32"
    inkscape:version="0.46dev+devel"
    sodipodi:docname="icons.svg"
+   sodipodi:docbase="D:\projects\me\dd3\art"
    inkscape:output_extension="org.inkscape.output.svg.inkscape">
   <defs
      id="defs4">
@@ -160,6 +161,15 @@
        y1="193.24503"
        x2="131.56075"
        y2="93.245033" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient2867"
+       id="linearGradient3022"
+       x1="184.10553"
+       y1="172.47299"
+       x2="279.37198"
+       y2="85.145462"
+       gradientUnits="userSpaceOnUse" />
   </defs>
   <sodipodi:namedview
      id="base"
@@ -172,18 +182,18 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="1.4028226"
-     inkscape:cx="160.25468"
-     inkscape:cy="780.22995"
+     inkscape:cx="60.812313"
+     inkscape:cy="821.59648"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      inkscape:object-paths="true"
      inkscape:object-nodes="true"
      inkscape:snap-bbox="true"
      inkscape:snap-guide="true"
-     inkscape:window-width="900"
+     inkscape:window-width="1008"
      inkscape:window-height="687"
-     inkscape:window-x="292"
-     inkscape:window-y="10">
+     inkscape:window-x="111"
+     inkscape:window-y="13">
     <inkscape:grid
        type="xygrid"
        id="grid2283" />
@@ -191,6 +201,12 @@
   <metadata
      id="metadata7">
     <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+      </cc:Work>
       <cc:Work
          rdf:about="">
         <dc:format>image/svg+xml</dc:format>
@@ -299,5 +315,18 @@
        inkscape:export-filename="d:\projects\me\dd3\eraser.png"
        inkscape:export-xdpi="14.26"
        inkscape:export-ydpi="14.26" />
+    <path
+       sodipodi:type="arc"
+       style="opacity:1;fill:url(#linearGradient3022);fill-opacity:1;fill-rule:nonzero;stroke:#003cb3;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="path1903"
+       sodipodi:cx="231.67577"
+       sodipodi:cy="128.86694"
+       sodipodi:rx="47.048"
+       sodipodi:ry="43.127335"
+       d="M 278.72377,128.86694 A 47.048,43.127335 0 1 1 184.62777,128.86694 A 47.048,43.127335 0 1 1 278.72377,128.86694 z"
+       transform="matrix(1.0496875,0,0,1.1451143,-53.253276,-25.139106)"
+       inkscape:export-filename="D:\projects\me\dd3\ellipse.png"
+       inkscape:export-xdpi="12.222222"
+       inkscape:export-ydpi="12.222222" />
   </g>
 </svg>
