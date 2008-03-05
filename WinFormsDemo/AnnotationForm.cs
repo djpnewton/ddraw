@@ -45,7 +45,7 @@ namespace WinFormsDemo
             WorkBookUtils.SetupDEngine(de);
             // setup undo/redo sensitive stuff
             de.UndoRedoStart("initial setup");
-            de.PageSize = new DPoint(screenSize.Width + 1, screenSize.Height + 1);
+            de.PageSize = new DPoint(screenSize.Width, screenSize.Height);
             BackgroundFigure bf = new BackgroundFigure(); // background figure
             bf.ImageData = WFHelper.ToImageData(bmp);
             bf.FileName = "screen_capture.png";

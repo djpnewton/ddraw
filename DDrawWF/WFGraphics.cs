@@ -425,8 +425,11 @@ namespace DDraw.WinForms
             if (bitmap != null)
             {
                 Bitmap bmp = (Bitmap)bitmap.NativeBmp;
-                g.DrawImage(bmp, MakeRect(rect.Inflate(1, 1)),
-                    0, 0, bmp.Width, bmp.Height, GraphicsUnit.Pixel, MakeImageAttributesWithAlpha(alpha));
+                if (bmp.Width == rect.Width && bmp.Height == rect.Height)
+                    g.DrawImageUnscaled(bmp, (int)rect.X, (int)rect.Y);
+                else
+                    g.DrawImage(bmp, MakeRect(rect),
+                        0, 0, bmp.Width, bmp.Height, GraphicsUnit.Pixel, MakeImageAttributesWithAlpha(alpha));
             }
         }
 

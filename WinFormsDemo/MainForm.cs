@@ -834,7 +834,7 @@ namespace WinFormsDemo
         void FloatingTools_ImportAnnotationsArea(DBitmap bmp)
         {
             de.UndoRedoStart("Import Annotations");
-            ImageFigure f = new ImageFigure(new DRect(10, 10, bmp.Width - 1, bmp.Height - 1), 0, WFHelper.ToImageData((Bitmap)bmp.NativeBmp), "annotations.png");
+            ImageFigure f = new ImageFigure(new DRect(10, 10, bmp.Width, bmp.Height), 0, WFHelper.ToImageData((Bitmap)bmp.NativeBmp), "annotations.png");
             de.AddFigure(f);
             dvEditor.Update();
             de.UndoRedoCommit();
