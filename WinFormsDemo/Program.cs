@@ -17,14 +17,16 @@ namespace WinFormsDemo
             {
                 Application.EnableVisualStyles();
                 Application.SetCompatibleTextRenderingDefault(false);
-                Application.Run(new MainForm());
+                new MainForm();
+                Application.Run();
             }
             else
             {
                 // send message to other program to show itself
-                Ipc.GlobalIpc.SendMessage(IpcMessage.Show);
                 if (WorkBookArguments.GlobalWbArgs.FloatingTools)
                     Ipc.GlobalIpc.SendMessage(IpcMessage.FloatingTools);
+                else
+                    Ipc.GlobalIpc.SendMessage(IpcMessage.Show);
             }
         }
     }

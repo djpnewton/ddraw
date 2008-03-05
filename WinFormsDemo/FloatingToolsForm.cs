@@ -19,12 +19,19 @@ namespace WinFormsDemo
         Form mainForm;
         AnnotationForm annotationForm = null;
 
+        bool haveImportedAnnotations = false;
+        public bool Alone
+        {
+            get { return TopMost; }
+            set { TopMost = value; }
+        }
+
         public event ImportAnnotationsPageHandler ImportAnnotationsPage;
         public event ImportAnnotationsImageHandler ImportAnnotationsArea;
 
         // singleton thingie
         static FloatingToolsForm floatingTools = null;
-        public static FloatingToolsForm FloatingTools
+        public static FloatingToolsForm GlobalFT
         {
             get
             {
@@ -37,7 +44,7 @@ namespace WinFormsDemo
         public FloatingToolsForm()
         {
             InitializeComponent();
-            btnMouse.PerformClick();
+            MouseMode();
             Disposed += new EventHandler(FloatingToolsForm_Disposed);
         }
 
@@ -49,15 +56,36 @@ namespace WinFormsDemo
 
         private void btnMouse_Click(object sender, EventArgs e)
         {
+            MouseMode();
+        }
+
+        private void btnScreenAnnotate_Click(object sender, EventArgs e)
+        {
+            ScreenAnnotateMode();
+        }
+
+        bool MouseMode()
+        {
             if (annotationForm != null)
             {
+                // ask if user wants to cancel
+                if (!haveImportedAnnotations && annotationForm.De.CanUndo)
+                {
+                    if (MessageBox.Show("You have not imported any annotations. Going into mouse mode will erase your annotations, do you want to cancel this action?",
+                        "Annotations Import Question", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
+                        return false;
+                }
                 // set ownwer back to the mainform
                 Owner = mainForm;
                 // close the annotation form
                 annotationForm.Close();
                 annotationForm = null;
                 // show the mainform
-                Owner.Show();
+                if (!Alone || haveImportedAnnotations)
+                {
+                    mainForm.Show();
+                    haveImportedAnnotations = false;
+                }
             }
             // check mouse button
             btnMouse.Checked = true;
@@ -70,9 +98,11 @@ namespace WinFormsDemo
             // hide state tools
             tsEngineState.Visible = false;
             tsPropState.Visible = false;
+
+            return true;
         }
 
-        private void btnScreenAnnotate_Click(object sender, EventArgs e)
+        void ScreenAnnotateMode()
         {
             if (annotationForm == null)
             {
@@ -80,7 +110,7 @@ namespace WinFormsDemo
                 mainForm = Owner;
                 // hide this toolbar and the mainform
                 Hide();
-                Owner.Hide();
+                mainForm.Hide();
                 Application.DoEvents();
                 System.Threading.Thread.Sleep(500);
                 // create the annotation form (this takes a screen grab)
@@ -112,9 +142,17 @@ namespace WinFormsDemo
         {
             // if the annotation form is shown then go back to mousing
             if (annotationForm != null)
+                if (!MouseMode())
+                {
+                    e.Cancel = true;
+                    return;
+                }
+            // if the main form is not visible then close it too
+            if (Owner != null && !Owner.Visible)
             {
-                Owner = null;
-                btnMouse.PerformClick();
+                mainForm = Owner;
+                Owner = null; // watch out for recursion
+                mainForm.Close();
             }
         }
 
@@ -156,6 +194,8 @@ namespace WinFormsDemo
                 g.DrawImage((Bitmap)initialBmp.NativeBmp, (int)-rect.X, (int)-rect.Y);
                 g.Dispose();
                 initialBmp.Dispose();
+                // set haveImportedAnnotations
+                haveImportedAnnotations = true;
                 // call the ImportAnnotationsArea event passing it the cropped bitmap
                 ImportAnnotationsArea(new WFBitmap(croppedBmp));
             }
@@ -166,7 +206,10 @@ namespace WinFormsDemo
         private void btnImportPage_Click(object sender, EventArgs e)
         {
             if (ImportAnnotationsPage != null)
+            {
+                haveImportedAnnotations = true;
                 ImportAnnotationsPage(annotationForm.De);
+            }
         }
     }
 }

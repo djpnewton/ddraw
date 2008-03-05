@@ -127,8 +127,8 @@ namespace WinFormsDemo
             this.actBringToFront = new Burkovsky.Controls.Action();
             this.actSendBackward = new Burkovsky.Controls.Action();
             this.actBringForward = new Burkovsky.Controls.Action();
-            this.actClonePage = new Burkovsky.Controls.Action();
             this.actFloatingTools = new Burkovsky.Controls.Action();
+            this.actClonePage = new Burkovsky.Controls.Action();
             this.toolStripContainer1.ContentPanel.SuspendLayout();
             this.toolStripContainer1.TopToolStripPanel.SuspendLayout();
             this.toolStripContainer1.SuspendLayout();
@@ -606,7 +606,8 @@ namespace WinFormsDemo
             // 
             this.actionListProvider1.SetAction(this.floatingToolsToolStripMenuItem, this.actFloatingTools);
             this.floatingToolsToolStripMenuItem.Name = "floatingToolsToolStripMenuItem";
-            this.floatingToolsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.floatingToolsToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.F)));
+            this.floatingToolsToolStripMenuItem.Size = new System.Drawing.Size(189, 22);
             this.floatingToolsToolStripMenuItem.Text = "Floating Tools";
             // 
             // helpToolStripMenuItem
@@ -971,17 +972,17 @@ namespace WinFormsDemo
             this.actBringForward.Text = "Bring Forward";
             this.actBringForward.Execute += new System.EventHandler(this.actBringForward_Execute);
             // 
-            // actClonePage
-            // 
-            this.actClonePage.ShortcutKeys = System.Windows.Forms.Keys.None;
-            this.actClonePage.Text = "Clone Page";
-            this.actClonePage.Execute += new System.EventHandler(this.actClonePage_Execute);
-            // 
             // actFloatingTools
             // 
             this.actFloatingTools.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.F)));
             this.actFloatingTools.Text = "Floating Tools";
             this.actFloatingTools.Execute += new System.EventHandler(this.actFloatingTools_Execute);
+            // 
+            // actClonePage
+            // 
+            this.actClonePage.ShortcutKeys = System.Windows.Forms.Keys.None;
+            this.actClonePage.Text = "Clone Page";
+            this.actClonePage.Execute += new System.EventHandler(this.actClonePage_Execute);
             // 
             // MainForm
             // 
@@ -993,6 +994,7 @@ namespace WinFormsDemo
             this.Name = "MainForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Text = "WinFormsDemo";
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.MainForm_FormClosed);
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
             this.toolStripContainer1.ContentPanel.ResumeLayout(false);
             this.toolStripContainer1.ContentPanel.PerformLayout();

@@ -121,53 +121,7 @@ namespace WinFormsDemo
             // new document
             New();
             dem.UndoRedoClearHistory();
-            // create initial figures
-            de.UndoRedoStart("create initial figures");
-            // rect figures
-            de.AddFigure(new RectFigure(new DRect(10, 10, 50, 50), 0));
-            Figure f = new RectFigure(new DRect(40, 40, 50, 50), 0);
-            ((RectFigure)f).Fill = new DColor(64, 64, 255, 128);
-            de.AddFigure(f);
-            // ellipse figure
-            f = new EllipseFigure(new DRect(120, 20, 100, 50), 0);
-            de.AddFigure(f);
-            // polyline figure
-            DPoints pts = new DPoints();
-            pts.Add(new DPoint(150, 80));
-            pts.Add(new DPoint(160, 70));
-            pts.Add(new DPoint(170, 100));
-            pts.Add(new DPoint(180, 80));
-            f = new PolylineFigure(pts);
-            de.AddFigure(f);
-            // bitmap images
-            byte[] imageData = WFHelper.ToImageData(Resource1.technocolor);
-            f = new ImageFigure(new DRect(250, 50, 24, 16), 0, imageData, "technocolor.png");
-            de.AddFigure(f);
-            f = new ImageFigure(new DRect(150, 150, 39, 50), 0, imageData, "technocolor.png");
-            f.LockAspectRatio = true;
-            de.AddFigure(f);
-            // text figure
-            f = new TextFigure(new DPoint(100, 200), "hello\ndan", 0);
-            de.AddFigure(f);
-            // compositing figure
-            f = new CompositedExampleFigure();
-            f.Rect = new DRect(20, 150, 50, 50);
-            de.AddFigure(f);
-            // clock (IEditable) figure
-            f = new ClockFigure();
-            f.Rect = new DRect(200, 200, 100, 100);
-            de.AddFigure(f);
-            // triangle polygon
-            f = new TriangleFigure();
-            f.Rect = new DRect(100, 200, 100, 100);
-            de.AddFigure(f);
-            // line figure
-            f = new LineFigure(new DPoint(100, 100), new DPoint(200, 200));
-            ((LineFigure)f).StrokeWidth = 10;
-            de.AddFigure(f);
-            // commit figures to undo redo manager
-            de.UndoRedoCommit();
-            de.UndoRedoClearHistory();
+            // update some controls and titlebar
             UpdateUndoRedoControls();
             UpdateTitleBar();
             // set toolstrip properties
@@ -216,7 +170,9 @@ namespace WinFormsDemo
         void ActionCommandLine()
         {
             if (cmdArguments.FloatingTools)
-                ShowFloatingTools();
+                ShowFloatingTools(true);
+            else
+                Show();
         }
 
         void ipc_MessageReceived(IpcMessage msg)
@@ -229,10 +185,13 @@ namespace WinFormsDemo
                     case IpcMessage.Show:
                         if (WindowState == FormWindowState.Minimized)
                             WindowState = FormWindowState.Normal;
-                        Activate();
+                        Show();
+                        Focus();
+                        if (FloatingToolsForm.GlobalFT.Visible)
+                            FloatingToolsForm.GlobalFT.Alone = false;
                         break;
                     case IpcMessage.FloatingTools:
-                        ShowFloatingTools();
+                        ShowFloatingTools(false);
                         break;
                 }
         }
@@ -243,6 +202,11 @@ namespace WinFormsDemo
                 e.Cancel = true;
             else
                 WriteOptions();
+        }
+
+        private void MainForm_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            Application.Exit();
         }
 
         void DebugMessage(string msg)
@@ -842,15 +806,16 @@ namespace WinFormsDemo
 
         private void actFloatingTools_Execute(object sender, EventArgs e)
         {
-            ShowFloatingTools();
+            ShowFloatingTools(false);
         }
 
-        void ShowFloatingTools()
+        void ShowFloatingTools(bool floatingToolsAlone)
         {
-            FloatingToolsForm ff = FloatingToolsForm.FloatingTools;
+            FloatingToolsForm ff = FloatingToolsForm.GlobalFT;
             ff.ImportAnnotationsPage += new ImportAnnotationsPageHandler(FloatingTools_ImportAnnotationsPage);
             ff.ImportAnnotationsArea += new ImportAnnotationsImageHandler(FloatingTools_ImportAnnotationsArea);
             ff.Owner = this;
+            ff.Alone = floatingToolsAlone;
             ff.Show();
             ff.Focus();
         }
@@ -873,6 +838,11 @@ namespace WinFormsDemo
             de.AddFigure(f);
             dvEditor.Update();
             de.UndoRedoCommit();
+        }
+
+        private void previewBar1_PreviewFigureDrop(Preview p)
+        {
+
         }
     }
 }
