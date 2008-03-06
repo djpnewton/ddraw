@@ -24,6 +24,8 @@ namespace WinFormsDemo
         DTkViewer dvEditor;
 
         BitmapGlyph contextGlyph;
+        DPoint textInsertionPoint;
+        bool nonTextInsertionKey;
 
         bool beenSaved;
         string fileName;
@@ -63,6 +65,7 @@ namespace WinFormsDemo
             de.DragFigureStart += new DragFigureHandler(de_DragFigureStart);
             de.DragFigureEvt += new DragFigureHandler(de_DragFigureEvt);
             de.DragFigureEnd += new DragFigureHandler(de_DragFigureEnd);
+            de.MouseDown += new DMouseButtonEventHandler(de_MouseDown);
             de.AddedFigure += new AddedFigureHandler(de_AddedFigure);
             // add glyphs to figures
             foreach (Figure f in de.Figures)
@@ -79,7 +82,7 @@ namespace WinFormsDemo
                 if (this.de.CurrentFigureClass != null)
                     de.HsmSetStateByFigureClass(this.de.CurrentFigureClass);
                 else
-                    de.HsmState = this.de.HsmState;
+                    de.HsmState = DHsmState.Select;
             }
             de.AddViewer(dvEditor);
             if (dvEditor.Zoom != Zoom.Custom)
@@ -91,6 +94,8 @@ namespace WinFormsDemo
             // update toolstrips
             tsEngineState.De = de;
             tsPropState.De = de;
+            // null textInsertionPoint
+            textInsertionPoint = null;
         }
 
         public MainForm()
@@ -279,6 +284,11 @@ namespace WinFormsDemo
         {
         }
 
+        void de_MouseDown(DTkViewer dv, DMouseButton btn, DPoint pt)
+        {
+            textInsertionPoint = pt;
+        }
+
         void contextGlyph_Clicked(IGlyph glyph, Figure figure, DPoint pt)
         {
             cmsFigure.Show(wfvcEditor, new Point((int)pt.X, (int)pt.Y));
@@ -443,11 +453,26 @@ namespace WinFormsDemo
         private void wfvcEditor_KeyDown(object sender, KeyEventArgs e)
         {
             WorkBookUtils.ViewerKeyDown(de, e);
+            nonTextInsertionKey = e.Alt || e.Control;
         }
 
         private void wfvcEditor_KeyUp(object sender, KeyEventArgs e)
         {
             WorkBookUtils.ViewerKeyUp(de, e);
+            nonTextInsertionKey = e.Alt || e.Control;
+        }
+
+        private void wfvcEditor_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (!nonTextInsertionKey && textInsertionPoint != null && de.HsmState != DHsmState.TextEdit)
+            {
+                de.UndoRedoStart("Text Edit");
+                TextFigure tf = new TextFigure(textInsertionPoint, "", 0);
+                dap.ApplyPropertiesToFigure(tf);
+                de.AddFigure(tf);
+                de.HsmTextEdit(tf);
+                dvEditor.Update();
+            }
         }
 
         // action methods //

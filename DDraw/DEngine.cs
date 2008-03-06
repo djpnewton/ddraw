@@ -346,6 +346,7 @@ namespace DDraw
         public event DragFigureHandler DragFigureStart;
         public event DragFigureHandler DragFigureEvt;
         public event DragFigureHandler DragFigureEnd;
+        public event DMouseButtonEventHandler MouseDown;
         public event PageSizeChangedHandler PageSizeChanged;
         public event EventHandler UndoRedoChanged;
         public event EventHandler<CommandDoneEventArgs> UndoRedoCommandDone;
@@ -360,6 +361,7 @@ namespace DDraw
             undoRedoManager.CommandDone += new EventHandler<CommandDoneEventArgs>(undoRedoArea_CommandDone);
             // create viewer handler
             viewerHandler = new DViewerHandler();
+            viewerHandler.MouseDown += new DMouseButtonEventHandler(viewerHandler_MouseDown);
             // create figure handler
             if (!usingEngineManager)
                 undoRedoManager.Start("create figure handler");
@@ -384,6 +386,12 @@ namespace DDraw
             hsm.DragFigureEnd += new DragFigureHandler(hsm_DragFigureEnd);
             hsm.MeasureRect += new SelectMeasureHandler(hsm_MeasureRect);
             hsm.StateChanged += new HsmStateChangedHandler(hsm_StateChanged);
+        }
+
+        void viewerHandler_MouseDown(DTkViewer dv, DMouseButton btn, DPoint pt)
+        {
+            if (MouseDown != null)
+                MouseDown(dv, btn, pt);
         }
 
         void undoRedoArea_CommandDone(object sender, CommandDoneEventArgs e)
@@ -670,6 +678,11 @@ namespace DDraw
         public void HsmSetStateByFigureClass(Type figureClass)
         {
             hsm.SetStateByFigureClass(figureClass);
+        }
+
+        public void HsmTextEdit(TextFigure tf)
+        {
+            hsm.ToTextEdit(tf);
         }
 
         public void ClearPage()

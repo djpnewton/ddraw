@@ -190,6 +190,7 @@ namespace WinFormsDemo
             this.wfvcEditor.Size = new System.Drawing.Size(439, 219);
             this.wfvcEditor.TabIndex = 0;
             this.wfvcEditor.KeyUp += new System.Windows.Forms.KeyEventHandler(this.wfvcEditor_KeyUp);
+            this.wfvcEditor.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.wfvcEditor_KeyPress);
             this.wfvcEditor.KeyDown += new System.Windows.Forms.KeyEventHandler(this.wfvcEditor_KeyDown);
             // 
             // previewBar1

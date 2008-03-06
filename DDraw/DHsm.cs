@@ -10,7 +10,7 @@ namespace DDraw
     public enum DHsmSignals : int
     {
         //enum values must start at UserSig value or greater
-        GSelect = QSignals.UserSig, GSelectMeasure, GDrawLine, GDrawText, GDrawRect, GEraser, GCancelFigureDrag,
+        GSelect = QSignals.UserSig, GSelectMeasure, GDrawLine, GDrawText, GDrawRect, GEraser, GCancelFigureDrag, GTextEdit,
         TextEdit, FigureEdit,
         MouseDown, MouseMove, MouseUp, DoubleClick,
         KeyDown, KeyPress, KeyUp
@@ -102,6 +102,20 @@ namespace DDraw
         public QGDrawFigureEvent(int qSignal, Type figureClass) : base(qSignal)
         {
             this.figureClass = figureClass;
+        }
+    }
+
+    public class QGTextEditEvent : QEvent
+    {
+        TextFigure tf;
+        public TextFigure TextFigure
+        {
+            get { return tf; }
+        }
+
+        public QGTextEditEvent(int qSignal, TextFigure tf) : base(qSignal)
+        {
+            this.tf = tf;
         }
     }
 
@@ -383,6 +397,11 @@ namespace DDraw
                 System.Diagnostics.Debug.Assert(false, String.Format("Sorry, cant set state using '{0}' :(", figureClass.Name));
         }
 
+        public void ToTextEdit(TextFigure tf)
+        {
+            Dispatch(new QGTextEditEvent((int)DHsmSignals.GTextEdit, tf));
+        }
+
         void DoStateChanged(DHsmState state)
         {
             if (StateChanged != null)
@@ -517,6 +536,10 @@ namespace DDraw
                     return null;
                 case (int)DHsmSignals.GEraser:
                     TransitionTo(Eraser);
+                    return null;
+                case (int)DHsmSignals.GTextEdit:
+                    currentFigure = ((QGTextEditEvent)qevent).TextFigure;
+                    TransitionTo(TextEdit);
                     return null;
             }
             return this.TopState;
