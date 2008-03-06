@@ -214,6 +214,13 @@ namespace WinFormsDemo
             lbInfo.Text = msg;
         }
 
+        void CheckState()
+        {
+            // Change to the 'Select' state if we are in a volatile state like text editing
+            if (de.HsmState == DHsmState.TextEdit)
+                de.HsmState = DHsmState.Select;
+        }
+
         void de_SelectedFiguresChanged()
         {
             InitActions();
@@ -364,6 +371,7 @@ namespace WinFormsDemo
             ofd.Filter = "Image Files(*.BMP;*.JPG;*.GIF,*.PNG)|*.BMP;*.JPG;*.GIF;*.PNG";
             if (ofd.ShowDialog() == DialogResult.OK)
             {
+                CheckState();
                 de.ClearSelected();
                 WFBitmap bmp = new WFBitmap(ofd.FileName);
 				de.UndoRedoStart("Add Image");
@@ -536,6 +544,7 @@ namespace WinFormsDemo
 
         private void actPaste_Execute(object sender, EventArgs e)
         {
+            CheckState();
             IDataObject iData = Clipboard.GetDataObject();
             if (iData.GetDataPresent(FigureSerialize.DDRAW_FIGURE_XML))
                 de.PasteAsSelectedFigures((string)iData.GetData(FigureSerialize.DDRAW_FIGURE_XML));
@@ -564,6 +573,7 @@ namespace WinFormsDemo
                 de.Delete(de.SelectedFigures);
             else 
             {
+                CheckState();
                 dem.UndoRedoStart("Delete Page");
                 dem.RemoveEngine(de);
                 if (dem.EngineCount == 0)
@@ -771,6 +781,7 @@ namespace WinFormsDemo
 
         private void actNewPage_Execute(object sender, EventArgs e)
         {
+            CheckState();
             dem.UndoRedoStart("New Page");
             CreateDEngine(de);
             dem.UndoRedoCommit();
@@ -783,6 +794,7 @@ namespace WinFormsDemo
 
         private void actClonePage_Execute(object sender, EventArgs e)
         {
+            CheckState();
             dem.UndoRedoStart("Clone Page");
             // clone data
             string clonedFigures = FigureSerialize.FormatToXml(de.Figures, null);
@@ -801,6 +813,7 @@ namespace WinFormsDemo
 
         private void actClearPage_Execute(object sender, EventArgs e)
         {
+            CheckState();
             de.ClearPage();
         }
 
