@@ -877,10 +877,5 @@ namespace WinFormsDemo
             dvEditor.Update();
             de.UndoRedoCommit();
         }
-
-        private void previewBar1_PreviewFigureDrop(Preview p)
-        {
-
-        }
     }
 }

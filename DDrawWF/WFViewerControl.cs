@@ -22,5 +22,19 @@ namespace DDraw.WinForms
         {
             //base.OnPaintBackground(e);
         }
+
+        protected override bool IsInputKey(Keys key)
+        {
+            // make sure control processes arrow keys
+            switch (key)
+            {
+                case Keys.Up:
+                case Keys.Down:
+                case Keys.Right:
+                case Keys.Left:
+                    return true;
+            }
+            return base.IsInputKey(key); 
+        }
     }
 }
