@@ -44,8 +44,23 @@ namespace DDraw
         protected override void PaintBody(DGraphics dg)
         {
             DPoints pts = DrawPoints();
-            dg.FillPolygon(pts, Fill, Alpha);
-            dg.DrawPolyline(pts, Stroke, Alpha, StrokeWidth, StrokeStyle, StrokeJoin, StrokeCap);
+            if (UseRealAlpha && Alpha != 1 && StrokeWidth > 0)
+            {
+                DBitmap bmp = GraphicsHelper.MakeBitmap(Width + StrokeWidth, Height + StrokeWidth);
+                DGraphics bmpGfx = GraphicsHelper.MakeGraphics(bmp);
+                bmpGfx.AntiAlias = dg.AntiAlias;
+                bmpGfx.Translate(SwHalf - X, SwHalf - Y);
+                bmpGfx.FillPolygon(pts, Fill, 1);
+                bmpGfx.DrawPolyline(pts, Stroke, 1, StrokeWidth, StrokeStyle, StrokeJoin, StrokeCap);
+                dg.DrawBitmap(bmp, new DPoint(X - SwHalf, Y - SwHalf), Alpha);
+                bmpGfx.Dispose();
+                bmp.Dispose();
+            }
+            else
+            {
+                dg.FillPolygon(pts, Fill, Alpha);
+                dg.DrawPolyline(pts, Stroke, Alpha, StrokeWidth, StrokeStyle, StrokeJoin, StrokeCap);
+            }
         }
     }
 

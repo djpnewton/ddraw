@@ -63,6 +63,10 @@ namespace DDraw
             get;
             set;
         }
+        double SwHalf
+        {
+            get;
+        }
         DStrokeStyle StrokeStyle
         {
             get;
@@ -415,6 +419,12 @@ namespace DDraw
             set { lockAspectRatio = value; }
         }
 
+        bool useRealAlpha = true;
+        public virtual bool UseRealAlpha
+        {
+            get { return useRealAlpha; }
+            set { useRealAlpha = value; }
+        }
 
         public Figure()
         { }
@@ -677,9 +687,23 @@ namespace DDraw
 
         protected override void PaintBody(DGraphics dg)
         {
-            dg.FillRect(X, Y, Width, Height, Fill, Alpha);
-            if (StrokeWidth > 0)
+            if (UseRealAlpha && Alpha != 1 && StrokeWidth > 0)
+            {
+                DBitmap bmp = GraphicsHelper.MakeBitmap(Width + StrokeWidth, Height + StrokeWidth);
+                DGraphics bmpGfx = GraphicsHelper.MakeGraphics(bmp);
+                bmpGfx.AntiAlias = dg.AntiAlias;
+                bmpGfx.Translate(SwHalf, SwHalf);
+                bmpGfx.FillRect(0, 0, Width, Height, Fill, 1);
+                bmpGfx.DrawRect(0, 0, Width, Height, Stroke, 1, StrokeWidth, StrokeStyle, StrokeJoin);
+                dg.DrawBitmap(bmp, new DPoint(X - SwHalf, Y - SwHalf), Alpha);
+                bmpGfx.Dispose();
+                bmp.Dispose();
+            }
+            else
+            {
+                dg.FillRect(X, Y, Width, Height, Fill, Alpha);
                 dg.DrawRect(X, Y, Width, Height, Stroke, Alpha, StrokeWidth, StrokeStyle, StrokeJoin);
+            }
         }
 
         #region IFillable Members
@@ -702,7 +726,19 @@ namespace DDraw
         public virtual double StrokeWidth
         {
             get { return _strokeWidth.Value; }
-            set { if (value != _strokeWidth.Value) _strokeWidth.Value = value; }  
+            set
+            {
+                if (value != _strokeWidth.Value)
+                {
+                    _strokeWidth.Value = value;
+                    strokeWidthHalf = value / 2;
+                }
+            }
+        }
+        double strokeWidthHalf = 0.5;
+        public double SwHalf
+        {
+            get { return strokeWidthHalf; }
         }
         UndoRedo<DStrokeStyle> _strokeStyle = new UndoRedo<DStrokeStyle>(DStrokeStyle.Solid);
         public virtual DStrokeStyle StrokeStyle
@@ -746,8 +782,23 @@ namespace DDraw
 
         protected override void PaintBody(DGraphics dg)
         {
-            dg.FillEllipse(X, Y, Width, Height, Fill, Alpha);
-            dg.DrawEllipse(X, Y, Width, Height, Stroke, Alpha, StrokeWidth, StrokeStyle);
+            if (UseRealAlpha && Alpha != 1 && StrokeWidth > 0)
+            {
+                DBitmap bmp = GraphicsHelper.MakeBitmap(Width + StrokeWidth, Height + StrokeWidth);
+                DGraphics bmpGfx = GraphicsHelper.MakeGraphics(bmp);
+                bmpGfx.AntiAlias = dg.AntiAlias;
+                bmpGfx.Translate(SwHalf, SwHalf);
+                bmpGfx.FillEllipse(0, 0, Width, Height, Fill, 1);
+                bmpGfx.DrawEllipse(0, 0, Width, Height, Stroke, 1, StrokeWidth, StrokeStyle);
+                dg.DrawBitmap(bmp, new DPoint(X - SwHalf, Y - SwHalf), Alpha);
+                bmpGfx.Dispose();
+                bmp.Dispose();
+            }
+            else
+            {
+                dg.FillEllipse(X, Y, Width, Height, Fill, Alpha);
+                dg.DrawEllipse(X, Y, Width, Height, Stroke, Alpha, StrokeWidth, StrokeStyle);
+            }
         }
     }
 
@@ -783,7 +834,19 @@ namespace DDraw
         public virtual double StrokeWidth
         {
             get { return _strokeWidth.Value; }
-            set { if (value != _strokeWidth.Value) _strokeWidth.Value = value; }
+            set
+            {
+                if (value != _strokeWidth.Value)
+                {
+                    _strokeWidth.Value = value;
+                    strokeWidthHalf = value / 2;
+                }
+            }
+        }
+        double strokeWidthHalf = 0.5;
+        public double SwHalf
+        {
+            get { return strokeWidthHalf; }
         }
         UndoRedo<DStrokeStyle> _strokeStyle = new UndoRedo<DStrokeStyle>(DStrokeStyle.Solid);
         public virtual DStrokeStyle StrokeStyle
@@ -1038,17 +1101,11 @@ namespace DDraw
     {
         public override DPoints GetStartMarkerPoints()
         {
-            if (Pt1 != null && Pt2 != null)
-                return MarkerHelper.MarkerPoints(StartMarker, Pt1, Pt2, MarkerSize);
-            else
-                return new DPoints();
+            return MarkerHelper.MarkerPoints(StartMarker, Pt1, Pt2, MarkerSize);
         }
         public override DPoints GetEndMarkerPoints()
         {
-            if (Pt1 != null && Pt2 != null)
-                return MarkerHelper.MarkerPoints(EndMarker, Pt2, Pt1, MarkerSize);
-            else
-                return new DPoints();
+            return MarkerHelper.MarkerPoints(EndMarker, Pt2, Pt1, MarkerSize);
         }
 
         public LineFigure()
@@ -1062,7 +1119,33 @@ namespace DDraw
 
         protected override void PaintBody(DGraphics dg)
         {
-            if (Pt1 != null && Pt2 != null)
+            if (UseRealAlpha && Alpha != 1 && StrokeWidth > 0 && (StartMarker != DMarker.None || EndMarker != DMarker.None))
+            {
+                DPoints smp;
+                if (StartMarker != DMarker.None)
+                    smp = GetStartMarkerPoints();
+                else
+                    smp = MarkerHelper.MarkerPoints(DMarker.Square, Pt1, 0, MarkerSize);
+                DPoints emp;
+                if (EndMarker != DMarker.None)
+                    emp = GetEndMarkerPoints();
+                else
+                    emp = MarkerHelper.MarkerPoints(DMarker.Square, Pt2, 0, MarkerSize);
+                DRect R = GetEncompassingRect().Union(smp.Bounds()).Union(emp.Bounds());
+                DBitmap bmp = GraphicsHelper.MakeBitmap(R.Width, R.Height);
+                DGraphics bmpGfx = GraphicsHelper.MakeGraphics(bmp);
+                bmpGfx.AntiAlias = dg.AntiAlias;
+                bmpGfx.Translate((X - R.X) - X, (Y - R.Y) - Y);
+                bmpGfx.DrawLine(Pt1, Pt2, Stroke, 1, StrokeStyle, StrokeWidth, StrokeCap);
+                if (StartMarker != DMarker.None)
+                    bmpGfx.FillPolygon(smp, Stroke, 1);
+                if (EndMarker != DMarker.None)
+                    bmpGfx.FillPolygon(emp, Stroke, 1);
+                dg.DrawBitmap(bmp, new DPoint(X - (X - R.X), Y - (Y - R.Y)), Alpha);
+                bmpGfx.Dispose();
+                bmp.Dispose();
+            }
+            else
             {
                 dg.DrawLine(Pt1, Pt2, Stroke, Alpha, StrokeStyle, StrokeWidth, StrokeCap);
                 if (StartMarker != DMarker.None)
@@ -1229,11 +1312,51 @@ namespace DDraw
         {
             if (Points != null && Points.Count > 1)
             {
-                dg.DrawPolyline(Points, Stroke, Alpha, StrokeWidth, StrokeStyle, StrokeJoin, StrokeCap);
-                if (StartMarker != DMarker.None)
-                    dg.FillPolygon(GetStartMarkerPoints(), Stroke, Alpha);
-                if (EndMarker != DMarker.None)
-                    dg.FillPolygon(GetEndMarkerPoints(), Stroke, Alpha);
+                if (UseRealAlpha && Alpha != 1 && StrokeWidth > 0 && (StartMarker != DMarker.None || EndMarker != DMarker.None))
+                {
+                    DPoints smp;
+                    if (StartMarker != DMarker.None)
+                        smp = GetStartMarkerPoints();
+                    else
+                    {
+                        if (Points.Count > 1)
+                            smp = MarkerHelper.MarkerPoints(DMarker.Square, Points[0], Points[1], MarkerSize);
+                        else
+                            smp = new DPoints();
+                    }
+                    DPoints emp;
+                    if (EndMarker != DMarker.None)
+                        emp = GetEndMarkerPoints();
+                    else
+                    {
+                        if (Points.Count > 1)
+                            emp = MarkerHelper.MarkerPoints(DMarker.Square, Points[Points.Count - 1], Points[Points.Count - 2], MarkerSize);
+                        else
+                            emp = new DPoints();
+                    }
+                    DRect R = StrokeHelper.RectIncludingStrokeWidth(GetEncompassingRect(), StrokeWidth)
+                        .Union(smp.Bounds()).Union(emp.Bounds());
+                    DBitmap bmp = GraphicsHelper.MakeBitmap(R.Width, R.Height);
+                    DGraphics bmpGfx = GraphicsHelper.MakeGraphics(bmp);
+                    bmpGfx.AntiAlias = dg.AntiAlias;
+                    bmpGfx.Translate((X - R.X) - X, (Y - R.Y) - Y);
+                    bmpGfx.DrawPolyline(Points, Stroke, 1, StrokeWidth, StrokeStyle, StrokeJoin, StrokeCap);
+                    if (StartMarker != DMarker.None)
+                        bmpGfx.FillPolygon(smp, Stroke, 1);
+                    if (EndMarker != DMarker.None)
+                        bmpGfx.FillPolygon(emp, Stroke, 1);
+                    dg.DrawBitmap(bmp, new DPoint(X - (X - R.X), Y - (Y - R.Y)), Alpha);
+                    bmpGfx.Dispose();
+                    bmp.Dispose();
+                }
+                else
+                {
+                    dg.DrawPolyline(Points, Stroke, Alpha, StrokeWidth, StrokeStyle, StrokeJoin, StrokeCap);
+                    if (StartMarker != DMarker.None)
+                        dg.FillPolygon(GetStartMarkerPoints(), Stroke, Alpha);
+                    if (EndMarker != DMarker.None)
+                        dg.FillPolygon(GetEndMarkerPoints(), Stroke, Alpha);
+                }
             }
         }
     }
@@ -1840,8 +1963,6 @@ namespace DDraw
             get { return true; }
         }
 
-        public bool UseGroupAlpha = false;
-
         UndoRedoList<Figure> childFigs;
         public UndoRedoList<Figure> ChildFigures
         {
@@ -1869,6 +1990,8 @@ namespace DDraw
                 childFigs.Add(f);
             // store starting dimensions for scaling later on
             CreateOriginalRects();
+            // use individual alpha for each child
+            UseRealAlpha = false;
         }
 
         void CreateOriginalRects()
@@ -1899,7 +2022,7 @@ namespace DDraw
 
         protected override void PaintBody(DGraphics dg)
         {
-            if (UseGroupAlpha)
+            if (UseRealAlpha)
             {
                 if (Width > 0 && Height > 0)
                 {
@@ -1924,7 +2047,7 @@ namespace DDraw
         {
             get
             {
-                if (UseGroupAlpha)
+                if (UseRealAlpha)
                     return base.Alpha;
                 else
                 {
@@ -1945,7 +2068,7 @@ namespace DDraw
             }
             set
             {
-                if (UseGroupAlpha)
+                if (UseRealAlpha)
                     base.Alpha = value;
                 else
                 {
