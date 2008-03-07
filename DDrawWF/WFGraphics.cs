@@ -425,7 +425,7 @@ namespace DDraw.WinForms
             if (bitmap != null)
             {
                 Bitmap bmp = (Bitmap)bitmap.NativeBmp;
-                if (bmp.Width == rect.Width && bmp.Height == rect.Height)
+                if (bmp.Width == rect.Width && bmp.Height == rect.Height && alpha == 1)
                     g.DrawImageUnscaled(bmp, (int)rect.X, (int)rect.Y);
                 else
                     g.DrawImage(bmp, MakeRect(rect),
