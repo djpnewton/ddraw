@@ -402,7 +402,7 @@ namespace DDraw.WinForms
 
         public override void DrawBitmap(DBitmap bitmap, DRect rect)
         {
-            g.DrawImage((Bitmap)bitmap.NativeBmp, MakeRect(rect.Inflate(1, 1)));
+            g.DrawImage((Bitmap)bitmap.NativeBmp, MakeRect(rect));
         }
 
         ImageAttributes MakeImageAttributesWithAlpha(double alpha)

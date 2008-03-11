@@ -318,7 +318,7 @@ namespace DDraw
 
     public interface IGlyphable
     {
-        List<GlyphPair> Glyphs
+        List<IGlyph> Glyphs
         {
             get;
             set;
@@ -424,6 +424,12 @@ namespace DDraw
         {
             get { return useRealAlpha; }
             set { useRealAlpha = value; }
+        }
+
+        UndoRedoDictionary<string, string> _userAttrs = new UndoRedoDictionary<string, string>();
+        public UndoRedoDictionary<string, string> UserAttrs
+        {
+            get { return _userAttrs; }
         }
 
         public Figure()
@@ -601,35 +607,35 @@ namespace DDraw
 
         #region IGlyphable Members
 
-        List<GlyphPair> glyphs = null;
-        public List<GlyphPair> Glyphs
+        List<IGlyph> glyphs = null;
+        public List<IGlyph> Glyphs
         {
             get { return glyphs; }
             set { glyphs = value; }
         }
 
-        public void PaintGlyphs(DGraphics dg)
+        public virtual void PaintGlyphs(DGraphics dg)
         {
             if (glyphs != null && glyphs.Count > 0)
             {
                 DMatrix m = dg.SaveTransform();
                 ApplyTransforms(dg);
-                foreach (GlyphPair gp in glyphs)
-                    if (gp.Glyph.IsVisible(selected))
-                        gp.Glyph.Paint(dg, gp.Position, GetSelectRect(), Scale);
+                foreach (IGlyph g in glyphs)
+                    if (g.IsVisible(selected))
+                        g.Paint(dg, GetSelectRect(), Scale);
                 dg.LoadTransform(m);
             }
         }
 
-        public DHitTest GlyphHitTest(DPoint pt, out IGlyph glyph)
+        public virtual DHitTest GlyphHitTest(DPoint pt, out IGlyph glyph)
         {
             if (glyphs != null && glyphs.Count > 0)
-                foreach (GlyphPair gp in glyphs)
+                foreach (IGlyph g in glyphs)
                 {
-                    DHitTest ht = gp.Glyph.HitTest(pt, gp.Position, GetSelectRect(), selected, Scale);
+                    DHitTest ht = g.HitTest(pt, GetSelectRect(), selected, Scale);
                     if (ht != DHitTest.None)
                     {
-                        glyph = gp.Glyph;
+                        glyph = g;
                         return ht;
                     }
                 }
@@ -1051,6 +1057,56 @@ namespace DDraw
                 // load previous transform
                 dg.LoadTransform(m);
             }
+        }
+
+        public override void PaintGlyphs(DGraphics dg)
+        {
+            if (Glyphs != null && Glyphs.Count > 0)
+            {
+                DMatrix m = dg.SaveTransform();
+                ApplyTransforms(dg);
+                int n = 0;
+                foreach (IGlyph g in Glyphs)
+                {
+                    // set glyph position to "center stack"
+                    DGlyphPosition temp = g.Position;
+                    g.CenterStack(Glyphs.Count, n);
+                    n++;
+                    // do paint op
+                    if (g.IsVisible(Selected))
+                        g.Paint(dg, GetSelectRect(), Scale);
+                    // set gylph position back to original
+                    g.Position = temp;
+                }
+                dg.LoadTransform(m);
+            }
+        }
+
+        public override DHitTest GlyphHitTest(DPoint pt, out IGlyph glyph)
+        {
+            if (Glyphs != null && Glyphs.Count > 0)
+            {
+                int n = 0;
+                foreach (IGlyph g in Glyphs)
+                {
+                    // set glyph position to "center stack"
+                    DGlyphPosition temp = g.Position;
+                    g.CenterStack(Glyphs.Count, n);
+                    n++;
+                    // do hit test
+                    DHitTest ht = g.HitTest(pt, GetSelectRect(), Selected, Scale);
+                    // set gylph position back to original
+                    g.Position = temp;
+                    // return if positive result
+                    if (ht != DHitTest.None)
+                    {
+                        glyph = g;
+                        return ht;
+                    }
+                }
+            }
+            glyph = null;
+            return DHitTest.None;
         }
 
         protected override DHitTest _HitTest(DPoint pt)

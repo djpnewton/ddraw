@@ -15,6 +15,12 @@ namespace DDraw
 
         public const string FIGURE_ELE = "Figure";
         public const string TYPE_ATTR = "Type";
+        public const string USERATTRS_ELE = "UserAttrs";
+        public const char   USERATTRS_SEP = ' ';
+        public const string USERATTRS_SPACE_ENT = "&space;";
+        public const char   USERATTRS_PART_SEP = ',';
+        public const string USERATTRS_COMMA_ENT = "&comma;";
+        public const string USERATTRS_AMP_ENT = "&amp;";
         public const string DIMENSION_ELE = "Dimension";
         public const string X_ATTR = "X";
         public const string Y_ATTR = "Y";
@@ -56,6 +62,20 @@ namespace DDraw
         {
             wr.WriteStartElement(FIGURE_ELE);
             wr.WriteAttributeString(TYPE_ATTR, f.GetType().FullName);
+            // UserAttrs
+            wr.WriteStartElement(USERATTRS_ELE);
+            string ua = "";
+            foreach (string k in f.UserAttrs.Keys)
+            {
+                string key = k.Replace("&", USERATTRS_AMP_ENT).
+                    Replace(",", USERATTRS_COMMA_ENT).Replace(" ", USERATTRS_SPACE_ENT);
+                string value = f.UserAttrs[k].Replace("&", USERATTRS_AMP_ENT).
+                    Replace(",", USERATTRS_COMMA_ENT).Replace(" ", USERATTRS_SPACE_ENT);
+                ua += string.Format("{0}{1}{2}{3}", key, USERATTRS_PART_SEP, value, USERATTRS_SEP);
+            }
+            wr.WriteValue(ua);
+            wr.WriteEndElement();
+            // the rest
             if (f is IDimension)
             {
                 wr.WriteStartElement(DIMENSION_ELE);
@@ -273,6 +293,25 @@ namespace DDraw
             }
             else
                 return null;
+        }
+
+        static void ApplyUserAttrs(XmlReader re, Figure f)
+        {
+            re.MoveToContent();
+            string ua = re.ReadString().Trim();
+            string[] attrs = ua.Split(USERATTRS_SEP);
+            foreach (string attr in attrs)
+            {
+                string[] attrParts = attr.Split(USERATTRS_PART_SEP);
+                if (attrParts.Length == 2)
+                {
+                    string key = attrParts[0].Replace(USERATTRS_COMMA_ENT, ",").
+                        Replace(USERATTRS_SPACE_ENT, " ").Replace(USERATTRS_AMP_ENT, "&");
+                    string value = attrParts[1].Replace(USERATTRS_COMMA_ENT, ",").
+                        Replace(USERATTRS_SPACE_ENT, " ").Replace(USERATTRS_AMP_ENT, "&");
+                    f.UserAttrs[key] = value;
+                }
+            }
         }
 
         static void ApplyDimensions(XmlReader re, IDimension d)
@@ -493,7 +532,9 @@ namespace DDraw
                 {
                     if (re.NodeType == XmlNodeType.Element)
                     {
-                        if (re.LocalName == DIMENSION_ELE && result is IDimension)
+                        if (re.LocalName == USERATTRS_ELE)
+                            ApplyUserAttrs(re.ReadSubtree(), result);
+                        else if (re.LocalName == DIMENSION_ELE && result is IDimension)
                             ApplyDimensions(re.ReadSubtree(), (IDimension)result);
                         else if (re.LocalName == FILL_ELE && result is IFillable)
                             ApplyFill(re.ReadSubtree(), (IFillable)result);

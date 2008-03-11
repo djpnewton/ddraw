@@ -96,6 +96,8 @@ namespace WinFormsDemo
             this.bringToFrontToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.sendBackwardToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.bringForwardToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator10 = new System.Windows.Forms.ToolStripSeparator();
+            this.linkToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.cmsCanvas = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.pasteToolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
             this.clearPageToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
@@ -129,6 +131,7 @@ namespace WinFormsDemo
             this.actBringForward = new Burkovsky.Controls.Action();
             this.actFloatingTools = new Burkovsky.Controls.Action();
             this.actClonePage = new Burkovsky.Controls.Action();
+            this.actLink = new Burkovsky.Controls.Action();
             this.toolStripContainer1.ContentPanel.SuspendLayout();
             this.toolStripContainer1.TopToolStripPanel.SuspendLayout();
             this.toolStripContainer1.SuspendLayout();
@@ -658,9 +661,11 @@ namespace WinFormsDemo
             this.sendToBackToolStripMenuItem,
             this.bringToFrontToolStripMenuItem,
             this.sendBackwardToolStripMenuItem,
-            this.bringForwardToolStripMenuItem});
+            this.bringForwardToolStripMenuItem,
+            this.toolStripSeparator10,
+            this.linkToolStripMenuItem});
             this.cmsFigure.Name = "cmsFigure";
-            this.cmsFigure.Size = new System.Drawing.Size(239, 214);
+            this.cmsFigure.Size = new System.Drawing.Size(239, 264);
             // 
             // cutToolStripMenuItem1
             // 
@@ -747,6 +752,19 @@ namespace WinFormsDemo
             this.bringForwardToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.PageUp)));
             this.bringForwardToolStripMenuItem.Size = new System.Drawing.Size(238, 22);
             this.bringForwardToolStripMenuItem.Text = "Bring Forward";
+            // 
+            // toolStripSeparator10
+            // 
+            this.actionListProvider1.SetAction(this.toolStripSeparator10, null);
+            this.toolStripSeparator10.Name = "toolStripSeparator10";
+            this.toolStripSeparator10.Size = new System.Drawing.Size(235, 6);
+            // 
+            // linkToolStripMenuItem
+            // 
+            this.actionListProvider1.SetAction(this.linkToolStripMenuItem, this.actLink);
+            this.linkToolStripMenuItem.Name = "linkToolStripMenuItem";
+            this.linkToolStripMenuItem.Size = new System.Drawing.Size(238, 22);
+            this.linkToolStripMenuItem.Text = "Link";
             // 
             // cmsCanvas
             // 
@@ -856,6 +874,7 @@ namespace WinFormsDemo
             this.actionListProvider1.Actions.Add(this.actClonePage);
             this.actionListProvider1.Actions.Add(this.actClearPage);
             this.actionListProvider1.Actions.Add(this.actFloatingTools);
+            this.actionListProvider1.Actions.Add(this.actLink);
             // 
             // actNew
             // 
@@ -984,6 +1003,12 @@ namespace WinFormsDemo
             this.actClonePage.ShortcutKeys = System.Windows.Forms.Keys.None;
             this.actClonePage.Text = "Clone Page";
             this.actClonePage.Execute += new System.EventHandler(this.actClonePage_Execute);
+            // 
+            // actLink
+            // 
+            this.actLink.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.L)));
+            this.actLink.Text = "Link";
+            this.actLink.Execute += new System.EventHandler(this.actLink_Execute);
             // 
             // MainForm
             // 
@@ -1119,6 +1144,9 @@ namespace WinFormsDemo
         private ToolStripDEngineState tsEngineState;
         private ToolStripDAuthorPropsState tsPropState;
         private Burkovsky.Controls.Action actFloatingTools;
+        private Burkovsky.Controls.Action actLink;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator10;
+        private System.Windows.Forms.ToolStripMenuItem linkToolStripMenuItem;
     }
 }
 

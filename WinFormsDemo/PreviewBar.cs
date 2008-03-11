@@ -35,6 +35,16 @@ namespace WinFormsDemo
             return -1;
         }
 
+        public void SetPreviewSelected(DEngine de)
+        {
+            if (de != null)
+            {
+                Preview pToSelect = (Preview)pnlPreviews.Controls[GetPreviewIndex(de)];
+                pToSelect.Selected = true;
+                DoPreviewSelected(pToSelect);
+            }
+        }
+
         public Preview AddPreview(DEngine de, DViewer dv, DEngine sibling)
         {
             // index of new preview

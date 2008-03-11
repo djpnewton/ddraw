@@ -24,6 +24,7 @@ namespace WinFormsDemo
         DTkViewer dvEditor;
 
         BitmapGlyph contextGlyph;
+        BitmapGlyph linkGlyph;
         DPoint textInsertionPoint;
         bool nonTextInsertionKey;
 
@@ -69,7 +70,7 @@ namespace WinFormsDemo
             de.AddedFigure += new AddedFigureHandler(de_AddedFigure);
             // add glyphs to figures
             foreach (Figure f in de.Figures)
-                AddGlyphs(f);
+                AddDefaultGlyphs(f);
             // show it
             SetCurrentDe(de);
         }
@@ -114,11 +115,11 @@ namespace WinFormsDemo
             dvEditor.EditFigures = true;
             dvEditor.DebugMessage += new DebugMessageHandler(DebugMessage);
             // glyphs
-            MemoryStream ms = new MemoryStream();
-            Resource1.arrow.Save(ms, ImageFormat.Png);
-            contextGlyph = new BitmapGlyph(new WFBitmap(ms));
-            ms.Dispose();
+            contextGlyph = new BitmapGlyph(new WFBitmap(Resource1.arrow), DGlyphPosition.TopRight);
             contextGlyph.Clicked += new GlyphClickedHandler(contextGlyph_Clicked);
+            linkGlyph = new BitmapGlyph(new WFBitmap(Resource1.link), DGlyphPosition.BottomLeft);
+            linkGlyph.Visiblility = DGlyphVisiblity.Always;
+            linkGlyph.Clicked += new GlyphClickedHandler(linkGlyph_Clicked);
             // figure defaults
             Figure._handleSize = 5;
             Figure._handleBorder = 3;
@@ -251,10 +252,15 @@ namespace WinFormsDemo
             UpdateTitleBar();
             if (sender == dem)
             {
+                // check if engines have changed order
                 previewBar1.MatchPreviewsToEngines(dem.GetEngines(), dvEditor);
                 foreach (DEngine de in dem.GetEngines())
                     de.UpdateViewers();
             }
+            else
+                // check if UserAttrs have changed and update glyphs
+                foreach (Figure f in de.Figures)
+                    CheckOptionalGlyphs(f);
             previewBar1.UpdatePreviewsDirtyProps();
         }
 
@@ -294,6 +300,35 @@ namespace WinFormsDemo
             cmsFigure.Show(wfvcEditor, new Point((int)pt.X, (int)pt.Y));
         }
 
+        void linkGlyph_Clicked(IGlyph glyph, Figure figure, DPoint pt)
+        {
+            if (figure.UserAttrs.ContainsKey(Links.Link) && figure.UserAttrs.ContainsKey(Links.LinkType))
+            {
+                string link = figure.UserAttrs[Links.Link];
+                LinkType linkType = Links.StringToLinkType(figure.UserAttrs[Links.LinkType]);
+                switch (linkType)
+                {
+                    case LinkType.WebPage:
+                        System.Diagnostics.Process.Start(link);
+                        break;
+                    case LinkType.File:
+                        if (File.Exists(link))
+                            System.Diagnostics.Process.Start(link);
+                        else
+                            MessageBox.Show(string.Format("Could not find file \"{0}\"", link), "File link error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        break;
+                    case LinkType.Page:
+                        int n = 0;
+                        int.TryParse(link, out n);
+                        if (n >= 0 && n < dem.EngineCount)
+                            previewBar1.SetPreviewSelected(dem.GetEngine(n));
+                        else
+                            MessageBox.Show(string.Format("Page \"{0}\" does not exist", n + 1), "Page link error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        break;
+                }
+            }
+        }
+
         void InitActions()
         {
             List<Figure> figs = de.SelectedFigures;
@@ -314,26 +349,40 @@ namespace WinFormsDemo
             actCut.Enabled = de.CanCopy(figs);
             actCopy.Enabled = de.CanCopy(figs);
             actDelete.Enabled = de.CanDelete(figs);
+            // update link action
+            actLink.Enabled = figs.Count == 1;
         }
 
-        void AddGlyphs(Figure fig)
+        void AddDefaultGlyphs(Figure fig)
         {
             // make sure fig.Glyphs is assigned
             if (fig.Glyphs == null)
-                fig.Glyphs = new List<GlyphPair>();
+                fig.Glyphs = new List<IGlyph>();
             // add context glyph if not already there
-            foreach (GlyphPair gp in fig.Glyphs)
-                if (gp.Glyph == contextGlyph)
+            foreach (IGlyph g in fig.Glyphs)
+                if (g == contextGlyph)
                     return;
-            GlyphPair contextGlyphPair = new GlyphPair(contextGlyph, DGlyphPosition.TopRight);
-            if (fig is LineSegmentbaseFigure) // if line segment then place context glyph at center
-                contextGlyphPair.Position = DGlyphPosition.Center;
-            fig.Glyphs.Add(contextGlyphPair);
+            fig.Glyphs.Add(contextGlyph);
+            CheckOptionalGlyphs(fig);
+        }
+
+        void CheckOptionalGlyphs(Figure fig)
+        {
+            if (fig.UserAttrs.ContainsKey("Link"))
+            {
+                if (!fig.Glyphs.Contains(linkGlyph))
+                    fig.Glyphs.Insert(0, linkGlyph);
+            }
+            else
+            {
+                if (fig.Glyphs.Contains(linkGlyph))
+                    fig.Glyphs.Remove(linkGlyph);
+            }
         }
 
         void de_AddedFigure(DEngine de, Figure fig)
         {
-            AddGlyphs(fig);
+            AddDefaultGlyphs(fig);
         }
 
         private void previewBar1_PreviewSelected(Preview p)
@@ -845,6 +894,64 @@ namespace WinFormsDemo
         private void actFloatingTools_Execute(object sender, EventArgs e)
         {
             ShowFloatingTools(false);
+        }
+
+        private void actLink_Execute(object sender, EventArgs e)
+        {
+            List<Figure> figs = de.SelectedFigures;
+            if (figs.Count == 1)
+            {
+                Figure f = figs[0];
+                LinkForm lf = new LinkForm();
+                lf.Engines = dem.GetEngines();
+                if (f.UserAttrs.ContainsKey(Links.LinkType) && f.UserAttrs.ContainsKey(Links.Link))
+                {
+                    lf.LinkType = Links.StringToLinkType(f.UserAttrs[Links.LinkType]);
+                    switch (lf.LinkType)
+                    {
+                        case LinkType.WebPage:
+                            lf.WebPage = f.UserAttrs[Links.Link];
+                            break;
+                        case LinkType.File:
+                            lf.File = f.UserAttrs[Links.Link];
+                            break;
+                        case LinkType.Page:
+                            int n = 0;
+                            int.TryParse(f.UserAttrs[Links.Link], out n);
+                            lf.Page = n;
+                            break;
+                    }
+                }
+                switch (lf.ShowDialog())
+                {
+                    case DialogResult.OK:
+                        de.UndoRedoStart("Change Link");
+                        f.UserAttrs[Links.LinkType] = lf.LinkType.ToString();
+                        switch (lf.LinkType)
+                        {
+                            case LinkType.WebPage:
+                                f.UserAttrs[Links.Link] = lf.WebPage;
+                                break;
+                            case LinkType.File:
+                                f.UserAttrs[Links.Link] = lf.File;
+                                break;
+                            case LinkType.Page:
+                                f.UserAttrs[Links.Link] = lf.Page.ToString();
+                                break;
+                        }
+                        de.UndoRedoCommit();
+                        CheckOptionalGlyphs(f);
+                        break;
+                    case DialogResult.Abort:
+                        de.UndoRedoStart("Remove Link");
+                        f.UserAttrs.Remove(Links.Link);
+                        f.UserAttrs.Remove(Links.LinkType);
+                        de.UndoRedoCommit();
+                        CheckOptionalGlyphs(f);
+                        break;
+                }
+                dvEditor.Update();
+            }
         }
 
         void ShowFloatingTools(bool floatingToolsAlone)

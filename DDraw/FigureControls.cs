@@ -102,19 +102,7 @@ namespace DDraw
         }
     }
 
-    public enum DGlyphPosition { TopRight, BottomLeft, Center };
-
-    public struct GlyphPair
-    {
-        public IGlyph Glyph;
-        public DGlyphPosition Position;
-
-        public GlyphPair(IGlyph glyph, DGlyphPosition pos)
-        {
-            Glyph = glyph;
-            Position = pos;
-        }
-    }
+    public enum DGlyphPosition { TopRight, BottomLeft, Center, CenterStack };
 
     public enum DGlyphVisiblity { Never, WhenFigureSelected, Always };
 
@@ -122,6 +110,14 @@ namespace DDraw
 
     public interface IGlyph
     {
+        DGlyphPosition Position
+        {
+            get;
+            set;
+        }
+
+        void CenterStack(int total, int index);
+
         DGlyphVisiblity Visiblility
         {
             get;
@@ -140,9 +136,9 @@ namespace DDraw
             get;
         }
 
-        void Paint(DGraphics dg, DGlyphPosition pos, DRect figureRect, double scale);
+        void Paint(DGraphics dg, DRect figureRect, double scale);
 
-        DHitTest HitTest(DPoint pt, DGlyphPosition pos, DRect figureRect, bool figureSelected, double scale);
+        DHitTest HitTest(DPoint pt, DRect figureRect, bool figureSelected, double scale);
 
         DCursor Cursor
         {
@@ -156,6 +152,31 @@ namespace DDraw
 
     public abstract class BasicGlyph : IGlyph
     {
+        DGlyphPosition pos = DGlyphPosition.TopRight;
+        public DGlyphPosition Position
+        {
+            get { return pos; }
+            set 
+            {
+                System.Diagnostics.Debug.Assert(value != DGlyphPosition.CenterStack, "Must use \"CenterStack\" method instead");
+                pos = value; 
+            }
+        }
+
+        protected int centerStackTotal;
+        protected int centerStackIndex;
+        public void CenterStack(int total, int index)
+        {
+            if (total == 1)
+                pos = DGlyphPosition.Center;
+            else
+            {
+                centerStackTotal = total;
+                centerStackIndex = index;
+                pos = DGlyphPosition.CenterStack;
+            }
+        }
+
         DGlyphVisiblity visiblility = DGlyphVisiblity.WhenFigureSelected;
         public DGlyphVisiblity Visiblility
         {
@@ -190,6 +211,12 @@ namespace DDraw
                     x = figureRect.Center.X - Width / 2 * scale;
                     y = figureRect.Center.Y - Height / 2 * scale;
                     break;
+                case DGlyphPosition.CenterStack:
+                    x = figureRect.Center.X - Width / 2 * scale;
+                    y = figureRect.Center.Y - Height / 2 * scale;
+                    double stackX = centerStackIndex * Width * scale;
+                    x += stackX;
+                    break;
             }
             return new DPoint(x, y);
         }
@@ -200,14 +227,14 @@ namespace DDraw
             return new DRect(pt.X, pt.Y, Width * scale, Height * scale);
         }
 
-        public abstract void Paint(DGraphics dg, DGlyphPosition pos, DRect figureRect, double scale);
+        public abstract void Paint(DGraphics dg, DRect figureRect, double scale);
 
         public bool IsVisible(bool figureSelected)
         {
             return visiblility == DGlyphVisiblity.Always || (visiblility == DGlyphVisiblity.WhenFigureSelected && figureSelected);
         }
 
-        public DHitTest HitTest(DPoint pt, DGlyphPosition pos, DRect figureRect, bool figureSelected, double scale)
+        public DHitTest HitTest(DPoint pt, DRect figureRect, bool figureSelected, double scale)
         {
             if (IsVisible(figureSelected))
             {
@@ -251,14 +278,15 @@ namespace DDraw
             set { bmp = value; }
         }
 
-        public BitmapGlyph(DBitmap bmp)
+        public BitmapGlyph(DBitmap bmp, DGlyphPosition pos)
         {
             this.bmp = bmp;
+            Position = pos;
         }
 
-        public override void Paint(DGraphics dg, DGlyphPosition pos, DRect figureRect, double scale)
+        public override void Paint(DGraphics dg, DRect figureRect, double scale)
         {
-            dg.DrawBitmap(bmp, GetRect(pos, figureRect, scale));
+            dg.DrawBitmap(bmp, GetRect(Position, figureRect, scale));
         }
     }
 }
