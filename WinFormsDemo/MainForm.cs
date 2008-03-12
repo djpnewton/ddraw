@@ -178,7 +178,13 @@ namespace WinFormsDemo
             if (cmdArguments.FloatingTools)
                 ShowFloatingTools(true);
             else
+            {
+                // if second unnamed cmd line argument is a file open it (first is this executable)
+                if (cmdArguments.UnnamedParamCount > 1 && File.Exists(cmdArguments[1]))
+                    OpenFile(cmdArguments[1]);
+                // show form
                 Show();
+            }
         }
 
         void ipc_MessageReceived(IpcMessage msg)
@@ -683,37 +689,40 @@ namespace WinFormsDemo
             UpdateTitleBar();
         }
 
+        void OpenFile(string fileName)
+        {
+            // start undo/redo
+            dem.UndoRedoStart("Open Document");
+            try
+            {
+                // load new engines
+                List<DEngine> engines = FileHelper.Load(fileName, dap, true);
+                dem.SetEngines(engines);
+                this.fileName = fileName;
+                // init new dengines
+                foreach (DEngine newDe in dem.GetEngines())
+                    InitDEngine(newDe);
+                // commit undo/redo
+                dem.UndoRedoCommit();
+                dem.Dirty = false;
+                // update vars
+                beenSaved = true;
+                UpdateTitleBar();
+            }
+            catch (Exception e)
+            {
+                dem.UndoRedoCancel();
+                MessageBox.Show(e.Message, "Error Reading File", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
         void Open()
         {
             OpenFileDialog ofd = new OpenFileDialog();
             ofd.DefaultExt = FileExt;
             ofd.Filter = FileTypeFilter;
             if (ofd.ShowDialog() == DialogResult.OK)
-            {
-                // start undo/redo
-                dem.UndoRedoStart("Open Document");
-                try
-                {
-                    // load new engines
-                    List<DEngine> engines = FileHelper.Load(ofd.FileName, dap, true);
-                    dem.SetEngines(engines);
-                    fileName = ofd.FileName;
-                    // init new dengines
-                    foreach (DEngine newDe in dem.GetEngines())
-                        InitDEngine(newDe);
-                    // commit undo/redo
-                    dem.UndoRedoCommit();
-                    dem.Dirty = false;
-                    // update vars
-                    beenSaved = true;
-                    UpdateTitleBar();
-                }
-                catch (Exception e)
-                {
-                    dem.UndoRedoCancel();
-                    MessageBox.Show(e.Message, "Error Reading File", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-            }
+                OpenFile(ofd.FileName);
         }
 
         void Save()
