@@ -130,8 +130,8 @@ namespace WinFormsDemo
             this.actSendBackward = new Burkovsky.Controls.Action();
             this.actBringForward = new Burkovsky.Controls.Action();
             this.actFloatingTools = new Burkovsky.Controls.Action();
-            this.actClonePage = new Burkovsky.Controls.Action();
             this.actLink = new Burkovsky.Controls.Action();
+            this.actClonePage = new Burkovsky.Controls.Action();
             this.toolStripContainer1.ContentPanel.SuspendLayout();
             this.toolStripContainer1.TopToolStripPanel.SuspendLayout();
             this.toolStripContainer1.SuspendLayout();
@@ -187,13 +187,16 @@ namespace WinFormsDemo
             // 
             // wfvcEditor
             // 
+            this.wfvcEditor.AllowDrop = true;
             this.wfvcEditor.Dock = System.Windows.Forms.DockStyle.Fill;
             this.wfvcEditor.Location = new System.Drawing.Point(0, 0);
             this.wfvcEditor.Name = "wfvcEditor";
             this.wfvcEditor.Size = new System.Drawing.Size(439, 219);
             this.wfvcEditor.TabIndex = 0;
+            this.wfvcEditor.DragDrop += new System.Windows.Forms.DragEventHandler(this.wfvcEditor_DragDrop);
             this.wfvcEditor.KeyUp += new System.Windows.Forms.KeyEventHandler(this.wfvcEditor_KeyUp);
             this.wfvcEditor.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.wfvcEditor_KeyPress);
+            this.wfvcEditor.DragEnter += new System.Windows.Forms.DragEventHandler(this.wfvcEditor_DragEnter);
             this.wfvcEditor.KeyDown += new System.Windows.Forms.KeyEventHandler(this.wfvcEditor_KeyDown);
             // 
             // previewBar1
@@ -665,7 +668,7 @@ namespace WinFormsDemo
             this.toolStripSeparator10,
             this.linkToolStripMenuItem});
             this.cmsFigure.Name = "cmsFigure";
-            this.cmsFigure.Size = new System.Drawing.Size(239, 264);
+            this.cmsFigure.Size = new System.Drawing.Size(239, 242);
             // 
             // cutToolStripMenuItem1
             // 
@@ -763,6 +766,7 @@ namespace WinFormsDemo
             // 
             this.actionListProvider1.SetAction(this.linkToolStripMenuItem, this.actLink);
             this.linkToolStripMenuItem.Name = "linkToolStripMenuItem";
+            this.linkToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.L)));
             this.linkToolStripMenuItem.Size = new System.Drawing.Size(238, 22);
             this.linkToolStripMenuItem.Text = "Link";
             // 
@@ -998,17 +1002,17 @@ namespace WinFormsDemo
             this.actFloatingTools.Text = "Floating Tools";
             this.actFloatingTools.Execute += new System.EventHandler(this.actFloatingTools_Execute);
             // 
-            // actClonePage
-            // 
-            this.actClonePage.ShortcutKeys = System.Windows.Forms.Keys.None;
-            this.actClonePage.Text = "Clone Page";
-            this.actClonePage.Execute += new System.EventHandler(this.actClonePage_Execute);
-            // 
             // actLink
             // 
             this.actLink.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.L)));
             this.actLink.Text = "Link";
             this.actLink.Execute += new System.EventHandler(this.actLink_Execute);
+            // 
+            // actClonePage
+            // 
+            this.actClonePage.ShortcutKeys = System.Windows.Forms.Keys.None;
+            this.actClonePage.Text = "Clone Page";
+            this.actClonePage.Execute += new System.EventHandler(this.actClonePage_Execute);
             // 
             // MainForm
             // 

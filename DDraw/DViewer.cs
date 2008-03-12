@@ -135,6 +135,12 @@ namespace DDraw
             pt = new DPoint(pt.X * scale, pt.Y * scale);
             return pt.Offset(-HortScroll + OffsetX, -VertScroll + OffsetY);
         }
+        public DPoint ClientToEngine(DPoint pt)
+        {
+            double x = pt.X + HortScroll - OffsetX;
+            double y = pt.Y + VertScroll - OffsetY;
+            return new DPoint(x / scale, y / scale);
+        }
 
         abstract protected int Width { get; }
         abstract protected int Height { get; }

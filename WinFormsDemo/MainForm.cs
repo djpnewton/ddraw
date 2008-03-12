@@ -622,29 +622,54 @@ namespace WinFormsDemo
             CopyToClipboard(data, (Bitmap)bmp.NativeBmp, figs);
         }
 
-        private void actPaste_Execute(object sender, EventArgs e)
+        void PasteDataObject(IDataObject iData, string opPrefix, double objX, double objY)
         {
-            CheckState();
-            IDataObject iData = Clipboard.GetDataObject();
             if (iData.GetDataPresent(FigureSerialize.DDRAW_FIGURE_XML))
                 de.PasteAsSelectedFigures((string)iData.GetData(FigureSerialize.DDRAW_FIGURE_XML));
             else if (iData.GetDataPresent(DataFormats.Text))
             {
-                de.UndoRedoStart("Paste Text");
-                TextFigure f = new TextFigure(new DPoint(10, 10), (string)iData.GetData(DataFormats.Text), 0);
+                de.UndoRedoStart(string.Format("{0} Text", opPrefix));
+                TextFigure f = new TextFigure(new DPoint(objX, objY), (string)iData.GetData(DataFormats.Text), 0);
                 dap.ApplyPropertiesToFigure(f);
                 de.PasteAsSelectedFigures(new List<Figure>(new Figure[] { f }));
                 de.UndoRedoCommit();
             }
             else if (iData.GetDataPresent(DataFormats.Bitmap))
             {
-                de.UndoRedoStart("Paste Bitmap");
+                de.UndoRedoStart(string.Format("{0} Bitmap", opPrefix));
                 Bitmap bmp = (Bitmap)iData.GetData(DataFormats.Bitmap, true);
                 byte[] imageData = WFHelper.ToImageData(bmp);
-                ImageFigure f = new ImageFigure(new DRect(10, 10, bmp.Width, bmp.Height), 0, imageData, "Clipboard.bmp");
+                ImageFigure f = new ImageFigure(new DRect(objX, objY, bmp.Width, bmp.Height), 0, imageData, "Clipboard.bmp");
                 de.PasteAsSelectedFigures(new List<Figure>(new Figure[] { f }));
                 de.UndoRedoCommit();
             }
+            else if (iData.GetDataPresent(DataFormats.FileDrop))
+            {
+                de.UndoRedoStart(string.Format("{0} File", opPrefix));
+                string path = ((string[])iData.GetData(DataFormats.FileDrop))[0];
+                if (IsImageFilePath(path))
+                {
+                    Bitmap bmp = (Bitmap)Bitmap.FromFile(path);
+                    ImageFigure f = new ImageFigure(new DRect(objX, objY, bmp.Width, bmp.Height), 0,
+                        WFHelper.ToImageData(bmp), path);
+                    de.PasteAsSelectedFigures(new List<Figure>(new Figure[] { f }));
+                }
+                else
+                {
+                    TextFigure f = new TextFigure(new DPoint(objX, objY), Path.GetFileName(path), 0);
+                    f.UserAttrs[Links.Link] = path;
+                    f.UserAttrs[Links.LinkType] = LinkType.File.ToString();
+                    dap.ApplyPropertiesToFigure(f);
+                    de.PasteAsSelectedFigures(new List<Figure>(new Figure[] { f }));
+                }
+                de.UndoRedoCommit();
+            }
+        }
+
+        private void actPaste_Execute(object sender, EventArgs e)
+        {
+            CheckState();
+            PasteDataObject(Clipboard.GetDataObject(), "Paste", 10, 10);
         }
 
         void DoDelete()
@@ -992,6 +1017,49 @@ namespace WinFormsDemo
             de.AddFigure(f);
             dvEditor.Update();
             de.UndoRedoCommit();
+        }
+
+        // wfvcEditor drag & drop
+
+        private void wfvcEditor_DragEnter(object sender, DragEventArgs e)
+        {
+            if ((e.AllowedEffect & DragDropEffects.Copy) == DragDropEffects.Copy)
+            {
+                if (e.Data.GetDataPresent(DataFormats.Text) || e.Data.GetDataPresent(DataFormats.Bitmap))
+                    e.Effect = DragDropEffects.Copy;
+            }
+            if ((e.AllowedEffect & DragDropEffects.Link)  == DragDropEffects.Link &&
+                e.Data.GetDataPresent(DataFormats.FileDrop))
+            {
+                string path = ((string[])e.Data.GetData(DataFormats.FileDrop))[0];
+                if (IsImageFilePath(path))
+                    e.Effect = DragDropEffects.Copy;
+                else
+                    e.Effect = DragDropEffects.Link;
+            }
+        }
+
+        bool IsImageFilePath(string path)
+        {
+            string ext = Path.GetExtension(path);
+            if (string.Compare(ext, ".png", true) == 0 ||
+                string.Compare(ext, ".gif", true) == 0 ||
+                string.Compare(ext, ".jpg", true) == 0 ||
+                string.Compare(ext, ".jpeg", true) == 0 ||
+                string.Compare(ext, ".bmp", true) == 0)
+                return true;
+            return false;
+        }
+
+        private void wfvcEditor_DragDrop(object sender, DragEventArgs e)
+        {
+            CheckState();
+            Point cpt = wfvcEditor.PointToClient(new Point(e.X, e.Y));
+            DPoint pt = dvEditor.ClientToEngine(new DPoint(cpt.X, cpt.Y));
+            if (e.Effect == DragDropEffects.Copy)
+                PasteDataObject(e.Data, "Copy", pt.X, pt.Y);
+            else if (e.Effect == DragDropEffects.Link)
+                PasteDataObject(e.Data, "Link", pt.X, pt.Y);
         }
     }
 }
