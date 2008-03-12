@@ -685,6 +685,21 @@ namespace DDraw
             hsm.ToTextEdit(tf);
         }
 
+        public void HsmMouseDown(DTkViewer dv, DMouseButton btn, DPoint pt)
+        {
+            hsm.Dispatch(new QMouseEvent((int)DHsmSignals.MouseDown, dv, btn, pt));
+        }
+
+        public void HsmMouseMove(DTkViewer dv, DMouseButton btn, DPoint pt)
+        {
+            hsm.Dispatch(new QMouseEvent((int)DHsmSignals.MouseMove, dv, btn, pt));
+        }
+
+        public void HsmMouseUp(DTkViewer dv, DMouseButton btn, DPoint pt)
+        {
+            hsm.Dispatch(new QMouseEvent((int)DHsmSignals.MouseUp, dv, btn, pt));
+        }
+
         public void ClearPage()
         {
             UndoRedoStart("Clear Page");

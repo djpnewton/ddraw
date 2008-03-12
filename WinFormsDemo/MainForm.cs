@@ -60,7 +60,7 @@ namespace WinFormsDemo
             // DEngine settings
             WorkBookUtils.SetupDEngine(de);
             // DEngine events
-            de.DebugMessage += new DebugMessageHandler(DebugMessage);
+            //de.DebugMessage += new DebugMessageHandler(DebugMessage);
             de.SelectedFiguresChanged += new SelectedFiguresHandler(de_SelectedFiguresChanged);
             de.ContextClick += new ContextClickHandler(de_ContextClick);
             de.DragFigureStart += new DragFigureHandler(de_DragFigureStart);
@@ -113,7 +113,7 @@ namespace WinFormsDemo
             // edit viewer
             dvEditor = new WFViewer(wfvcEditor);
             dvEditor.EditFigures = true;
-            dvEditor.DebugMessage += new DebugMessageHandler(DebugMessage);
+            //dvEditor.DebugMessage += new DebugMessageHandler(DebugMessage);
             // glyphs
             contextGlyph = new BitmapGlyph(new WFBitmap(Resource1.arrow), DGlyphPosition.TopRight);
             contextGlyph.Clicked += new GlyphClickedHandler(contextGlyph_Clicked);
@@ -139,6 +139,7 @@ namespace WinFormsDemo
             ActionCommandLine();
             // connect to ipc messages
             ipc.MessageReceived += new MessageReceivedHandler(ipc_MessageReceived);
+            ipc.TcpTwoTouchReceived += new TcpTwoTouchHandler(ipc_TcpTwoTouchReceived);
         }
 
         void ReadOptions()
@@ -178,7 +179,28 @@ namespace WinFormsDemo
             if (cmdArguments.FloatingTools)
                 ShowFloatingTools(true);
             else
+            {
                 Show();
+                if (cmdArguments.DoubleUp && !cmdArguments.DoubleUpDone)
+                {
+                    cmdArguments.DoubleUpDone = true;
+                    // position this form
+                    Text = "Number 0";
+                    Left = 0;
+                    Top = 0;
+                    Width = Screen.PrimaryScreen.WorkingArea.Width / 2;
+                    Height = Screen.PrimaryScreen.WorkingArea.Height;
+                    // new form
+                    MainForm f = new MainForm();
+                    f.Show();
+                    f.TwoTouchPointerNum = 1;
+                    f.Text = "Number 1";
+                    f.Left = Screen.PrimaryScreen.WorkingArea.Width / 2; ;
+                    f.Top = 0;
+                    f.Width = Screen.PrimaryScreen.WorkingArea.Width / 2;
+                    f.Height = Screen.PrimaryScreen.WorkingArea.Height;
+                }
+            }
         }
 
         void ipc_MessageReceived(IpcMessage msg)
@@ -199,6 +221,38 @@ namespace WinFormsDemo
                     case IpcMessage.FloatingTools:
                         ShowFloatingTools(false);
                         break;
+                }
+        }
+
+        public int TwoTouchPointerNum = 0;
+
+        void ipc_TcpTwoTouchReceived(int touchNum, TwoTouchCode code, float x, float y, int width)
+        {
+            if (InvokeRequired)
+                Invoke(new TcpTwoTouchHandler(ipc_TcpTwoTouchReceived), new object[] { touchNum, code, x, y, width });
+            else
+                if ((TwoTouchPointerNum == 0 && x <= 0.5) || (TwoTouchPointerNum == 1 && x >= 0.5))
+                {
+                    if (code == TwoTouchCode.Down)
+                        DebugMessage(string.Format("{0}, {1}, {2}", code, x, y));
+                    // Scale x/y to wfvcEditor and Dispatch events to DHsm
+                    Rectangle r = Screen.PrimaryScreen.Bounds;
+                    int mx = (int)(x * r.Width);
+                    int my = (int)(y * r.Height);
+                    Point pt = wfvcEditor.PointToClient(new Point(mx, my));
+                    DPoint dpt = new DPoint(pt.X, pt.Y);
+                    switch (code)
+                    {
+                        case TwoTouchCode.Down:
+                            de.HsmMouseDown(dvEditor, DMouseButton.Left, dpt);
+                            break;
+                        case TwoTouchCode.Move:
+                            de.HsmMouseMove(dvEditor, DMouseButton.NotApplicable, dpt);
+                            break;
+                        case TwoTouchCode.Up:
+                            de.HsmMouseUp(dvEditor, DMouseButton.Left, dpt);
+                            break;
+                    }
                 }
         }
 

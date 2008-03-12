@@ -126,5 +126,12 @@ namespace WinFormsDemo
         {
             get { return HasParam("floatingtools"); }
         }
+
+        public bool DoubleUp
+        {
+            get { return HasParam("doubleup"); }
+        }
+
+        public bool DoubleUpDone = false;
     }
 }

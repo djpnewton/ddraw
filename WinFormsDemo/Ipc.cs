@@ -6,6 +6,7 @@ using System.Security.AccessControl;
 using System.Runtime.Remoting;
 using System.Runtime.Remoting.Channels;
 using System.Runtime.Remoting.Channels.Ipc;
+using System.Net.Sockets;
 
 namespace WinFormsDemo
 {
@@ -37,6 +38,9 @@ namespace WinFormsDemo
         }
     }
 
+    public enum TwoTouchCode { Down = 1, Move = 2, Up = 3 };
+    public delegate void TcpTwoTouchHandler(int touchNum, TwoTouchCode code, float x, float y, int width);
+
     public class Ipc : MarshalByRefObject
     {
         static Ipc ipc = null;
@@ -54,7 +58,10 @@ namespace WinFormsDemo
         {
             CreateMutex();
             if (!mutexUnauthorized)
+            {
                 CreateIpcServerChannel();
+                CreateTcpSocketServer();
+            }
             else
                 CreateIpcClientChannel();
         }
@@ -188,6 +195,47 @@ namespace WinFormsDemo
                 service.SendMessage(msg);
                 int n = service.GetCount();
                 Console.WriteLine("The remote object has been called {0} times.", n);
+            }
+        }
+
+        // TCP Socket stuff /////////////////////////////////////
+
+        public event TcpTwoTouchHandler TcpTwoTouchReceived;
+
+        void CreateTcpSocketServer()
+        {
+            Socket listener = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            System.Net.EndPoint ep = new System.Net.IPEndPoint(System.Net.IPAddress.Parse("127.0.0.1"), 10997);
+            listener.Bind(ep);
+            listener.Listen(1000);
+            listener.BeginAccept(new AsyncCallback(SocketAccepted), listener);
+        }
+
+        void SocketAccepted(IAsyncResult ar)
+        {
+            if (TcpTwoTouchReceived != null)
+            {
+                Socket listener = (Socket)ar.AsyncState;
+                Socket handler = listener.EndAccept(ar);
+                byte[] buf = new byte[100];
+                int n = handler.Receive(buf);
+                string stringTransferred = Encoding.ASCII.GetString(buf, 0, n);
+                string[] parts = stringTransferred.Split('|');
+                if (parts.Length == 5)
+                {
+                    try
+                    {
+                        int touchNum = int.Parse(parts[0]);
+                        int code = int.Parse(parts[1]);
+                        float x = float.Parse(parts[2]);
+                        float y = float.Parse(parts[3]);
+                        int width = int.Parse(parts[4]);
+                        TcpTwoTouchReceived(touchNum, (TwoTouchCode)code, x, y, width);
+                    }
+                    catch
+                    { }
+                }
+                listener.BeginAccept(new AsyncCallback(SocketAccepted), listener);
             }
         }
     }
