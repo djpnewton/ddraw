@@ -41,7 +41,7 @@ namespace WinFormsDemo
                         ((ScrollableControl)Parent).ScrollControlIntoView(this);
                 }
                 else
-                    viewerHolder.BackColor = Color.Empty;
+                    viewerHolder.BackColor = Color.LightGray;
             }
         }
 

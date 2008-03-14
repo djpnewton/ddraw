@@ -107,6 +107,7 @@ namespace WinFormsDemo
             // DEngine Manager
             dem = new DEngineManager();
             dem.UndoRedoChanged += new EventHandler(dem_UndoRedoChanged);
+            attachmentView1.EngineManager = dem;
             // create author properties
             dap = DAuthorProperties.GlobalAP;
             dap.SetProperties(DColor.Blue, DColor.Red, 3, DStrokeStyle.Solid, DMarker.None, DMarker.None, 1, "Arial", false, false, false, false);
@@ -267,6 +268,9 @@ namespace WinFormsDemo
                 // check if UserAttrs have changed and update glyphs
                 foreach (Figure f in de.Figures)
                     CheckOptionalGlyphs(f);
+            // check if attachments have changed
+            attachmentView1.UpdateAttachmentView();
+            // update previews dirty states
             previewBar1.UpdatePreviewsDirtyProps();
         }
 
@@ -330,6 +334,9 @@ namespace WinFormsDemo
                             previewBar1.SetPreviewSelected(dem.GetEngine(n));
                         else
                             MessageBox.Show(string.Format("Page \"{0}\" does not exist", n + 1), "Page link error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        break;
+                    case LinkType.Attachment:
+                        attachmentView1.ExecuteAttachment(link);
                         break;
                 }
             }
@@ -444,6 +451,19 @@ namespace WinFormsDemo
                 de.AddFigure(new ImageFigure(new DRect(10, 10, bmp.Width, bmp.Height), 0, imageData, ofd.FileName));
 				de.UndoRedoCommit();
                 de.UpdateViewers();
+            }
+        }
+
+        private void attachmentToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog ofd = new OpenFileDialog();
+            ofd.Filter = "All Files|*.*";
+            if (ofd.ShowDialog() == DialogResult.OK)
+            {
+                dem.UndoRedoStart("Add Attachment");
+                if (attachmentView1.CheckAttachmentExists(ofd.FileName))
+                    attachmentView1.AddAttachment(ofd.FileName);
+                dem.UndoRedoCommit();
             }
         }
 
@@ -654,13 +674,39 @@ namespace WinFormsDemo
                         WFHelper.ToImageData(bmp), path);
                     de.PasteAsSelectedFigures(new List<Figure>(new Figure[] { f }));
                 }
-                else
+                else if (attachmentView1.CheckAttachmentExists(path))
                 {
                     TextFigure f = new TextFigure(new DPoint(objX, objY), Path.GetFileName(path), 0);
-                    f.UserAttrs[Links.Link] = path;
-                    f.UserAttrs[Links.LinkType] = LinkType.File.ToString();
+                    f.UserAttrs[Links.Link] = attachmentView1.AddAttachment(path);
+                    f.UserAttrs[Links.LinkType] = LinkType.Attachment.ToString();
                     dap.ApplyPropertiesToFigure(f);
                     de.PasteAsSelectedFigures(new List<Figure>(new Figure[] { f }));
+                }
+                de.UndoRedoCommit();
+            }
+            else if (iData.GetDataPresent(attachmentView1.GetType()))
+            {
+                de.UndoRedoStart(string.Format("{0} Attachment", opPrefix));
+                foreach (ListViewItem item in attachmentView1.SelectedItems)
+                {
+                    if (IsImageFilePath(item.Text))
+                    {
+                        using (MemoryStream ms = new MemoryStream(attachmentView1.GetAttachment(item.Text)))
+                        {
+                            Bitmap bmp = (Bitmap)Bitmap.FromStream(ms);
+                            ImageFigure f = new ImageFigure(new DRect(objX, objY, bmp.Width, bmp.Height), 0,
+                                WFHelper.ToImageData(bmp), item.Text);
+                            de.PasteAsSelectedFigures(new List<Figure>(new Figure[] { f }));
+                        }
+                    }
+                    else
+                    {
+                        TextFigure f = new TextFigure(new DPoint(objX, objY), item.Text, 0);
+                        f.UserAttrs[Links.Link] = item.Text;
+                        f.UserAttrs[Links.LinkType] = LinkType.Attachment.ToString();
+                        dap.ApplyPropertiesToFigure(f);
+                        de.PasteAsSelectedFigures(new List<Figure>(new Figure[] { f }));
+                    }
                 }
                 de.UndoRedoCommit();
             }
@@ -672,11 +718,25 @@ namespace WinFormsDemo
             PasteDataObject(Clipboard.GetDataObject(), "Paste", 10, 10);
         }
 
+        bool AttachmentLinked(string name)
+        {
+            foreach (DEngine de in dem.GetEngines())
+                foreach (Figure f in de.Figures)
+                {
+                    if (f.UserAttrs.ContainsKey(Links.Link) && f.UserAttrs.ContainsKey(Links.LinkType))
+                    {
+                        if (f.UserAttrs[Links.LinkType] == LinkType.Attachment.ToString() && f.UserAttrs[Links.Link] == name)
+                            return true;
+                    }
+                }
+            return false;
+        }
+
         void DoDelete()
         {
             if (wfvcEditor.Focused)
                 de.Delete(de.SelectedFigures);
-            else 
+            else if (previewBar1.Focused)
             {
                 CheckState();
                 dem.UndoRedoStart("Delete Page");
@@ -684,6 +744,22 @@ namespace WinFormsDemo
                 if (dem.EngineCount == 0)
                     CreateDEngine(de);
                 dem.UndoRedoCommit();
+            }
+            else if (attachmentView1.Focused)
+            {
+                foreach (ListViewItem item in attachmentView1.SelectedItems)
+                    if (AttachmentLinked(item.Text))
+                    {
+                        if (MessageBox.Show("One of the attachments is linked by a figure. Are you sure you want to delete it?",
+                            "Attachment is Linked", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
+                            break;
+                        else
+                            return;
+                    }
+                dem.UndoRedoStart("Delete Attachments");
+                foreach (ListViewItem item in attachmentView1.SelectedItems)
+                    attachmentView1.RemoveAttachment(item);
+                dem.UndoRedoCommit();                
             }
         }
 
@@ -708,6 +784,7 @@ namespace WinFormsDemo
             dem.UndoRedoStart("New Document");
             dem.Clear();
             CreateDEngine(null);
+            attachmentView1.ClearAttachments();
             dem.UndoRedoCommit();
             dem.Dirty = false;
 
@@ -721,12 +798,20 @@ namespace WinFormsDemo
             try
             {
                 // load new engines
-                List<DEngine> engines = FileHelper.Load(fileName, dap, true);
+                Dictionary<string, byte[]> extraEntries;
+                List<DEngine> engines = FileHelper.Load(fileName, dap, true,
+                    new string[] { AttachmentView.ATTACHMENTS_DIR }, out extraEntries);
                 dem.SetEngines(engines);
                 this.fileName = fileName;
                 // init new dengines
                 foreach (DEngine newDe in dem.GetEngines())
                     InitDEngine(newDe);
+                // set attachments
+                attachmentView1.ClearAttachments();
+                if (extraEntries != null)
+                    foreach (string name in extraEntries.Keys)
+                        if (name.IndexOf(AttachmentView.ATTACHMENTS_DIR) == 0)
+                            attachmentView1.AddAttachment(Path.GetFileName(name), extraEntries[name]);
                 // commit undo/redo
                 dem.UndoRedoCommit();
                 dem.Dirty = false;
@@ -754,7 +839,13 @@ namespace WinFormsDemo
         {
             try
             {
-                FileHelper.Save(fileName, dem.GetEngines());
+                // make extra enties dict (from attachments)
+                Dictionary<string, byte[]> extraEntries = new Dictionary<string, byte[]>();
+                foreach (string name in attachmentView1.GetAttachmentNames())
+                    extraEntries.Add(AttachmentView.ATTACHMENTS_DIR + Path.DirectorySeparatorChar + name,
+                        attachmentView1.GetAttachment(name));
+                // save
+                FileHelper.Save(fileName, dem.GetEngines(), extraEntries);
                 dem.Dirty = false;
                 beenSaved = true;
                 UpdateTitleBar();
@@ -938,6 +1029,7 @@ namespace WinFormsDemo
                 Figure f = figs[0];
                 LinkForm lf = new LinkForm();
                 lf.Engines = dem.GetEngines();
+                lf.Attachments = attachmentView1.GetAttachmentNames();
                 if (f.UserAttrs.ContainsKey(Links.LinkType) && f.UserAttrs.ContainsKey(Links.Link))
                 {
                     lf.LinkType = Links.StringToLinkType(f.UserAttrs[Links.LinkType]);
@@ -948,11 +1040,15 @@ namespace WinFormsDemo
                             break;
                         case LinkType.File:
                             lf.File = f.UserAttrs[Links.Link];
+                            lf.CopyFileToAttachments = false;
                             break;
                         case LinkType.Page:
                             int n = 0;
                             int.TryParse(f.UserAttrs[Links.Link], out n);
                             lf.Page = n;
+                            break;
+                        case LinkType.Attachment:
+                            lf.Attachment = f.UserAttrs[Links.Link];
                             break;
                     }
                 }
@@ -967,11 +1063,27 @@ namespace WinFormsDemo
                                 f.UserAttrs[Links.Link] = lf.WebPage;
                                 break;
                             case LinkType.File:
-                                f.UserAttrs[Links.Link] = lf.File;
+                                if (lf.CopyFileToAttachments && attachmentView1.CheckAttachmentExists(lf.File))
+                                {
+                                    f.UserAttrs[Links.LinkType] = LinkType.Attachment.ToString();
+                                    string name = attachmentView1.AddAttachment(lf.File);
+                                    f.UserAttrs[Links.Link] = name;
+                                }
+                                else
+                                    f.UserAttrs[Links.Link] = lf.File;
                                 break;
                             case LinkType.Page:
                                 f.UserAttrs[Links.Link] = lf.Page.ToString();
                                 break;
+                            case LinkType.Attachment:
+                                f.UserAttrs[Links.Link] = lf.Attachment;
+                                break;
+                        }
+                        // remove dead enties
+                        if (f.UserAttrs[Links.Link] == null || f.UserAttrs[Links.Link].Length == 0)
+                        {
+                            f.UserAttrs.Remove(Links.Link);
+                            f.UserAttrs.Remove(Links.LinkType);
                         }
                         de.UndoRedoCommit();
                         CheckOptionalGlyphs(f);
@@ -984,6 +1096,7 @@ namespace WinFormsDemo
                         CheckOptionalGlyphs(f);
                         break;
                 }
+                // update editor view
                 dvEditor.Update();
             }
         }
@@ -1025,17 +1138,9 @@ namespace WinFormsDemo
         {
             if ((e.AllowedEffect & DragDropEffects.Copy) == DragDropEffects.Copy)
             {
-                if (e.Data.GetDataPresent(DataFormats.Text) || e.Data.GetDataPresent(DataFormats.Bitmap))
+                if (e.Data.GetDataPresent(DataFormats.Text) || e.Data.GetDataPresent(DataFormats.Bitmap) ||
+                    e.Data.GetDataPresent(DataFormats.FileDrop) || e.Data.GetDataPresent(attachmentView1.GetType()))
                     e.Effect = DragDropEffects.Copy;
-            }
-            if ((e.AllowedEffect & DragDropEffects.Link)  == DragDropEffects.Link &&
-                e.Data.GetDataPresent(DataFormats.FileDrop))
-            {
-                string path = ((string[])e.Data.GetData(DataFormats.FileDrop))[0];
-                if (IsImageFilePath(path))
-                    e.Effect = DragDropEffects.Copy;
-                else
-                    e.Effect = DragDropEffects.Link;
             }
         }
 
@@ -1056,10 +1161,7 @@ namespace WinFormsDemo
             CheckState();
             Point cpt = wfvcEditor.PointToClient(new Point(e.X, e.Y));
             DPoint pt = dvEditor.ClientToEngine(new DPoint(cpt.X, cpt.Y));
-            if (e.Effect == DragDropEffects.Copy)
-                PasteDataObject(e.Data, "Copy", pt.X, pt.Y);
-            else if (e.Effect == DragDropEffects.Link)
-                PasteDataObject(e.Data, "Link", pt.X, pt.Y);
+            PasteDataObject(e.Data, "Copy", pt.X, pt.Y);
         }
     }
 }

@@ -21,7 +21,9 @@ namespace WinFormsDemo
                     return LinkType.WebPage;
                 if (rbFile.Checked)
                     return LinkType.File;
-                return LinkType.Page;
+                if (rbPage.Checked)
+                    return LinkType.Page;
+                return LinkType.Attachment;
             }
             set
             {
@@ -35,6 +37,9 @@ namespace WinFormsDemo
                         break;
                     case LinkType.Page:
                         rbPage.Checked = true;
+                        break;
+                    case LinkType.Attachment:
+                        rbAttachment.Checked = true;
                         break;
                 }
             }
@@ -52,6 +57,12 @@ namespace WinFormsDemo
             set { tbFile.Text = value; }
         }
 
+        public bool CopyFileToAttachments
+        {
+            get { return cbCopyFileToAttachments.Checked; }
+            set { cbCopyFileToAttachments.Checked = value; }
+        }
+
         public int Page
         {
             get { return lbPages.SelectedIndex; }
@@ -60,6 +71,17 @@ namespace WinFormsDemo
                 if (value >= 0 && value < lbPages.Items.Count)
                     lbPages.SelectedIndex = value; 
             }
+        }
+
+        public string Attachment
+        {
+            get
+            {
+                if (lbAttachments.SelectedIndex != -1)
+                    return (string)lbAttachments.Items[lbAttachments.SelectedIndex];
+                return null;
+            }
+            set { lbAttachments.SelectedItem = value; }
         }
 
         List<DEngine> engines;
@@ -75,6 +97,23 @@ namespace WinFormsDemo
                     for (int i = 1; i <= engines.Count; i++)
                         lbPages.Items.Add(i);
                     lbPages.SelectedIndex = 0;
+                }
+            }
+        }
+
+        List<string> attachments;
+        public List<string> Attachments
+        {
+            get { return attachments; }
+            set
+            {
+                attachments = value;
+                lbAttachments.Items.Clear();
+                if (attachments.Count > 0)
+                {
+                    foreach (string s in attachments)
+                        lbAttachments.Items.Add(s);
+                    lbAttachments.SelectedIndex = 0;
                 }
             }
         }
@@ -95,6 +134,8 @@ namespace WinFormsDemo
                 pnlFile.BringToFront();
             if (rbPage.Checked)
                 pnlPage.BringToFront();
+            if (rbAttachment.Checked)
+                pnlAttachment.BringToFront();
         }
 
         private void btnBrowse_Click(object sender, EventArgs e)
@@ -118,7 +159,7 @@ namespace WinFormsDemo
         }
     }
 
-    public enum LinkType { WebPage, File, Page };
+    public enum LinkType { WebPage, File, Attachment, Page };
 
     public static class Links
     {

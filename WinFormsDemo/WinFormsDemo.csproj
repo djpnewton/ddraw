@@ -60,6 +60,9 @@
       <DependentUpon>ActionListProvider.cs</DependentUpon>
     </Compile>
     <Compile Include="Arguments.cs" />
+    <Compile Include="Attachments.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="BackgroundForm.cs">
       <SubType>Form</SubType>
     </Compile>

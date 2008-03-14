@@ -29,6 +29,7 @@ namespace WinFormsDemo
         private void InitializeComponent()
         {
             this.gbLinkType = new System.Windows.Forms.GroupBox();
+            this.rbAttachment = new System.Windows.Forms.RadioButton();
             this.rbPage = new System.Windows.Forms.RadioButton();
             this.rbFile = new System.Windows.Forms.RadioButton();
             this.rbWebPage = new System.Windows.Forms.RadioButton();
@@ -36,34 +37,52 @@ namespace WinFormsDemo
             this.tbAddress = new System.Windows.Forms.TextBox();
             this.lbAddress = new System.Windows.Forms.Label();
             this.pnlFile = new System.Windows.Forms.Panel();
+            this.cbCopyFileToAttachments = new System.Windows.Forms.CheckBox();
             this.btnBrowse = new System.Windows.Forms.Button();
             this.tbFile = new System.Windows.Forms.TextBox();
             this.lbFile = new System.Windows.Forms.Label();
             this.pnlPage = new System.Windows.Forms.Panel();
+            this.wfViewerControl1 = new DDraw.WinForms.WFViewerControl();
             this.lbPages = new System.Windows.Forms.ListBox();
             this.lbPage = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
             this.btnOk = new System.Windows.Forms.Button();
             this.btnCancel = new System.Windows.Forms.Button();
             this.btnClear = new System.Windows.Forms.Button();
-            this.wfViewerControl1 = new DDraw.WinForms.WFViewerControl();
+            this.pnlAttachment = new System.Windows.Forms.Panel();
+            this.lbAttachments = new System.Windows.Forms.ListBox();
+            this.lbAttachment = new System.Windows.Forms.Label();
             this.gbLinkType.SuspendLayout();
             this.pnlWebPage.SuspendLayout();
             this.pnlFile.SuspendLayout();
             this.pnlPage.SuspendLayout();
+            this.pnlAttachment.SuspendLayout();
             this.SuspendLayout();
             // 
             // gbLinkType
             // 
+            this.gbLinkType.Controls.Add(this.rbAttachment);
             this.gbLinkType.Controls.Add(this.rbPage);
             this.gbLinkType.Controls.Add(this.rbFile);
             this.gbLinkType.Controls.Add(this.rbWebPage);
             this.gbLinkType.Location = new System.Drawing.Point(12, 12);
             this.gbLinkType.Name = "gbLinkType";
-            this.gbLinkType.Size = new System.Drawing.Size(268, 90);
+            this.gbLinkType.Size = new System.Drawing.Size(268, 113);
             this.gbLinkType.TabIndex = 0;
             this.gbLinkType.TabStop = false;
             this.gbLinkType.Text = "Link Type";
+            // 
+            // rbAttachment
+            // 
+            this.rbAttachment.AutoSize = true;
+            this.rbAttachment.Location = new System.Drawing.Point(6, 88);
+            this.rbAttachment.Name = "rbAttachment";
+            this.rbAttachment.Size = new System.Drawing.Size(79, 17);
+            this.rbAttachment.TabIndex = 4;
+            this.rbAttachment.TabStop = true;
+            this.rbAttachment.Text = "Attachment";
+            this.rbAttachment.UseVisualStyleBackColor = true;
+            this.rbAttachment.CheckedChanged += new System.EventHandler(this.LinkType_Changed);
             // 
             // rbPage
             // 
@@ -105,7 +124,7 @@ namespace WinFormsDemo
             // 
             this.pnlWebPage.Controls.Add(this.tbAddress);
             this.pnlWebPage.Controls.Add(this.lbAddress);
-            this.pnlWebPage.Location = new System.Drawing.Point(12, 108);
+            this.pnlWebPage.Location = new System.Drawing.Point(12, 131);
             this.pnlWebPage.Name = "pnlWebPage";
             this.pnlWebPage.Size = new System.Drawing.Size(268, 102);
             this.pnlWebPage.TabIndex = 1;
@@ -128,13 +147,26 @@ namespace WinFormsDemo
             // 
             // pnlFile
             // 
+            this.pnlFile.Controls.Add(this.cbCopyFileToAttachments);
             this.pnlFile.Controls.Add(this.btnBrowse);
             this.pnlFile.Controls.Add(this.tbFile);
             this.pnlFile.Controls.Add(this.lbFile);
-            this.pnlFile.Location = new System.Drawing.Point(12, 108);
+            this.pnlFile.Location = new System.Drawing.Point(12, 131);
             this.pnlFile.Name = "pnlFile";
             this.pnlFile.Size = new System.Drawing.Size(268, 102);
             this.pnlFile.TabIndex = 2;
+            // 
+            // cbCopyFileToAttachments
+            // 
+            this.cbCopyFileToAttachments.AutoSize = true;
+            this.cbCopyFileToAttachments.Checked = true;
+            this.cbCopyFileToAttachments.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.cbCopyFileToAttachments.Location = new System.Drawing.Point(6, 48);
+            this.cbCopyFileToAttachments.Name = "cbCopyFileToAttachments";
+            this.cbCopyFileToAttachments.Size = new System.Drawing.Size(143, 17);
+            this.cbCopyFileToAttachments.TabIndex = 3;
+            this.cbCopyFileToAttachments.Text = "Copy File to Attachments";
+            this.cbCopyFileToAttachments.UseVisualStyleBackColor = true;
             // 
             // btnBrowse
             // 
@@ -167,10 +199,17 @@ namespace WinFormsDemo
             this.pnlPage.Controls.Add(this.wfViewerControl1);
             this.pnlPage.Controls.Add(this.lbPages);
             this.pnlPage.Controls.Add(this.lbPage);
-            this.pnlPage.Location = new System.Drawing.Point(12, 108);
+            this.pnlPage.Location = new System.Drawing.Point(12, 131);
             this.pnlPage.Name = "pnlPage";
             this.pnlPage.Size = new System.Drawing.Size(268, 102);
             this.pnlPage.TabIndex = 2;
+            // 
+            // wfViewerControl1
+            // 
+            this.wfViewerControl1.Location = new System.Drawing.Point(138, 23);
+            this.wfViewerControl1.Name = "wfViewerControl1";
+            this.wfViewerControl1.Size = new System.Drawing.Size(126, 69);
+            this.wfViewerControl1.TabIndex = 2;
             // 
             // lbPages
             // 
@@ -193,7 +232,7 @@ namespace WinFormsDemo
             // panel1
             // 
             this.panel1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.panel1.Location = new System.Drawing.Point(12, 216);
+            this.panel1.Location = new System.Drawing.Point(12, 239);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(268, 4);
             this.panel1.TabIndex = 3;
@@ -201,7 +240,7 @@ namespace WinFormsDemo
             // btnOk
             // 
             this.btnOk.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.btnOk.Location = new System.Drawing.Point(124, 226);
+            this.btnOk.Location = new System.Drawing.Point(124, 249);
             this.btnOk.Name = "btnOk";
             this.btnOk.Size = new System.Drawing.Size(75, 23);
             this.btnOk.TabIndex = 4;
@@ -211,7 +250,7 @@ namespace WinFormsDemo
             // btnCancel
             // 
             this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.btnCancel.Location = new System.Drawing.Point(205, 226);
+            this.btnCancel.Location = new System.Drawing.Point(205, 249);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(75, 23);
             this.btnCancel.TabIndex = 5;
@@ -221,19 +260,38 @@ namespace WinFormsDemo
             // btnClear
             // 
             this.btnClear.DialogResult = System.Windows.Forms.DialogResult.Abort;
-            this.btnClear.Location = new System.Drawing.Point(12, 226);
+            this.btnClear.Location = new System.Drawing.Point(12, 249);
             this.btnClear.Name = "btnClear";
             this.btnClear.Size = new System.Drawing.Size(82, 23);
             this.btnClear.TabIndex = 6;
             this.btnClear.Text = "Remove Link";
             this.btnClear.UseVisualStyleBackColor = true;
             // 
-            // wfViewerControl1
+            // pnlAttachment
             // 
-            this.wfViewerControl1.Location = new System.Drawing.Point(138, 23);
-            this.wfViewerControl1.Name = "wfViewerControl1";
-            this.wfViewerControl1.Size = new System.Drawing.Size(126, 69);
-            this.wfViewerControl1.TabIndex = 2;
+            this.pnlAttachment.Controls.Add(this.lbAttachments);
+            this.pnlAttachment.Controls.Add(this.lbAttachment);
+            this.pnlAttachment.Location = new System.Drawing.Point(12, 131);
+            this.pnlAttachment.Name = "pnlAttachment";
+            this.pnlAttachment.Size = new System.Drawing.Size(268, 102);
+            this.pnlAttachment.TabIndex = 3;
+            // 
+            // lbAttachments
+            // 
+            this.lbAttachments.FormattingEnabled = true;
+            this.lbAttachments.Location = new System.Drawing.Point(6, 23);
+            this.lbAttachments.Name = "lbAttachments";
+            this.lbAttachments.Size = new System.Drawing.Size(258, 69);
+            this.lbAttachments.TabIndex = 1;
+            // 
+            // lbAttachment
+            // 
+            this.lbAttachment.AutoSize = true;
+            this.lbAttachment.Location = new System.Drawing.Point(3, 6);
+            this.lbAttachment.Name = "lbAttachment";
+            this.lbAttachment.Size = new System.Drawing.Size(64, 13);
+            this.lbAttachment.TabIndex = 0;
+            this.lbAttachment.Text = "Attachment:";
             // 
             // LinkForm
             // 
@@ -241,15 +299,16 @@ namespace WinFormsDemo
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btnCancel;
-            this.ClientSize = new System.Drawing.Size(292, 258);
+            this.ClientSize = new System.Drawing.Size(292, 287);
             this.Controls.Add(this.btnClear);
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.btnOk);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.gbLinkType);
+            this.Controls.Add(this.pnlFile);
+            this.Controls.Add(this.pnlAttachment);
             this.Controls.Add(this.pnlPage);
             this.Controls.Add(this.pnlWebPage);
-            this.Controls.Add(this.pnlFile);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
@@ -264,6 +323,8 @@ namespace WinFormsDemo
             this.pnlFile.PerformLayout();
             this.pnlPage.ResumeLayout(false);
             this.pnlPage.PerformLayout();
+            this.pnlAttachment.ResumeLayout(false);
+            this.pnlAttachment.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -288,6 +349,11 @@ namespace WinFormsDemo
         private System.Windows.Forms.Button btnOk;
         private System.Windows.Forms.Button btnCancel;
         private System.Windows.Forms.Button btnClear;
+        private System.Windows.Forms.RadioButton rbAttachment;
         private DDraw.WinForms.WFViewerControl wfViewerControl1;
+        private System.Windows.Forms.Panel pnlAttachment;
+        private System.Windows.Forms.ListBox lbAttachments;
+        private System.Windows.Forms.Label lbAttachment;
+        private System.Windows.Forms.CheckBox cbCopyFileToAttachments;
     }
 }

@@ -190,7 +190,7 @@ namespace DDraw
             wr.WriteEndElement();
         }
 
-        private static bool BytesSame(byte[] a1, byte[] a2)
+        public static bool BytesSame(byte[] a1, byte[] a2)
         {
             if (a1.Length != a2.Length)
                 return false;

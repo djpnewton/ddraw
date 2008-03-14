@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using System.IO;
@@ -26,7 +27,7 @@ namespace DDraw
             zipOut.Write(data, 0, data.Length);
         }
 
-        public static void Save(string fileName, List<DEngine> engines)
+        public static void Save(string fileName, List<DEngine> engines, Dictionary<string, byte[]> extraEntries)
         {
             System.Text.ASCIIEncoding encoding = new System.Text.ASCIIEncoding();
             using (ZipOutputStream zipOut = new ZipOutputStream(File.Create(fileName)))
@@ -53,6 +54,10 @@ namespace DDraw
                 foreach (KeyValuePair<string, byte[]> kvp in images)
                     if (kvp.Key != null && kvp.Key.Length > 0)
                         Write(zipOut, IMAGES_DIR + Path.DirectorySeparatorChar + Path.GetFileName(kvp.Key), kvp.Value);
+                // write extra entries
+                if (extraEntries != null)
+                    foreach (string name in extraEntries.Keys)
+                        Write(zipOut, name, extraEntries[name]);
                 // write pages ini
                 Write(zipOut, PAGES_INI, encoding.GetBytes(source.ToString()));
             }
@@ -79,7 +84,7 @@ namespace DDraw
                 return null;
         }
 
-        public static List<DEngine> Load(string fileName, DAuthorProperties dap, bool usingEngineManager)
+        public static List<DEngine> Load(string fileName, DAuthorProperties dap, bool usingEngineManager, string[] extraEntryDirs, out Dictionary<string, byte[]> extraEntries)
         {
             System.Text.ASCIIEncoding encoding = new System.Text.ASCIIEncoding();
             List<DEngine> res = new List<DEngine>();
@@ -141,7 +146,27 @@ namespace DDraw
                     // add to list of DEngines
                     res.Add(de);
                 }
+                // read extra entries
+                if (extraEntryDirs != null)
+                {
+                    extraEntries = new Dictionary<string, byte[]>();
+                    foreach (string dir in extraEntryDirs)
+                    {
+                        IEnumerator en = zf.GetEnumerator();
+                        en.Reset();
+                        while (en.MoveNext())
+                        {
+                            ZipEntry entry = (ZipEntry)en.Current;
+                            if (entry.Name.IndexOf(dir) == 0)
+                                extraEntries.Add(entry.Name, Read(zf, entry.Name));
+                        }
+                    }
+                }
+                else
+                    extraEntries = null;
             }
+            else
+                extraEntries = null;
             return res;
         }
 
