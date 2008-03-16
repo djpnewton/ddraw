@@ -56,7 +56,7 @@ namespace WinFormsDemo
             this.clearPageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripContainer1 = new System.Windows.Forms.ToolStripContainer();
             this.pnlMain = new System.Windows.Forms.Panel();
-            this.pnlViewer = new System.Windows.Forms.Panel();
+            this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.wfvcEditor = new DDraw.WinForms.WFViewerControl();
             this.tcSidebar = new System.Windows.Forms.TabControl();
             this.tpPages = new System.Windows.Forms.TabPage();
@@ -144,7 +144,9 @@ namespace WinFormsDemo
             this.toolStripContainer1.TopToolStripPanel.SuspendLayout();
             this.toolStripContainer1.SuspendLayout();
             this.pnlMain.SuspendLayout();
-            this.pnlViewer.SuspendLayout();
+            this.splitContainer1.Panel1.SuspendLayout();
+            this.splitContainer1.Panel2.SuspendLayout();
+            this.splitContainer1.SuspendLayout();
             this.tcSidebar.SuspendLayout();
             this.tpPages.SuspendLayout();
             this.tpAttachments.SuspendLayout();
@@ -380,22 +382,31 @@ namespace WinFormsDemo
             // 
             // pnlMain
             // 
-            this.pnlMain.Controls.Add(this.pnlViewer);
+            this.pnlMain.Controls.Add(this.splitContainer1);
             this.pnlMain.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pnlMain.Location = new System.Drawing.Point(0, 0);
             this.pnlMain.Name = "pnlMain";
             this.pnlMain.Size = new System.Drawing.Size(540, 219);
             this.pnlMain.TabIndex = 0;
             // 
-            // pnlViewer
+            // splitContainer1
             // 
-            this.pnlViewer.Controls.Add(this.wfvcEditor);
-            this.pnlViewer.Controls.Add(this.tcSidebar);
-            this.pnlViewer.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pnlViewer.Location = new System.Drawing.Point(0, 0);
-            this.pnlViewer.Name = "pnlViewer";
-            this.pnlViewer.Size = new System.Drawing.Size(540, 219);
-            this.pnlViewer.TabIndex = 10;
+            this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.splitContainer1.FixedPanel = System.Windows.Forms.FixedPanel.Panel2;
+            this.splitContainer1.Location = new System.Drawing.Point(0, 0);
+            this.splitContainer1.Name = "splitContainer1";
+            // 
+            // splitContainer1.Panel1
+            // 
+            this.splitContainer1.Panel1.Controls.Add(this.wfvcEditor);
+            // 
+            // splitContainer1.Panel2
+            // 
+            this.splitContainer1.Panel2.Controls.Add(this.tcSidebar);
+            this.splitContainer1.Panel2MinSize = 120;
+            this.splitContainer1.Size = new System.Drawing.Size(540, 219);
+            this.splitContainer1.SplitterDistance = 416;
+            this.splitContainer1.TabIndex = 3;
             // 
             // wfvcEditor
             // 
@@ -403,7 +414,7 @@ namespace WinFormsDemo
             this.wfvcEditor.Dock = System.Windows.Forms.DockStyle.Fill;
             this.wfvcEditor.Location = new System.Drawing.Point(0, 0);
             this.wfvcEditor.Name = "wfvcEditor";
-            this.wfvcEditor.Size = new System.Drawing.Size(420, 219);
+            this.wfvcEditor.Size = new System.Drawing.Size(416, 219);
             this.wfvcEditor.TabIndex = 0;
             this.wfvcEditor.DragDrop += new System.Windows.Forms.DragEventHandler(this.wfvcEditor_DragDrop);
             this.wfvcEditor.KeyUp += new System.Windows.Forms.KeyEventHandler(this.wfvcEditor_KeyUp);
@@ -415,8 +426,8 @@ namespace WinFormsDemo
             // 
             this.tcSidebar.Controls.Add(this.tpPages);
             this.tcSidebar.Controls.Add(this.tpAttachments);
-            this.tcSidebar.Dock = System.Windows.Forms.DockStyle.Right;
-            this.tcSidebar.Location = new System.Drawing.Point(420, 0);
+            this.tcSidebar.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tcSidebar.Location = new System.Drawing.Point(0, 0);
             this.tcSidebar.Name = "tcSidebar";
             this.tcSidebar.SelectedIndex = 0;
             this.tcSidebar.Size = new System.Drawing.Size(120, 219);
@@ -761,7 +772,7 @@ namespace WinFormsDemo
             // 
             this.actionListProvider1.SetAction(this.imageToolStripMenuItem, null);
             this.imageToolStripMenuItem.Name = "imageToolStripMenuItem";
-            this.imageToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.imageToolStripMenuItem.Size = new System.Drawing.Size(141, 22);
             this.imageToolStripMenuItem.Text = "Image";
             this.imageToolStripMenuItem.Click += new System.EventHandler(this.imageToolStripMenuItem_Click);
             // 
@@ -769,14 +780,14 @@ namespace WinFormsDemo
             // 
             this.actionListProvider1.SetAction(this.newPageToolStripMenuItem1, this.actNewPage);
             this.newPageToolStripMenuItem1.Name = "newPageToolStripMenuItem1";
-            this.newPageToolStripMenuItem1.Size = new System.Drawing.Size(152, 22);
+            this.newPageToolStripMenuItem1.Size = new System.Drawing.Size(141, 22);
             this.newPageToolStripMenuItem1.Text = "New Page";
             // 
             // attachmentToolStripMenuItem
             // 
             this.actionListProvider1.SetAction(this.attachmentToolStripMenuItem, null);
             this.attachmentToolStripMenuItem.Name = "attachmentToolStripMenuItem";
-            this.attachmentToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.attachmentToolStripMenuItem.Size = new System.Drawing.Size(141, 22);
             this.attachmentToolStripMenuItem.Text = "Attachment";
             this.attachmentToolStripMenuItem.Click += new System.EventHandler(this.attachmentToolStripMenuItem_Click);
             // 
@@ -1097,7 +1108,9 @@ namespace WinFormsDemo
             this.toolStripContainer1.ResumeLayout(false);
             this.toolStripContainer1.PerformLayout();
             this.pnlMain.ResumeLayout(false);
-            this.pnlViewer.ResumeLayout(false);
+            this.splitContainer1.Panel1.ResumeLayout(false);
+            this.splitContainer1.Panel2.ResumeLayout(false);
+            this.splitContainer1.ResumeLayout(false);
             this.tcSidebar.ResumeLayout(false);
             this.tpPages.ResumeLayout(false);
             this.tpAttachments.ResumeLayout(false);
@@ -1114,7 +1127,6 @@ namespace WinFormsDemo
 
         private DDraw.WinForms.WFViewerControl wfvcEditor;
         private System.Windows.Forms.ToolStripContainer toolStripContainer1;
-        private System.Windows.Forms.Panel pnlViewer;
         private System.Windows.Forms.StatusStrip statusStrip1;
         private System.Windows.Forms.Panel pnlMain;
         private System.Windows.Forms.ToolStripStatusLabel lbInfo;
@@ -1220,6 +1232,7 @@ namespace WinFormsDemo
         private System.Windows.Forms.TabPage tpAttachments;
         private AttachmentView attachmentView1;
         private System.Windows.Forms.ToolStripMenuItem attachmentToolStripMenuItem;
+        private System.Windows.Forms.SplitContainer splitContainer1;
     }
 }
 

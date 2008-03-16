@@ -74,6 +74,7 @@ namespace WinFormsDemo
             this.pnlPreviews.Name = "pnlPreviews";
             this.pnlPreviews.Size = new System.Drawing.Size(148, 121);
             this.pnlPreviews.TabIndex = 3;
+            this.pnlPreviews.SizeChanged += new System.EventHandler(this.pnlPreviews_SizeChanged);
             // 
             // PreviewBar
             // 

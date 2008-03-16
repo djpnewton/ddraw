@@ -21,6 +21,11 @@ namespace WinFormsDemo
         public event PreviewMoveHandler PreviewMove;
         public event PreivewFigureDropHandler PreviewFigureDrop;
 
+        int IdealPreviewWidth
+        {
+            get { return pnlPreviews.Width - SystemInformation.VerticalScrollBarWidth; }
+        }
+
         public PreviewBar()
         {
             InitializeComponent();
@@ -58,7 +63,7 @@ namespace WinFormsDemo
             p.Parent = pnlPreviews;
             pnlPreviews.Controls.SetChildIndex(p, idx);
             // set preview properties
-            p.Width = pnlPreviews.Width - SystemInformation.VerticalScrollBarWidth;
+            p.Width = IdealPreviewWidth;
             p.Height = 65;
             p.Left = 0;
             SetPreviewTops(idx); 
@@ -232,6 +237,16 @@ namespace WinFormsDemo
         {
             foreach (Preview p in pnlPreviews.Controls)
                 p.Dirty = p.DEngine.CanUndo;
+        }
+
+        private void pnlPreviews_SizeChanged(object sender, EventArgs e)
+        {
+            if (pnlPreviews.Controls.Count > 0)
+            {
+                if (pnlPreviews.Controls[0].Width != IdealPreviewWidth)
+                    foreach (Preview p in pnlPreviews.Controls)
+                        p.Width = IdealPreviewWidth;
+            }
         }
     }
 }
