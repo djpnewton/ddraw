@@ -118,94 +118,130 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <metadata name="cmsFigure.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>300, 10</value>
+    <value>335, 17</value>
   </metadata>
   <metadata name="actionListProvider1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>705, 9</value>
+    <value>654, 17</value>
   </metadata>
   <metadata name="actGroupFigures.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>850, 9</value>
+    <value>17, 54</value>
   </metadata>
   <metadata name="actSendToBack.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>17, 46</value>
+    <value>150, 54</value>
   </metadata>
   <metadata name="actBringToFront.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>144, 46</value>
+    <value>277, 54</value>
   </metadata>
   <metadata name="actSendBackward.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>275, 46</value>
+    <value>408, 54</value>
   </metadata>
   <metadata name="actBringForward.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>414, 46</value>
+    <value>547, 54</value>
   </metadata>
   <metadata name="actPageSize.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>547, 46</value>
+    <value>680, 54</value>
   </metadata>
   <metadata name="actBackground.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>657, 46</value>
+    <value>790, 54</value>
   </metadata>
   <metadata name="actCut.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>782, 46</value>
+    <value>17, 91</value>
   </metadata>
   <metadata name="actCopy.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>865, 46</value>
+    <value>100, 91</value>
   </metadata>
   <metadata name="actPaste.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>17, 83</value>
+    <value>191, 91</value>
   </metadata>
   <metadata name="actDelete.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>110, 83</value>
+    <value>284, 91</value>
   </metadata>
   <metadata name="actNew.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>208, 83</value>
+    <value>382, 91</value>
   </metadata>
   <metadata name="actOpen.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>296, 83</value>
+    <value>470, 91</value>
   </metadata>
   <metadata name="actSave.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>389, 83</value>
+    <value>563, 91</value>
   </metadata>
   <metadata name="actSaveAs.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>479, 83</value>
+    <value>653, 91</value>
   </metadata>
   <metadata name="actPrint.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>581, 83</value>
+    <value>755, 91</value>
   </metadata>
   <metadata name="actNewPage.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>670, 83</value>
+    <value>17, 128</value>
   </metadata>
   <metadata name="actDeletePage.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>782, 83</value>
+    <value>129, 128</value>
   </metadata>
   <metadata name="actClonePage.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>884, 83</value>
+    <value>252, 128</value>
   </metadata>
   <metadata name="actClearPage.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>17, 120</value>
+    <value>370, 128</value>
   </metadata>
   <metadata name="actFloatingTools.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>124, 118</value>
+    <value>486, 128</value>
   </metadata>
   <metadata name="actLink.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>243, 118</value>
+    <value>618, 128</value>
   </metadata>
   <metadata name="cmsCanvas.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>488, 9</value>
+    <value>437, 17</value>
   </metadata>
   <metadata name="cmsPreview.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>585, 9</value>
+    <value>544, 17</value>
   </metadata>
+  <metadata name="tsSidebar.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>126, 116</value>
+  </metadata>
+  <assembly alias="System.Drawing" name="System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+  <data name="btnPages.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
+        YQUAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAAOpgAABdwnLpRPAAAAr5JREFUOE9VkslP
+        E2EYh0s81Jt/BhelUTHhaEiKIgejKBcTZClLYpRwIMZEElIxwYMXt5iYGE9evJhSFqWFFNpCZVPoprK2
+        lEIXu883a3++M4UWJnnm+2b5nu/3vjNVOjqMTx1t+nP6e2eqdJcFQXdWr9dVqfe1M+iEok4qFjcziaI9
+        tRMd8H9pEbXnx0fjc+dcLMsS0WRGTuZ5JHMVElkeiSxDYD+LQUsIrS+DhesPx/WnBE0jrlg8lZPnd0R4
+        diV4QhIWdiS4tgU4/vKY9OfBS4A1yGHw6y46X3m5U5IG8wyXKQhYDstYCUs0SljUJAJmN3h89xdIoGB5
+        X4YnImJ4PIT6J9OfyymaXriZKlglwc89Cat7sib7sSvCuSnA9pvD9mFeKyXHJBymCjA+npVOCdJ5Aeu0
+        g5dYjyr4pUnUFKKWYopSjHlzGF3LIE19ajA7WVlwY8TNUiQIRIvw02If4d1XsEayJerJ/HZJYv/DYYr6
+        kMqLaHjmrggaSZAkQfCgqBEg/CRbj5SSaBJKMkflqKIkCYzmE4Jrw26WyAnwlxcr5SSqRO3LEpWjJnET
+        sayI+qETAqPZxeL0vdVd1RKO8VEZxymWQzIW1U9MZKmRdQOuSgn1Qy52kOHhi5Ril6BmEmoJK7R4ifDQ
+        v7FAAiYqqO1zVARXB5xsP81w18qjxcpwZ4yhmebNFh63R5nGLQvDzSMKggxD32RFcKXfwcJJhkezCj4F
+        gY8B4IMfeE/jOxrfEm98wGsv0DUtIU8lGHqsFUFd/0whuPev2DujoMcuay+ZpmWNDrrutEtot0loU69t
+        MjJ5Trlw35or/weXem1b4UwhG4ykla04h60Yh40j4jkRKmrnc0xGMlNQOMbS1a0TvrKgtvfbA4Np0nax
+        eypp6B5lZbpoTtR0WUqYLKzaNJE63zFhr2kf71QF/wF/qswxmgxVpgAAAABJRU5ErkJggg==
+</value>
+  </data>
+  <data name="btnAttachments.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
+        YQUAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAAOpgAABdwnLpRPAAAAc1JREFUOE9jYKAH
+        WLBggfScOXNeTpo06VRPT49NU1OTIdH2Llq0SHH27Nkv+/v7r3d0dDxqaGjY2tfX9z83N7eOoCEgm2fO
+        nHl/4sSJG9vb2y/W19cHgTQBNVskJyd/w2sAUKPItGnT7gFt29zS0rK+trbWH6YhLi5OOyIi4jlOA4BO
+        Fp8wYcIHoH+3NDc3z6+pqQkqLi7mzsjIOAjU3BISErLVx8cHuwHAwJKfMmXK2+7u7g3AwJpVWVmZWlhY
+        KJSWlnY0Nja2IygoaIq3t/dNDw8PUQwXTJ8+XRUY0k+AgTUfGFjTy8vL44CaOYH+vRUTE9MF1LzQ09Pz
+        kbu7uySG5lmzZikCQ/pBW1vbjLq6uu6ysjJvkObExMSbQP/WBwQELHJycnrl6Ogoj6EZGFjqQFvfA/27
+        HCjJCPTvmszMzOsJCQnPwsPDG/z9/RcAnfwGiPmwBhwwsNyBIf0IGE0SSCHdGRoaGgMMrJlAJ992c3MT
+        whnqQI16FRUVL4HxCw8YoH9VgYG1GKjxpqurqxjeOAdFUU5OztaUlJQtkZGRqkDN1kDnXgb69569vb0M
+        wRQHUpCUlMQL1OwFDKzzQM1PgbbmATULEKV5QBUBAG44xGuV5ox1AAAAAElFTkSuQmCC
+</value>
+  </data>
   <metadata name="statusStrip1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>116, 11</value>
+    <value>116, 17</value>
   </metadata>
   <metadata name="menuStrip1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>207, 10</value>
+    <value>226, 17</value>
   </metadata>
   <metadata name="tsEngineState.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>356, 118</value>
+    <value>704, 128</value>
   </metadata>
   <metadata name="tsPropState.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>465, 120</value>
+    <value>17, 165</value>
   </metadata>
   <metadata name="$this.TrayHeight" type="System.Int32, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>153</value>

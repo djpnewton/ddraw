@@ -28,6 +28,8 @@ namespace WinFormsDemo
         DPoint textInsertionPoint;
         bool nonTextInsertionKey;
 
+        bool previewBar1Focused;
+
         bool beenSaved;
         string fileName;
 
@@ -398,6 +400,18 @@ namespace WinFormsDemo
             AddDefaultGlyphs(fig);
         }
 
+        private void previewBar1_Enter(object sender, EventArgs e)
+        {
+            // previewBar1.Focused does not seem to be working :(
+            previewBar1Focused = true;
+        }
+
+        private void previewBar1_Leave(object sender, EventArgs e)
+        {
+            // previewBar1.Focused does not seem to be working :(
+            previewBar1Focused = false;
+        }
+
         private void previewBar1_PreviewSelected(Preview p)
         {
             SetCurrentDe(p.DEngine);
@@ -736,7 +750,7 @@ namespace WinFormsDemo
         {
             if (wfvcEditor.Focused)
                 de.Delete(de.SelectedFigures);
-            else if (previewBar1.Focused)
+            else if (previewBar1Focused)
             {
                 CheckState();
                 dem.UndoRedoStart("Delete Page");
@@ -1162,6 +1176,62 @@ namespace WinFormsDemo
             Point cpt = wfvcEditor.PointToClient(new Point(e.X, e.Y));
             DPoint pt = dvEditor.ClientToEngine(new DPoint(cpt.X, cpt.Y));
             PasteDataObject(e.Data, "Copy", pt.X, pt.Y);
+        }
+
+        // Sidebar //////////////////////////////////////////////////////
+
+        void SetSizebarPos(bool left)
+        {
+            SuspendLayout();
+            if (left)
+            {
+                previewBar1.Parent = splitContainer1.Panel1;
+                attachmentView1.Parent = splitContainer1.Panel1;
+                tsSidebarPanel.Parent = splitContainer1.Panel1;
+                wfvcEditor.Parent = splitContainer1.Panel2;
+                btnSwitchSidebar.Image = Resource1.arrow_right;
+                tsSidebar.Items.Insert(tsSidebar.Items.Count - 1, tsSidebarSep);
+                tsSidebar.Items.Insert(tsSidebar.Items.Count - 1, btnSwitchSidebar);
+            }
+            else
+            {
+                previewBar1.Parent = splitContainer1.Panel2;
+                attachmentView1.Parent = splitContainer1.Panel2;
+                tsSidebarPanel.Parent = splitContainer1.Panel2;
+                wfvcEditor.Parent = splitContainer1.Panel1;
+                btnSwitchSidebar.Image = Resource1.arrow_left;
+                tsSidebar.Items.Insert(0, tsSidebarSep);
+                tsSidebar.Items.Insert(0, btnSwitchSidebar);
+            }
+            if (btnPages.Checked)
+                btnPages.PerformClick();
+            else
+                btnAttachments.PerformClick();
+            int tmp = splitContainer1.Panel1MinSize;
+            splitContainer1.Panel1MinSize = splitContainer1.Panel2MinSize;
+            splitContainer1.Panel2MinSize = tmp;
+            splitContainer1.SplitterDistance = splitContainer1.Width - splitContainer1.SplitterDistance;
+            ResumeLayout();
+        }
+
+        private void btnSwitchSidebar_Click(object sender, EventArgs e)
+        {
+            SetSizebarPos(tsSidebarPanel.Parent == splitContainer1.Panel2);
+        }
+
+        private void btnPages_Click(object sender, EventArgs e)
+        {
+            previewBar1.BringToFront();
+            btnPages.Checked = true;
+            btnAttachments.Checked = false;
+            previewBar1.Focus();
+        }
+
+        private void btnAttachments_Click(object sender, EventArgs e)
+        {
+            attachmentView1.BringToFront();
+            btnPages.Checked = false;
+            btnAttachments.Checked = true;
         }
     }
 }

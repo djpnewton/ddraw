@@ -29,6 +29,7 @@ namespace WinFormsDemo
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.cmsFigure = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.cutToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.copyToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
@@ -58,11 +59,14 @@ namespace WinFormsDemo
             this.pnlMain = new System.Windows.Forms.Panel();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.wfvcEditor = new DDraw.WinForms.WFViewerControl();
-            this.tcSidebar = new System.Windows.Forms.TabControl();
-            this.tpPages = new System.Windows.Forms.TabPage();
             this.previewBar1 = new WinFormsDemo.PreviewBar();
-            this.tpAttachments = new System.Windows.Forms.TabPage();
             this.attachmentView1 = new WinFormsDemo.AttachmentView();
+            this.tsSidebarPanel = new System.Windows.Forms.ToolStripPanel();
+            this.tsSidebar = new System.Windows.Forms.ToolStrip();
+            this.btnSwitchSidebar = new System.Windows.Forms.ToolStripButton();
+            this.tsSidebarSep = new System.Windows.Forms.ToolStripSeparator();
+            this.btnPages = new System.Windows.Forms.ToolStripButton();
+            this.btnAttachments = new System.Windows.Forms.ToolStripButton();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.lbInfo = new System.Windows.Forms.ToolStripStatusLabel();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
@@ -147,9 +151,8 @@ namespace WinFormsDemo
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
-            this.tcSidebar.SuspendLayout();
-            this.tpPages.SuspendLayout();
-            this.tpAttachments.SuspendLayout();
+            this.tsSidebarPanel.SuspendLayout();
+            this.tsSidebar.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.actionListProvider1)).BeginInit();
@@ -402,7 +405,9 @@ namespace WinFormsDemo
             // 
             // splitContainer1.Panel2
             // 
-            this.splitContainer1.Panel2.Controls.Add(this.tcSidebar);
+            this.splitContainer1.Panel2.Controls.Add(this.previewBar1);
+            this.splitContainer1.Panel2.Controls.Add(this.attachmentView1);
+            this.splitContainer1.Panel2.Controls.Add(this.tsSidebarPanel);
             this.splitContainer1.Panel2MinSize = 120;
             this.splitContainer1.Size = new System.Drawing.Size(540, 219);
             this.splitContainer1.SplitterDistance = 416;
@@ -422,63 +427,97 @@ namespace WinFormsDemo
             this.wfvcEditor.DragEnter += new System.Windows.Forms.DragEventHandler(this.wfvcEditor_DragEnter);
             this.wfvcEditor.KeyDown += new System.Windows.Forms.KeyEventHandler(this.wfvcEditor_KeyDown);
             // 
-            // tcSidebar
-            // 
-            this.tcSidebar.Controls.Add(this.tpPages);
-            this.tcSidebar.Controls.Add(this.tpAttachments);
-            this.tcSidebar.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tcSidebar.Location = new System.Drawing.Point(0, 0);
-            this.tcSidebar.Name = "tcSidebar";
-            this.tcSidebar.SelectedIndex = 0;
-            this.tcSidebar.Size = new System.Drawing.Size(120, 219);
-            this.tcSidebar.TabIndex = 2;
-            // 
-            // tpPages
-            // 
-            this.tpPages.Controls.Add(this.previewBar1);
-            this.tpPages.Location = new System.Drawing.Point(4, 22);
-            this.tpPages.Name = "tpPages";
-            this.tpPages.Padding = new System.Windows.Forms.Padding(3);
-            this.tpPages.Size = new System.Drawing.Size(112, 193);
-            this.tpPages.TabIndex = 0;
-            this.tpPages.Text = "Pages";
-            this.tpPages.UseVisualStyleBackColor = true;
-            // 
             // previewBar1
             // 
             this.previewBar1.AutoScroll = true;
             this.previewBar1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.previewBar1.Location = new System.Drawing.Point(3, 3);
+            this.previewBar1.Location = new System.Drawing.Point(0, 25);
             this.previewBar1.Name = "previewBar1";
-            this.previewBar1.Size = new System.Drawing.Size(106, 187);
+            this.previewBar1.Size = new System.Drawing.Size(120, 194);
             this.previewBar1.TabIndex = 0;
             this.previewBar1.PreviewMove += new WinFormsDemo.PreviewMoveHandler(this.previewBar1_PreviewMove);
             this.previewBar1.PreviewSelected += new WinFormsDemo.PreviewSelectedHandler(this.previewBar1_PreviewSelected);
             this.previewBar1.PreviewFigureDrop += new WinFormsDemo.PreivewFigureDropHandler(this.previewBar1_PreviewFigureDrop);
             this.previewBar1.PreviewAdd += new System.EventHandler(this.previewBar1_PreviewAdd);
+            this.previewBar1.Leave += new System.EventHandler(this.previewBar1_Leave);
             this.previewBar1.PreviewContext += new WinFormsDemo.PreviewContextHandler(this.previewBar1_PreviewContext);
-            // 
-            // tpAttachments
-            // 
-            this.tpAttachments.Controls.Add(this.attachmentView1);
-            this.tpAttachments.Location = new System.Drawing.Point(4, 22);
-            this.tpAttachments.Name = "tpAttachments";
-            this.tpAttachments.Padding = new System.Windows.Forms.Padding(3);
-            this.tpAttachments.Size = new System.Drawing.Size(112, 193);
-            this.tpAttachments.TabIndex = 1;
-            this.tpAttachments.Text = "Attachments";
-            this.tpAttachments.UseVisualStyleBackColor = true;
+            this.previewBar1.Enter += new System.EventHandler(this.previewBar1_Enter);
             // 
             // attachmentView1
             // 
             this.attachmentView1.AllowDrop = true;
             this.attachmentView1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.attachmentView1.Location = new System.Drawing.Point(3, 3);
+            this.attachmentView1.Location = new System.Drawing.Point(0, 25);
             this.attachmentView1.Name = "attachmentView1";
-            this.attachmentView1.Size = new System.Drawing.Size(106, 187);
+            this.attachmentView1.Size = new System.Drawing.Size(120, 194);
             this.attachmentView1.TabIndex = 0;
             this.attachmentView1.UseCompatibleStateImageBehavior = false;
             this.attachmentView1.View = System.Windows.Forms.View.Details;
+            // 
+            // tsSidebarPanel
+            // 
+            this.tsSidebarPanel.Controls.Add(this.tsSidebar);
+            this.tsSidebarPanel.Dock = System.Windows.Forms.DockStyle.Top;
+            this.tsSidebarPanel.Location = new System.Drawing.Point(0, 0);
+            this.tsSidebarPanel.Name = "tsSidebarPanel";
+            this.tsSidebarPanel.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            this.tsSidebarPanel.RowMargin = new System.Windows.Forms.Padding(3, 0, 0, 0);
+            this.tsSidebarPanel.Size = new System.Drawing.Size(120, 25);
+            // 
+            // tsSidebar
+            // 
+            this.tsSidebar.Dock = System.Windows.Forms.DockStyle.None;
+            this.tsSidebar.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
+            this.tsSidebar.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.btnSwitchSidebar,
+            this.tsSidebarSep,
+            this.btnPages,
+            this.btnAttachments});
+            this.tsSidebar.Location = new System.Drawing.Point(3, 0);
+            this.tsSidebar.Name = "tsSidebar";
+            this.tsSidebar.Size = new System.Drawing.Size(78, 25);
+            this.tsSidebar.TabIndex = 0;
+            // 
+            // btnSwitchSidebar
+            // 
+            this.actionListProvider1.SetAction(this.btnSwitchSidebar, null);
+            this.btnSwitchSidebar.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.btnSwitchSidebar.Image = global::WinFormsDemo.Resource1.arrow_left;
+            this.btnSwitchSidebar.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnSwitchSidebar.Name = "btnSwitchSidebar";
+            this.btnSwitchSidebar.Size = new System.Drawing.Size(23, 22);
+            this.btnSwitchSidebar.Text = "Switch Sidebar";
+            this.btnSwitchSidebar.Click += new System.EventHandler(this.btnSwitchSidebar_Click);
+            // 
+            // tsSidebarSep
+            // 
+            this.actionListProvider1.SetAction(this.tsSidebarSep, null);
+            this.tsSidebarSep.Name = "tsSidebarSep";
+            this.tsSidebarSep.Size = new System.Drawing.Size(6, 25);
+            // 
+            // btnPages
+            // 
+            this.actionListProvider1.SetAction(this.btnPages, null);
+            this.btnPages.Checked = true;
+            this.btnPages.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.btnPages.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.btnPages.Image = ((System.Drawing.Image)(resources.GetObject("btnPages.Image")));
+            this.btnPages.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnPages.Name = "btnPages";
+            this.btnPages.Size = new System.Drawing.Size(23, 22);
+            this.btnPages.Text = "View Pages";
+            this.btnPages.Click += new System.EventHandler(this.btnPages_Click);
+            // 
+            // btnAttachments
+            // 
+            this.actionListProvider1.SetAction(this.btnAttachments, null);
+            this.btnAttachments.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.btnAttachments.Image = ((System.Drawing.Image)(resources.GetObject("btnAttachments.Image")));
+            this.btnAttachments.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnAttachments.Name = "btnAttachments";
+            this.btnAttachments.Size = new System.Drawing.Size(23, 22);
+            this.btnAttachments.Text = "View Attachments";
+            this.btnAttachments.Click += new System.EventHandler(this.btnAttachments_Click);
             // 
             // statusStrip1
             // 
@@ -1110,10 +1149,12 @@ namespace WinFormsDemo
             this.pnlMain.ResumeLayout(false);
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel2.ResumeLayout(false);
+            this.splitContainer1.Panel2.PerformLayout();
             this.splitContainer1.ResumeLayout(false);
-            this.tcSidebar.ResumeLayout(false);
-            this.tpPages.ResumeLayout(false);
-            this.tpAttachments.ResumeLayout(false);
+            this.tsSidebarPanel.ResumeLayout(false);
+            this.tsSidebarPanel.PerformLayout();
+            this.tsSidebar.ResumeLayout(false);
+            this.tsSidebar.PerformLayout();
             this.statusStrip1.ResumeLayout(false);
             this.statusStrip1.PerformLayout();
             this.menuStrip1.ResumeLayout(false);
@@ -1227,12 +1268,15 @@ namespace WinFormsDemo
         private Burkovsky.Controls.Action actLink;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator10;
         private System.Windows.Forms.ToolStripMenuItem linkToolStripMenuItem;
-        private System.Windows.Forms.TabControl tcSidebar;
-        private System.Windows.Forms.TabPage tpPages;
-        private System.Windows.Forms.TabPage tpAttachments;
         private AttachmentView attachmentView1;
         private System.Windows.Forms.ToolStripMenuItem attachmentToolStripMenuItem;
         private System.Windows.Forms.SplitContainer splitContainer1;
+        private System.Windows.Forms.ToolStripPanel tsSidebarPanel;
+        private System.Windows.Forms.ToolStrip tsSidebar;
+        private System.Windows.Forms.ToolStripButton btnSwitchSidebar;
+        private System.Windows.Forms.ToolStripButton btnPages;
+        private System.Windows.Forms.ToolStripButton btnAttachments;
+        private System.Windows.Forms.ToolStripSeparator tsSidebarSep;
     }
 }
 
