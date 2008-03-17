@@ -93,7 +93,7 @@ namespace WinFormsDemo
             dvEditor.Update();
             this.de = de;
             de_SelectedFiguresChanged();
-            UpdateUndoRedoControls();
+            UpdateUndoRedoActions();
             // update toolstrips
             tsEngineState.De = de;
             tsPropState.De = de;
@@ -131,7 +131,7 @@ namespace WinFormsDemo
             New();
             dem.UndoRedoClearHistory();
             // update some controls and titlebar
-            UpdateUndoRedoControls();
+            UpdateUndoRedoActions();
             UpdateTitleBar();
             // set toolstrip properties
             tsPropState.Dap = dap;
@@ -243,23 +243,23 @@ namespace WinFormsDemo
             InitActions();
         }
 
-        void UpdateUndoRedoControls()
+        void UpdateUndoRedoActions()
         {
-            undoToolStripMenuItem.Enabled = dem.CanUndo(de);
-            if (undoToolStripMenuItem.Enabled)
-                undoToolStripMenuItem.Text = string.Format("Undo \"{0}\"", dem.UndoCaption(de));
+            actUndo.Enabled = dem.CanUndo(de);
+            if (actUndo.Enabled)
+                actUndo.Text = string.Format("Undo \"{0}\"", dem.UndoCaption(de));
             else
-                undoToolStripMenuItem.Text = "Undo";
-            redoToolStripMenuItem.Enabled = dem.CanRedo(de);
-            if (redoToolStripMenuItem.Enabled)
-                redoToolStripMenuItem.Text = string.Format("Redo \"{0}\"", dem.RedoCaption(de));
+                actUndo.Text = "Undo";
+            actRedo.Enabled = dem.CanRedo(de);
+            if (actRedo.Enabled)
+                actRedo.Text = string.Format("Redo \"{0}\"", dem.RedoCaption(de));
             else
-                redoToolStripMenuItem.Text = "Redo";
+                actRedo.Text = "Redo";
         }
 
         void dem_UndoRedoChanged(object sender, EventArgs e)
         {
-            UpdateUndoRedoControls();
+            UpdateUndoRedoActions();
             UpdateTitleBar();
             if (sender == dem)
             {
@@ -488,16 +488,6 @@ namespace WinFormsDemo
         {
             if (de.HsmState != DHsmState.Select)
                 de.HsmState = DHsmState.Select;
-        }
-
-        private void undoToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            dem.Undo(de);
-        }
-
-        private void redoToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            dem.Redo(de);
         }
 
         private void viewToolStripMenuItem_DropDownOpening(object sender, EventArgs e)
@@ -1110,6 +1100,16 @@ namespace WinFormsDemo
                 // update editor view
                 dvEditor.Update();
             }
+        }
+
+        private void actUndo_Execute(object sender, EventArgs e)
+        {
+            dem.Undo(de);
+        }
+
+        private void actRedo_Execute(object sender, EventArgs e)
+        {
+            dem.Redo(de);
         }
 
         void ShowFloatingTools(bool floatingToolsAlone)

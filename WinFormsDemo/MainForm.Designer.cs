@@ -121,6 +121,15 @@ namespace WinFormsDemo
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tsEngineState = new WinFormsDemo.ToolStripDEngineState();
+            this.tsEdit = new System.Windows.Forms.ToolStrip();
+            this.btnUndo = new System.Windows.Forms.ToolStripButton();
+            this.btnRedo = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator = new System.Windows.Forms.ToolStripSeparator();
+            this.btnCut = new System.Windows.Forms.ToolStripButton();
+            this.btnCopy = new System.Windows.Forms.ToolStripButton();
+            this.btnPaste = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator12 = new System.Windows.Forms.ToolStripSeparator();
+            this.btnDelete = new System.Windows.Forms.ToolStripButton();
             this.tsPropState = new WinFormsDemo.ToolStripDAuthorPropsState();
             this.actionListProvider1 = new Burkovsky.Controls.ActionListProvider(this.components);
             this.actCut = new Burkovsky.Controls.Action();
@@ -145,6 +154,8 @@ namespace WinFormsDemo
             this.actSaveAs = new Burkovsky.Controls.Action();
             this.actPrint = new Burkovsky.Controls.Action();
             this.actFloatingTools = new Burkovsky.Controls.Action();
+            this.actUndo = new Burkovsky.Controls.Action();
+            this.actRedo = new Burkovsky.Controls.Action();
             this.cmsFigure.SuspendLayout();
             this.cmsCanvas.SuspendLayout();
             this.cmsPreview.SuspendLayout();
@@ -160,6 +171,7 @@ namespace WinFormsDemo
             this.tsPageManage.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
+            this.tsEdit.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.actionListProvider1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -374,7 +386,7 @@ namespace WinFormsDemo
             // 
             this.toolStripContainer1.ContentPanel.Controls.Add(this.pnlMain);
             this.toolStripContainer1.ContentPanel.Controls.Add(this.statusStrip1);
-            this.toolStripContainer1.ContentPanel.Size = new System.Drawing.Size(540, 241);
+            this.toolStripContainer1.ContentPanel.Size = new System.Drawing.Size(540, 216);
             this.toolStripContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.toolStripContainer1.Location = new System.Drawing.Point(0, 0);
             this.toolStripContainer1.Name = "toolStripContainer1";
@@ -387,6 +399,7 @@ namespace WinFormsDemo
             this.toolStripContainer1.TopToolStripPanel.Controls.Add(this.menuStrip1);
             this.toolStripContainer1.TopToolStripPanel.Controls.Add(this.tsEngineState);
             this.toolStripContainer1.TopToolStripPanel.Controls.Add(this.tsPropState);
+            this.toolStripContainer1.TopToolStripPanel.Controls.Add(this.tsEdit);
             // 
             // pnlMain
             // 
@@ -394,7 +407,7 @@ namespace WinFormsDemo
             this.pnlMain.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pnlMain.Location = new System.Drawing.Point(0, 0);
             this.pnlMain.Name = "pnlMain";
-            this.pnlMain.Size = new System.Drawing.Size(540, 219);
+            this.pnlMain.Size = new System.Drawing.Size(540, 194);
             this.pnlMain.TabIndex = 0;
             // 
             // splitContainer1
@@ -414,7 +427,7 @@ namespace WinFormsDemo
             this.splitContainer1.Panel2.Controls.Add(this.attachmentView1);
             this.splitContainer1.Panel2.Controls.Add(this.tsSidebarPanel);
             this.splitContainer1.Panel2MinSize = 120;
-            this.splitContainer1.Size = new System.Drawing.Size(540, 219);
+            this.splitContainer1.Size = new System.Drawing.Size(540, 194);
             this.splitContainer1.SplitterDistance = 416;
             this.splitContainer1.TabIndex = 3;
             // 
@@ -424,7 +437,7 @@ namespace WinFormsDemo
             this.wfvcEditor.Dock = System.Windows.Forms.DockStyle.Fill;
             this.wfvcEditor.Location = new System.Drawing.Point(0, 0);
             this.wfvcEditor.Name = "wfvcEditor";
-            this.wfvcEditor.Size = new System.Drawing.Size(416, 219);
+            this.wfvcEditor.Size = new System.Drawing.Size(416, 194);
             this.wfvcEditor.TabIndex = 0;
             this.wfvcEditor.DragDrop += new System.Windows.Forms.DragEventHandler(this.wfvcEditor_DragDrop);
             this.wfvcEditor.KeyUp += new System.Windows.Forms.KeyEventHandler(this.wfvcEditor_KeyUp);
@@ -438,7 +451,7 @@ namespace WinFormsDemo
             this.previewBar1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.previewBar1.Location = new System.Drawing.Point(0, 50);
             this.previewBar1.Name = "previewBar1";
-            this.previewBar1.Size = new System.Drawing.Size(120, 169);
+            this.previewBar1.Size = new System.Drawing.Size(120, 144);
             this.previewBar1.TabIndex = 0;
             this.previewBar1.PreviewMove += new WinFormsDemo.PreviewMoveHandler(this.previewBar1_PreviewMove);
             this.previewBar1.PreviewSelected += new WinFormsDemo.PreviewSelectedHandler(this.previewBar1_PreviewSelected);
@@ -453,7 +466,7 @@ namespace WinFormsDemo
             this.attachmentView1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.attachmentView1.Location = new System.Drawing.Point(0, 50);
             this.attachmentView1.Name = "attachmentView1";
-            this.attachmentView1.Size = new System.Drawing.Size(120, 169);
+            this.attachmentView1.Size = new System.Drawing.Size(120, 144);
             this.attachmentView1.TabIndex = 0;
             this.attachmentView1.UseCompatibleStateImageBehavior = false;
             this.attachmentView1.View = System.Windows.Forms.View.Details;
@@ -533,7 +546,7 @@ namespace WinFormsDemo
             this.btnNextPage});
             this.tsPageManage.Location = new System.Drawing.Point(3, 25);
             this.tsPageManage.Name = "tsPageManage";
-            this.tsPageManage.Size = new System.Drawing.Size(112, 25);
+            this.tsPageManage.Size = new System.Drawing.Size(81, 25);
             this.tsPageManage.TabIndex = 1;
             // 
             // btnNewPage
@@ -572,7 +585,7 @@ namespace WinFormsDemo
             // 
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.lbInfo});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 219);
+            this.statusStrip1.Location = new System.Drawing.Point(0, 194);
             this.statusStrip1.Name = "statusStrip1";
             this.statusStrip1.Size = new System.Drawing.Size(540, 22);
             this.statusStrip1.TabIndex = 11;
@@ -698,21 +711,19 @@ namespace WinFormsDemo
             // 
             // undoToolStripMenuItem
             // 
-            this.actionListProvider1.SetAction(this.undoToolStripMenuItem, null);
+            this.actionListProvider1.SetAction(this.undoToolStripMenuItem, this.actUndo);
             this.undoToolStripMenuItem.Name = "undoToolStripMenuItem";
             this.undoToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Z)));
             this.undoToolStripMenuItem.Size = new System.Drawing.Size(165, 22);
             this.undoToolStripMenuItem.Text = "Undo";
-            this.undoToolStripMenuItem.Click += new System.EventHandler(this.undoToolStripMenuItem_Click);
             // 
             // redoToolStripMenuItem
             // 
-            this.actionListProvider1.SetAction(this.redoToolStripMenuItem, null);
+            this.actionListProvider1.SetAction(this.redoToolStripMenuItem, this.actRedo);
             this.redoToolStripMenuItem.Name = "redoToolStripMenuItem";
             this.redoToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Y)));
             this.redoToolStripMenuItem.Size = new System.Drawing.Size(165, 22);
             this.redoToolStripMenuItem.Text = "Redo";
-            this.redoToolStripMenuItem.Click += new System.EventHandler(this.redoToolStripMenuItem_Click);
             // 
             // toolStripSeparator4
             // 
@@ -1007,6 +1018,95 @@ namespace WinFormsDemo
             this.tsEngineState.Size = new System.Drawing.Size(288, 25);
             this.tsEngineState.TabIndex = 2;
             // 
+            // tsEdit
+            // 
+            this.tsEdit.Dock = System.Windows.Forms.DockStyle.None;
+            this.tsEdit.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.btnUndo,
+            this.btnRedo,
+            this.toolStripSeparator,
+            this.btnCut,
+            this.btnCopy,
+            this.btnPaste,
+            this.toolStripSeparator12,
+            this.btnDelete});
+            this.tsEdit.Location = new System.Drawing.Point(3, 74);
+            this.tsEdit.Name = "tsEdit";
+            this.tsEdit.Size = new System.Drawing.Size(162, 25);
+            this.tsEdit.TabIndex = 5;
+            // 
+            // btnUndo
+            // 
+            this.actionListProvider1.SetAction(this.btnUndo, this.actUndo);
+            this.btnUndo.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.btnUndo.Image = ((System.Drawing.Image)(resources.GetObject("btnUndo.Image")));
+            this.btnUndo.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnUndo.Name = "btnUndo";
+            this.btnUndo.Size = new System.Drawing.Size(23, 22);
+            this.btnUndo.Text = "Undo";
+            // 
+            // btnRedo
+            // 
+            this.actionListProvider1.SetAction(this.btnRedo, this.actRedo);
+            this.btnRedo.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.btnRedo.Image = ((System.Drawing.Image)(resources.GetObject("btnRedo.Image")));
+            this.btnRedo.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnRedo.Name = "btnRedo";
+            this.btnRedo.Size = new System.Drawing.Size(23, 22);
+            this.btnRedo.Text = "Redo";
+            // 
+            // toolStripSeparator
+            // 
+            this.actionListProvider1.SetAction(this.toolStripSeparator, null);
+            this.toolStripSeparator.Name = "toolStripSeparator";
+            this.toolStripSeparator.Size = new System.Drawing.Size(6, 25);
+            // 
+            // btnCut
+            // 
+            this.actionListProvider1.SetAction(this.btnCut, this.actCut);
+            this.btnCut.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.btnCut.Image = ((System.Drawing.Image)(resources.GetObject("btnCut.Image")));
+            this.btnCut.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnCut.Name = "btnCut";
+            this.btnCut.Size = new System.Drawing.Size(23, 22);
+            this.btnCut.Text = "Cut";
+            // 
+            // btnCopy
+            // 
+            this.actionListProvider1.SetAction(this.btnCopy, this.actCopy);
+            this.btnCopy.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.btnCopy.Image = ((System.Drawing.Image)(resources.GetObject("btnCopy.Image")));
+            this.btnCopy.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnCopy.Name = "btnCopy";
+            this.btnCopy.Size = new System.Drawing.Size(23, 22);
+            this.btnCopy.Text = "Copy";
+            // 
+            // btnPaste
+            // 
+            this.actionListProvider1.SetAction(this.btnPaste, this.actPaste);
+            this.btnPaste.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.btnPaste.Image = ((System.Drawing.Image)(resources.GetObject("btnPaste.Image")));
+            this.btnPaste.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnPaste.Name = "btnPaste";
+            this.btnPaste.Size = new System.Drawing.Size(23, 22);
+            this.btnPaste.Text = "Paste";
+            // 
+            // toolStripSeparator12
+            // 
+            this.actionListProvider1.SetAction(this.toolStripSeparator12, null);
+            this.toolStripSeparator12.Name = "toolStripSeparator12";
+            this.toolStripSeparator12.Size = new System.Drawing.Size(6, 25);
+            // 
+            // btnDelete
+            // 
+            this.actionListProvider1.SetAction(this.btnDelete, this.actDelete);
+            this.btnDelete.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.btnDelete.Image = ((System.Drawing.Image)(resources.GetObject("btnDelete.Image")));
+            this.btnDelete.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnDelete.Name = "btnDelete";
+            this.btnDelete.Size = new System.Drawing.Size(23, 22);
+            this.btnDelete.Text = "Delete";
+            // 
             // tsPropState
             // 
             this.tsPropState.Dock = System.Windows.Forms.DockStyle.None;
@@ -1039,6 +1139,8 @@ namespace WinFormsDemo
             this.actionListProvider1.Actions.Add(this.actClearPage);
             this.actionListProvider1.Actions.Add(this.actFloatingTools);
             this.actionListProvider1.Actions.Add(this.actLink);
+            this.actionListProvider1.Actions.Add(this.actUndo);
+            this.actionListProvider1.Actions.Add(this.actRedo);
             // 
             // actCut
             // 
@@ -1174,6 +1276,18 @@ namespace WinFormsDemo
             this.actFloatingTools.Text = "Floating Tools";
             this.actFloatingTools.Execute += new System.EventHandler(this.actFloatingTools_Execute);
             // 
+            // actUndo
+            // 
+            this.actUndo.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Z)));
+            this.actUndo.Text = "Undo";
+            this.actUndo.Execute += new System.EventHandler(this.actUndo_Execute);
+            // 
+            // actRedo
+            // 
+            this.actRedo.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Y)));
+            this.actRedo.Text = "Redo";
+            this.actRedo.Execute += new System.EventHandler(this.actRedo_Execute);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1210,6 +1324,8 @@ namespace WinFormsDemo
             this.statusStrip1.PerformLayout();
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
+            this.tsEdit.ResumeLayout(false);
+            this.tsEdit.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.actionListProvider1)).EndInit();
             this.ResumeLayout(false);
 
@@ -1332,6 +1448,17 @@ namespace WinFormsDemo
         private System.Windows.Forms.ToolStripButton btnNewPage;
         private System.Windows.Forms.ToolStripButton btnPrevPage;
         private System.Windows.Forms.ToolStripButton btnNextPage;
+        private System.Windows.Forms.ToolStrip tsEdit;
+        private System.Windows.Forms.ToolStripButton btnUndo;
+        private System.Windows.Forms.ToolStripButton btnRedo;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator;
+        private System.Windows.Forms.ToolStripButton btnCut;
+        private System.Windows.Forms.ToolStripButton btnCopy;
+        private System.Windows.Forms.ToolStripButton btnPaste;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator12;
+        private System.Windows.Forms.ToolStripButton btnDelete;
+        private Burkovsky.Controls.Action actUndo;
+        private Burkovsky.Controls.Action actRedo;
     }
 }
 
