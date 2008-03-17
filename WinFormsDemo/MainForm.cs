@@ -89,8 +89,8 @@ namespace WinFormsDemo
             }
             de.AddViewer(dvEditor);
             if (dvEditor.Zoom != Zoom.Custom)
-                dvEditor.Zoom = dvEditor.Zoom; 
-            dvEditor.Update();            
+                dvEditor.Zoom = dvEditor.Zoom;
+            dvEditor.Update();
             this.de = de;
             de_SelectedFiguresChanged();
             UpdateUndoRedoControls();
@@ -419,11 +419,6 @@ namespace WinFormsDemo
             SetCurrentDe(p.DEngine);
         }
 
-        private void previewBar1_PreviewAdd(object sender, EventArgs e)
-        {
-            actNewPage_Execute(sender, e);
-        }
-
         private void previewBar1_PreviewContext(Preview p, Point pt)
         {
             cmsPreview.Show(p, pt);
@@ -462,10 +457,10 @@ namespace WinFormsDemo
                 CheckState();
                 de.ClearSelected();
                 WFBitmap bmp = new WFBitmap(ofd.FileName);
-				de.UndoRedoStart("Add Image");
+                de.UndoRedoStart("Add Image");
                 byte[] imageData = WFHelper.ToImageData((Bitmap)bmp.NativeBmp);
                 de.AddFigure(new ImageFigure(new DRect(10, 10, bmp.Width, bmp.Height), 0, imageData, ofd.FileName));
-				de.UndoRedoCommit();
+                de.UndoRedoCommit();
                 de.UpdateViewers();
             }
         }
@@ -775,13 +770,13 @@ namespace WinFormsDemo
                 dem.UndoRedoStart("Delete Attachments");
                 foreach (ListViewItem item in attachmentView1.SelectedItems)
                     attachmentView1.RemoveAttachment(item);
-                dem.UndoRedoCommit();                
+                dem.UndoRedoCommit();
             }
         }
 
         private void actDelete_Execute(object sender, EventArgs e)
         {
-            DoDelete();   
+            DoDelete();
         }
 
         void UpdateTitleBar()
@@ -1250,6 +1245,18 @@ namespace WinFormsDemo
             attachmentView1.BringToFront();
             btnPages.Checked = false;
             btnAttachments.Checked = true;
+        }
+
+        // Page Management toolbar
+
+        private void btnPrevPage_Click(object sender, EventArgs e)
+        {
+            previewBar1.Previous();
+        }
+
+        private void btnNextPage_Click(object sender, EventArgs e)
+        {
+            previewBar1.Next();
         }
     }
 }

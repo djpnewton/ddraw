@@ -16,14 +16,13 @@ namespace WinFormsDemo
     public partial class PreviewBar : UserControl
     {
         public event PreviewSelectedHandler PreviewSelected;
-        public event EventHandler PreviewAdd;
         public event PreviewContextHandler PreviewContext;
         public event PreviewMoveHandler PreviewMove;
         public event PreivewFigureDropHandler PreviewFigureDrop;
 
         int IdealPreviewWidth
         {
-            get { return pnlPreviews.Width - SystemInformation.VerticalScrollBarWidth; }
+            get { return Width - SystemInformation.VerticalScrollBarWidth; }
         }
 
         public PreviewBar()
@@ -34,8 +33,8 @@ namespace WinFormsDemo
         int GetPreviewIndex(DEngine de)
         {
             if (de != null)
-                for (int i = pnlPreviews.Controls.Count - 1; i >= 0; i--)
-                    if (((Preview)pnlPreviews.Controls[i]).DEngine == de)
+                for (int i = Controls.Count - 1; i >= 0; i--)
+                    if (((Preview)Controls[i]).DEngine == de)
                         return i;
             return -1;
         }
@@ -44,7 +43,7 @@ namespace WinFormsDemo
         {
             if (de != null)
             {
-                Preview pToSelect = (Preview)pnlPreviews.Controls[GetPreviewIndex(de)];
+                Preview pToSelect = (Preview)Controls[GetPreviewIndex(de)];
                 pToSelect.Selected = true;
                 DoPreviewSelected(pToSelect);
             }
@@ -57,11 +56,11 @@ namespace WinFormsDemo
             if (sibling != null)
                 idx = GetPreviewIndex(sibling) + 1;
             else
-                idx = pnlPreviews.Controls.Count;
+                idx = Controls.Count;
             // create preview
             Preview p = new Preview(de);
-            p.Parent = pnlPreviews;
-            pnlPreviews.Controls.SetChildIndex(p, idx);
+            p.Parent = this;
+            Controls.SetChildIndex(p, idx);
             // set preview properties
             p.Width = IdealPreviewWidth;
             p.Height = 65;
@@ -83,23 +82,23 @@ namespace WinFormsDemo
             int idx = GetPreviewIndex(de);
             if (idx > -1)
             {
-                Preview p = (Preview)pnlPreviews.Controls[idx];
+                Preview p = (Preview)Controls[idx];
                 // remove from pnlPreview.Controls
-                pnlPreviews.Controls.Remove(p);
+                Controls.Remove(p);
                 // set the preview positions
                 SetPreviewTops(idx);
                 // select a new preview
                 if (p.Selected)
                 {
-                    if (idx < pnlPreviews.Controls.Count)
+                    if (idx < Controls.Count)
                     {
-                        ((Preview)pnlPreviews.Controls[idx]).Selected = true;
-                        DoPreviewSelected((Preview)pnlPreviews.Controls[idx]);
+                        ((Preview)Controls[idx]).Selected = true;
+                        DoPreviewSelected((Preview)Controls[idx]);
                     }
                     else if (idx > 0)
                     {
-                        ((Preview)pnlPreviews.Controls[idx - 1]).Selected = true;
-                        DoPreviewSelected((Preview)pnlPreviews.Controls[idx - 1]);
+                        ((Preview)Controls[idx - 1]).Selected = true;
+                        DoPreviewSelected((Preview)Controls[idx - 1]);
                     }
                 }
             }
@@ -107,19 +106,19 @@ namespace WinFormsDemo
         
         void SetPreviewTops(int idx)
         {
-            while (idx < pnlPreviews.Controls.Count)
+            while (idx < Controls.Count)
             {
                 if (idx == 0)
-                    pnlPreviews.Controls[idx].Top = 0 - pnlPreviews.VerticalScroll.Value;
+                    Controls[idx].Top = 0 - VerticalScroll.Value;
                 else
-                    pnlPreviews.Controls[idx].Top = pnlPreviews.Controls[idx - 1].Bottom;
+                    Controls[idx].Top = Controls[idx - 1].Bottom;
                 idx++;
             }
         }
 
         public void Clear()
         {
-            pnlPreviews.Controls.Clear();
+            Controls.Clear();
         }
 
         void p_Click(object sender, EventArgs e)
@@ -139,7 +138,7 @@ namespace WinFormsDemo
 
         void p_PreviewMove(Preview p, Preview to)
         {
-            pnlPreviews.Controls.SetChildIndex(p, pnlPreviews.Controls.IndexOf(to));
+            Controls.SetChildIndex(p, Controls.IndexOf(to));
             SetPreviewTops(0);
             if (PreviewMove != null)
                 PreviewMove(p, to);
@@ -151,40 +150,34 @@ namespace WinFormsDemo
                 PreviewFigureDrop(p, figs);
         }
 
-        private void btnAdd_Click(object sender, EventArgs e)
+        public void Previous()
         {
-            if (PreviewAdd != null)
-                PreviewAdd(this, new EventArgs());
-        }
-
-        private void btnPrev_Click(object sender, EventArgs e)
-        {
-            foreach (Preview p in pnlPreviews.Controls)
+            foreach (Preview p in Controls)
                 if (p.Selected)
                 {
-                    int idx = pnlPreviews.Controls.IndexOf(p);
+                    int idx = Controls.IndexOf(p);
                     Preview pToSelect;
                     if (idx > 0)
-                        pToSelect = (Preview)pnlPreviews.Controls[idx - 1];
+                        pToSelect = (Preview)Controls[idx - 1];
                     else
-                        pToSelect = (Preview)pnlPreviews.Controls[pnlPreviews.Controls.Count - 1];
+                        pToSelect = (Preview)Controls[Controls.Count - 1];
                     pToSelect.Selected = true;
                     DoPreviewSelected(pToSelect);
                     break;
                 }
         }
 
-        private void btnNext_Click(object sender, EventArgs e)
+        public void Next()
         {
-            foreach (Preview p in pnlPreviews.Controls)
+            foreach (Preview p in Controls)
                 if (p.Selected)
                 {
-                    int idx = pnlPreviews.Controls.IndexOf(p);
+                    int idx = Controls.IndexOf(p);
                     Preview pToSelect;
-                    if (idx < pnlPreviews.Controls.Count - 1)
-                        pToSelect = (Preview)pnlPreviews.Controls[idx + 1];
+                    if (idx < Controls.Count - 1)
+                        pToSelect = (Preview)Controls[idx + 1];
                     else
-                        pToSelect = (Preview)pnlPreviews.Controls[0];
+                        pToSelect = (Preview)Controls[0];
                     pToSelect.Selected = true;
                     DoPreviewSelected(pToSelect);
                     break;
@@ -200,9 +193,9 @@ namespace WinFormsDemo
         public void MatchPreviewsToEngines(List<DEngine> engines, DViewer dv)
         {
             // Remove previews that dont have a matching preview
-            for (int i = pnlPreviews.Controls.Count-1; i >= 0; i--)
+            for (int i = Controls.Count-1; i >= 0; i--)
             {
-                Preview p = (Preview)pnlPreviews.Controls[i];
+                Preview p = (Preview)Controls[i];
 
                 if (engines.IndexOf(p.DEngine) == -1)
                     RemovePreview(p.DEngine);
@@ -225,7 +218,7 @@ namespace WinFormsDemo
                 int idx = GetPreviewIndex(engines[i]);
                 if (idx != i)
                 {
-                    pnlPreviews.Controls.SetChildIndex(pnlPreviews.Controls[idx], i);
+                    Controls.SetChildIndex(Controls[idx], i);
                     reorder = true;
                 }
             }
@@ -235,16 +228,16 @@ namespace WinFormsDemo
 
         public void UpdatePreviewsDirtyProps()
         {
-            foreach (Preview p in pnlPreviews.Controls)
+            foreach (Preview p in Controls)
                 p.Dirty = p.DEngine.CanUndo;
         }
 
-        private void pnlPreviews_SizeChanged(object sender, EventArgs e)
+        private void PreviewBar_SizeChanged(object sender, EventArgs e)
         {
-            if (pnlPreviews.Controls.Count > 0)
+            if (Controls.Count > 0)
             {
-                if (pnlPreviews.Controls[0].Width != IdealPreviewWidth)
-                    foreach (Preview p in pnlPreviews.Controls)
+                if (Controls[0].Width != IdealPreviewWidth)
+                    foreach (Preview p in Controls)
                         p.Width = IdealPreviewWidth;
             }
         }

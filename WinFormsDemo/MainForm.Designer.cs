@@ -67,6 +67,10 @@ namespace WinFormsDemo
             this.tsSidebarSep = new System.Windows.Forms.ToolStripSeparator();
             this.btnPages = new System.Windows.Forms.ToolStripButton();
             this.btnAttachments = new System.Windows.Forms.ToolStripButton();
+            this.tsPageManage = new System.Windows.Forms.ToolStrip();
+            this.btnNewPage = new System.Windows.Forms.ToolStripButton();
+            this.btnPrevPage = new System.Windows.Forms.ToolStripButton();
+            this.btnNextPage = new System.Windows.Forms.ToolStripButton();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.lbInfo = new System.Windows.Forms.ToolStripStatusLabel();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
@@ -153,6 +157,7 @@ namespace WinFormsDemo
             this.splitContainer1.SuspendLayout();
             this.tsSidebarPanel.SuspendLayout();
             this.tsSidebar.SuspendLayout();
+            this.tsPageManage.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.actionListProvider1)).BeginInit();
@@ -431,14 +436,13 @@ namespace WinFormsDemo
             // 
             this.previewBar1.AutoScroll = true;
             this.previewBar1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.previewBar1.Location = new System.Drawing.Point(0, 25);
+            this.previewBar1.Location = new System.Drawing.Point(0, 50);
             this.previewBar1.Name = "previewBar1";
-            this.previewBar1.Size = new System.Drawing.Size(120, 194);
+            this.previewBar1.Size = new System.Drawing.Size(120, 169);
             this.previewBar1.TabIndex = 0;
             this.previewBar1.PreviewMove += new WinFormsDemo.PreviewMoveHandler(this.previewBar1_PreviewMove);
             this.previewBar1.PreviewSelected += new WinFormsDemo.PreviewSelectedHandler(this.previewBar1_PreviewSelected);
             this.previewBar1.PreviewFigureDrop += new WinFormsDemo.PreivewFigureDropHandler(this.previewBar1_PreviewFigureDrop);
-            this.previewBar1.PreviewAdd += new System.EventHandler(this.previewBar1_PreviewAdd);
             this.previewBar1.Leave += new System.EventHandler(this.previewBar1_Leave);
             this.previewBar1.PreviewContext += new WinFormsDemo.PreviewContextHandler(this.previewBar1_PreviewContext);
             this.previewBar1.Enter += new System.EventHandler(this.previewBar1_Enter);
@@ -447,9 +451,9 @@ namespace WinFormsDemo
             // 
             this.attachmentView1.AllowDrop = true;
             this.attachmentView1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.attachmentView1.Location = new System.Drawing.Point(0, 25);
+            this.attachmentView1.Location = new System.Drawing.Point(0, 50);
             this.attachmentView1.Name = "attachmentView1";
-            this.attachmentView1.Size = new System.Drawing.Size(120, 194);
+            this.attachmentView1.Size = new System.Drawing.Size(120, 169);
             this.attachmentView1.TabIndex = 0;
             this.attachmentView1.UseCompatibleStateImageBehavior = false;
             this.attachmentView1.View = System.Windows.Forms.View.Details;
@@ -457,12 +461,13 @@ namespace WinFormsDemo
             // tsSidebarPanel
             // 
             this.tsSidebarPanel.Controls.Add(this.tsSidebar);
+            this.tsSidebarPanel.Controls.Add(this.tsPageManage);
             this.tsSidebarPanel.Dock = System.Windows.Forms.DockStyle.Top;
             this.tsSidebarPanel.Location = new System.Drawing.Point(0, 0);
             this.tsSidebarPanel.Name = "tsSidebarPanel";
             this.tsSidebarPanel.Orientation = System.Windows.Forms.Orientation.Horizontal;
             this.tsSidebarPanel.RowMargin = new System.Windows.Forms.Padding(3, 0, 0, 0);
-            this.tsSidebarPanel.Size = new System.Drawing.Size(120, 25);
+            this.tsSidebarPanel.Size = new System.Drawing.Size(120, 50);
             // 
             // tsSidebar
             // 
@@ -518,6 +523,50 @@ namespace WinFormsDemo
             this.btnAttachments.Size = new System.Drawing.Size(23, 22);
             this.btnAttachments.Text = "View Attachments";
             this.btnAttachments.Click += new System.EventHandler(this.btnAttachments_Click);
+            // 
+            // tsPageManage
+            // 
+            this.tsPageManage.Dock = System.Windows.Forms.DockStyle.None;
+            this.tsPageManage.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.btnNewPage,
+            this.btnPrevPage,
+            this.btnNextPage});
+            this.tsPageManage.Location = new System.Drawing.Point(3, 25);
+            this.tsPageManage.Name = "tsPageManage";
+            this.tsPageManage.Size = new System.Drawing.Size(112, 25);
+            this.tsPageManage.TabIndex = 1;
+            // 
+            // btnNewPage
+            // 
+            this.actionListProvider1.SetAction(this.btnNewPage, this.actNewPage);
+            this.btnNewPage.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.btnNewPage.Image = ((System.Drawing.Image)(resources.GetObject("btnNewPage.Image")));
+            this.btnNewPage.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnNewPage.Name = "btnNewPage";
+            this.btnNewPage.Size = new System.Drawing.Size(23, 22);
+            this.btnNewPage.Text = "New Page";
+            // 
+            // btnPrevPage
+            // 
+            this.actionListProvider1.SetAction(this.btnPrevPage, null);
+            this.btnPrevPage.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.btnPrevPage.Image = ((System.Drawing.Image)(resources.GetObject("btnPrevPage.Image")));
+            this.btnPrevPage.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnPrevPage.Name = "btnPrevPage";
+            this.btnPrevPage.Size = new System.Drawing.Size(23, 22);
+            this.btnPrevPage.Text = "Previous Page";
+            this.btnPrevPage.Click += new System.EventHandler(this.btnPrevPage_Click);
+            // 
+            // btnNextPage
+            // 
+            this.actionListProvider1.SetAction(this.btnNextPage, null);
+            this.btnNextPage.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.btnNextPage.Image = ((System.Drawing.Image)(resources.GetObject("btnNextPage.Image")));
+            this.btnNextPage.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnNextPage.Name = "btnNextPage";
+            this.btnNextPage.Size = new System.Drawing.Size(23, 22);
+            this.btnNextPage.Text = "Next Page";
+            this.btnNextPage.Click += new System.EventHandler(this.btnNextPage_Click);
             // 
             // statusStrip1
             // 
@@ -1155,6 +1204,8 @@ namespace WinFormsDemo
             this.tsSidebarPanel.PerformLayout();
             this.tsSidebar.ResumeLayout(false);
             this.tsSidebar.PerformLayout();
+            this.tsPageManage.ResumeLayout(false);
+            this.tsPageManage.PerformLayout();
             this.statusStrip1.ResumeLayout(false);
             this.statusStrip1.PerformLayout();
             this.menuStrip1.ResumeLayout(false);
@@ -1277,6 +1328,10 @@ namespace WinFormsDemo
         private System.Windows.Forms.ToolStripButton btnPages;
         private System.Windows.Forms.ToolStripButton btnAttachments;
         private System.Windows.Forms.ToolStripSeparator tsSidebarSep;
+        private System.Windows.Forms.ToolStrip tsPageManage;
+        private System.Windows.Forms.ToolStripButton btnNewPage;
+        private System.Windows.Forms.ToolStripButton btnPrevPage;
+        private System.Windows.Forms.ToolStripButton btnNextPage;
     }
 }
 
