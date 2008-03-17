@@ -151,6 +151,7 @@ namespace WinFormsDemo
             SetBounds(options.FormRect.Left, options.FormRect.Top, options.FormRect.Width, options.FormRect.Height);
             if (options.FormWindowState != FormWindowState.Minimized)
                 WindowState = options.FormWindowState;
+            SidebarSide = options.SidebarSide;
             // dvEditor options
             dvEditor.AntiAlias = options.AntiAlias;
             if (options.Zoom == Zoom.Custom)
@@ -168,6 +169,7 @@ namespace WinFormsDemo
             else
                 options.FormRect = new Rectangle(Left, Top, Width, Height);
             options.FormWindowState = WindowState;
+            options.SidebarSide = SidebarSide;
             // dvEditor options
             options.Zoom = dvEditor.Zoom;
             options.Scale = dvEditor.Scale;
@@ -1180,43 +1182,59 @@ namespace WinFormsDemo
 
         // Sidebar //////////////////////////////////////////////////////
 
-        void SetSizebarPos(bool left)
+        SidebarSide SidebarSide
         {
-            SuspendLayout();
-            if (left)
+            get
             {
-                previewBar1.Parent = splitContainer1.Panel1;
-                attachmentView1.Parent = splitContainer1.Panel1;
-                tsSidebarPanel.Parent = splitContainer1.Panel1;
-                wfvcEditor.Parent = splitContainer1.Panel2;
-                btnSwitchSidebar.Image = Resource1.arrow_right;
-                tsSidebar.Items.Insert(tsSidebar.Items.Count - 1, tsSidebarSep);
-                tsSidebar.Items.Insert(tsSidebar.Items.Count - 1, btnSwitchSidebar);
+                if (tsSidebarPanel.Parent == splitContainer1.Panel2)
+                    return SidebarSide.Right;
+                else
+                    return SidebarSide.Left;
             }
-            else
+            set
             {
-                previewBar1.Parent = splitContainer1.Panel2;
-                attachmentView1.Parent = splitContainer1.Panel2;
-                tsSidebarPanel.Parent = splitContainer1.Panel2;
-                wfvcEditor.Parent = splitContainer1.Panel1;
-                btnSwitchSidebar.Image = Resource1.arrow_left;
-                tsSidebar.Items.Insert(0, tsSidebarSep);
-                tsSidebar.Items.Insert(0, btnSwitchSidebar);
+                if (value != SidebarSide)
+                {
+                    SuspendLayout();
+                    if (value == SidebarSide.Left)
+                    {
+                        previewBar1.Parent = splitContainer1.Panel1;
+                        attachmentView1.Parent = splitContainer1.Panel1;
+                        tsSidebarPanel.Parent = splitContainer1.Panel1;
+                        wfvcEditor.Parent = splitContainer1.Panel2;
+                        btnSwitchSidebar.Image = Resource1.arrow_right;
+                        tsSidebar.Items.Insert(tsSidebar.Items.Count - 1, tsSidebarSep);
+                        tsSidebar.Items.Insert(tsSidebar.Items.Count - 1, btnSwitchSidebar);
+                    }
+                    else
+                    {
+                        previewBar1.Parent = splitContainer1.Panel2;
+                        attachmentView1.Parent = splitContainer1.Panel2;
+                        tsSidebarPanel.Parent = splitContainer1.Panel2;
+                        wfvcEditor.Parent = splitContainer1.Panel1;
+                        btnSwitchSidebar.Image = Resource1.arrow_left;
+                        tsSidebar.Items.Insert(0, tsSidebarSep);
+                        tsSidebar.Items.Insert(0, btnSwitchSidebar);
+                    }
+                    if (btnPages.Checked)
+                        btnPages.PerformClick();
+                    else
+                        btnAttachments.PerformClick();
+                    int tmp = splitContainer1.Panel1MinSize;
+                    splitContainer1.Panel1MinSize = splitContainer1.Panel2MinSize;
+                    splitContainer1.Panel2MinSize = tmp;
+                    splitContainer1.SplitterDistance = splitContainer1.Width - splitContainer1.SplitterDistance;
+                    ResumeLayout();
+                }
             }
-            if (btnPages.Checked)
-                btnPages.PerformClick();
-            else
-                btnAttachments.PerformClick();
-            int tmp = splitContainer1.Panel1MinSize;
-            splitContainer1.Panel1MinSize = splitContainer1.Panel2MinSize;
-            splitContainer1.Panel2MinSize = tmp;
-            splitContainer1.SplitterDistance = splitContainer1.Width - splitContainer1.SplitterDistance;
-            ResumeLayout();
         }
 
         private void btnSwitchSidebar_Click(object sender, EventArgs e)
         {
-            SetSizebarPos(tsSidebarPanel.Parent == splitContainer1.Panel2);
+            if (SidebarSide == SidebarSide.Right)
+                SidebarSide = SidebarSide.Left;
+            else
+                SidebarSide = SidebarSide.Right;
         }
 
         private void btnPages_Click(object sender, EventArgs e)
