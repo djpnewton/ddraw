@@ -123,6 +123,7 @@ namespace WinFormsDemo
 
         void p_Click(object sender, EventArgs e)
         {
+            Focus();
             if (!((Preview)sender).Selected)
             {
                 ((Preview)sender).Selected = true;

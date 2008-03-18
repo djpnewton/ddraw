@@ -11,7 +11,7 @@ using DDraw.WinForms;
 
 namespace WinFormsDemo
 {
-    public class ToolStripDEngineState : ToolStrip
+    public class ToolStripDEngineState : ToolStripEx
     {
         ToolStripButton btnSelect;
         ToolStripButton btnPen;
@@ -126,7 +126,7 @@ namespace WinFormsDemo
         }
     }
 
-    public class ToolStripDAuthorPropsState : ToolStrip
+    public class ToolStripDAuthorPropsState : ToolStripEx
     {
         ToolStripColorButton btnFill;
         ToolStripColorButton btnStroke;

@@ -771,4 +771,63 @@ namespace WinFormsDemo
                 FontNameChanged(this, e);
         }
     }
+
+    // based off code in Paint.Net for mono (http://code.google.com/p/paint-mono/)
+    public class ToolStripEx : ToolStrip
+    {
+        /// <summary>
+        /// Gets or sets whether the ToolStripEx honors item clicks when its containing form does
+        /// not have input focus.
+        /// </summary>
+        /// <remarks>
+        /// Default value is true, which is the opposite of the behavior provided by the base
+        /// ToolStrip class.
+        /// </remarks>
+        bool clickThrough = true;
+        public bool ClickThrough
+        {
+            get { return clickThrough; }
+            set { clickThrough = value; }
+        }
+
+        const uint MA_ACTIVATE = 1;
+        const uint MA_ACTIVATEANDEAT = 2;
+        const uint MA_NOACTIVATE = 3;
+        const uint MA_NOACTIVATEANDEAT = 4;
+
+        const uint WM_MOUSEACTIVATE = 0x21;
+
+        protected override void WndProc(ref Message m)
+        {
+            base.WndProc(ref m);
+
+            if (this.clickThrough)
+                ClickThroughWndProc(ref m);
+        }
+
+        /// <summary>
+        /// This WndProc implements click-through functionality. Some controls (MenuStrip, ToolStrip) will not
+        /// recognize a click unless the form they are hosted in is active. So the first click will activate the
+        /// form and then a second is required to actually make the click happen.
+        /// </summary>
+        /// <param name="m">The Message that was passed to your WndProc.</param>
+        /// <returns>true if the message was processed, false if it was not</returns>
+        /// <remarks>
+        /// You should first call base.WndProc(), and then call this method. This method is only intended to
+        /// change a return value, not to change actual processing before that.
+        /// </remarks>
+        bool ClickThroughWndProc(ref Message m)
+        {
+            bool returnVal = false;
+            if (m.Msg == WM_MOUSEACTIVATE)
+            {
+                if (m.Result == (IntPtr)MA_ACTIVATEANDEAT)
+                {
+                    m.Result = (IntPtr)MA_ACTIVATE;
+                    returnVal = true;
+                }
+            }
+            return returnVal;
+        }
+    }
 }
