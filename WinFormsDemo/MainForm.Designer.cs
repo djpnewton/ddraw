@@ -73,7 +73,7 @@ namespace WinFormsDemo
             this.btnNextPage = new System.Windows.Forms.ToolStripButton();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.lbInfo = new System.Windows.Forms.ToolStripStatusLabel();
-            this.menuStrip1 = new System.Windows.Forms.MenuStrip();
+            this.menuStrip1 = new MenuStripEx();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.newToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -1339,7 +1339,7 @@ namespace WinFormsDemo
         private System.Windows.Forms.Panel pnlMain;
         private System.Windows.Forms.ToolStripStatusLabel lbInfo;
         private PreviewBar previewBar1;
-        private System.Windows.Forms.MenuStrip menuStrip1;
+        private MenuStripEx menuStrip1;
         private System.Windows.Forms.ToolStripMenuItem insertToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem imageToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;
