@@ -155,6 +155,7 @@ namespace WinFormsDemo
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "BackgroundForm";
+            this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Set Background";
             this.Shown += new System.EventHandler(this.BackgroundForm_Shown);

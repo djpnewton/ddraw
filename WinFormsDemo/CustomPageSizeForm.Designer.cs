@@ -173,6 +173,7 @@ namespace WinFormsDemo
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "CustomPageSizeForm";
+            this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Page Size";
             ((System.ComponentModel.ISupportInitialize)(this.nudWidthMM)).EndInit();

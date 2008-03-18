@@ -182,7 +182,9 @@
     <Compile Include="AnnotationForm.Designer.cs">
       <DependentUpon>AnnotationForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="WorkBookUtils.cs" />
+    <Compile Include="WorkBookUtils.cs">
+      <SubType>Form</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DDrawWF\DDrawWF.csproj">

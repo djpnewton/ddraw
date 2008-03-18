@@ -14,7 +14,7 @@ namespace WinFormsDemo
     public delegate void ImportAnnotationsPageHandler(DEngine de);
     public delegate void ImportAnnotationsImageHandler(DBitmap bmp);
 
-    public partial class FloatingToolsForm : Form
+    public partial class FloatingToolsForm : WorkBookForm
     {
         Form mainForm;
         AnnotationForm annotationForm = null;

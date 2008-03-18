@@ -15,7 +15,7 @@ using DDraw.WinForms;
 
 namespace WinFormsDemo
 {
-    public partial class MainForm : Form
+    public partial class MainForm : WorkBookForm
     {
         DEngineManager dem;
         DAuthorProperties dap;

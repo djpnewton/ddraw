@@ -313,6 +313,7 @@ namespace WinFormsDemo
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "LinkForm";
+            this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Figure Link";
             this.gbLinkType.ResumeLayout(false);

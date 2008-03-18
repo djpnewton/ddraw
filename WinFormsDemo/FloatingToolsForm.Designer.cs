@@ -67,6 +67,7 @@ namespace WinFormsDemo
             this.btnImportArea,
             this.btnImportPage});
             this.toolStrip1.Location = new System.Drawing.Point(3, 0);
+            this.toolStrip1.ManagedFocus = true;
             this.toolStrip1.Name = "toolStrip1";
             this.toolStrip1.Size = new System.Drawing.Size(133, 25);
             this.toolStrip1.TabIndex = 0;
@@ -132,6 +133,7 @@ namespace WinFormsDemo
             this.tsEngineState.ClickThrough = true;
             this.tsEngineState.Dock = System.Windows.Forms.DockStyle.None;
             this.tsEngineState.Location = new System.Drawing.Point(3, 25);
+            this.tsEngineState.ManagedFocus = true;
             this.tsEngineState.Name = "tsEngineState";
             this.tsEngineState.Size = new System.Drawing.Size(288, 25);
             this.tsEngineState.TabIndex = 2;
@@ -143,6 +145,7 @@ namespace WinFormsDemo
             this.tsPropState.Dock = System.Windows.Forms.DockStyle.None;
             this.tsPropState.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.HorizontalStackWithOverflow;
             this.tsPropState.Location = new System.Drawing.Point(3, 50);
+            this.tsPropState.ManagedFocus = true;
             this.tsPropState.Name = "tsPropState";
             this.tsPropState.Size = new System.Drawing.Size(291, 25);
             this.tsPropState.TabIndex = 3;
@@ -158,6 +161,7 @@ namespace WinFormsDemo
             this.Controls.Add(this.toolStripPanel1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             this.Name = "FloatingToolsForm";
+            this.ShowInTaskbar = false;
             this.Text = "Floating Tools";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FloatingToolsForm_FormClosing);
             this.toolStripPanel1.ResumeLayout(false);
