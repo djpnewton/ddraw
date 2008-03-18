@@ -19,6 +19,7 @@ namespace WinFormsDemo
             de.AutoGroupPolylinesTimeout = 2000;
             de.AutoGroupPolylinesXLimit = 100;
             de.AutoGroupPolylinesYLimit = 50;
+            de.UsePolylineDots = true;
             de.FiguresBoundToPage = true;
         }
 

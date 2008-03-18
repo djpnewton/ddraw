@@ -124,9 +124,10 @@ namespace WinFormsDemo
             linkGlyph.Visiblility = DGlyphVisiblity.Always;
             linkGlyph.Clicked += new GlyphClickedHandler(linkGlyph_Clicked);
             // figure defaults
-            Figure._handleSize = 5;
-            Figure._handleBorder = 3;
-            Figure._rotateHandleStemLength -= Figure._handleBorder;
+            Figure._handleSize = 6;
+            Figure._handleBorder = 4;
+            Figure._rotateHandleStemLength = Figure._handleSize - Figure._handleBorder;
+            LinebaseFigure._hitTestExtension = 5;
             // new document
             New();
             dem.UndoRedoClearHistory();

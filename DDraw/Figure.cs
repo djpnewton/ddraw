@@ -810,6 +810,8 @@ namespace DDraw
 
     public abstract class LinebaseFigure : Figure, IStrokeable, IMarkable, IAlphaBlendable
     {
+        public static int _hitTestExtension = 0;
+
         public override DRect GetSelectRect()
         {
             // add in stroke width spacing
@@ -1113,7 +1115,7 @@ namespace DDraw
         {
             if (Pt1 != null && Pt2 != null)
             {
-                if (DGeom.PointInLine(pt, Pt1, Pt2, StrokeWidth / 2))
+                if (DGeom.PointInLine(pt, Pt1, Pt2, StrokeWidth / 2 + _hitTestExtension))
                     return DHitTest.Body;
                 else if (DGeom.PointInPolygon(pt, GetStartMarkerPoints()) || DGeom.PointInPolygon(pt, GetEndMarkerPoints()))
                     return DHitTest.Body;
@@ -1330,7 +1332,7 @@ namespace DDraw
         {
             if (Points != null)
             {
-                if (DGeom.PointInPolyline(pt, Points, StrokeWidth / 2))
+                if (DGeom.PointInPolyline(pt, Points, StrokeWidth / 2 + _hitTestExtension))
                     return DHitTest.Body;
                 else if (DGeom.PointInPolygon(pt, GetStartMarkerPoints()) || DGeom.PointInPolygon(pt, GetEndMarkerPoints()))
                     return DHitTest.Body;
