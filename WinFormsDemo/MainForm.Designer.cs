@@ -62,18 +62,18 @@ namespace WinFormsDemo
             this.previewBar1 = new WinFormsDemo.PreviewBar();
             this.attachmentView1 = new WinFormsDemo.AttachmentView();
             this.tsSidebarPanel = new System.Windows.Forms.ToolStripPanel();
-            this.tsSidebar = new ToolStripEx();
+            this.tsSidebar = new WinFormsDemo.ToolStripEx();
             this.btnSwitchSidebar = new System.Windows.Forms.ToolStripButton();
             this.tsSidebarSep = new System.Windows.Forms.ToolStripSeparator();
             this.btnPages = new System.Windows.Forms.ToolStripButton();
             this.btnAttachments = new System.Windows.Forms.ToolStripButton();
-            this.tsPageManage = new ToolStripEx();
+            this.tsPageManage = new WinFormsDemo.ToolStripEx();
             this.btnNewPage = new System.Windows.Forms.ToolStripButton();
             this.btnPrevPage = new System.Windows.Forms.ToolStripButton();
             this.btnNextPage = new System.Windows.Forms.ToolStripButton();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.lbInfo = new System.Windows.Forms.ToolStripStatusLabel();
-            this.menuStrip1 = new MenuStripEx();
+            this.menuStrip1 = new WinFormsDemo.MenuStripEx();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.newToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -118,10 +118,12 @@ namespace WinFormsDemo
             this.bringForwardToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.floatingToolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.resetToolbarsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tsEngineState = new WinFormsDemo.ToolStripDEngineState();
-            this.tsEdit = new ToolStripEx();
+            this.tsPropState = new WinFormsDemo.ToolStripDAuthorPropsState();
+            this.tsEdit = new WinFormsDemo.ToolStripEx();
             this.btnUndo = new System.Windows.Forms.ToolStripButton();
             this.btnRedo = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator = new System.Windows.Forms.ToolStripSeparator();
@@ -130,7 +132,6 @@ namespace WinFormsDemo
             this.btnPaste = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator12 = new System.Windows.Forms.ToolStripSeparator();
             this.btnDelete = new System.Windows.Forms.ToolStripButton();
-            this.tsPropState = new WinFormsDemo.ToolStripDAuthorPropsState();
             this.actionListProvider1 = new Burkovsky.Controls.ActionListProvider(this.components);
             this.actCut = new Burkovsky.Controls.Action();
             this.actCopy = new Burkovsky.Controls.Action();
@@ -153,9 +154,9 @@ namespace WinFormsDemo
             this.actSave = new Burkovsky.Controls.Action();
             this.actSaveAs = new Burkovsky.Controls.Action();
             this.actPrint = new Burkovsky.Controls.Action();
-            this.actFloatingTools = new Burkovsky.Controls.Action();
             this.actUndo = new Burkovsky.Controls.Action();
             this.actRedo = new Burkovsky.Controls.Action();
+            this.actFloatingTools = new Burkovsky.Controls.Action();
             this.cmsFigure.SuspendLayout();
             this.cmsCanvas.SuspendLayout();
             this.cmsPreview.SuspendLayout();
@@ -484,7 +485,9 @@ namespace WinFormsDemo
             // 
             // tsSidebar
             // 
+            this.tsSidebar.ClickThrough = true;
             this.tsSidebar.Dock = System.Windows.Forms.DockStyle.None;
+            this.tsSidebar.FocusControl = this;
             this.tsSidebar.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
             this.tsSidebar.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.btnSwitchSidebar,
@@ -492,8 +495,9 @@ namespace WinFormsDemo
             this.btnPages,
             this.btnAttachments});
             this.tsSidebar.Location = new System.Drawing.Point(3, 0);
+            this.tsSidebar.ManagedFocus = true;
             this.tsSidebar.Name = "tsSidebar";
-            this.tsSidebar.Size = new System.Drawing.Size(78, 25);
+            this.tsSidebar.Size = new System.Drawing.Size(109, 25);
             this.tsSidebar.TabIndex = 0;
             // 
             // btnSwitchSidebar
@@ -539,12 +543,15 @@ namespace WinFormsDemo
             // 
             // tsPageManage
             // 
+            this.tsPageManage.ClickThrough = true;
             this.tsPageManage.Dock = System.Windows.Forms.DockStyle.None;
+            this.tsPageManage.FocusControl = this;
             this.tsPageManage.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.btnNewPage,
             this.btnPrevPage,
             this.btnNextPage});
             this.tsPageManage.Location = new System.Drawing.Point(3, 25);
+            this.tsPageManage.ManagedFocus = true;
             this.tsPageManage.Name = "tsPageManage";
             this.tsPageManage.Size = new System.Drawing.Size(81, 25);
             this.tsPageManage.TabIndex = 1;
@@ -599,6 +606,7 @@ namespace WinFormsDemo
             // 
             // menuStrip1
             // 
+            this.menuStrip1.ClickThrough = true;
             this.menuStrip1.Dock = System.Windows.Forms.DockStyle.None;
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fileToolStripMenuItem,
@@ -979,7 +987,8 @@ namespace WinFormsDemo
             // 
             this.actionListProvider1.SetAction(this.toolsToolStripMenuItem, null);
             this.toolsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.floatingToolsToolStripMenuItem});
+            this.floatingToolsToolStripMenuItem,
+            this.resetToolbarsToolStripMenuItem});
             this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
             this.toolsToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
             this.toolsToolStripMenuItem.Text = "Tools";
@@ -991,6 +1000,14 @@ namespace WinFormsDemo
             this.floatingToolsToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.F)));
             this.floatingToolsToolStripMenuItem.Size = new System.Drawing.Size(189, 22);
             this.floatingToolsToolStripMenuItem.Text = "Floating Tools";
+            // 
+            // resetToolbarsToolStripMenuItem
+            // 
+            this.actionListProvider1.SetAction(this.resetToolbarsToolStripMenuItem, null);
+            this.resetToolbarsToolStripMenuItem.Name = "resetToolbarsToolStripMenuItem";
+            this.resetToolbarsToolStripMenuItem.Size = new System.Drawing.Size(189, 22);
+            this.resetToolbarsToolStripMenuItem.Text = "Reset Toolbars";
+            this.resetToolbarsToolStripMenuItem.Click += new System.EventHandler(this.resetToolbarsToolStripMenuItem_Click);
             // 
             // helpToolStripMenuItem
             // 
@@ -1012,15 +1029,31 @@ namespace WinFormsDemo
             // 
             // tsEngineState
             // 
+            this.tsEngineState.ClickThrough = true;
             this.tsEngineState.Dock = System.Windows.Forms.DockStyle.None;
+            this.tsEngineState.FocusControl = this;
             this.tsEngineState.Location = new System.Drawing.Point(3, 24);
+            this.tsEngineState.ManagedFocus = true;
             this.tsEngineState.Name = "tsEngineState";
             this.tsEngineState.Size = new System.Drawing.Size(288, 25);
             this.tsEngineState.TabIndex = 2;
             // 
+            // tsPropState
+            // 
+            this.tsPropState.ClickThrough = true;
+            this.tsPropState.Dock = System.Windows.Forms.DockStyle.None;
+            this.tsPropState.FocusControl = this;
+            this.tsPropState.Location = new System.Drawing.Point(3, 49);
+            this.tsPropState.ManagedFocus = true;
+            this.tsPropState.Name = "tsPropState";
+            this.tsPropState.Size = new System.Drawing.Size(291, 25);
+            this.tsPropState.TabIndex = 4;
+            // 
             // tsEdit
             // 
+            this.tsEdit.ClickThrough = true;
             this.tsEdit.Dock = System.Windows.Forms.DockStyle.None;
+            this.tsEdit.FocusControl = this;
             this.tsEdit.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.btnUndo,
             this.btnRedo,
@@ -1031,6 +1064,7 @@ namespace WinFormsDemo
             this.toolStripSeparator12,
             this.btnDelete});
             this.tsEdit.Location = new System.Drawing.Point(3, 74);
+            this.tsEdit.ManagedFocus = true;
             this.tsEdit.Name = "tsEdit";
             this.tsEdit.Size = new System.Drawing.Size(162, 25);
             this.tsEdit.TabIndex = 5;
@@ -1106,14 +1140,6 @@ namespace WinFormsDemo
             this.btnDelete.Name = "btnDelete";
             this.btnDelete.Size = new System.Drawing.Size(23, 22);
             this.btnDelete.Text = "Delete";
-            // 
-            // tsPropState
-            // 
-            this.tsPropState.Dock = System.Windows.Forms.DockStyle.None;
-            this.tsPropState.Location = new System.Drawing.Point(3, 49);
-            this.tsPropState.Name = "tsPropState";
-            this.tsPropState.Size = new System.Drawing.Size(291, 25);
-            this.tsPropState.TabIndex = 4;
             // 
             // actionListProvider1
             // 
@@ -1270,12 +1296,6 @@ namespace WinFormsDemo
             this.actPrint.Text = "Print";
             this.actPrint.Execute += new System.EventHandler(this.actPrint_Execute);
             // 
-            // actFloatingTools
-            // 
-            this.actFloatingTools.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.F)));
-            this.actFloatingTools.Text = "Floating Tools";
-            this.actFloatingTools.Execute += new System.EventHandler(this.actFloatingTools_Execute);
-            // 
             // actUndo
             // 
             this.actUndo.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Z)));
@@ -1288,6 +1308,12 @@ namespace WinFormsDemo
             this.actRedo.Text = "Redo";
             this.actRedo.Execute += new System.EventHandler(this.actRedo_Execute);
             // 
+            // actFloatingTools
+            // 
+            this.actFloatingTools.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.F)));
+            this.actFloatingTools.Text = "Floating Tools";
+            this.actFloatingTools.Execute += new System.EventHandler(this.actFloatingTools_Execute);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1298,6 +1324,7 @@ namespace WinFormsDemo
             this.Name = "MainForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Text = "WinFormsDemo";
+            this.Load += new System.EventHandler(this.MainForm_Load);
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.MainForm_FormClosed);
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
             this.cmsFigure.ResumeLayout(false);
@@ -1459,6 +1486,7 @@ namespace WinFormsDemo
         private System.Windows.Forms.ToolStripButton btnDelete;
         private Burkovsky.Controls.Action actUndo;
         private Burkovsky.Controls.Action actRedo;
+        private System.Windows.Forms.ToolStripMenuItem resetToolbarsToolStripMenuItem;
     }
 }
 

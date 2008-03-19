@@ -777,6 +777,10 @@ namespace WinFormsDemo
     {
         static int enteredComboBox = 0;
 
+        bool clickThrough = true;
+        bool managedFocus = true;
+        Control focusControl = null;
+
         /// <summary>
         /// Gets or sets whether the ToolStripEx honors item clicks when its containing form does
         /// not have input focus.
@@ -785,7 +789,6 @@ namespace WinFormsDemo
         /// Default value is true, which is the opposite of the behavior provided by the base
         /// ToolStrip class.
         /// </remarks>
-        bool clickThrough = true;
         public bool ClickThrough
         {
             get { return clickThrough; }
@@ -819,11 +822,22 @@ namespace WinFormsDemo
         /// relinquish focus (via the RelinquishFocus event) when the mouse leaves. It will not capture or
         /// attempt to relinquish focus if MenuStripEx.IsAnyMenuActive returns true.
         /// </remarks>
-        bool managedFocus = true;
         public bool ManagedFocus
         {
             get { return managedFocus; }
             set { managedFocus = value; }
+        }
+
+        /// <summary>
+        /// Sets the form that will be focused via ManagedFocus
+        /// </summary>
+        /// <remarks>
+        /// If this is set the control will be focused rather than the toolstrip itself
+        /// </remarks>
+        public Control FocusControl
+        {
+            get { return focusControl; }
+            set { focusControl = value; }
         }
 
         protected override void OnItemAdded(ToolStripItemEventArgs e)
@@ -878,7 +892,20 @@ namespace WinFormsDemo
         void OnItemMouseEnter(object sender, EventArgs e)
         {
             if (this.managedFocus && !MenuStripEx.IsAnyMenuActive && WorkBookUtils.IsOurAppActive && enteredComboBox == 0)
-                this.Focus();
+            {
+                if (focusControl != null)
+                {
+                    if (focusControl is Form)
+                    {
+                        if (Form.ActiveForm != focusControl)
+                            focusControl.Focus();
+                    }
+                    else if (!focusControl.Focused)
+                        focusControl.Focus();
+                }
+                else
+                    Focus();
+            }
         }
 
         protected override void OnMouseLeave(EventArgs e)

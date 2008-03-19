@@ -137,12 +137,19 @@ namespace WinFormsDemo
             // set toolstrip properties
             tsPropState.Dap = dap;
             tsPropState.Dv = dvEditor;
-            // read program options
-            ReadOptions();
-            // get command line arguments
-            ActionCommandLine();
             // connect to ipc messages
             ipc.MessageReceived += new MessageReceivedHandler(ipc_MessageReceived);
+            // get command line arguments
+            ActionCommandLine();
+        }
+
+        private void MainForm_Load(object sender, EventArgs e)
+        {
+            // read program options
+            ReadOptions();
+            // read toolstrip settings
+            ToolStripManager.SaveSettings(this, "reset");
+            ToolStripManager.LoadSettings(this);
         }
 
         void ReadOptions()
@@ -153,6 +160,7 @@ namespace WinFormsDemo
             if (options.FormWindowState != FormWindowState.Minimized)
                 WindowState = options.FormWindowState;
             SidebarSide = options.SidebarSide;
+            SidebarWidth = options.SidebarWidth;
             // dvEditor options
             dvEditor.AntiAlias = options.AntiAlias;
             if (options.Zoom == Zoom.Custom)
@@ -171,6 +179,7 @@ namespace WinFormsDemo
                 options.FormRect = new Rectangle(Left, Top, Width, Height);
             options.FormWindowState = WindowState;
             options.SidebarSide = SidebarSide;
+            options.SidebarWidth = SidebarWidth;
             // dvEditor options
             options.Zoom = dvEditor.Zoom;
             options.Scale = dvEditor.Scale;
@@ -219,7 +228,12 @@ namespace WinFormsDemo
             if (!CheckDirty())
                 e.Cancel = true;
             else
+            {
+                // write user options
                 WriteOptions();
+                // write toolstrip settings
+                ToolStripManager.SaveSettings(this);
+            }
         }
 
         private void MainForm_FormClosed(object sender, FormClosedEventArgs e)
@@ -477,6 +491,11 @@ namespace WinFormsDemo
                     attachmentView1.AddAttachment(ofd.FileName);
                 dem.UndoRedoCommit();
             }
+        }
+
+        private void resetToolbarsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ToolStripManager.LoadSettings(this, "reset");
         }
 
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1177,6 +1196,24 @@ namespace WinFormsDemo
         }
 
         // Sidebar //////////////////////////////////////////////////////
+
+        int SidebarWidth
+        {
+            get
+            {
+                if (SidebarSide == SidebarSide.Left)
+                    return splitContainer1.SplitterDistance;
+                else
+                    return splitContainer1.Width - splitContainer1.SplitterDistance;
+            }
+            set
+            {
+                if (SidebarSide == SidebarSide.Left)
+                    splitContainer1.SplitterDistance = value;
+                else
+                    splitContainer1.SplitterDistance = splitContainer1.Width - value;
+            }
+        }
 
         SidebarSide SidebarSide
         {
