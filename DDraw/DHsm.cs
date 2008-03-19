@@ -136,6 +136,7 @@ namespace DDraw
         DPoint dragPt;
         double dragRot;
         DHitTest mouseHitTest;
+        bool cancelledFigureDrag;
 
         bool lockInitialAspectRatio = false;
         double unlockInitalAspectRatioThreshold = 50;
@@ -706,6 +707,12 @@ namespace DDraw
                     // drag figure event
                     if (DragFigureEvt != null)
                         DragFigureEvt(null, currentFigure, dv.EngineToClient(pt));
+                    // if figure drag op is cancelled then quit this function
+                    if (cancelledFigureDrag)
+                    {
+                        cancelledFigureDrag = false;
+                        return;
+                    }
                     // bound pt to canvas
                     BoundPtToPage(pt);
                     // initial update rect
@@ -941,6 +948,8 @@ namespace DDraw
                     DoDragFigureDoubleClick(((QMouseEvent)qevent).Dv, ((QMouseEvent)qevent).Pt);
                     return null;
                 case (int)DHsmSignals.GCancelFigureDrag:
+                    // tell DoDragFigureMouseMove to quit
+                    cancelledFigureDrag = true;
                     // nullify currentFigure
                     currentFigure = null;
                     // cancel changes

@@ -164,28 +164,18 @@ namespace qf4net
 		{
 			// We let the event bubble up the chain until it is handled by a state handler
 			m_MySourceStateMethod = m_MyStateMethod;
-			while(m_MySourceStateMethod != null)
-			{
-                // this try block is here because for some reason sometimes m_MySourceStateMethod
-                // will be null in the first line of the try block even though the while loop
-                // checks that m_MySourceStateMethod is assigned
-                try
+            while (m_MySourceStateMethod != null)
+            {
+                QState state = (QState)m_MySourceStateMethod.Invoke(this, new object[] { qEvent });
+                if (state != null)
                 {
-                    QState state = (QState)m_MySourceStateMethod.Invoke(this, new object[] { qEvent });
-                    if (state != null)
-                    {
-                        m_MySourceStateMethod = state.Method;
-                    }
-                    else
-                    {
-                        m_MySourceStateMethod = null;
-                    }
+                    m_MySourceStateMethod = state.Method;
                 }
-                catch
+                else
                 {
-                    return;
+                    m_MySourceStateMethod = null;
                 }
-			}
+            }
 		}
 
 		/// <summary>
