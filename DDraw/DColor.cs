@@ -54,6 +54,18 @@ namespace DDraw
                 return DColor.Black;                
         }
 
+        public static DColor FromHtml(string s)
+        {
+            if (s.Length == 7 && s[0] == '#')
+            {
+                byte r = Convert.ToByte(string.Concat("0x" + s.Substring(1, 2)), 16);
+                byte g = Convert.ToByte(string.Concat("0x" + s.Substring(3, 2)), 16);
+                byte b = Convert.ToByte(string.Concat("0x" + s.Substring(5, 2)), 16);
+                return new DColor(r, g, b);
+            }
+            return DColor.Black;
+        }
+
         // Predefined colors
 
         public static DColor Clear

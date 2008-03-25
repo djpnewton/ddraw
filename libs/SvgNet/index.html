@@ -1,0 +1,77 @@
+<html>
+    <head>
+        <link rel="stylesheet" type="text/css" href="MSDN.css"/>
+        <title>
+            SvgNet Documentation
+        </title>
+    </head>
+    <body id="bodyID" class="dtBODY">
+        <div id="nsbanner">
+            <div id="bannerrow1">
+                <table class="bannerparthead" cellspacing="0">
+                <tr id="hdr">
+                <td class="runninghead">
+                SvgNet</td>
+                <td class="product">
+                </td>
+                </tr>
+                </table>
+            </div>
+            <div id="TitleRow">
+            <h1 class="dtH1"> SvgNet Overview </h1>
+            </div>
+    </div>
+    <div id="nstext">
+
+        <a href="SvgNet.html">SvgNet</a> is a C# library designed to facilitate the processing and particularly the creation of SVG documents in C#.
+
+        <h2>What it does</h2>
+
+        SvgNet consists of the following parts:
+
+        <h3> Classes to represent SVG elements and SVG types</h3>
+        SvgNet contains a family of classes that represent <a href="SvgNet.SvgElements.html">SVG elements</a> (e.g. ellipse or tspan) and <a href="SvgNet.SvgTypes.html">SVG types</a> (e.g. a transformation list, a style, or a path description). 
+        The SVG types are provided with operators to make constructing and modifying SVG documents easy.  For example, to change some properties of a style you can do:
+        <br/>
+        <pre>
+            myEllipse.Style = new Style("fill:red");
+            myEllipse.Style.Set("opacity", 0.5);
+            myEllipse.Style += "stroke:black";
+        </pre>
+
+        <h3>Classes to read, write and copy SVG scenes</h3>
+        To get an SVG string from a tree of SVG elements you have created is as simple as this:
+        <br/>
+        <pre>
+            SvgElement myRootElement = SvgFactory.ReadSvgString(s);
+            s = myRootElement.WriteSvgString(); 
+        </pre>
+        XML output can use entities to reduce the size and increase the legibility of the document.
+        <p/>
+        The <a href="SvgNet.SvgFactory.html">SvgFactory</a> class also contains methods to make a deep copy of any SVG node and its descendants.  All SVG types and elements are cloneable. 
+
+        <h3>The Svg-Gdi bridge</h3>
+        The <a href="SvgNet.SvgGdi.html">SvgGdi</a> bridge is a set of classes that use SvgNet to translate between SVG and GDI+.  What this means is that any code that uses GDI+ to draw graphics can easily
+        output SVG as well, simply by plugging in the SvgGraphics object.  This object is exactly the same as a regular .NET Graphics object, but creates an SVG tree.  Even things
+        like hatched fills and line anchors are implemented.  The irritatingly old-fashioned 'current transformation' system of GDI+ is implemented by creating nested SVG group
+        elements, resulting in SVG output that's a bit cleaner than the corresponding GDI+ metafile in some ways.
+        <p/>
+        SvgGdi is the main use for SvgNet, although other things (a collection of basic shapes, maybe charting tools) may be built on SvgNet in the future.
+        
+
+        <h2>Documentation</h2>
+
+        The SvgNet class libraries are documented in this help package.  Additionally, there are two example applications bundled with SvgNet:
+        <ul>
+            <li>SvgDocTest -- test application that reads and writes documents and constructs an SVG document.  This application is both an example and test system.</li>
+            <li>SvgGdiTest -- application that draws various scenes with SVG and GDI+.  It is both an example of SvgGdi use, and a test of how accurate SvgGdi's emulation of GDI+ is.</li>
+        </ul>
+
+        <h2>The SvgNet Project</h2>
+         
+        SvgNet is an Open Source project under a BSD-like license (license terms are reproduced in every SvgNet source file).  SvgNet is copyright 2003 RiskCare Ltd.
+
+        </div>
+    </body>
+
+</html>

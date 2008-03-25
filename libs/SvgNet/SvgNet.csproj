@@ -1,0 +1,179 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ProjectType>Local</ProjectType>
+    <ProductVersion>8.0.50727</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{BB4C8021-B5E1-4DE2-82CB-14BDFB9837E4}</ProjectGuid>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ApplicationIcon>
+    </ApplicationIcon>
+    <AssemblyKeyContainerName>
+    </AssemblyKeyContainerName>
+    <AssemblyName>SVG</AssemblyName>
+    <AssemblyOriginatorKeyFile>
+    </AssemblyOriginatorKeyFile>
+    <DefaultClientScript>JScript</DefaultClientScript>
+    <DefaultHTMLPageLayout>Grid</DefaultHTMLPageLayout>
+    <DefaultTargetSchema>IE50</DefaultTargetSchema>
+    <DelaySign>false</DelaySign>
+    <OutputType>Library</OutputType>
+    <RootNamespace>SVG</RootNamespace>
+    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
+    <StartupObject>
+    </StartupObject>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <OutputPath>bin\Debug\</OutputPath>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <BaseAddress>285212672</BaseAddress>
+    <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
+    <ConfigurationOverrideFile>
+    </ConfigurationOverrideFile>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DocumentationFile>svgnetdoc.xml</DocumentationFile>
+    <DebugSymbols>true</DebugSymbols>
+    <FileAlignment>4096</FileAlignment>
+    <NoStdLib>false</NoStdLib>
+    <NoWarn>
+    </NoWarn>
+    <Optimize>false</Optimize>
+    <RegisterForComInterop>false</RegisterForComInterop>
+    <RemoveIntegerChecks>false</RemoveIntegerChecks>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningLevel>4</WarningLevel>
+    <DebugType>full</DebugType>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <OutputPath>bin\Release\</OutputPath>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <BaseAddress>285212672</BaseAddress>
+    <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
+    <ConfigurationOverrideFile>
+    </ConfigurationOverrideFile>
+    <DefineConstants>TRACE</DefineConstants>
+    <DocumentationFile>
+    </DocumentationFile>
+    <DebugSymbols>false</DebugSymbols>
+    <FileAlignment>4096</FileAlignment>
+    <NoStdLib>false</NoStdLib>
+    <NoWarn>
+    </NoWarn>
+    <Optimize>true</Optimize>
+    <RegisterForComInterop>false</RegisterForComInterop>
+    <RemoveIntegerChecks>false</RemoveIntegerChecks>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningLevel>4</WarningLevel>
+    <DebugType>none</DebugType>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System">
+      <Name>System</Name>
+    </Reference>
+    <Reference Include="System.Data">
+      <Name>System.Data</Name>
+    </Reference>
+    <Reference Include="System.Drawing">
+      <Name>System.Drawing</Name>
+    </Reference>
+    <Reference Include="System.Xml">
+      <Name>System.XML</Name>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AssemblyInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ElementInterfaces.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="GDIGraphics.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="IGraphics.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SvgElement.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SvgElementFactory.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SvgEllipseElement.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SvgException.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SvgFilterElement.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SVGGDINotImpl.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SVGGraphics.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SvgGroupElement.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SvgLinearGradient.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SvgLineElement.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SvgPathElement.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SvgPolygonElement.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SvgPolylineElement.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SvgRectElement.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SvgScriptElement.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SvgStyle.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SvgStyledElement.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SvgSvgElement.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SvgSymbolElement.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SvgTextElement.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SvgTitleElement.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SvgTransformList.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Types.cs">
+      <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>
+    </PreBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
+  </PropertyGroup>
+</Project>

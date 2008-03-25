@@ -57,6 +57,7 @@ namespace DDraw
         public const string STARTMARKER_ATTR = "StartMarker";
         public const string ENDMARKER_ATTR = "EndMarker";
         public const string EDITABLEATTRIBUTES_ELE = "EditableAttributes";
+        public const string POLYGON_ELE = "Polygon";
 
         static void FormatToXml(Figure f, XmlTextWriter wr, Dictionary<string, byte[]> images)
         {
@@ -185,6 +186,12 @@ namespace DDraw
             {
                 wr.WriteStartElement(EDITABLEATTRIBUTES_ELE);
                 wr.WriteString(((IEditable)f).EditAttrsToString());
+                wr.WriteEndElement();
+            }
+            if (f is PolygonFigure)
+            {
+                wr.WriteStartElement(POLYGON_ELE);
+                wr.WriteString(DPoints.FormatToString(((PolygonFigure)f).Points));
                 wr.WriteEndElement();
             }
             wr.WriteEndElement();
@@ -511,6 +518,12 @@ namespace DDraw
             e.SetEditAttrsFromString(re.ReadString());
         }
 
+        static void ApplyPolygon(XmlReader re, PolygonFigure f)
+        {
+            re.MoveToContent();
+            f.Points = DPoints.FromString(re.ReadString());
+        }
+
         static Figure FromXml(XmlReader re)
         {
             Figure result = null;
@@ -556,6 +569,8 @@ namespace DDraw
                             ApplyMarkers(re.ReadSubtree(), (IMarkable)result);
                         else if (re.LocalName == EDITABLEATTRIBUTES_ELE && result is IEditable)
                             ApplyEditableAttributes(re.ReadSubtree(), (IEditable)result);
+                        else if (re.LocalName == POLYGON_ELE && result is PolygonFigure)
+                            ApplyPolygon(re.ReadSubtree(), (PolygonFigure)result);
                     }
                 }
             }

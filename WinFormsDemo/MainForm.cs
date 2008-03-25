@@ -1296,5 +1296,31 @@ namespace WinFormsDemo
         {
             previewBar1.Next();
         }
+
+        private void importNotebookToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (CheckDirty())
+            {
+                OpenFileDialog ofd = new OpenFileDialog();
+                ofd.Filter = "Smart Notebook|*.notebook";
+                if (ofd.ShowDialog() == DialogResult.OK)
+                {
+                    dem.UndoRedoStart("Import Notebook");
+                    dem.Clear();
+                    attachmentView1.ClearAttachments();
+                    foreach (DEngine de in Converters.Converters.FromNotebook(ofd.FileName))
+                    {
+                        InitDEngine(de);
+                        dem.AddEngine(de);
+                    }
+                    dem.UndoRedoCommit();
+                    dem.UndoRedoClearHistory();
+                    // update vars
+                    fileName = Path.GetFileNameWithoutExtension(ofd.FileName);
+                    beenSaved = false;
+                    UpdateTitleBar();
+                }
+            }
+        }
     }
 }

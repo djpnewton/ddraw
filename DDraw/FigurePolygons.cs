@@ -7,6 +7,17 @@ namespace DDraw
     public class PolygonFigure : RectFigure
     {
         DPoints points;
+        public DPoints Points
+        {
+            get { return points; }
+            set { points = value; }
+        }
+
+        // default to triangle shape
+        public PolygonFigure()
+            : this(DPoints.FromArray(new DPoint[3] { new DPoint(0, 1), new DPoint(0.5, 0), new DPoint(1, 1) }))
+        {
+        }
 
         public PolygonFigure(DPoints pts)
         {
@@ -67,7 +78,7 @@ namespace DDraw
     public class TriangleFigure : PolygonFigure
     {
         public TriangleFigure(): 
-            base (DPoints.FromArray(new DPoint[3] { new DPoint(0, 1), new DPoint(0.5, 0), new DPoint(1, 1) }))
+            base ()
         { }
     }
 

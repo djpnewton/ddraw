@@ -28,6 +28,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="ICSharpCode.SharpZipLib, Version=0.85.4.369, Culture=neutral, PublicKeyToken=1b03e6acf1164f73, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\libs\ICSharpCode.SharpZipLib.dll</HintPath>
+    </Reference>
     <Reference Include="Nini, Version=1.1.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\libs\Nini.dll</HintPath>
@@ -72,6 +76,8 @@
     <Compile Include="ColorPicker.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Converters\Converters.cs" />
+    <Compile Include="Converters\Notebook.cs" />
     <Compile Include="FloatingToolsForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -198,6 +204,10 @@
     <ProjectReference Include="..\libs\Dejavu\DejaVu.csproj">
       <Project>{A204BD9C-1C1A-4AE8-9716-B7B6C67E09F7}</Project>
       <Name>DejaVu</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\libs\SvgNet\SvgNet.csproj">
+      <Project>{BB4C8021-B5E1-4DE2-82CB-14BDFB9837E4}</Project>
+      <Name>SvgNet</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
