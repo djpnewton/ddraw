@@ -87,8 +87,19 @@ namespace WinFormsDemo.Converters
             return GetXmlEntry(entryName);
         }
 
+        const string svgNs = "http://www.w3.org/2000/svg";
+
+        bool HasSvgNamespace(XmlDocument page)
+        {
+            return page.DocumentElement.GetAttribute("xmlns") == svgNs;
+        }
+
         public void AddPageToEngine(XmlDocument page, DEngine de)
         {
+            // svg namespace
+            XmlNamespaceManager nsmgr = new XmlNamespaceManager(page.NameTable);
+            nsmgr.AddNamespace("svg", svgNs);
+            bool hasSvgNs = HasSvgNamespace(page);
             // set de page size
             int width;
             int height;
@@ -98,13 +109,30 @@ namespace WinFormsDemo.Converters
                 de.PageSize = new DPoint(800, 600);
             else
                 de.PageSize = new DPoint(width, height);
-            // try to find foreground group using svg namespace
-            XmlNamespaceManager nsmgr = new XmlNamespaceManager(page.NameTable);
-            nsmgr.AddNamespace("svg", "http://www.w3.org/2000/svg");
-            XmlNodeList nl = page.SelectNodes("/svg:svg/svg:g[@class='foreground']", nsmgr);
-            // try to find foreground group without using svg namespace
-            if (nl.Count == 0)
+            // node list
+            XmlNodeList nl;
+            // find background
+            if (hasSvgNs)
+                nl = page.SelectNodes("/svg:svg/svg:rect", nsmgr);
+            else
+                nl = page.SelectNodes("/svg/rect");
+            if (nl.Count == 1)
+            {
+                SvgElement rect = SvgFactory.LoadFromXML(page, (XmlElement)nl[0]);
+                Figure f = SvgElementToFigure(rect);
+                if (f is RectFigure)
+                {
+                    BackgroundFigure bf = new BackgroundFigure();
+                    bf.Fill = ((RectFigure)f).Fill;
+                    de.SetBackgroundFigure(bf);
+                }
+            }
+            // try to find foreground group
+            if (hasSvgNs)
+                nl = page.SelectNodes("/svg:svg/svg:g[@class='foreground']", nsmgr);
+            else
                 nl = page.SelectNodes("/svg/g[@class='foreground']");
+            // convert svg elements to figures and add them to DEngine
             if (nl.Count == 1)
             {
                 SvgElement root = SvgFactory.LoadFromXML(page, (XmlElement)nl[0]);
@@ -258,7 +286,7 @@ namespace WinFormsDemo.Converters
             return f;
         }
 
-        private DStrokeStyle NotebookDashArrayToStrokeStyle(string s)
+        DStrokeStyle NotebookDashArrayToStrokeStyle(string s)
         {
             string[] parts = s.Split(',');
             double[] dashes = new double[parts.Length];
