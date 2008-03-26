@@ -138,14 +138,22 @@ namespace DDraw.WinForms
             }
         }
 
-        Rectangle MakeRect(double x, double y, double width, double height)
+        RectangleF MakeRect(double x, double y, double width, double height)
         {
-            return new Rectangle(Convert.ToInt32(x), Convert.ToInt32(y), Convert.ToInt32(width), Convert.ToInt32(height));
+            return new RectangleF(Convert.ToSingle(x), Convert.ToSingle(y), Convert.ToSingle(width), Convert.ToSingle(height));
         }
 
-        Rectangle MakeRect(DRect rect)
+        RectangleF MakeRect(DRect rect)
         {
-            return new Rectangle(Convert.ToInt32(rect.X), Convert.ToInt32(rect.Y), Convert.ToInt32(rect.Width), Convert.ToInt32(rect.Height));
+            return new RectangleF(Convert.ToSingle(rect.X), Convert.ToSingle(rect.Y), Convert.ToSingle(rect.Width), Convert.ToSingle(rect.Height));
+        }
+
+        PointF[] MakePara(DRect r)
+        {
+            // Array of three PointF structures that define a parallelogram.
+            // The three PointF structures represent the upper-left, upper-right, and lower-left corners of the parallelogram. The fourth point is extrapolated from the first three to form a parallelogram.
+            return new PointF[] { new PointF((float)r.X, (float)r.Y), 
+                new PointF((float)r.Right, (float)r.Y), new PointF((float)r.X, (float)r.Bottom) };
         }
 
         PointF[] MakePoints(DPoints pts)
@@ -298,7 +306,7 @@ namespace DDraw.WinForms
 
         public override void DrawRect(DRect rect, DColor color, double alpha, DStrokeStyle strokeStyle)
         {
-            g.DrawRectangle(MakePen(WFHelper.MakeColor(color, alpha), strokeStyle), MakeRect(rect));
+            DrawRect(rect.X, rect.Y, rect.Width, rect.Height, color, alpha, 1, strokeStyle, DStrokeJoin.Mitre);
         }
 
         public override void FillEllipse(double x, double y, double width, double height, DColor color)
@@ -428,8 +436,8 @@ namespace DDraw.WinForms
                 if (bmp.Width == rect.Width && bmp.Height == rect.Height && alpha == 1)
                     g.DrawImageUnscaled(bmp, (int)rect.X, (int)rect.Y);
                 else
-                    g.DrawImage(bmp, MakeRect(rect),
-                        0, 0, bmp.Width, bmp.Height, GraphicsUnit.Pixel, MakeImageAttributesWithAlpha(alpha));
+                    g.DrawImage(bmp, MakePara(rect), new RectangleF(0, 0, bmp.Width, bmp.Height),
+                        GraphicsUnit.Pixel, MakeImageAttributesWithAlpha(alpha));
             }
         }
 
