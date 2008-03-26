@@ -66,7 +66,7 @@ namespace WinFormsDemo.Converters
             return GetXmlEntry("imsmanifest.xml");
         }
 
-        public XmlNamespaceManager GetManifestNsManager(XmlDocument manifest)
+        XmlNamespaceManager GetManifestNsManager(XmlDocument manifest)
         {
             // add default namespace the the manifest uses
             XmlNamespaceManager nsmgr = new XmlNamespaceManager(manifest.NameTable);
@@ -74,7 +74,17 @@ namespace WinFormsDemo.Converters
             return nsmgr;
         }
 
-        public List<string> GetResourceEntries(XmlDocument manifest, string resName)
+        public List<string> GetPageEntries(XmlDocument manifest)
+        {
+            return GetResourceEntries(manifest, "pages");
+        }
+
+        public List<string> GetAttachmentEntries(XmlDocument manifest)
+        {
+            return GetResourceEntries(manifest, "attachments");
+        }
+
+        List<string> GetResourceEntries(XmlDocument manifest, string resName)
         {
             List<string> resEntries = new List<string>();
             // find page nodes using the ims manifest
@@ -293,6 +303,8 @@ namespace WinFormsDemo.Converters
                 }
                 if (f is IAlphaBlendable && e.Attributes.ContainsKey("opacity"))
                     ((IAlphaBlendable)f).Alpha = double.Parse((string)e.Attributes["opacity"]);
+
+                applyLink(f, e);
             }
 
             return f;
@@ -332,6 +344,73 @@ namespace WinFormsDemo.Converters
             if (s.StartsWith("url(#Diamond"))
                 return DMarker.Diamond;
             return DMarker.None;
+        }
+
+        const string NBLinkShortCutAttr = "shortcut";
+        const string NBLinkHttpPrefix = "http://";
+        const string NBLinkPagePrefix = "page://";
+        const string NBLinkFirstPage = "firstPage();";
+        const string NBLinkLastPage = "lastPage();";
+        const string NBLinkNextPage = "nextPage();";
+        const string NBLinkPreviousPage = "previousPage();";
+        const string NBLinkAttachmentPrefix = "file://attachments/";
+        const string NBLinkFilePrefix = "file://";
+
+        void applyLink(Figure f, SvgElement e)
+        {
+            if (e.Attributes.ContainsKey(NBLinkShortCutAttr))
+            {
+                string shortcut = (string)e.Attributes[NBLinkShortCutAttr];
+                if (shortcut.StartsWith(NBLinkHttpPrefix))
+                {
+                    f.UserAttrs[Links.LinkType] = LinkType.WebPage.ToString();
+                    f.UserAttrs[Links.Link] = shortcut;
+                }
+                else if (shortcut.StartsWith(NBLinkPagePrefix))
+                {
+                    f.UserAttrs[Links.LinkType] = LinkType.Page.ToString();
+                    f.UserAttrs[Links.Link] = GetPageNumberFromPageName(shortcut.Substring(NBLinkPagePrefix.Length)).ToString();
+                }
+                else if (shortcut == NBLinkFirstPage)
+                {
+                    f.UserAttrs[Links.LinkType] = LinkType.Page.ToString();
+                    f.UserAttrs[Links.Link] = LinkPage.First.ToString();
+                }
+                else if (shortcut == NBLinkLastPage)
+                {
+                    f.UserAttrs[Links.LinkType] = LinkType.Page.ToString();
+                    f.UserAttrs[Links.Link] = LinkPage.Last.ToString();
+                }
+                else if (shortcut == NBLinkNextPage)
+                {
+                    f.UserAttrs[Links.LinkType] = LinkType.Page.ToString();
+                    f.UserAttrs[Links.Link] = LinkPage.Next.ToString();
+                }
+                else if (shortcut == NBLinkPreviousPage)
+                {
+                    f.UserAttrs[Links.LinkType] = LinkType.Page.ToString();
+                    f.UserAttrs[Links.Link] = LinkPage.Previous.ToString();
+                }
+                else if (shortcut.StartsWith(NBLinkAttachmentPrefix))
+                {
+                    f.UserAttrs[Links.LinkType] = LinkType.Attachment.ToString();
+                    f.UserAttrs[Links.Link] = shortcut.Substring(NBLinkAttachmentPrefix.Length);
+                }
+                else if (shortcut.StartsWith(NBLinkFilePrefix))
+                {
+                    f.UserAttrs[Links.LinkType] = LinkType.File.ToString();
+                    f.UserAttrs[Links.Link] = shortcut.Substring(NBLinkFilePrefix.Length);
+                }
+            }
+        }
+
+        int GetPageNumberFromPageName(string pageName)
+        {
+            List<string> pages = GetPageEntries(GetManifest());
+            for (int i = 0; i < pages.Count; i++)
+                if (pages[i] == pageName)
+                    return i;
+            return -1;
         }
     }
 }

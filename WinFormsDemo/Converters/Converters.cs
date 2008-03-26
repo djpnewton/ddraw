@@ -16,7 +16,7 @@ namespace WinFormsDemo.Converters
             Notebook nbk = new Notebook(fileName);
             XmlDocument manifest = nbk.GetManifest();
             // create engine for each page
-            List<string> pageEntries = nbk.GetResourceEntries(manifest, "pages");
+            List<string> pageEntries = nbk.GetPageEntries(manifest);
             foreach (string entry in pageEntries)
             {
                 DEngine de = new DEngine(DAuthorProperties.GlobalAP, true);
@@ -25,7 +25,7 @@ namespace WinFormsDemo.Converters
             }
             // read attachments
             attachments = new Dictionary<string, byte[]>();
-            List<string> attachmentEntries = nbk.GetResourceEntries(manifest, "attachments");
+            List<string> attachmentEntries = nbk.GetAttachmentEntries(manifest);
             foreach (string entry in attachmentEntries)
             {
                 byte[] attachmentData = nbk.GetAttachment(entry);

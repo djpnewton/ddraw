@@ -52,6 +52,10 @@ namespace WinFormsDemo
             this.pnlAttachment = new System.Windows.Forms.Panel();
             this.lbAttachments = new System.Windows.Forms.ListBox();
             this.lbAttachment = new System.Windows.Forms.Label();
+            this.rbPageFirst = new System.Windows.Forms.RadioButton();
+            this.rbPageLast = new System.Windows.Forms.RadioButton();
+            this.rbPageNext = new System.Windows.Forms.RadioButton();
+            this.rbPagePrevious = new System.Windows.Forms.RadioButton();
             this.gbLinkType.SuspendLayout();
             this.pnlWebPage.SuspendLayout();
             this.pnlFile.SuspendLayout();
@@ -197,6 +201,10 @@ namespace WinFormsDemo
             // pnlPage
             // 
             this.pnlPage.Controls.Add(this.wfViewerControl1);
+            this.pnlPage.Controls.Add(this.rbPagePrevious);
+            this.pnlPage.Controls.Add(this.rbPageNext);
+            this.pnlPage.Controls.Add(this.rbPageLast);
+            this.pnlPage.Controls.Add(this.rbPageFirst);
             this.pnlPage.Controls.Add(this.lbPages);
             this.pnlPage.Controls.Add(this.lbPage);
             this.pnlPage.Location = new System.Drawing.Point(12, 131);
@@ -206,9 +214,9 @@ namespace WinFormsDemo
             // 
             // wfViewerControl1
             // 
-            this.wfViewerControl1.Location = new System.Drawing.Point(138, 23);
+            this.wfViewerControl1.Location = new System.Drawing.Point(147, 23);
             this.wfViewerControl1.Name = "wfViewerControl1";
-            this.wfViewerControl1.Size = new System.Drawing.Size(126, 69);
+            this.wfViewerControl1.Size = new System.Drawing.Size(117, 69);
             this.wfViewerControl1.TabIndex = 2;
             // 
             // lbPages
@@ -216,7 +224,7 @@ namespace WinFormsDemo
             this.lbPages.FormattingEnabled = true;
             this.lbPages.Location = new System.Drawing.Point(6, 23);
             this.lbPages.Name = "lbPages";
-            this.lbPages.Size = new System.Drawing.Size(126, 69);
+            this.lbPages.Size = new System.Drawing.Size(63, 69);
             this.lbPages.TabIndex = 1;
             this.lbPages.SelectedIndexChanged += new System.EventHandler(this.lbPages_SelectedIndexChanged);
             // 
@@ -293,6 +301,50 @@ namespace WinFormsDemo
             this.lbAttachment.TabIndex = 0;
             this.lbAttachment.Text = "Attachment:";
             // 
+            // rbPageFirst
+            // 
+            this.rbPageFirst.AutoSize = true;
+            this.rbPageFirst.Location = new System.Drawing.Point(75, 22);
+            this.rbPageFirst.Name = "rbPageFirst";
+            this.rbPageFirst.Size = new System.Drawing.Size(44, 17);
+            this.rbPageFirst.TabIndex = 7;
+            this.rbPageFirst.Text = "First";
+            this.rbPageFirst.UseVisualStyleBackColor = true;
+            this.rbPageFirst.CheckedChanged += new System.EventHandler(this.rbPage_CheckedChanged);
+            // 
+            // rbPageLast
+            // 
+            this.rbPageLast.AutoSize = true;
+            this.rbPageLast.Location = new System.Drawing.Point(75, 40);
+            this.rbPageLast.Name = "rbPageLast";
+            this.rbPageLast.Size = new System.Drawing.Size(45, 17);
+            this.rbPageLast.TabIndex = 8;
+            this.rbPageLast.Text = "Last";
+            this.rbPageLast.UseVisualStyleBackColor = true;
+            this.rbPageLast.CheckedChanged += new System.EventHandler(this.rbPage_CheckedChanged);
+            // 
+            // rbPageNext
+            // 
+            this.rbPageNext.AutoSize = true;
+            this.rbPageNext.Location = new System.Drawing.Point(75, 58);
+            this.rbPageNext.Name = "rbPageNext";
+            this.rbPageNext.Size = new System.Drawing.Size(47, 17);
+            this.rbPageNext.TabIndex = 9;
+            this.rbPageNext.Text = "Next";
+            this.rbPageNext.UseVisualStyleBackColor = true;
+            this.rbPageNext.CheckedChanged += new System.EventHandler(this.rbPage_CheckedChanged);
+            // 
+            // rbPagePrevious
+            // 
+            this.rbPagePrevious.AutoSize = true;
+            this.rbPagePrevious.Location = new System.Drawing.Point(75, 75);
+            this.rbPagePrevious.Name = "rbPagePrevious";
+            this.rbPagePrevious.Size = new System.Drawing.Size(66, 17);
+            this.rbPagePrevious.TabIndex = 10;
+            this.rbPagePrevious.Text = "Previous";
+            this.rbPagePrevious.UseVisualStyleBackColor = true;
+            this.rbPagePrevious.CheckedChanged += new System.EventHandler(this.rbPage_CheckedChanged);
+            // 
             // LinkForm
             // 
             this.AcceptButton = this.btnOk;
@@ -305,10 +357,10 @@ namespace WinFormsDemo
             this.Controls.Add(this.btnOk);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.gbLinkType);
-            this.Controls.Add(this.pnlFile);
-            this.Controls.Add(this.pnlAttachment);
             this.Controls.Add(this.pnlPage);
             this.Controls.Add(this.pnlWebPage);
+            this.Controls.Add(this.pnlFile);
+            this.Controls.Add(this.pnlAttachment);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
@@ -356,5 +408,9 @@ namespace WinFormsDemo
         private System.Windows.Forms.ListBox lbAttachments;
         private System.Windows.Forms.Label lbAttachment;
         private System.Windows.Forms.CheckBox cbCopyFileToAttachments;
+        private System.Windows.Forms.RadioButton rbPagePrevious;
+        private System.Windows.Forms.RadioButton rbPageNext;
+        private System.Windows.Forms.RadioButton rbPageLast;
+        private System.Windows.Forms.RadioButton rbPageFirst;
     }
 }

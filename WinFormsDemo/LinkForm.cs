@@ -63,7 +63,45 @@ namespace WinFormsDemo
             set { cbCopyFileToAttachments.Checked = value; }
         }
 
-        public int Page
+        public LinkPage LinkPage
+        {
+            get
+            {
+                if (rbPageFirst.Checked)
+                    return LinkPage.First;
+                else if (rbPageLast.Checked)
+                    return LinkPage.Last;
+                else if (rbPageNext.Checked)
+                    return LinkPage.Next;
+                else if (rbPagePrevious.Checked)
+                    return LinkPage.Previous;
+                else
+                    return LinkPage.None;
+            }
+            set
+            {
+                switch (value)
+                {
+                    case LinkPage.None:
+                        lbPages.SelectedIndex = 0;
+                        break;
+                    case LinkPage.First:
+                        rbPageFirst.Checked = true;
+                        break;
+                    case LinkPage.Last:
+                        rbPageLast.Checked = true;
+                        break;
+                    case LinkPage.Next:
+                        rbPageNext.Checked = true;
+                        break;
+                    case LinkPage.Previous:
+                        rbPagePrevious.Checked = true;
+                        break;
+                }
+            }
+        }
+
+        public int PageNum
         {
             get { return lbPages.SelectedIndex; }
             set 
@@ -101,6 +139,12 @@ namespace WinFormsDemo
             }
         }
 
+        DEngine currentEngine;
+        public DEngine CurrentEngine
+        {
+            set { currentEngine = value; }
+        }
+
         List<string> attachments;
         public List<string> Attachments
         {
@@ -118,8 +162,8 @@ namespace WinFormsDemo
             }
         }
 
-        DEngine de = null;
-        DTkViewer dv = null;
+        DEngine currentPreviewEngine = null;
+        DTkViewer currentPreviewViewer = null;
 
         public LinkForm()
         {
@@ -146,20 +190,60 @@ namespace WinFormsDemo
                 tbFile.Text = ofd.FileName;
         }
 
+        void ShowPagePreview(int engineIdx)
+        {
+            // bound engine index to 0 <-> engines.Count - 1
+            if (engineIdx >= engines.Count)
+                engineIdx = 0;
+            if (engineIdx < 0)
+                engineIdx = engines.Count - 1;
+            // setup new preview
+            if (currentPreviewEngine != null && currentPreviewViewer != null)
+                currentPreviewEngine.RemoveViewer(currentPreviewViewer);
+            currentPreviewViewer = new WFViewer(wfViewerControl1);
+            currentPreviewViewer.AntiAlias = true;
+            currentPreviewViewer.EditFigures = false;
+            currentPreviewViewer.Preview = true;
+            currentPreviewEngine = engines[engineIdx];
+            currentPreviewEngine.AddViewer(currentPreviewViewer);
+        }
+
         private void lbPages_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (de != null && dv != null)
-                de.RemoveViewer(dv);
-            dv = new WFViewer(wfViewerControl1);
-            dv.AntiAlias = true;
-            dv.EditFigures = false;
-            dv.Preview = true;
-            de = engines[lbPages.SelectedIndex];
-            de.AddViewer(dv);
+            if (lbPages.SelectedIndex != -1)
+            {
+                // deselect page radio buttons
+                rbPageFirst.Checked = false;
+                rbPageLast.Checked = false;
+                rbPageNext.Checked = false;
+                rbPagePrevious.Checked = false;
+                // show preview
+                ShowPagePreview(lbPages.SelectedIndex);
+            }
+        }
+
+        private void rbPage_CheckedChanged(object sender, EventArgs e)
+        {
+            if (((RadioButton)sender).Checked)
+            {
+                // deselect lbPages
+                lbPages.SelectedIndex = -1;
+                // show preview
+                if (sender == rbPageFirst)
+                    ShowPagePreview(0);
+                if (sender == rbPageLast)
+                    ShowPagePreview(engines.Count - 1);
+                if (sender == rbPageNext)
+                    ShowPagePreview(engines.IndexOf(currentEngine) + 1);
+                else if (sender == rbPagePrevious)
+                    ShowPagePreview(engines.IndexOf(currentEngine) - 1);
+            }
         }
     }
 
     public enum LinkType { WebPage, File, Attachment, Page };
+
+    public enum LinkPage { None, First = -1, Last = -2, Next = -3, Previous = -4 };
 
     public static class Links
     {

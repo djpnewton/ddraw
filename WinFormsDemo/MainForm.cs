@@ -347,12 +347,38 @@ namespace WinFormsDemo
                             MessageBox.Show(string.Format("Could not find file \"{0}\"", link), "File link error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         break;
                     case LinkType.Page:
-                        int n = 0;
-                        int.TryParse(link, out n);
-                        if (n >= 0 && n < dem.EngineCount)
-                            previewBar1.SetPreviewSelected(dem.GetEngine(n));
-                        else
-                            MessageBox.Show(string.Format("Page \"{0}\" does not exist", n + 1), "Page link error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        LinkPage lp = (LinkPage)Enum.Parse(typeof(LinkPage), link, true);
+                        switch (lp)
+                        {
+                            case LinkPage.First:
+                                previewBar1.SetPreviewSelected(dem.GetEngine(0));
+                                break;
+                            case LinkPage.Last:
+                                previewBar1.SetPreviewSelected(dem.GetEngine(dem.EngineCount - 1));
+                                break;
+                            case LinkPage.Next:
+                                int idx = dem.IndexOfEngine(de) + 1;
+                                if (idx < dem.EngineCount)
+                                    previewBar1.SetPreviewSelected(dem.GetEngine(idx));
+                                else
+                                    goto case LinkPage.First;
+                                break;
+                            case LinkPage.Previous:
+                                int idx2 = dem.IndexOfEngine(de) - 1;
+                                if (idx2 > 0)
+                                    previewBar1.SetPreviewSelected(dem.GetEngine(idx2));
+                                else
+                                    goto case LinkPage.Last;
+                                break;
+                            default:
+                                int n = 0;
+                                int.TryParse(link, out n);
+                                if (n >= 0 && n < dem.EngineCount)
+                                    previewBar1.SetPreviewSelected(dem.GetEngine(n));
+                                else
+                                    MessageBox.Show(string.Format("Page \"{0}\" does not exist", n + 1), "Page link error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                break;
+                        }
                         break;
                     case LinkType.Attachment:
                         attachmentView1.ExecuteAttachment(link);
@@ -1049,6 +1075,7 @@ namespace WinFormsDemo
             {
                 Figure f = figs[0];
                 LinkForm lf = new LinkForm();
+                lf.CurrentEngine = de;
                 lf.Engines = dem.GetEngines();
                 lf.Attachments = attachmentView1.GetAttachmentNames();
                 if (f.UserAttrs.ContainsKey(Links.LinkType) && f.UserAttrs.ContainsKey(Links.Link))
@@ -1064,9 +1091,14 @@ namespace WinFormsDemo
                             lf.CopyFileToAttachments = false;
                             break;
                         case LinkType.Page:
-                            int n = 0;
-                            int.TryParse(f.UserAttrs[Links.Link], out n);
-                            lf.Page = n;
+                            string link = f.UserAttrs[Links.Link];
+                            lf.LinkPage = (LinkPage)Enum.Parse(typeof(LinkPage), link, true); ;
+                            if (lf.LinkPage == LinkPage.None)
+                            {
+                                int n = 0;
+                                int.TryParse(link, out n);
+                                lf.PageNum = n;
+                            }
                             break;
                         case LinkType.Attachment:
                             lf.Attachment = f.UserAttrs[Links.Link];
@@ -1094,7 +1126,10 @@ namespace WinFormsDemo
                                     f.UserAttrs[Links.Link] = lf.File;
                                 break;
                             case LinkType.Page:
-                                f.UserAttrs[Links.Link] = lf.Page.ToString();
+                                if (lf.LinkPage == LinkPage.None)
+                                    f.UserAttrs[Links.Link] = lf.PageNum.ToString();
+                                else
+                                    f.UserAttrs[Links.Link] = lf.LinkPage.ToString();
                                 break;
                             case LinkType.Attachment:
                                 f.UserAttrs[Links.Link] = lf.Attachment;
