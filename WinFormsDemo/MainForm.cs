@@ -1283,6 +1283,7 @@ namespace WinFormsDemo
                         btnSwitchSidebar.Image = Resource1.arrow_right;
                         tsSidebar.Items.Insert(tsSidebar.Items.Count - 1, tsSidebarSep);
                         tsSidebar.Items.Insert(tsSidebar.Items.Count - 1, btnSwitchSidebar);
+                        splitContainer1.FixedPanel = FixedPanel.Panel1;
                     }
                     else
                     {
@@ -1293,6 +1294,7 @@ namespace WinFormsDemo
                         btnSwitchSidebar.Image = Resource1.arrow_left;
                         tsSidebar.Items.Insert(0, tsSidebarSep);
                         tsSidebar.Items.Insert(0, btnSwitchSidebar);
+                        splitContainer1.FixedPanel = FixedPanel.Panel2;
                     }
                     if (btnPages.Checked)
                         btnPages.PerformClick();
