@@ -576,13 +576,16 @@ namespace WinFormsDemo
         private void wfvcEditor_KeyDown(object sender, KeyEventArgs e)
         {
             WorkBookUtils.ViewerKeyDown(de, e);
-            nonTextInsertionKey = e.Alt || e.Control;
+            nonTextInsertionKey = e.Alt || e.Control || 
+                e.KeyValue == (int)Keys.Escape || e.KeyValue == (int)Keys.Enter ||
+                e.KeyValue == (int)Keys.Space;
         }
 
         private void wfvcEditor_KeyUp(object sender, KeyEventArgs e)
         {
             WorkBookUtils.ViewerKeyUp(de, e);
-            nonTextInsertionKey = e.Alt || e.Control;
+            if (e.KeyValue == (int)Keys.Escape)
+                de.HsmState = DHsmState.Select;
         }
 
         private void wfvcEditor_KeyPress(object sender, KeyPressEventArgs e)
