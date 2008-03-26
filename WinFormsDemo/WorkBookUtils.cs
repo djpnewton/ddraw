@@ -27,12 +27,14 @@ namespace WinFormsDemo
         {
             de.FigureLockAspectRatio = e.Shift;
             de.FigureAlwaysSnapAngle = e.Shift;
+            de.FigureSelectAddToSelection = e.Shift;
         }
 
         public static void ViewerKeyUp(DEngine de, KeyEventArgs e)
         {
             de.FigureLockAspectRatio = e.Shift;
             de.FigureAlwaysSnapAngle = e.Shift;
+            de.FigureSelectAddToSelection = e.Shift;
         }
 
         const uint MA_ACTIVATE = 1;

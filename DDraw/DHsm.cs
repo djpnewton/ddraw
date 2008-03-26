@@ -174,6 +174,13 @@ namespace DDraw
             set { figureAlwaysSnapAngle = value; }
         }
 
+        bool figureSelectAddToSelection = false;
+        public bool FigureSelectAddToSelection
+        {
+            get { return figureSelectAddToSelection; }
+            set { figureSelectAddToSelection = value; }
+        }
+
         bool simplifyPolylines = false;
         public bool SimplifyPolylines
         {
@@ -572,7 +579,7 @@ namespace DDraw
             {
                 // find and select clicked figure
                 IGlyph glyph;
-                Figure f = figureHandler.HitTestSelect(pt, out mouseHitTest, out glyph);
+                Figure f = figureHandler.HitTestSelect(pt, out mouseHitTest, out glyph, figureSelectAddToSelection);
                 // update selected figures
                 if (glyph != null)
                 {
@@ -612,7 +619,8 @@ namespace DDraw
                 }
                 else
                 {
-                    figureHandler.ClearSelected();
+                    if (!figureSelectAddToSelection)
+                        figureHandler.ClearSelected();
                     dragPt = pt; // mouseHitTest = DHitTest.None
                     // transition
                     TransitionTo(DragSelect);
@@ -668,7 +676,7 @@ namespace DDraw
             }
             else if (btn == DMouseButton.Right)
             {
-                Figure f = figureHandler.HitTestSelect(pt, out hitTest, out glyph);
+                Figure f = figureHandler.HitTestSelect(pt, out hitTest, out glyph, figureSelectAddToSelection);
                 dv.SetCursor(DCursor.Default);
                 dv.Update();
                 if (ContextClick != null)
@@ -1000,18 +1008,18 @@ namespace DDraw
                     DoDragSelectMouseMove(((QMouseEvent)qevent).Dv, ((QMouseEvent)qevent).Pt);
                     return null;
                 case (int)DHsmSignals.MouseUp:
-                        DRect updateRect2 = figureHandler.SelectionFigure.Rect;
-                        List<Figure> selectFigs = new List<Figure>();
-                        foreach (Figure f in figureHandler.Figures)
-                            if (DGeom.PointInRect(f.Rect.Center, figureHandler.SelectionFigure.Rect))
-                                selectFigs.Add(f);
-                        figureHandler.SelectFigures(selectFigs);
-                        foreach (Figure f in selectFigs)
-                            updateRect2 = updateRect2.Union(GetBoundingBox(f));
-                        // update drawing
-                        ((QMouseEvent)qevent).Dv.Update(updateRect2);
-                        // transition back
-                        TransitionTo(SelectDefault);
+                    DRect updateRect2 = figureHandler.SelectionFigure.Rect;
+                    List<Figure> selectFigs = new List<Figure>();
+                    foreach (Figure f in figureHandler.Figures)
+                        if (DGeom.PointInRect(f.Rect.Center, figureHandler.SelectionFigure.Rect))
+                            selectFigs.Add(f);
+                    figureHandler.SelectFigures(selectFigs, figureSelectAddToSelection);
+                    foreach (Figure f in selectFigs)
+                        updateRect2 = updateRect2.Union(GetBoundingBox(f));
+                    // update drawing
+                    ((QMouseEvent)qevent).Dv.Update(updateRect2);
+                    // transition back
+                    TransitionTo(SelectDefault);
                     return null;
                 case (int)DHsmSignals.DoubleClick:
                     DoDragFigureDoubleClick(((QMouseEvent)qevent).Dv, ((QMouseEvent)qevent).Pt);
@@ -1289,7 +1297,7 @@ namespace DDraw
             {
                 // find and select clicked figure
                 IGlyph glyph;
-                Figure f = figureHandler.HitTestSelect(pt, out mouseHitTest, out glyph);
+                Figure f = figureHandler.HitTestSelect(pt, out mouseHitTest, out glyph, false);
                 // select the TextFigure from the TextEditFigure
                 TextEditFigure tef = (TextEditFigure)currentFigure;
                 if (f == tef)
@@ -1297,7 +1305,7 @@ namespace DDraw
                     if (tef.HasText)
                     {
                         f = tef.TextFigure;
-                        figureHandler.SelectFigures(new List<Figure>(new Figure[] { f }));
+                        figureHandler.SelectFigures(new List<Figure>(new Figure[] { f }), false);
                     }
                 }
                 // setup for select mouse move

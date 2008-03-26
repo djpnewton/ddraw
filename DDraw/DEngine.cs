@@ -272,6 +272,11 @@ namespace DDraw
             get { return hsm.FigureAlwaysSnapAngle; }
             set { hsm.FigureAlwaysSnapAngle = value; }
         }
+        public bool FigureSelectAddToSelection
+        {
+            get { return hsm.FigureSelectAddToSelection; }
+            set { hsm.FigureSelectAddToSelection = value; }
+        }
         public bool SimplifyPolylines
         {
             get { return hsm.SimplifyPolylines; }

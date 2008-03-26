@@ -88,9 +88,10 @@ namespace DDraw
             DoSelectedFiguresChanged();
         }
 
-        public void SelectFigures(List<Figure> figs)
+        public void SelectFigures(List<Figure> figs, bool add)
         {
-            ClearSelectedFiguresList();
+            if (!add)
+                ClearSelectedFiguresList();
             foreach (Figure f in figs)
                 AddToSelected(f);
             DoSelectedFiguresChanged();
@@ -245,7 +246,7 @@ namespace DDraw
             return null;
         }
 
-        public Figure HitTestSelect(DPoint pt, out DHitTest hitTest, out IGlyph glyph)
+        public Figure HitTestSelect(DPoint pt, out DHitTest hitTest, out IGlyph glyph, bool add)
         {
             Figure f = HitTestFigures(pt, out hitTest, out glyph);
             // update selected figures
@@ -253,7 +254,8 @@ namespace DDraw
             {
                 if (!f.Selected)
                 {
-                    ClearSelectedFiguresList();
+                    if (!add)
+                        ClearSelectedFiguresList();
                     AddToSelected(f);
                     DoSelectedFiguresChanged();
                 }
@@ -317,7 +319,8 @@ namespace DDraw
         void AddToSelected(Figure f)
         {
             f.Selected = true;
-            selectedFigures.Add(f);
+            if (!selectedFigures.Contains(f))
+                selectedFigures.Add(f);
         }
 
         void DoSelectedFiguresChanged()
