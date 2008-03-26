@@ -699,6 +699,12 @@ namespace DDraw
             hsm.CancelFigureDrag();
         }
 
+        public void SelectAll()
+        {
+            figureHandler.Select(figureHandler.Figures);
+            UpdateViewers();
+        }
+
         // Other //
 
         void DoDebugMessage(string msg)

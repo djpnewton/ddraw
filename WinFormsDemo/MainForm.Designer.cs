@@ -79,6 +79,8 @@ namespace WinFormsDemo
             this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator11 = new System.Windows.Forms.ToolStripSeparator();
+            this.importNotebookToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator7 = new System.Windows.Forms.ToolStripSeparator();
             this.printToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
@@ -157,8 +159,10 @@ namespace WinFormsDemo
             this.actUndo = new Burkovsky.Controls.Action();
             this.actRedo = new Burkovsky.Controls.Action();
             this.actFloatingTools = new Burkovsky.Controls.Action();
-            this.toolStripSeparator11 = new System.Windows.Forms.ToolStripSeparator();
-            this.importNotebookToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.actSelectAll = new Burkovsky.Controls.Action();
+            this.selectAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.selectAllToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator13 = new System.Windows.Forms.ToolStripSeparator();
             this.cmsFigure.SuspendLayout();
             this.cmsCanvas.SuspendLayout();
             this.cmsPreview.SuspendLayout();
@@ -301,12 +305,13 @@ namespace WinFormsDemo
             // 
             this.cmsCanvas.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.pasteToolStripMenuItem2,
+            this.selectAllToolStripMenuItem,
             this.clearPageToolStripMenuItem1,
             this.toolStripSeparator8,
             this.pageSizeToolStripMenuItem1,
             this.backgroundToolStripMenuItem1});
             this.cmsCanvas.Name = "cmsCanvas";
-            this.cmsCanvas.Size = new System.Drawing.Size(151, 98);
+            this.cmsCanvas.Size = new System.Drawing.Size(151, 120);
             // 
             // pasteToolStripMenuItem2
             // 
@@ -673,6 +678,20 @@ namespace WinFormsDemo
             this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
             this.saveAsToolStripMenuItem.Text = "Save As";
             // 
+            // toolStripSeparator11
+            // 
+            this.actionListProvider1.SetAction(this.toolStripSeparator11, null);
+            this.toolStripSeparator11.Name = "toolStripSeparator11";
+            this.toolStripSeparator11.Size = new System.Drawing.Size(163, 6);
+            // 
+            // importNotebookToolStripMenuItem
+            // 
+            this.actionListProvider1.SetAction(this.importNotebookToolStripMenuItem, null);
+            this.importNotebookToolStripMenuItem.Name = "importNotebookToolStripMenuItem";
+            this.importNotebookToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
+            this.importNotebookToolStripMenuItem.Text = "Import Notebook";
+            this.importNotebookToolStripMenuItem.Click += new System.EventHandler(this.importNotebookToolStripMenuItem_Click);
+            // 
             // toolStripSeparator7
             // 
             this.actionListProvider1.SetAction(this.toolStripSeparator7, null);
@@ -714,6 +733,8 @@ namespace WinFormsDemo
             this.pasteToolStripMenuItem,
             this.deleteToolStripMenuItem,
             this.toolStripSeparator9,
+            this.selectAllToolStripMenuItem1,
+            this.toolStripSeparator13,
             this.clearPageToolStripMenuItem2,
             this.deletePageToolStripMenuItem1});
             this.editToolStripMenuItem.Name = "editToolStripMenuItem";
@@ -1171,6 +1192,7 @@ namespace WinFormsDemo
             this.actionListProvider1.Actions.Add(this.actLink);
             this.actionListProvider1.Actions.Add(this.actUndo);
             this.actionListProvider1.Actions.Add(this.actRedo);
+            this.actionListProvider1.Actions.Add(this.actSelectAll);
             // 
             // actCut
             // 
@@ -1318,19 +1340,31 @@ namespace WinFormsDemo
             this.actFloatingTools.Text = "Floating Tools";
             this.actFloatingTools.Execute += new System.EventHandler(this.actFloatingTools_Execute);
             // 
-            // toolStripSeparator11
+            // actSelectAll
             // 
-            this.actionListProvider1.SetAction(this.toolStripSeparator11, null);
-            this.toolStripSeparator11.Name = "toolStripSeparator11";
-            this.toolStripSeparator11.Size = new System.Drawing.Size(163, 6);
+            this.actSelectAll.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.A)));
+            this.actSelectAll.Text = "Select All";
+            this.actSelectAll.Execute += new System.EventHandler(this.actSelectAll_Execute);
             // 
-            // importNotebookToolStripMenuItem
+            // selectAllToolStripMenuItem
             // 
-            this.actionListProvider1.SetAction(this.importNotebookToolStripMenuItem, null);
-            this.importNotebookToolStripMenuItem.Name = "importNotebookToolStripMenuItem";
-            this.importNotebookToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
-            this.importNotebookToolStripMenuItem.Text = "Import Notebook";
-            this.importNotebookToolStripMenuItem.Click += new System.EventHandler(this.importNotebookToolStripMenuItem_Click);
+            this.actionListProvider1.SetAction(this.selectAllToolStripMenuItem, this.actSelectAll);
+            this.selectAllToolStripMenuItem.Name = "selectAllToolStripMenuItem";
+            this.selectAllToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
+            this.selectAllToolStripMenuItem.Text = "Select All";
+            // 
+            // selectAllToolStripMenuItem1
+            // 
+            this.actionListProvider1.SetAction(this.selectAllToolStripMenuItem1, this.actSelectAll);
+            this.selectAllToolStripMenuItem1.Name = "selectAllToolStripMenuItem1";
+            this.selectAllToolStripMenuItem1.Size = new System.Drawing.Size(165, 22);
+            this.selectAllToolStripMenuItem1.Text = "Select All";
+            // 
+            // toolStripSeparator13
+            // 
+            this.actionListProvider1.SetAction(this.toolStripSeparator13, null);
+            this.toolStripSeparator13.Name = "toolStripSeparator13";
+            this.toolStripSeparator13.Size = new System.Drawing.Size(162, 6);
             // 
             // MainForm
             // 
@@ -1507,6 +1541,10 @@ namespace WinFormsDemo
         private System.Windows.Forms.ToolStripMenuItem resetToolbarsToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator11;
         private System.Windows.Forms.ToolStripMenuItem importNotebookToolStripMenuItem;
+        private Burkovsky.Controls.Action actSelectAll;
+        private System.Windows.Forms.ToolStripMenuItem selectAllToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem selectAllToolStripMenuItem1;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator13;
     }
 }
 

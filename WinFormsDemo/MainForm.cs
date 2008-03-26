@@ -1167,6 +1167,12 @@ namespace WinFormsDemo
             dem.Redo(de);
         }
 
+        private void actSelectAll_Execute(object sender, EventArgs e)
+        {
+            if (de.HsmState == DHsmState.Select)
+                de.SelectAll();
+        }
+
         void ShowFloatingTools(bool floatingToolsAlone)
         {
             FloatingToolsForm ff = FloatingToolsForm.GlobalFT;
