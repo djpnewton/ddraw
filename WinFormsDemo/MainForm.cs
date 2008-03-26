@@ -832,7 +832,7 @@ namespace WinFormsDemo
                 if (extraEntries != null)
                     foreach (string name in extraEntries.Keys)
                         if (name.IndexOf(AttachmentView.ATTACHMENTS_DIR) == 0)
-                            attachmentView1.AddAttachment(Path.GetFileName(name), extraEntries[name]);
+                            attachmentView1.AddAttachment(name, extraEntries[name]);
                 // commit undo/redo
                 dem.UndoRedoCommit();
                 dem.Dirty = false;
@@ -1306,13 +1306,22 @@ namespace WinFormsDemo
                 if (ofd.ShowDialog() == DialogResult.OK)
                 {
                     dem.UndoRedoStart("Import Notebook");
+                    // clear pages & attachments
                     dem.Clear();
                     attachmentView1.ClearAttachments();
-                    foreach (DEngine de in Converters.Converters.FromNotebook(ofd.FileName))
+                    // load notebook file
+                    Dictionary<string, byte[]> attachments;
+                    List<DEngine> engines = Converters.Converters.FromNotebook(ofd.FileName, out attachments);
+                    // add new pages
+                    foreach (DEngine de in engines)
                     {
                         InitDEngine(de);
                         dem.AddEngine(de);
                     }
+                    // add new attachments
+                    foreach (string name in attachments.Keys)
+                        attachmentView1.AddAttachment(name, attachments[name]);
+                    // clear undos
                     dem.UndoRedoCommit();
                     dem.UndoRedoClearHistory();
                     // update vars

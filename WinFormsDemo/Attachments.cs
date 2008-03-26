@@ -114,6 +114,7 @@ namespace WinFormsDemo
 
         public void AddAttachment(string name, byte[] buf)
         {
+            name = Path.GetFileName(name);
             attachmentDict[name] = buf;
             ListViewItem item = new ListViewItem(name);
             item.SubItems.Add(buf.Length.ToString());

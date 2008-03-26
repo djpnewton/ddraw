@@ -66,25 +66,37 @@ namespace WinFormsDemo.Converters
             return GetXmlEntry("imsmanifest.xml");
         }
 
-        public List<string> GetPageEntries(XmlDocument manifest)
+        public XmlNamespaceManager GetManifestNsManager(XmlDocument manifest)
         {
-            List<string> pageEntries = new List<string>();
             // add default namespace the the manifest uses
             XmlNamespaceManager nsmgr = new XmlNamespaceManager(manifest.NameTable);
             nsmgr.AddNamespace("ims", "http://www.imsglobal.org/xsd/imscp_v1p1");
+            return nsmgr;
+        }
+
+        public List<string> GetResourceEntries(XmlDocument manifest, string resName)
+        {
+            List<string> resEntries = new List<string>();
             // find page nodes using the ims manifest
             XmlNode doc = manifest.DocumentElement;
-            XmlNodeList pages = doc.SelectNodes("/ims:manifest/ims:resources/ims:resource[@identifier='pages']/*", nsmgr);
+            XmlNodeList pages = doc.SelectNodes(
+                string.Format("/ims:manifest/ims:resources/ims:resource[@identifier='{0}']/*", resName),
+                GetManifestNsManager(manifest));
             // add the page entries to the result
             foreach (XmlNode n in pages)
                 if (n.LocalName == "file" && n.Attributes.GetNamedItem("href") != null)
-                    pageEntries.Add(n.Attributes.GetNamedItem("href").Value);
-            return pageEntries;
+                    resEntries.Add(n.Attributes.GetNamedItem("href").Value);
+            return resEntries;
         }
 
         public XmlDocument GetPage(string entryName)
         {
             return GetXmlEntry(entryName);
+        }
+
+        public byte[] GetAttachment(string entryName)
+        {
+            return Read(entryName);
         }
 
         const string svgNs = "http://www.w3.org/2000/svg";
