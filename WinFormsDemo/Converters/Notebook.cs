@@ -169,9 +169,35 @@ namespace WinFormsDemo.Converters
 
         double GetSvgElementRotation(SvgStyledTransformedElement e)
         {
-            if (e.Transform.Count == 1 && e.Transform[0].Type == SvgTransformType.SVG_TRANSFORM_ROTATE)
-                return e.Transform[0].Angle * Math.PI / 180;
+            for (int i = 0; i < e.Transform.Count; i++)
+            {
+                SvgTransform t = e.Transform[i];
+                if (t.Type == SvgTransformType.SVG_TRANSFORM_ROTATE)
+                    return t.Angle * Math.PI / 180;
+            }
             return 0;
+        }
+
+        DPoint GetSvgElementTranslation(SvgStyledTransformedElement e)
+        {
+            for (int i = 0; i < e.Transform.Count; i++)
+            {
+                SvgTransform t = e.Transform[i];
+                if (t.Type == SvgTransformType.SVG_TRANSFORM_TRANSLATE)
+                    return new DPoint(t.Matrix.OffsetX, t.Matrix.OffsetY);
+            }
+            return new DPoint(0, 0);
+        }
+
+        DPoint GetSvgElementScale(SvgStyledTransformedElement e)
+        {
+            for (int i = 0; i < e.Transform.Count; i++)
+            {
+                SvgTransform t = e.Transform[i];
+                if (t.Type == SvgTransformType.SVG_TRANSFORM_SCALE)
+                    return new DPoint(t.Matrix.Elements[0], t.Matrix.Elements[3]);
+            }
+            return new DPoint(1, 1);
         }
 
         Figure SvgElementToFigure(SvgElement e)
@@ -278,6 +304,31 @@ namespace WinFormsDemo.Converters
                 else
                     f = null;
             }
+            else if (e is SvgTextElement)
+            {
+                double fontSize;
+                string fontFamily;
+                DColor fill;
+                bool bold, italic, underline;
+                string text = ExtractText(e, 0, out fontSize, out fontFamily, out fill, out bold, out italic, out underline);
+                while (text.EndsWith("\n"))
+                    text = text.Substring(0, text.Length - 1);
+                if (text != null)
+                {
+                    DPoint translation = GetSvgElementTranslation((SvgTextElement)e);
+                    f = new TextFigure(translation, text, 0);
+                    ((TextFigure)f).FontSize = fontSize;
+                    ((TextFigure)f).FontName = fontFamily;
+                    ((TextFigure)f).Fill = fill;
+                    ((TextFigure)f).Bold = bold;
+                    ((TextFigure)f).Italics = italic;
+                    ((TextFigure)f).Underline = underline;
+
+                    DPoint scale = GetSvgElementScale((SvgTextElement)e);
+                    f.Width *= scale.X;
+                    f.Height *= scale.Y;
+                }
+            }
 
             if (f != null)
             {
@@ -308,6 +359,68 @@ namespace WinFormsDemo.Converters
             }
 
             return f;
+        }
+
+        const string NBFontSizeAttr = "font-size";
+        const string NBFontFamilyAttr = "font-family";
+        const string NBFillAttr = "fill";
+        const string NBFontWeightAttr = "font-weight";
+        const string NBFontStyleAttr = "font-style";
+        const string NBTextDecorationAttr = "text-decoration";
+
+        string ExtractText(SvgElement e, int level, out double fontSize, out string fontFamily, out DColor fill, out bool bold, out bool italic, out bool underline)
+        {
+            string text;
+            text = "";
+            fontSize = 12;
+            fontFamily = "Arial";
+            fill = DColor.Black;
+            bold = false;
+            italic = false;
+            underline = false;
+            if ((e is SvgTextElement || e is SvgTspanElement) && e.Children.Count == 1 && e.Children[0] is TextNode)
+            {
+                text = ((TextNode)e.Children[0]).Text;
+                if (e.Attributes.ContainsKey(NBFontSizeAttr))
+                    fontSize = double.Parse((string)e.Attributes[NBFontSizeAttr]);
+                if (e.Attributes.ContainsKey(NBFontFamilyAttr))
+                    fontFamily = (string)e.Attributes[NBFontFamilyAttr];
+                if (e.Attributes.ContainsKey(NBFillAttr))
+                    fill = DColor.FromHtml((string)e.Attributes[NBFillAttr]);
+                if (e.Attributes.ContainsKey(NBFontWeightAttr))
+                    bold = NotebookFontWeightToBold((string)e.Attributes[NBFontWeightAttr]);
+                if (e.Attributes.ContainsKey(NBFontStyleAttr))
+                    italic = NotebookFontStyleToItalic((string)e.Attributes[NBFontStyleAttr]);
+                if (e.Attributes.ContainsKey(NBTextDecorationAttr))
+                    underline = NotebookTextDecorationToUnderline((string)e.Attributes[NBTextDecorationAttr]);
+            }
+            else
+            {
+                foreach (SvgElement child in e.Children)
+                {
+                    string childText = ExtractText(child, level + 1, out fontSize, out fontFamily, out fill, out bold, out italic, out underline);
+                    if (childText != null)
+                        text += childText;
+                }
+            }
+            if (level == 1)
+                text += "\n";
+            return text;
+        }
+
+        bool NotebookFontWeightToBold(string s)
+        {
+            return s == "bold";
+        }
+
+        private bool NotebookFontStyleToItalic(string s)
+        {
+            return s == "italic";
+        }
+
+        private bool NotebookTextDecorationToUnderline(string s)
+        {
+            return s == "underline";
         }
 
         DStrokeStyle NotebookDashArrayToStrokeStyle(string s)

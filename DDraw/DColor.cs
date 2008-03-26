@@ -63,6 +63,8 @@ namespace DDraw
                 byte b = Convert.ToByte(string.Concat("0x" + s.Substring(5, 2)), 16);
                 return new DColor(r, g, b);
             }
+            else if (s == "none")
+                return new DColor(0, 0, 0, 0);
             return DColor.Black;
         }
 
