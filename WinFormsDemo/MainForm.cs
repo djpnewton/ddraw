@@ -122,6 +122,7 @@ namespace WinFormsDemo
             contextGlyph.Clicked += new GlyphClickedHandler(contextGlyph_Clicked);
             linkGlyph = new BitmapGlyph(new WFBitmap(Resource1.link), DGlyphPosition.BottomLeft);
             linkGlyph.Visiblility = DGlyphVisiblity.Always;
+            linkGlyph.Cursor = DCursor.Hand;
             linkGlyph.Clicked += new GlyphClickedHandler(linkGlyph_Clicked);
             // figure defaults
             Figure._handleSize = 6;

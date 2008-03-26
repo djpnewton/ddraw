@@ -280,6 +280,9 @@ namespace DDraw.WinForms
                 case DCursor.IBeam:
                     control.Cursor = Cursors.IBeam;
                     break;
+                case DCursor.Hand:
+                    control.Cursor = Cursors.Hand;
+                    break;
             }
         }
     }

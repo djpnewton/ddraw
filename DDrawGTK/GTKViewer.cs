@@ -276,6 +276,9 @@ namespace DDraw.GTK
                 case DCursor.IBeam:
                     control.GdkWindow.Cursor = new Gdk.Cursor(Gdk.CursorType.Xterm);
                     break;
+                case DCursor.Hand:
+                    control.GdkWindow.Cursor = new Gdk.Cursor(Gdk.CursorType.Hand1);
+                    break;
             }
         }
     }

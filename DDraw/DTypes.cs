@@ -14,7 +14,7 @@ namespace DDraw
 
     public enum DMarker { None, Arrow, Dot, Square, Diamond };
 
-    public enum DCursor { Default, MoveAll, MoveNS, MoveWE, MoveNESW, MoveNWSE, Rotate, Crosshair, IBeam };
+    public enum DCursor { Default, MoveAll, MoveNS, MoveWE, MoveNESW, MoveNWSE, Rotate, Crosshair, IBeam, Hand };
 
     public enum DHitTest { None, Body, SelectRect, Resize, Rotate, ReposLinePt1, ReposLinePt2, Glyph };
 
