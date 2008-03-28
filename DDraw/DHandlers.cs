@@ -47,10 +47,18 @@ namespace DDraw
 
         public DFigureHandler()
         {
+            figures.ItemAdded += new ItemAddedDelegate<Figure>(figures_ItemAdded);
+
             BackgroundFigure = new BackgroundFigure();
             BackgroundFigure.Fill = DColor.White;
             BackgroundFigure.Width = PageTools.DefaultPageWidth;
             BackgroundFigure.Height = PageTools.DefaultPageHeight;
+        }
+
+        void figures_ItemAdded(Figure item)
+        {
+            if (AddedFigure != null)
+                AddedFigure(null, item);  
         }
 
         // public methods //
@@ -60,8 +68,6 @@ namespace DDraw
         public void Add(Figure f)
         {
             figures.Add(f);
-            if (AddedFigure != null)
-                AddedFigure(null, f);
         }
 
         public void Insert(Figure f, Figure before)

@@ -8,9 +8,18 @@ using System.Diagnostics;
 
 namespace DejaVu.Collections.Generic
 {
+    public delegate void ItemAddedDelegate<T>(T item);
+
     public class UndoRedoList<T> : IUndoRedoMember, IList<T>, ICollection<T>, IEnumerable<T>, IList, ICollection, IEnumerable
     {
         List<T> list;
+        public event ItemAddedDelegate<T> ItemAdded;
+
+        void DoItemAdded(T item)
+        {
+            if (ItemAdded != null)
+                ItemAdded(item);
+        }
 
         #region IUndoRedoMember Members
 
@@ -139,6 +148,7 @@ namespace DejaVu.Collections.Generic
         {
             Enlist();
             list.Add(item);
+            DoItemAdded(item);
         }
         //
         ///<summary>
@@ -157,6 +167,8 @@ namespace DejaVu.Collections.Generic
         {
             Enlist();
             list.AddRange(collection);
+            foreach (T item in collection)
+                DoItemAdded(item);
         }
         //
         ///<summary>
@@ -797,6 +809,7 @@ namespace DejaVu.Collections.Generic
         {
             Enlist();
             list.Insert(index, item);
+            DoItemAdded(item);
         }
         //
         ///<summary>
@@ -822,6 +835,8 @@ namespace DejaVu.Collections.Generic
         {
             Enlist();
             list.InsertRange(index, collection);
+            foreach (T item in collection)
+                DoItemAdded(item);
         }
         //
         ///<summary>
