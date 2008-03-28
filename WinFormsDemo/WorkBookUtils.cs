@@ -28,6 +28,7 @@ namespace WinFormsDemo
             de.FigureLockAspectRatio = e.Shift;
             de.FigureAlwaysSnapAngle = e.Shift;
             de.FigureSelectAddToSelection = e.Shift;
+            SetKeyMovementRate(de, e);
         }
 
         public static void ViewerKeyUp(DEngine de, KeyEventArgs e)
@@ -35,6 +36,15 @@ namespace WinFormsDemo
             de.FigureLockAspectRatio = e.Shift;
             de.FigureAlwaysSnapAngle = e.Shift;
             de.FigureSelectAddToSelection = e.Shift;
+            SetKeyMovementRate(de, e);
+        }
+
+        static void SetKeyMovementRate(DEngine de, KeyEventArgs e)
+        {
+            if (e.Shift)
+                de.KeyMovementRate = 5;
+            else
+                de.KeyMovementRate = 1;
         }
 
         const uint MA_ACTIVATE = 1;

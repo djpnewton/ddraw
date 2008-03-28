@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 
 using qf4net;
+using DejaVu;
 using DejaVu.Collections.Generic;
 
 namespace DDraw
@@ -50,43 +51,30 @@ namespace DDraw
         }
     }
 
-    public class QKeyEvent : QEvent
+    public class QKeyEvent : QViewerEvent
     {
-        DViewer dv;
-        public DViewer Dv
-        {
-            get { return dv; }
-        }
         DKey key;
         public DKey Key
         {
             get { return key; }
         }
 
-        public QKeyEvent(int qSignal, DViewer dv, DKey key) : base(qSignal)
+        public QKeyEvent(int qSignal, DTkViewer dv, DKey key) : base(qSignal, dv)
         {
-            this.dv = dv;
             this.key = key;
         }
     }
 
-    public class QKeyPressEvent : QEvent
+    public class QKeyPressEvent : QViewerEvent
     {
-        DTkViewer dv;
-        public DTkViewer Dv
-        {
-            get { return dv; }
-        }
         int key;
         public int Key
         {
             get { return key; }
         }
 
-        public QKeyPressEvent(int qSignal, DTkViewer dv, int key)
-            : base(qSignal)
+        public QKeyPressEvent(int qSignal, DTkViewer dv, int key) : base(qSignal, dv)
         {
-            this.dv = dv;
             this.key = key;
         }
     }
@@ -126,7 +114,7 @@ namespace DDraw
     public class DHsm : QHsm
     {
         // private variables
-        UndoRedoManager undoRedoManager;
+        UndoRedoArea undoRedoArea;
         DViewerHandler viewerHandler;
         DFigureHandler figureHandler;
         DAuthorProperties authorProps;
@@ -226,6 +214,13 @@ namespace DDraw
             set { usePolylineDots = value; }
         }
 
+        int keyMovementRate = 1;
+        public int KeyMovementRate
+        {
+            get { return keyMovementRate; }
+            set { keyMovementRate = value; }
+        }
+
         DPoint pageSize = new DPoint(PageTools.DefaultPageWidth, PageTools.DefaultPageHeight);
         public void SetPageSize(DPoint pageSize)
         {
@@ -312,10 +307,10 @@ namespace DDraw
                 QState EraserDefault;
                 QState Erasing;
 
-        public DHsm(UndoRedoManager undoRedoManager, DViewerHandler viewerHandler, DFigureHandler figureHandler, DAuthorProperties authorProps) : base()
+        public DHsm(UndoRedoArea undoRedoArea, DViewerHandler viewerHandler, DFigureHandler figureHandler, DAuthorProperties authorProps) : base()
         {
             // undo redo manager
-            this.undoRedoManager = undoRedoManager;
+            this.undoRedoArea = undoRedoArea;
             // viewer handler
             this.viewerHandler = viewerHandler;
             viewerHandler.NeedRepaint += new DPaintEventHandler(dv_NeedRepaint);
@@ -443,10 +438,10 @@ namespace DDraw
         {
             // roll back if current figure has zero areasize
             if (currentFigure.Width == 0 || currentFigure.Height == 0)
-                undoRedoManager.Cancel();
+                undoRedoArea.Cancel();
             else
                 // commit to undo/redo
-                undoRedoManager.Commit();
+                undoRedoArea.Commit();
             // null currentfigure
             currentFigure = null;
         }
@@ -684,6 +679,37 @@ namespace DDraw
             }
         }
 
+        void DoSelectDefaultKeyPress(DTkViewer dv, int k)
+        {
+            int dx = 0, dy = 0;
+            switch (k)
+            {
+                case (int)DKeys.Left:
+                    dx = -keyMovementRate;
+                    break;
+                case (int)DKeys.Right:
+                    dx = keyMovementRate;
+                    break;
+                case (int)DKeys.Up:
+                    dy = -keyMovementRate;
+                    break;
+                case (int)DKeys.Down:
+                    dy = keyMovementRate;
+                    break;
+            }
+            if (dx != 0 || dy != 0)
+            {
+                undoRedoArea.StartSpan("Move", true);
+                foreach (Figure f in figureHandler.SelectedFigures)
+                {
+                    f.X += dx;
+                    f.Y += dy;
+                }
+                undoRedoArea.CommitSpan();
+                dv.Update();
+            }
+        }
+
         QState DoSelectDefault(IQEvent qevent)
         {
             switch (qevent.QSignal)
@@ -696,6 +722,9 @@ namespace DDraw
                     return null;
                 case (int)DHsmSignals.MouseUp:
                     DoSelectDefaultMouseUp(((QMouseEvent)qevent).Dv, ((QMouseEvent)qevent).Button, ((QMouseEvent)qevent).Pt);
+                    return null;
+                case (int)DHsmSignals.KeyPress:
+                    DoSelectDefaultKeyPress(((QKeyPressEvent)qevent).Dv, ((QKeyPressEvent)qevent).Key);
                     return null;
             }
             return this.Select;
@@ -939,12 +968,12 @@ namespace DDraw
             {
                 case (int)QSignals.Entry:
                     // record state for undo/redo manager
-                    undoRedoManager.Start("Select Operation");
+                    undoRedoArea.Start("Select Operation");
                     return null;
                 case (int)QSignals.Exit:
                     // commit undo changes
-                    if (undoRedoManager.IsCommandStarted)
-                        undoRedoManager.Commit();
+                    if (undoRedoArea.IsCommandStarted)
+                        undoRedoArea.Commit();
                     return null;
                 case (int)DHsmSignals.MouseMove:
                     DoDragFigureMouseMove(((QMouseEvent)qevent).Dv, ((QMouseEvent)qevent).Pt);
@@ -961,7 +990,7 @@ namespace DDraw
                     // nullify currentFigure
                     currentFigure = null;
                     // cancel changes
-                    undoRedoManager.Cancel();
+                    undoRedoArea.Cancel();
                     // transition
                     TransitionTo(SelectDefault);
                     return null;
@@ -1081,7 +1110,7 @@ namespace DDraw
         {
             if (btn == DMouseButton.Left)
             {                
-                undoRedoManager.Start("Add Line");
+                undoRedoArea.Start("Add Line");
                 // bound pt to canvas
                 BoundPtToPage(pt);
                 // create line figure
@@ -1244,7 +1273,7 @@ namespace DDraw
         {
             if (btn == DMouseButton.Left)
             {
-                undoRedoManager.Start("Add Text");
+                undoRedoArea.StartSpan("Add Text", false);
                 // bound pt to canvas
                 BoundPtToPage(pt);
                 // create TextFigure
@@ -1360,7 +1389,7 @@ namespace DDraw
             {
                 case (int)QSignals.Entry:
                     // start undo record
-                    undoRedoManager.Start("Text Edit");
+                    undoRedoArea.StartSpan("Text Edit", false);
                     // add TextEditFigure
                     Figure tf = currentFigure;
                     currentFigure = new TextEditFigure((TextFigure)tf);
@@ -1380,7 +1409,7 @@ namespace DDraw
                         figureHandler.Remove(currentFigure);
                     }
                     // record text edit to undo manager
-                    undoRedoManager.Commit();
+                    undoRedoArea.Commit();
                     return null;
                 case (int)DHsmSignals.MouseDown:
                     DoTextEditMouseDown(((QMouseEvent)qevent).Dv, ((QMouseEvent)qevent).Button, ((QMouseEvent)qevent).Pt);
@@ -1415,7 +1444,7 @@ namespace DDraw
         {
             if (btn == DMouseButton.Left)
             {
-                undoRedoManager.Start(string.Format("Add {0}", currentFigureClass.Name));
+                undoRedoArea.Start(string.Format("Add {0}", currentFigureClass.Name));
                 // bound pt to canvas
                 BoundPtToPage(pt);
                 // create Figure
@@ -1529,7 +1558,7 @@ namespace DDraw
                 case (int)QSignals.Entry:
                     DoStateChanged(DHsmState.FigureEdit);
                     // start undo record
-                    undoRedoManager.Start("Figure Edit");
+                    undoRedoArea.Start("Figure Edit");
                     // set editing and connect to edit finished event
                     ((IEditable)currentFigure).StartEdit();
                     ((IEditable)currentFigure).EditFinished += new EditFinishedHandler(currentFigure_EditFinished);
@@ -1542,7 +1571,7 @@ namespace DDraw
                     ((IEditable)currentFigure).EndEdit();
                     ((IEditable)currentFigure).EditFinished -= currentFigure_EditFinished;                
                     // record figure edit to undo manager
-                    undoRedoManager.Commit();
+                    undoRedoArea.Commit();
                     return null;
                 case (int)DHsmSignals.MouseDown:
                     ((IEditable)currentFigure).MouseDown(((QMouseEvent)qevent).Dv, ((QMouseEvent)qevent).Button, ((QMouseEvent)qevent).Pt);
@@ -1738,11 +1767,11 @@ namespace DDraw
             {
                 case (int)QSignals.Entry:
                     // record state for undo/redo manager
-                    undoRedoManager.Start("Erase Operation");
+                    undoRedoArea.Start("Erase Operation");
                     return null;
                 case (int)QSignals.Exit:
                     // commit undo changes
-                    undoRedoManager.Commit();
+                    undoRedoArea.Commit();
                     // hide eraser
                     drawEraser = false;
                     viewerHandler.Update(); // and show updated polylines in other viewers too

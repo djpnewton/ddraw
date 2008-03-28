@@ -173,71 +173,52 @@ namespace DDraw
         }
     }
 
-    public class UndoRedoManager : UndoRedoArea
-    {
-        static int instanceNumber = 0;
-
-        public UndoRedoManager() : base("UndoRedoArea #" + instanceNumber.ToString())
-        {
-            // increment static instanceNumber variable
-            instanceNumber += 1;
-        }
-
-        public new IDisposable Start(string name)
-        {
-            if (!IsCommandStarted)
-                return base.Start(name);
-            else
-                return null;
-        }
-    }
-
     public class DEngine
     {
-        UndoRedoManager undoRedoManager;
+        UndoRedoArea undoRedoArea;
         public bool CanUndo
         {
-            get { return undoRedoManager.CanUndo; }
+            get { return undoRedoArea.CanUndo; }
         }
         public bool CanRedo
         {
-            get { return undoRedoManager.CanRedo; }
+            get { return undoRedoArea.CanRedo; }
         }
         public IEnumerable<CommandId> UndoCommands
         {
-            get { return undoRedoManager.UndoCommands; }
+            get { return undoRedoArea.UndoCommands; }
         }
         public IEnumerable<CommandId> RedoCommands
         {
-            get { return undoRedoManager.RedoCommands; }
+            get { return undoRedoArea.RedoCommands; }
         }
         public void UndoRedoStart(string name)
         {
-            undoRedoManager.Start(name);
+            undoRedoArea.Start(name);
         }
         public void UndoRedoCommit()
         {
-            undoRedoManager.Commit();
+            undoRedoArea.Commit();
         }
         public void UndoRedoCancel()
         {
-            undoRedoManager.Cancel();
+            undoRedoArea.Cancel();
         }
         public void UndoRedoClearHistory()
         {
-            undoRedoManager.ClearHistory();
+            undoRedoArea.ClearHistory();
         }
         public void UndoRedoClearRedos()
         {
-            undoRedoManager.ClearRedos();
+            undoRedoArea.ClearRedos();
         }
         public void Undo()
         {
-            undoRedoManager.Undo();
+            undoRedoArea.Undo();
         }
         public void Redo()
         {
-            undoRedoManager.Redo();
+            undoRedoArea.Redo();
         }
 
         DViewerHandler viewerHandler;
@@ -317,6 +298,11 @@ namespace DDraw
             get { return hsm.FiguresBoundToPage; }
             set { hsm.FiguresBoundToPage = value; }
         }
+        public int KeyMovementRate
+        {
+            get { return hsm.KeyMovementRate; }
+            set { hsm.KeyMovementRate = value; }
+        }
 
         UndoRedo<DPoint> _pageSize = new UndoRedo<DPoint>(new DPoint(PageTools.DefaultPageWidth, PageTools.DefaultPageHeight));
         public DPoint PageSize
@@ -359,17 +345,19 @@ namespace DDraw
         public event AddedFigureHandler AddedFigure;
         public event SelectMeasureHandler MeasureRect;
 
+        static int instanceNumber = 0;
+
         public DEngine(DAuthorProperties authorProps, bool usingEngineManager)
         {
             // create the undo/redo manager
-            undoRedoManager = new UndoRedoManager();
-            undoRedoManager.CommandDone += new EventHandler<CommandDoneEventArgs>(undoRedoArea_CommandDone);
+            undoRedoArea = new UndoRedoArea(string.Format("area #{0}", instanceNumber));
+            undoRedoArea.CommandDone += new EventHandler<CommandDoneEventArgs>(undoRedoArea_CommandDone);
             // create viewer handler
             viewerHandler = new DViewerHandler();
             viewerHandler.MouseDown += new DMouseButtonEventHandler(viewerHandler_MouseDown);
             // create figure handler
             if (!usingEngineManager)
-                undoRedoManager.Start("create figure handler");
+                undoRedoArea.Start("create figure handler");
             figureHandler = new DFigureHandler();
             figureHandler.SelectedFiguresChanged += new SelectedFiguresHandler(DoSelectedFiguresChanged);
             figureHandler.AddedFigure += delegate(DEngine de, Figure fig)
@@ -379,11 +367,11 @@ namespace DDraw
             };
             if (!usingEngineManager)
             {
-                undoRedoManager.Commit();
-                undoRedoManager.ClearHistory();
+                undoRedoArea.Commit();
+                undoRedoArea.ClearHistory();
             }
             // create state machine
-            hsm = new DHsm(undoRedoManager, viewerHandler, figureHandler, authorProps);
+            hsm = new DHsm(undoRedoArea, viewerHandler, figureHandler, authorProps);
             hsm.DebugMessage += new DebugMessageHandler(hsm_DebugMessage);
             hsm.ContextClick += new ContextClickHandler(hsm_ContextClick);
             hsm.DragFigureStart += new DragFigureHandler(hsm_DragFigureStart);
@@ -391,6 +379,8 @@ namespace DDraw
             hsm.DragFigureEnd += new DragFigureHandler(hsm_DragFigureEnd);
             hsm.MeasureRect += new SelectMeasureHandler(hsm_MeasureRect);
             hsm.StateChanged += new HsmStateChangedHandler(hsm_StateChanged);
+            // update instance number
+            instanceNumber++;
         }
 
         void viewerHandler_MouseDown(DTkViewer dv, DMouseButton btn, DPoint pt)

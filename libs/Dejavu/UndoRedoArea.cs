@@ -43,20 +43,40 @@ namespace DejaVu
 			get { return currentCommand; }
 		}
 
+        private bool span = false;
+        private void CheckSpan()
+        {
+            if (span)
+                Commit();
+        }
+
 		#region Undo/Redo stuff
 		/// <summary>Returns true if history has command that can be undone</summary>
-		public bool CanUndo
+        public bool CanUndo
 		{
-			get { return currentPosition >= 0; }
+			get 
+            {
+                if (span)
+                    return true;
+                else
+                    return currentPosition >= 0; 
+            }
 		}
 		/// <summary>Returns true if history has command that can be redone</summary>
-		public bool CanRedo
+        public bool CanRedo
 		{
-			get { return currentPosition < history.Count - 1; }
+            get
+            {
+                if (span)
+                    return false;
+                else
+                    return currentPosition < history.Count - 1;
+            }          
 		}
 		/// <summary>Undo last command from history list</summary>
 		public void Undo()
 		{
+            CheckSpan();
 			AssertNoCommand();
 			if (CanUndo)
 			{
@@ -66,8 +86,9 @@ namespace DejaVu
 			}
 		}
 		/// <summary>Repeats command that was undone before</summary>
-		public void Redo()
+        public void Redo()
 		{
+            CheckSpan();
 			AssertNoCommand();
 			if (CanRedo)
 			{
@@ -81,16 +102,41 @@ namespace DejaVu
 		/// <summary>Start command. Any data changes must be done within a command.</summary>
 		/// <param name="commandCaption"></param>
 		/// <returns>Interface that allows properly finish the command with 'using' statement</returns>
-		public IDisposable Start(string commandCaption)
+        public IDisposable Start(string commandCaption)
 		{
+            CheckSpan();
 			AssertNoCommand();
 			currentArea = this;
 			currentCommand = new Command(commandCaption, this);
 			return currentCommand;
 		}
+
+        /// <summary>StartSpan command. A span command will accrue changes between multiple StartSpan/CommitSpan 
+        /// commands (if nameMustMatch is true the same name must be given for each StartSpan command).
+        /// Any other command (Start, Commit, Undo, CanUndo etc..) will end the span command.
+        /// </summary>
+        /// <param name="commandCaption"></param>
+        /// <returns>Interface that allows properly finish the command with 'using' statement</returns>
+        public IDisposable StartSpan(string name, bool nameMustMatch)
+        {
+            if (IsCommandStarted)
+            {
+                if (nameMustMatch)
+                    AssertOnHoldCommandHasThisName(name);
+                return currentCommand;
+            }
+            else
+            {
+                Start(name);
+                span = true;
+                return currentCommand;
+            }
+        }
+
 		/// <summary>Commits current command and saves changes into history</summary>
         public void Commit()
         {
+            span = false;
             AssertCurrentCommand();
             if (currentCommand.HasChanges)
             {
@@ -108,11 +154,21 @@ namespace DejaVu
             }
             currentCommand = null;
         }
+
+        /// <summary>Pretends to Commit current command (sends event)</summary>
+        public void CommitSpan()
+        {
+            AssertSpanCommand();
+            OnCommandDone(CommandDoneType.Commit);
+        }
+
 		/// <summary>
 		/// Rollback current command. It does not saves any changes done in current command.
 		/// </summary>
-		public void Cancel()
+        public void Cancel()
 		{
+            if (span)
+                span = false;
 			AssertCurrentCommand();
 			currentCommand.Undo();
 			currentCommand = null;
@@ -122,8 +178,9 @@ namespace DejaVu
 		/// Clears all history. It does not affect current data but history only. 
 		/// It is usefull after any data initialization if you want forbid user to undo this initialization.
 		/// </summary>
-		public void ClearHistory()
+        public void ClearHistory()
 		{
+            CheckSpan();
 			currentCommand = null;
 			currentPosition = -1;
 			history.Clear();
@@ -134,6 +191,7 @@ namespace DejaVu
         /// </summary>
         public void ClearRedos()
         {
+            CheckSpan();
             currentCommand = null;
             int count = history.Count - currentPosition - 1;
             history.RemoveRange(currentPosition + 1, count);
@@ -163,6 +221,22 @@ namespace DejaVu
 				throw new InvalidOperationException("Command in given area is not started.");
 		}
 
+        /// <summary>Checks that command has been started and that it is a span command</summary>
+        internal void AssertSpanCommand()
+        {
+            AssertCommand();
+            if (!span)
+                throw new InvalidOperationException("Command is not a spanned command.");
+        }
+
+        /// <summary>Checks that command has been started and that it is a span command and matches the name given</summary>
+        internal void AssertOnHoldCommandHasThisName(string name)
+        {
+            AssertSpanCommand();
+            if (currentCommand.CommandId.Caption != name)
+                throw new InvalidOperationException("Previous command is not completed. Use UndoRedoManager.Commit() to complete current command.");
+        }
+
 		public bool IsCommandStarted
 		{
 			get { return currentCommand != null; }
@@ -175,6 +249,11 @@ namespace DejaVu
 		{
 			get
 			{
+                if (span)
+                {
+                    AssertCommand();
+                    yield return currentCommand.CommandId;
+                }
 				for (int i = currentPosition; i >= 0; i--)
 					yield return history[i].CommandId;
 			}
@@ -226,7 +305,7 @@ namespace DejaVu
 		#endregion
 
 		public event EventHandler<CommandDoneEventArgs> CommandDone;
-		void OnCommandDone(CommandDoneType type)
+		protected void OnCommandDone(CommandDoneType type)
 		{
 			if (CommandDone != null)
 				CommandDone(null, new CommandDoneEventArgs(type));
