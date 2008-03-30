@@ -844,37 +844,50 @@ namespace WinFormsDemo
 
         void OpenFile(string fileName)
         {
-            // start undo/redo
-            dem.UndoRedoStart("Open Document");
-            try
+            // create progress form
+            ProgressForm pf = new ProgressForm();
+            pf.Text = "Opening File";
+            pf.Shown += delegate(object s, EventArgs e)
             {
-                // load new engines
-                Dictionary<string, byte[]> extraEntries;
-                List<DEngine> engines = FileHelper.Load(fileName, dap, true,
-                    new string[] { AttachmentView.ATTACHMENTS_DIR }, out extraEntries);
-                dem.SetEngines(engines);
-                this.fileName = fileName;
-                // init new dengines
-                foreach (DEngine newDe in dem.GetEngines())
-                    InitDEngine(newDe);
-                // set attachments
-                attachmentView1.ClearAttachments();
-                if (extraEntries != null)
-                    foreach (string name in extraEntries.Keys)
-                        if (name.IndexOf(AttachmentView.ATTACHMENTS_DIR) == 0)
-                            attachmentView1.AddAttachment(name, extraEntries[name]);
-                // commit undo/redo
-                dem.UndoRedoCommit();
-                dem.Dirty = false;
-                // update vars
-                beenSaved = true;
-                UpdateTitleBar();
-            }
-            catch (Exception e)
-            {
-                dem.UndoRedoCancel();
-                MessageBox.Show(e.Message, "Error Reading File", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+                Application.DoEvents();
+                // start undo/redo
+                dem.UndoRedoStart("Open Document");
+                try
+                {
+                    // load new engines
+                    Dictionary<string, byte[]> extraEntries;
+                    List<DEngine> engines = FileHelper.Load(fileName, dap, true,
+                        new string[] { AttachmentView.ATTACHMENTS_DIR }, out extraEntries);
+                    dem.Clear();
+                    // init new dengines
+                    foreach (DEngine newDe in engines)
+                    {
+                        InitDEngine(newDe);
+                        dem.AddEngine(newDe);
+                        Application.DoEvents(); // update progress form
+                    }
+                    // set attachments
+                    attachmentView1.ClearAttachments();
+                    if (extraEntries != null)
+                        foreach (string name in extraEntries.Keys)
+                            if (name.IndexOf(AttachmentView.ATTACHMENTS_DIR) == 0)
+                                attachmentView1.AddAttachment(name, extraEntries[name]);
+                    // commit undo/redo
+                    dem.UndoRedoCommit();
+                    dem.Dirty = false;
+                    // update vars
+                    this.fileName = fileName;
+                    beenSaved = true;
+                    UpdateTitleBar();
+                }
+                catch (Exception e2)
+                {
+                    dem.UndoRedoCancel();
+                    MessageBox.Show(e2.Message, "Error Reading File", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                pf.Close();
+            };
+            pf.ShowDialog();
         }
 
         void Open()
@@ -888,23 +901,32 @@ namespace WinFormsDemo
 
         void Save()
         {
-            try
+            // progress form
+            ProgressForm pf = new ProgressForm();
+            pf.Text = "Saving File";
+            pf.Shown += delegate(object s, EventArgs e)
             {
-                // make extra enties dict (from attachments)
-                Dictionary<string, byte[]> extraEntries = new Dictionary<string, byte[]>();
-                foreach (string name in attachmentView1.GetAttachmentNames())
-                    extraEntries.Add(AttachmentView.ATTACHMENTS_DIR + Path.DirectorySeparatorChar + name,
-                        attachmentView1.GetAttachment(name));
-                // save
-                FileHelper.Save(fileName, dem.GetEngines(), extraEntries);
-                dem.Dirty = false;
-                beenSaved = true;
-                UpdateTitleBar();
-            }
-            catch (Exception e)
-            {
-                MessageBox.Show(e.Message, "Error Writing File", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+                Application.DoEvents();
+                try
+                {
+                    // make extra enties dict (from attachments)
+                    Dictionary<string, byte[]> extraEntries = new Dictionary<string, byte[]>();
+                    foreach (string name in attachmentView1.GetAttachmentNames())
+                        extraEntries.Add(AttachmentView.ATTACHMENTS_DIR + Path.DirectorySeparatorChar + name,
+                            attachmentView1.GetAttachment(name));
+                    // save
+                    FileHelper.Save(fileName, dem.GetEngines(), extraEntries);
+                    dem.Dirty = false;
+                    beenSaved = true;
+                    UpdateTitleBar();
+                }
+                catch (Exception e2)
+                {
+                    MessageBox.Show(e2.Message, "Error Writing File", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                pf.Close();
+            };
+            pf.ShowDialog();
         }
 
         bool SaveAs()
@@ -1193,22 +1215,44 @@ namespace WinFormsDemo
 
         void FloatingTools_ImportAnnotationsPage(DEngine de)
         {
-            dem.UndoRedoStart("Import Annotations");
-            CreateDEngine(null);
-            this.de.PageSize = de.PageSize;
-            this.de.SetBackgroundFigure(de.GetBackgroundFigure());
-            foreach (Figure f in de.Figures)
-                this.de.AddFigure(f);
-            dem.UndoRedoCommit();
+            // progress form
+            ProgressForm pf = new ProgressForm();
+            pf.Text = "Importing Screen as Page";
+            pf.Shown += delegate(object s, EventArgs e)
+            {
+                Application.DoEvents();
+                // import annotations
+                dem.UndoRedoStart("Import Annotations");
+                CreateDEngine(null);
+                this.de.PageSize = de.PageSize;
+                this.de.SetBackgroundFigure(de.GetBackgroundFigure());
+                foreach (Figure f in de.Figures)
+                    this.de.AddFigure(f);
+                dem.UndoRedoCommit();
+                // close dialog
+                pf.Close();
+            };
+            pf.ShowDialog();
         }
 
         void FloatingTools_ImportAnnotationsArea(DBitmap bmp)
         {
-            de.UndoRedoStart("Import Annotations");
-            ImageFigure f = new ImageFigure(new DRect(10, 10, bmp.Width, bmp.Height), 0, WFHelper.ToImageData((Bitmap)bmp.NativeBmp), "annotations.png");
-            de.AddFigure(f);
-            dvEditor.Update();
-            de.UndoRedoCommit();
+            // progress form
+            ProgressForm pf = new ProgressForm();
+            pf.Text = "Importing Area as Image";
+            pf.Shown += delegate(object s, EventArgs e)
+            {
+                Application.DoEvents();
+                // import annotations
+                de.UndoRedoStart("Import Annotations");
+                ImageFigure f = new ImageFigure(new DRect(10, 10, bmp.Width, bmp.Height), 0, WFHelper.ToImageData((Bitmap)bmp.NativeBmp), "annotations.png");
+                de.AddFigure(f);
+                dvEditor.Update();
+                de.UndoRedoCommit();
+                // close dialog
+                pf.Close();
+            };
+            pf.ShowDialog();
         }
 
         // wfvcEditor drag & drop
@@ -1355,29 +1399,48 @@ namespace WinFormsDemo
                 ofd.Filter = "Smart Notebook|*.notebook";
                 if (ofd.ShowDialog() == DialogResult.OK)
                 {
-                    dem.UndoRedoStart("Import Notebook");
-                    // clear pages & attachments
-                    dem.Clear();
-                    attachmentView1.ClearAttachments();
-                    // load notebook file
-                    Dictionary<string, byte[]> attachments;
-                    List<DEngine> engines = Converters.Converters.FromNotebook(ofd.FileName, out attachments);
-                    // add new pages
-                    foreach (DEngine de in engines)
+                    // setup progress form
+                    ProgressForm pf = new ProgressForm();
+                    pf.Text = "Importing Notebook File";
+                    pf.Shown += delegate(object s, EventArgs e2)
                     {
-                        InitDEngine(de);
-                        dem.AddEngine(de);
-                    }
-                    // add new attachments
-                    foreach (string name in attachments.Keys)
-                        attachmentView1.AddAttachment(name, attachments[name]);
-                    // clear undos
-                    dem.UndoRedoCommit();
-                    dem.UndoRedoClearHistory();
-                    // update vars
-                    fileName = Path.GetFileNameWithoutExtension(ofd.FileName);
-                    beenSaved = false;
-                    UpdateTitleBar();
+                        Application.DoEvents();
+                        // start undo/redo
+                        dem.UndoRedoStart("Import Notebook");
+                        try
+                        {
+                            // clear pages & attachments
+                            dem.Clear();
+                            attachmentView1.ClearAttachments();
+                            // load notebook file
+                            Dictionary<string, byte[]> attachments;
+                            List<DEngine> engines = Converters.Converters.FromNotebook(ofd.FileName, out attachments);
+                            // add new pages
+                            foreach (DEngine de in engines)
+                            {
+                                InitDEngine(de);
+                                dem.AddEngine(de);
+                                Application.DoEvents(); // update progress form
+                            }
+                            // add new attachments
+                            foreach (string name in attachments.Keys)
+                                attachmentView1.AddAttachment(name, attachments[name]);
+                            // clear undos
+                            dem.UndoRedoCommit();
+                            dem.UndoRedoClearHistory();
+                            // update vars
+                            fileName = Path.GetFileNameWithoutExtension(ofd.FileName);
+                            beenSaved = false;
+                            UpdateTitleBar();
+                        }
+                        catch (Exception e3)
+                        {
+                            dem.UndoRedoCancel();
+                            MessageBox.Show(e3.Message, "Error Reading File", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        }
+                        pf.Close();
+                    };
+                    pf.ShowDialog();
                 }
             }
         }

@@ -92,6 +92,12 @@
       <DependentUpon>LinkForm.cs</DependentUpon>
     </Compile>
     <Compile Include="ProgramOptions.cs" />
+    <Compile Include="ProgressForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ProgressForm.Designer.cs">
+      <DependentUpon>ProgressForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="ToolStripState.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -148,6 +154,10 @@
     <EmbeddedResource Include="PreviewBar.resx">
       <SubType>Designer</SubType>
       <DependentUpon>PreviewBar.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ProgressForm.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>ProgressForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
