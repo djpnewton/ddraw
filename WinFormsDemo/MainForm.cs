@@ -1180,11 +1180,14 @@ namespace WinFormsDemo
         void ShowFloatingTools(bool floatingToolsAlone)
         {
             FloatingToolsForm ff = FloatingToolsForm.GlobalFT;
-            ff.ImportAnnotationsPage += new ImportAnnotationsPageHandler(FloatingTools_ImportAnnotationsPage);
-            ff.ImportAnnotationsArea += new ImportAnnotationsImageHandler(FloatingTools_ImportAnnotationsArea);
-            ff.Owner = this;
-            ff.Alone = floatingToolsAlone;
-            ff.Show();
+            if (!ff.Visible)
+            {
+                ff.ImportAnnotationsPage += new ImportAnnotationsPageHandler(FloatingTools_ImportAnnotationsPage);
+                ff.ImportAnnotationsArea += new ImportAnnotationsImageHandler(FloatingTools_ImportAnnotationsArea);
+                ff.Owner = this;
+                ff.Alone = floatingToolsAlone;
+                ff.Show();
+            }
             ff.Focus();
         }
 

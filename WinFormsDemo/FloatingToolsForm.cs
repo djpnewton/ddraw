@@ -164,10 +164,13 @@ namespace WinFormsDemo
         private void btnImportArea_Click(object sender, EventArgs e)
         {
             // set annotation DEngine state to SelectMeasure
-            annotationForm.De.HsmState = DHsmState.SelectMeasure;
-            btnImportArea.Checked = true;
-            annotationForm.De.HsmStateChanged += new HsmStateChangedHandler(De_HsmStateChanged);
-            annotationForm.De.MeasureRect += new SelectMeasureHandler(De_MeasureRect);
+            if (annotationForm.De.HsmState != DHsmState.SelectMeasure)
+            {
+                annotationForm.De.HsmState = DHsmState.SelectMeasure;
+                btnImportArea.Checked = true;
+                annotationForm.De.HsmStateChanged += new HsmStateChangedHandler(De_HsmStateChanged);
+                annotationForm.De.MeasureRect += new SelectMeasureHandler(De_MeasureRect);
+            }
         }
 
         void De_HsmStateChanged(DEngine de, DHsmState state)

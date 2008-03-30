@@ -294,6 +294,8 @@ namespace DDraw
                 QState DragFigure;
                 QState DragSelect;
             QState SelectMeasure;
+                QState SelectMeasureDefault;
+                QState SelectMeasuring;
             QState DrawLine;
                 QState DrawLineDefault;
                 QState DrawingLine;
@@ -1069,12 +1071,33 @@ namespace DDraw
                     viewerHandler.Update();
                     DoStateChanged(DHsmState.SelectMeasure);
                     return null;
+                case (int)QSignals.Init:
+                    InitializeState(SelectMeasureDefault);
+                    return null;
+            }
+            return this.Main;
+        }
+
+        QState DoSelectMeasureDefault(IQEvent qevent)
+        {
+            switch (qevent.QSignal)
+            {
                 case (int)DHsmSignals.MouseDown:
                     // store drag point
                     dragPt = ((QMouseEvent)qevent).Pt;
                     // show the selection figure
                     drawSelection = true;
+                    // transistion
+                    TransitionTo(SelectMeasuring);
                     return null;
+            }
+            return this.SelectMeasure;
+        }
+
+        QState DoSelectMeasuring(IQEvent qevent)
+        {
+            switch (qevent.QSignal)
+            {
                 case (int)DHsmSignals.MouseMove:
                     DoDragSelectMouseMove(((QMouseEvent)qevent).Dv, ((QMouseEvent)qevent).Pt);
                     return null;
@@ -1082,12 +1105,14 @@ namespace DDraw
                     // hide the selection figure
                     drawSelection = false;
                     ((QMouseEvent)qevent).Dv.Update();
+                    // transition
+                    TransitionTo(SelectMeasureDefault);
                     // call SelectMeasure event
                     if (MeasureRect != null)
                         MeasureRect(null, figureHandler.SelectionFigure.Rect);
                     break;
             }
-            return this.Main;
+            return this.SelectMeasure;
         }
 
         QState DoDrawLine(IQEvent qevent)
@@ -1803,6 +1828,8 @@ namespace DDraw
             DragFigure = new QState(this.DoDragFigure);
             DragSelect = new QState(this.DoDragSelect);
             SelectMeasure = new QState(this.DoSelectMeasure);
+            SelectMeasureDefault = new QState(this.DoSelectMeasureDefault);
+            SelectMeasuring = new QState(this.DoSelectMeasuring);
             DrawLine = new QState(this.DoDrawLine);
             DrawLineDefault = new QState(this.DoDrawLineDefault);
             DrawingLine = new QState(this.DoDrawingLine);
