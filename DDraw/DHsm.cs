@@ -669,7 +669,7 @@ namespace DDraw
             {
                 Figure f = figureHandler.HitTestFigures(pt, out hitTest, out glyph);
                 if (hitTest == DHitTest.Glyph)
-                    glyph.CallClicked(f, dv.EngineToClient(pt));
+                    glyph.CallClicked(glyph.HitTestFigure, dv.EngineToClient(pt));
             }
             else if (btn == DMouseButton.Right)
             {

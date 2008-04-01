@@ -25,7 +25,7 @@ namespace DDraw
             points = pts;
         }
 
-        protected override DHitTest _HitTest(DPoint pt)
+        protected override DHitTest BodyHitTest(DPoint pt)
         {
             DPoints pts = DrawPoints();
             if (DGeom.PointInPolygon(pt, pts) || DGeom.PointInPolyline(pt, pts, StrokeWidth / 2))

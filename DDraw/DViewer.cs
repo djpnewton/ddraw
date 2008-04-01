@@ -31,7 +31,10 @@ namespace DDraw
             if (backgroundFigure != null)
                 backgroundFigure.Paint(dg);
             foreach (Figure figure in figures)
+            {
+                figure.GlyphsVisible = false;
                 figure.Paint(dg);
+            }
         }
 
         // Other //
@@ -223,21 +226,24 @@ namespace DDraw
                 dg.Scale(scale, scale); // scale canvas
                 dg.FillRect(SHADOW_OFFSET, SHADOW_OFFSET, PageSize.X, PageSize.Y, DColor.Black, 1); // draw black canvas shadow
             }
-            base.Paint(dg, backgroundFigure, figures);
+            // paint figures
+            if (backgroundFigure != null)
+                backgroundFigure.Paint(dg);
+            double invScale = 1 / scale;
+            foreach (Figure figure in figures)
+            {
+                figure.ControlScale = invScale;
+                figure.GlyphsVisible = editFigures;
+                figure.Paint(dg);
+            }
             if (editFigures)
             {
-                double invScale = 1 / scale;
-                if (figures != null)
-                    foreach (Figure figure in figures)
-                    {
-                        figure.Scale = invScale;
-                        figure.PaintSelectionChrome(dg);
-                        figure.PaintGlyphs(dg);
-                    }
+                foreach (Figure figure in figures)
+                    figure.PaintSelectionChrome(dg);
                 if (controlFigures != null)
                     foreach (Figure figure in controlFigures)
                     {
-                        figure.Scale = invScale;
+                        figure.ControlScale = invScale;
                         figure.Paint(dg);
                     }
             }

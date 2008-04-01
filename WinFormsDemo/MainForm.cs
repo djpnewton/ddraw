@@ -119,6 +119,7 @@ namespace WinFormsDemo
             dvEditor.DebugMessage += new DebugMessageHandler(DebugMessage);
             // glyphs
             contextGlyph = new BitmapGlyph(new WFBitmap(Resource1.arrow), DGlyphPosition.TopRight);
+            contextGlyph.Cursor = DCursor.Hand;
             contextGlyph.Clicked += new GlyphClickedHandler(contextGlyph_Clicked);
             linkGlyph = new BitmapGlyph(new WFBitmap(Resource1.link), DGlyphPosition.BottomLeft);
             linkGlyph.Visiblility = DGlyphVisiblity.Always;
@@ -423,6 +424,10 @@ namespace WinFormsDemo
                     return;
             fig.Glyphs.Add(contextGlyph);
             CheckOptionalGlyphs(fig);
+            // recurse into child figures
+            if (fig is GroupFigure)
+                foreach (Figure child in ((GroupFigure)fig).ChildFigures)
+                    AddDefaultGlyphs(child);
         }
 
         void CheckOptionalGlyphs(Figure fig)

@@ -36,8 +36,8 @@ namespace DDraw
 
         protected override void PaintBody(DGraphics dg)
         {
-            dg.DrawRect(X, Y, Width, Height, DColor.White, Alpha, Scale);
-            dg.DrawRect(X, Y, Width, Height, DColor.Black, Alpha, Scale, DStrokeStyle.Dot, DStrokeJoin.Mitre);
+            dg.DrawRect(X, Y, Width, Height, DColor.White, Alpha, ControlScale);
+            dg.DrawRect(X, Y, Width, Height, DColor.Black, Alpha, ControlScale, DStrokeStyle.Dot, DStrokeJoin.Mitre);
         }
     }
 
@@ -136,9 +136,9 @@ namespace DDraw
             get;
         }
 
-        void Paint(DGraphics dg, DRect figureRect, double scale);
+        void Paint(DGraphics dg, Figure f, double scale);
 
-        DHitTest HitTest(DPoint pt, DRect figureRect, bool figureSelected, double scale);
+        DHitTest HitTest(DPoint pt, Figure hitTestFigure, double scale);
 
         DCursor Cursor
         {
@@ -148,6 +148,11 @@ namespace DDraw
 
         event GlyphClickedHandler Clicked;
         void CallClicked(Figure f, DPoint pt);
+
+        Figure HitTestFigure
+        {
+            get;
+        }
     }
 
     public abstract class BasicGlyph : IGlyph
@@ -227,18 +232,19 @@ namespace DDraw
             return new DRect(pt.X, pt.Y, Width * scale, Height * scale);
         }
 
-        public abstract void Paint(DGraphics dg, DRect figureRect, double scale);
+        public abstract void Paint(DGraphics dg, Figure f, double scale);
 
         public bool IsVisible(bool figureSelected)
         {
             return visiblility == DGlyphVisiblity.Always || (visiblility == DGlyphVisiblity.WhenFigureSelected && figureSelected);
         }
 
-        public DHitTest HitTest(DPoint pt, DRect figureRect, bool figureSelected, double scale)
+        public DHitTest HitTest(DPoint pt, Figure hitTestFigure, double scale)
         {
-            if (IsVisible(figureSelected))
+            this.hitTestFigure = hitTestFigure;
+            if (IsVisible(hitTestFigure.Selected))
             {
-                if (DGeom.PointInRect(pt, GetRect(pos, figureRect, scale)))
+                if (DGeom.PointInRect(pt, GetRect(pos, hitTestFigure.GetSelectRect(), scale)))
                     return DHitTest.Glyph;
             }
             return DHitTest.None;
@@ -256,6 +262,12 @@ namespace DDraw
         {
             if (Clicked != null)
                 Clicked(this, f, pt);
+        }
+
+        Figure hitTestFigure;
+        public Figure HitTestFigure
+        {
+            get { return hitTestFigure; }
         }
     }
 
@@ -284,9 +296,9 @@ namespace DDraw
             Position = pos;
         }
 
-        public override void Paint(DGraphics dg, DRect figureRect, double scale)
+        public override void Paint(DGraphics dg, Figure f, double scale)
         {
-            dg.DrawBitmap(bmp, GetRect(Position, figureRect, scale));
+            dg.DrawBitmap(bmp, GetRect(Position, f.GetSelectRect(), scale));
         }
     }
 }

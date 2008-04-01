@@ -238,7 +238,7 @@ namespace DDraw
             {
                 Figure f = figures[i];
                 hitTest = f.HitTest(pt, out glyph);
-                if (hitTest != DHitTest.None && hitTest != DHitTest.Body)
+                if (hitTest != DHitTest.None && hitTest != DHitTest.Body && hitTest != DHitTest.Glyph)
                     return f;
             }
             // now hittest for any part of the figure

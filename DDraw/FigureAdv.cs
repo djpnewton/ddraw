@@ -38,7 +38,7 @@ namespace DDraw
             get { return true; }
         }
 
-        protected override DHitTest _HitTest(DPoint pt)
+        protected override DHitTest BodyHitTest(DPoint pt)
         {
             if (editing && DGeom.PointInRect(pt, GetClockRect()))
                 return DHitTest.Body;
