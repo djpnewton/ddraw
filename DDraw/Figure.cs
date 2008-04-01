@@ -2093,6 +2093,8 @@ namespace DDraw
                             res = child.HitTest(pt, out glyph);
                             if (res == DHitTest.Glyph)
                                 return res;
+                            else if (res != DHitTest.None)
+                                break;
                         }
                         DHitTest temp = res;
                         res = SelectHitTest(pt);
