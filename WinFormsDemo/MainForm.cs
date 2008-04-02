@@ -64,7 +64,8 @@ namespace WinFormsDemo
             // DEngine events
             de.DebugMessage += new DebugMessageHandler(DebugMessage);
             de.SelectedFiguresChanged += new SelectedFiguresHandler(de_SelectedFiguresChanged);
-            de.ContextClick += new ContextClickHandler(de_ContextClick);
+            de.FigureClick += new ClickHandler(de_FigureClick);
+            de.ContextClick += new ClickHandler(de_ContextClick);
             de.DragFigureStart += new DragFigureHandler(de_DragFigureStart);
             de.DragFigureEvt += new DragFigureHandler(de_DragFigureEvt);
             de.DragFigureEnd += new DragFigureHandler(de_DragFigureEnd);
@@ -288,11 +289,17 @@ namespace WinFormsDemo
             else
                 // check if UserAttrs have changed and update glyphs
                 foreach (Figure f in de.Figures)
-                    CheckOptionalGlyphs(f);
+                    CheckLinkGlyph(f);
             // check if attachments have changed
             attachmentView1.UpdateAttachmentView();
             // update previews dirty states
             previewBar1.UpdatePreviewsDirtyProps();
+        }
+
+        void de_FigureClick(DEngine de, Figure clickedFigure, DPoint pt)
+        {
+            if (clickedFigure.UserAttrs.ContainsKey(Links.LinkBody))
+                ExecLink(clickedFigure);
         }
 
         void de_ContextClick(DEngine de, Figure clickedFigure, DPoint pt)
@@ -331,7 +338,7 @@ namespace WinFormsDemo
             cmsFigure.Show(wfvcEditor, new Point((int)pt.X, (int)pt.Y));
         }
 
-        void linkGlyph_Clicked(IGlyph glyph, Figure figure, DPoint pt)
+        void ExecLink(Figure figure)
         {
             if (figure.UserAttrs.ContainsKey(Links.Link) && figure.UserAttrs.ContainsKey(Links.LinkType))
             {
@@ -389,6 +396,11 @@ namespace WinFormsDemo
             }
         }
 
+        void linkGlyph_Clicked(IGlyph glyph, Figure figure, DPoint pt)
+        {
+            ExecLink(figure);
+        }
+
         void InitActions()
         {
             List<Figure> figs = de.SelectedFigures;
@@ -423,16 +435,16 @@ namespace WinFormsDemo
                 if (g == contextGlyph)
                     return;
             fig.Glyphs.Add(contextGlyph);
-            CheckOptionalGlyphs(fig);
+            CheckLinkGlyph(fig);
             // recurse into child figures
             if (fig is GroupFigure)
                 foreach (Figure child in ((GroupFigure)fig).ChildFigures)
                     AddDefaultGlyphs(child);
         }
 
-        void CheckOptionalGlyphs(Figure fig)
+        void CheckLinkGlyph(Figure fig)
         {
-            if (fig.UserAttrs.ContainsKey("Link"))
+            if (fig.UserAttrs.ContainsKey(Links.Link) && !fig.UserAttrs.ContainsKey(Links.LinkBody))
             {
                 if (!fig.Glyphs.Contains(linkGlyph))
                     fig.Glyphs.Insert(0, linkGlyph);
@@ -442,6 +454,7 @@ namespace WinFormsDemo
                 if (fig.Glyphs.Contains(linkGlyph))
                     fig.Glyphs.Remove(linkGlyph);
             }
+            fig.ClickEvent = fig.UserAttrs.ContainsKey(Links.LinkBody);
         }
 
         void de_AddedFigure(DEngine de, Figure fig)
@@ -1136,6 +1149,7 @@ namespace WinFormsDemo
                             break;
                     }
                 }
+                lf.LinkBody = f.UserAttrs.ContainsKey(Links.LinkBody);
                 switch (lf.ShowDialog())
                 {
                     case DialogResult.OK:
@@ -1166,21 +1180,27 @@ namespace WinFormsDemo
                                 f.UserAttrs[Links.Link] = lf.Attachment;
                                 break;
                         }
+                        if (lf.LinkBody)
+                            f.UserAttrs[Links.LinkBody] = "";
+                        else
+                            f.UserAttrs.Remove(Links.LinkBody);
                         // remove dead enties
                         if (f.UserAttrs[Links.Link] == null || f.UserAttrs[Links.Link].Length == 0)
                         {
                             f.UserAttrs.Remove(Links.Link);
                             f.UserAttrs.Remove(Links.LinkType);
+                            f.UserAttrs.Remove(Links.LinkBody);
                         }
                         de.UndoRedoCommit();
-                        CheckOptionalGlyphs(f);
+                        CheckLinkGlyph(f);
                         break;
                     case DialogResult.Abort:
                         de.UndoRedoStart("Remove Link");
                         f.UserAttrs.Remove(Links.Link);
                         f.UserAttrs.Remove(Links.LinkType);
+                        f.UserAttrs.Remove(Links.LinkBody);
                         de.UndoRedoCommit();
-                        CheckOptionalGlyphs(f);
+                        CheckLinkGlyph(f);
                         break;
                 }
                 // update editor view

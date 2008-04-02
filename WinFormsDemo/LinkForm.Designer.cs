@@ -43,6 +43,10 @@ namespace WinFormsDemo
             this.lbFile = new System.Windows.Forms.Label();
             this.pnlPage = new System.Windows.Forms.Panel();
             this.wfViewerControl1 = new DDraw.WinForms.WFViewerControl();
+            this.rbPagePrevious = new System.Windows.Forms.RadioButton();
+            this.rbPageNext = new System.Windows.Forms.RadioButton();
+            this.rbPageLast = new System.Windows.Forms.RadioButton();
+            this.rbPageFirst = new System.Windows.Forms.RadioButton();
             this.lbPages = new System.Windows.Forms.ListBox();
             this.lbPage = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
@@ -52,15 +56,15 @@ namespace WinFormsDemo
             this.pnlAttachment = new System.Windows.Forms.Panel();
             this.lbAttachments = new System.Windows.Forms.ListBox();
             this.lbAttachment = new System.Windows.Forms.Label();
-            this.rbPageFirst = new System.Windows.Forms.RadioButton();
-            this.rbPageLast = new System.Windows.Forms.RadioButton();
-            this.rbPageNext = new System.Windows.Forms.RadioButton();
-            this.rbPagePrevious = new System.Windows.Forms.RadioButton();
+            this.gbLinkMethod = new System.Windows.Forms.GroupBox();
+            this.rbLinkBody = new System.Windows.Forms.RadioButton();
+            this.rbLinkIcon = new System.Windows.Forms.RadioButton();
             this.gbLinkType.SuspendLayout();
             this.pnlWebPage.SuspendLayout();
             this.pnlFile.SuspendLayout();
             this.pnlPage.SuspendLayout();
             this.pnlAttachment.SuspendLayout();
+            this.gbLinkMethod.SuspendLayout();
             this.SuspendLayout();
             // 
             // gbLinkType
@@ -71,7 +75,7 @@ namespace WinFormsDemo
             this.gbLinkType.Controls.Add(this.rbWebPage);
             this.gbLinkType.Location = new System.Drawing.Point(12, 12);
             this.gbLinkType.Name = "gbLinkType";
-            this.gbLinkType.Size = new System.Drawing.Size(268, 113);
+            this.gbLinkType.Size = new System.Drawing.Size(298, 113);
             this.gbLinkType.TabIndex = 0;
             this.gbLinkType.TabStop = false;
             this.gbLinkType.Text = "Link Type";
@@ -128,16 +132,16 @@ namespace WinFormsDemo
             // 
             this.pnlWebPage.Controls.Add(this.tbAddress);
             this.pnlWebPage.Controls.Add(this.lbAddress);
-            this.pnlWebPage.Location = new System.Drawing.Point(12, 131);
+            this.pnlWebPage.Location = new System.Drawing.Point(12, 188);
             this.pnlWebPage.Name = "pnlWebPage";
-            this.pnlWebPage.Size = new System.Drawing.Size(268, 102);
+            this.pnlWebPage.Size = new System.Drawing.Size(295, 123);
             this.pnlWebPage.TabIndex = 1;
             // 
             // tbAddress
             // 
             this.tbAddress.Location = new System.Drawing.Point(6, 23);
             this.tbAddress.Name = "tbAddress";
-            this.tbAddress.Size = new System.Drawing.Size(259, 20);
+            this.tbAddress.Size = new System.Drawing.Size(286, 20);
             this.tbAddress.TabIndex = 1;
             // 
             // lbAddress
@@ -155,9 +159,9 @@ namespace WinFormsDemo
             this.pnlFile.Controls.Add(this.btnBrowse);
             this.pnlFile.Controls.Add(this.tbFile);
             this.pnlFile.Controls.Add(this.lbFile);
-            this.pnlFile.Location = new System.Drawing.Point(12, 131);
+            this.pnlFile.Location = new System.Drawing.Point(12, 188);
             this.pnlFile.Name = "pnlFile";
-            this.pnlFile.Size = new System.Drawing.Size(268, 102);
+            this.pnlFile.Size = new System.Drawing.Size(298, 123);
             this.pnlFile.TabIndex = 2;
             // 
             // cbCopyFileToAttachments
@@ -174,7 +178,7 @@ namespace WinFormsDemo
             // 
             // btnBrowse
             // 
-            this.btnBrowse.Location = new System.Drawing.Point(201, 20);
+            this.btnBrowse.Location = new System.Drawing.Point(228, 21);
             this.btnBrowse.Name = "btnBrowse";
             this.btnBrowse.Size = new System.Drawing.Size(64, 23);
             this.btnBrowse.TabIndex = 2;
@@ -186,7 +190,7 @@ namespace WinFormsDemo
             // 
             this.tbFile.Location = new System.Drawing.Point(6, 22);
             this.tbFile.Name = "tbFile";
-            this.tbFile.Size = new System.Drawing.Size(189, 20);
+            this.tbFile.Size = new System.Drawing.Size(216, 20);
             this.tbFile.TabIndex = 1;
             // 
             // lbFile
@@ -207,24 +211,68 @@ namespace WinFormsDemo
             this.pnlPage.Controls.Add(this.rbPageFirst);
             this.pnlPage.Controls.Add(this.lbPages);
             this.pnlPage.Controls.Add(this.lbPage);
-            this.pnlPage.Location = new System.Drawing.Point(12, 131);
+            this.pnlPage.Location = new System.Drawing.Point(12, 188);
             this.pnlPage.Name = "pnlPage";
-            this.pnlPage.Size = new System.Drawing.Size(268, 102);
+            this.pnlPage.Size = new System.Drawing.Size(298, 123);
             this.pnlPage.TabIndex = 2;
             // 
             // wfViewerControl1
             // 
-            this.wfViewerControl1.Location = new System.Drawing.Point(147, 23);
+            this.wfViewerControl1.Location = new System.Drawing.Point(155, 23);
             this.wfViewerControl1.Name = "wfViewerControl1";
-            this.wfViewerControl1.Size = new System.Drawing.Size(117, 69);
+            this.wfViewerControl1.Size = new System.Drawing.Size(140, 95);
             this.wfViewerControl1.TabIndex = 2;
+            // 
+            // rbPagePrevious
+            // 
+            this.rbPagePrevious.AutoSize = true;
+            this.rbPagePrevious.Location = new System.Drawing.Point(75, 91);
+            this.rbPagePrevious.Name = "rbPagePrevious";
+            this.rbPagePrevious.Size = new System.Drawing.Size(66, 17);
+            this.rbPagePrevious.TabIndex = 10;
+            this.rbPagePrevious.Text = "Previous";
+            this.rbPagePrevious.UseVisualStyleBackColor = true;
+            this.rbPagePrevious.CheckedChanged += new System.EventHandler(this.rbPage_CheckedChanged);
+            // 
+            // rbPageNext
+            // 
+            this.rbPageNext.AutoSize = true;
+            this.rbPageNext.Location = new System.Drawing.Point(75, 68);
+            this.rbPageNext.Name = "rbPageNext";
+            this.rbPageNext.Size = new System.Drawing.Size(47, 17);
+            this.rbPageNext.TabIndex = 9;
+            this.rbPageNext.Text = "Next";
+            this.rbPageNext.UseVisualStyleBackColor = true;
+            this.rbPageNext.CheckedChanged += new System.EventHandler(this.rbPage_CheckedChanged);
+            // 
+            // rbPageLast
+            // 
+            this.rbPageLast.AutoSize = true;
+            this.rbPageLast.Location = new System.Drawing.Point(75, 45);
+            this.rbPageLast.Name = "rbPageLast";
+            this.rbPageLast.Size = new System.Drawing.Size(45, 17);
+            this.rbPageLast.TabIndex = 8;
+            this.rbPageLast.Text = "Last";
+            this.rbPageLast.UseVisualStyleBackColor = true;
+            this.rbPageLast.CheckedChanged += new System.EventHandler(this.rbPage_CheckedChanged);
+            // 
+            // rbPageFirst
+            // 
+            this.rbPageFirst.AutoSize = true;
+            this.rbPageFirst.Location = new System.Drawing.Point(75, 22);
+            this.rbPageFirst.Name = "rbPageFirst";
+            this.rbPageFirst.Size = new System.Drawing.Size(44, 17);
+            this.rbPageFirst.TabIndex = 7;
+            this.rbPageFirst.Text = "First";
+            this.rbPageFirst.UseVisualStyleBackColor = true;
+            this.rbPageFirst.CheckedChanged += new System.EventHandler(this.rbPage_CheckedChanged);
             // 
             // lbPages
             // 
             this.lbPages.FormattingEnabled = true;
             this.lbPages.Location = new System.Drawing.Point(6, 23);
             this.lbPages.Name = "lbPages";
-            this.lbPages.Size = new System.Drawing.Size(63, 69);
+            this.lbPages.Size = new System.Drawing.Size(63, 95);
             this.lbPages.TabIndex = 1;
             this.lbPages.SelectedIndexChanged += new System.EventHandler(this.lbPages_SelectedIndexChanged);
             // 
@@ -240,15 +288,15 @@ namespace WinFormsDemo
             // panel1
             // 
             this.panel1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.panel1.Location = new System.Drawing.Point(12, 239);
+            this.panel1.Location = new System.Drawing.Point(8, 317);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(268, 4);
+            this.panel1.Size = new System.Drawing.Size(305, 4);
             this.panel1.TabIndex = 3;
             // 
             // btnOk
             // 
             this.btnOk.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.btnOk.Location = new System.Drawing.Point(124, 249);
+            this.btnOk.Location = new System.Drawing.Point(154, 327);
             this.btnOk.Name = "btnOk";
             this.btnOk.Size = new System.Drawing.Size(75, 23);
             this.btnOk.TabIndex = 4;
@@ -258,7 +306,7 @@ namespace WinFormsDemo
             // btnCancel
             // 
             this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.btnCancel.Location = new System.Drawing.Point(205, 249);
+            this.btnCancel.Location = new System.Drawing.Point(235, 327);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(75, 23);
             this.btnCancel.TabIndex = 5;
@@ -268,7 +316,7 @@ namespace WinFormsDemo
             // btnClear
             // 
             this.btnClear.DialogResult = System.Windows.Forms.DialogResult.Abort;
-            this.btnClear.Location = new System.Drawing.Point(12, 249);
+            this.btnClear.Location = new System.Drawing.Point(12, 327);
             this.btnClear.Name = "btnClear";
             this.btnClear.Size = new System.Drawing.Size(82, 23);
             this.btnClear.TabIndex = 6;
@@ -279,9 +327,9 @@ namespace WinFormsDemo
             // 
             this.pnlAttachment.Controls.Add(this.lbAttachments);
             this.pnlAttachment.Controls.Add(this.lbAttachment);
-            this.pnlAttachment.Location = new System.Drawing.Point(12, 131);
+            this.pnlAttachment.Location = new System.Drawing.Point(12, 188);
             this.pnlAttachment.Name = "pnlAttachment";
-            this.pnlAttachment.Size = new System.Drawing.Size(268, 102);
+            this.pnlAttachment.Size = new System.Drawing.Size(298, 123);
             this.pnlAttachment.TabIndex = 3;
             // 
             // lbAttachments
@@ -289,7 +337,7 @@ namespace WinFormsDemo
             this.lbAttachments.FormattingEnabled = true;
             this.lbAttachments.Location = new System.Drawing.Point(6, 23);
             this.lbAttachments.Name = "lbAttachments";
-            this.lbAttachments.Size = new System.Drawing.Size(258, 69);
+            this.lbAttachments.Size = new System.Drawing.Size(286, 95);
             this.lbAttachments.TabIndex = 1;
             // 
             // lbAttachment
@@ -301,49 +349,38 @@ namespace WinFormsDemo
             this.lbAttachment.TabIndex = 0;
             this.lbAttachment.Text = "Attachment:";
             // 
-            // rbPageFirst
+            // gbLinkMethod
             // 
-            this.rbPageFirst.AutoSize = true;
-            this.rbPageFirst.Location = new System.Drawing.Point(75, 22);
-            this.rbPageFirst.Name = "rbPageFirst";
-            this.rbPageFirst.Size = new System.Drawing.Size(44, 17);
-            this.rbPageFirst.TabIndex = 7;
-            this.rbPageFirst.Text = "First";
-            this.rbPageFirst.UseVisualStyleBackColor = true;
-            this.rbPageFirst.CheckedChanged += new System.EventHandler(this.rbPage_CheckedChanged);
+            this.gbLinkMethod.Controls.Add(this.rbLinkBody);
+            this.gbLinkMethod.Controls.Add(this.rbLinkIcon);
+            this.gbLinkMethod.Location = new System.Drawing.Point(13, 131);
+            this.gbLinkMethod.Name = "gbLinkMethod";
+            this.gbLinkMethod.Size = new System.Drawing.Size(297, 51);
+            this.gbLinkMethod.TabIndex = 7;
+            this.gbLinkMethod.TabStop = false;
+            this.gbLinkMethod.Text = "Link Method";
             // 
-            // rbPageLast
+            // rbLinkBody
             // 
-            this.rbPageLast.AutoSize = true;
-            this.rbPageLast.Location = new System.Drawing.Point(75, 40);
-            this.rbPageLast.Name = "rbPageLast";
-            this.rbPageLast.Size = new System.Drawing.Size(45, 17);
-            this.rbPageLast.TabIndex = 8;
-            this.rbPageLast.Text = "Last";
-            this.rbPageLast.UseVisualStyleBackColor = true;
-            this.rbPageLast.CheckedChanged += new System.EventHandler(this.rbPage_CheckedChanged);
+            this.rbLinkBody.AutoSize = true;
+            this.rbLinkBody.Location = new System.Drawing.Point(81, 19);
+            this.rbLinkBody.Name = "rbLinkBody";
+            this.rbLinkBody.Size = new System.Drawing.Size(81, 17);
+            this.rbLinkBody.TabIndex = 9;
+            this.rbLinkBody.TabStop = true;
+            this.rbLinkBody.Text = "Figure Body";
+            this.rbLinkBody.UseVisualStyleBackColor = true;
             // 
-            // rbPageNext
+            // rbLinkIcon
             // 
-            this.rbPageNext.AutoSize = true;
-            this.rbPageNext.Location = new System.Drawing.Point(75, 58);
-            this.rbPageNext.Name = "rbPageNext";
-            this.rbPageNext.Size = new System.Drawing.Size(47, 17);
-            this.rbPageNext.TabIndex = 9;
-            this.rbPageNext.Text = "Next";
-            this.rbPageNext.UseVisualStyleBackColor = true;
-            this.rbPageNext.CheckedChanged += new System.EventHandler(this.rbPage_CheckedChanged);
-            // 
-            // rbPagePrevious
-            // 
-            this.rbPagePrevious.AutoSize = true;
-            this.rbPagePrevious.Location = new System.Drawing.Point(75, 75);
-            this.rbPagePrevious.Name = "rbPagePrevious";
-            this.rbPagePrevious.Size = new System.Drawing.Size(66, 17);
-            this.rbPagePrevious.TabIndex = 10;
-            this.rbPagePrevious.Text = "Previous";
-            this.rbPagePrevious.UseVisualStyleBackColor = true;
-            this.rbPagePrevious.CheckedChanged += new System.EventHandler(this.rbPage_CheckedChanged);
+            this.rbLinkIcon.AutoSize = true;
+            this.rbLinkIcon.Location = new System.Drawing.Point(6, 19);
+            this.rbLinkIcon.Name = "rbLinkIcon";
+            this.rbLinkIcon.Size = new System.Drawing.Size(69, 17);
+            this.rbLinkIcon.TabIndex = 8;
+            this.rbLinkIcon.TabStop = true;
+            this.rbLinkIcon.Text = "Link Icon";
+            this.rbLinkIcon.UseVisualStyleBackColor = true;
             // 
             // LinkForm
             // 
@@ -351,7 +388,8 @@ namespace WinFormsDemo
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btnCancel;
-            this.ClientSize = new System.Drawing.Size(292, 287);
+            this.ClientSize = new System.Drawing.Size(322, 360);
+            this.Controls.Add(this.gbLinkMethod);
             this.Controls.Add(this.btnClear);
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.btnOk);
@@ -378,6 +416,8 @@ namespace WinFormsDemo
             this.pnlPage.PerformLayout();
             this.pnlAttachment.ResumeLayout(false);
             this.pnlAttachment.PerformLayout();
+            this.gbLinkMethod.ResumeLayout(false);
+            this.gbLinkMethod.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -412,5 +452,8 @@ namespace WinFormsDemo
         private System.Windows.Forms.RadioButton rbPageNext;
         private System.Windows.Forms.RadioButton rbPageLast;
         private System.Windows.Forms.RadioButton rbPageFirst;
+        private System.Windows.Forms.GroupBox gbLinkMethod;
+        private System.Windows.Forms.RadioButton rbLinkBody;
+        private System.Windows.Forms.RadioButton rbLinkIcon;
     }
 }

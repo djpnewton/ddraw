@@ -122,6 +122,16 @@ namespace WinFormsDemo
             set { lbAttachments.SelectedItem = value; }
         }
 
+        public bool LinkBody
+        {
+            get { return rbLinkBody.Checked; }
+            set
+            {
+                if (value) rbLinkBody.Checked = true;
+                else rbLinkIcon.Checked = true;
+            }
+        }
+
         List<DEngine> engines;
         public List<DEngine> Engines
         {
@@ -249,6 +259,7 @@ namespace WinFormsDemo
     {
         public const string Link = "Link";
         public const string LinkType = "LinkType";
+        public const string LinkBody = "LinkBody";
 
         public static LinkType StringToLinkType(string p)
         {

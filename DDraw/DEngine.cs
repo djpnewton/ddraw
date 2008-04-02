@@ -9,7 +9,7 @@ namespace DDraw
 {
     public delegate void DebugMessageHandler(string msg);
     public delegate void PageSizeChangedHandler(DEngine de, DPoint pageSize);
-    public delegate void ContextClickHandler(DEngine de, Figure clickedFigure, DPoint pt);
+    public delegate void ClickHandler(DEngine de, Figure clickedFigure, DPoint pt);
     public delegate void DragFigureHandler(DEngine de, Figure dragFigure, DPoint pt);
     public delegate void SelectMeasureHandler(DEngine de, DRect rect);
     public delegate void AddedFigureHandler(DEngine de, Figure fig);
@@ -333,7 +333,8 @@ namespace DDraw
 
         public event DebugMessageHandler DebugMessage;
         public event SelectedFiguresHandler SelectedFiguresChanged;
-        public event ContextClickHandler ContextClick;
+        public event ClickHandler FigureClick;
+        public event ClickHandler ContextClick;
         public event DragFigureHandler DragFigureStart;
         public event DragFigureHandler DragFigureEvt;
         public event DragFigureHandler DragFigureEnd;
@@ -373,7 +374,8 @@ namespace DDraw
             // create state machine
             hsm = new DHsm(undoRedoArea, viewerHandler, figureHandler, authorProps);
             hsm.DebugMessage += new DebugMessageHandler(hsm_DebugMessage);
-            hsm.ContextClick += new ContextClickHandler(hsm_ContextClick);
+            hsm.FigureClick += new ClickHandler(hsm_FigureClick);
+            hsm.ContextClick += new ClickHandler(hsm_ContextClick);
             hsm.DragFigureStart += new DragFigureHandler(hsm_DragFigureStart);
             hsm.DragFigureEvt += new DragFigureHandler(hsm_DragFigureEvt);
             hsm.DragFigureEnd += new DragFigureHandler(hsm_DragFigureEnd);
@@ -408,6 +410,12 @@ namespace DDraw
         {
             if (HsmStateChanged != null)
                 HsmStateChanged(this, state);
+        }
+
+        void hsm_FigureClick(DEngine de, Figure clickedFigure, DPoint pt)
+        {
+            if (FigureClick != null)
+                FigureClick(this, clickedFigure, pt);
         }
 
         void hsm_ContextClick(DEngine de, Figure clickedFigure, DPoint pt)

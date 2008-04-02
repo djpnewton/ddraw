@@ -337,7 +337,9 @@ namespace DDraw
 
     public abstract class Figure: IDimension, ISelectable, IGlyphable
     {
-        public double ControlScale = 1;
+        public double _controlScale = 1;
+
+        public bool ClickEvent = false;
 
         UndoRedo<double> _x = new UndoRedo<double>(0);
         public virtual double X
@@ -454,7 +456,7 @@ namespace DDraw
             return DGeom.RotatePoint(pt, Rect.Center, -Rotation);
         }
 
-        public virtual DHitTest HitTest(DPoint pt, out IGlyph glyph)
+        public virtual DHitTest HitTest(DPoint pt, List<Figure> children, out IGlyph glyph)
         {
             pt = RotatePointToFigure(pt);
             DHitTest res = GlyphHitTest(pt, out glyph);
@@ -468,14 +470,14 @@ namespace DDraw
                     {
                         res = SelectHitTest(pt);
                         if (res == DHitTest.None)
-                            res = BodyHitTest(pt);
+                            res = BodyHitTest(pt, children);
                     }
                 }
             }
             return res;
         }
 
-        protected abstract DHitTest BodyHitTest(DPoint pt);
+        protected abstract DHitTest BodyHitTest(DPoint pt, List<Figure> children);
 
         protected void ApplyTransforms(DGraphics dg)
         {
@@ -536,26 +538,26 @@ namespace DDraw
                 // draw selection rectangle
                 DRect r = GetSelectRect();
                 double selectRectY = r.Y;
-                dg.DrawRect(r.X, r.Y, r.Width, r.Height, DColor.White, 1, ControlScale);
-                dg.DrawRect(r.X, r.Y, r.Width, r.Height, DColor.Black, 1, ControlScale, DStrokeStyle.Dot, DStrokeJoin.Mitre);
+                dg.DrawRect(r.X, r.Y, r.Width, r.Height, DColor.White, 1, _controlScale);
+                dg.DrawRect(r.X, r.Y, r.Width, r.Height, DColor.Black, 1, _controlScale, DStrokeStyle.Dot, DStrokeJoin.Mitre);
                 // draw resize handle
-                double hb = _handleBorder *ControlScale;
+                double hb = _handleBorder *_controlScale;
                 double hb2 = hb + hb;
                 r = GetResizeHandleRect();
                 if (hb != 0)
                     r = r.Resize(hb, hb, -hb2, -hb2);
                 dg.FillEllipse(r, DColor.Red);
-                dg.DrawEllipse(r.X, r.Y, r.Width, r.Height, DColor.Black, 1, ControlScale, DStrokeStyle.Solid);
+                dg.DrawEllipse(r.X, r.Y, r.Width, r.Height, DColor.Black, 1, _controlScale, DStrokeStyle.Solid);
                 // draw rotate handle
                 r = GetRotateHandleRect();
                 if (hb != 0)
                     r = r.Resize(hb, hb, -hb2, -hb2);
                 DPoint p1 = r.Center;
                 DPoint p2 = new DPoint(p1.X, selectRectY);
-                dg.DrawLine(p1, p2, DColor.White, 1, DStrokeStyle.Solid, ControlScale, DStrokeCap.Butt);
-                dg.DrawLine(p1, p2, DColor.Black, 1, DStrokeStyle.Dot, ControlScale, DStrokeCap.Butt);
+                dg.DrawLine(p1, p2, DColor.White, 1, DStrokeStyle.Solid, _controlScale, DStrokeCap.Butt);
+                dg.DrawLine(p1, p2, DColor.Black, 1, DStrokeStyle.Dot, _controlScale, DStrokeCap.Butt);
                 dg.FillEllipse(r, DColor.Blue);
-                dg.DrawEllipse(r.X, r.Y, r.Width, r.Height, DColor.Black, 1, ControlScale, DStrokeStyle.Solid);
+                dg.DrawEllipse(r.X, r.Y, r.Width, r.Height, DColor.Black, 1, _controlScale, DStrokeStyle.Solid);
                 //r = GetEncompassingRect();
                 //dg.DrawRect(r.X, r.Y, r.Width, r.Height, DColor.Black, 1, Scale);
                 // load previous transform
@@ -565,21 +567,21 @@ namespace DDraw
 
         public virtual DRect GetSelectRect()
         {
-            double i = _selectIndent * ControlScale;
+            double i = _selectIndent * _controlScale;
             return Rect.Offset(-i, -i).Inflate(i + i, i + i);
         }
 
         public virtual DRect GetResizeHandleRect()
         {
             DRect selectRect = GetSelectRect();
-            double hs = HandleSize * ControlScale;
+            double hs = HandleSize * _controlScale;
             return new DRect(selectRect.Right - hs, selectRect.Bottom - hs, hs + hs, hs + hs);
         }
 
         public virtual DRect GetRotateHandleRect()
         {
             DRect selectRect = GetSelectRect();
-            double hs = HandleSize * ControlScale;
+            double hs = HandleSize * _controlScale;
             return new DRect(selectRect.Center.X - hs, selectRect.Y - hs - hs - _rotateHandleStemLength, hs + hs, hs + hs);
         }
 
@@ -635,7 +637,7 @@ namespace DDraw
             if (glyphs != null && glyphs.Count > 0)
                 foreach (IGlyph g in glyphs)
                     if (g.IsVisible(selected))
-                        g.Paint(dg, this, ControlScale);
+                        g.Paint(dg, this, _controlScale);
         }
 
         public virtual DHitTest GlyphHitTest(DPoint pt, out IGlyph glyph)
@@ -643,7 +645,7 @@ namespace DDraw
             if (glyphs != null && glyphs.Count > 0)
                 foreach (IGlyph g in glyphs)
                 {
-                    DHitTest ht = g.HitTest(pt, this, ControlScale);
+                    DHitTest ht = g.HitTest(pt, this, _controlScale);
                     if (ht != DHitTest.None)
                     {
                         glyph = g;
@@ -665,7 +667,7 @@ namespace DDraw
         public RectbaseFigure(DRect rect, double rotation) : base(rect, rotation)
         { }
 
-        protected override DHitTest BodyHitTest(DPoint pt)
+        protected override DHitTest BodyHitTest(DPoint pt, List<Figure> children)
         {
             if (DGeom.PointInRect(pt, Rect))
                 return DHitTest.Body;
@@ -695,7 +697,7 @@ namespace DDraw
             return StrokeHelper.SelectRectIncludingStrokeWidth(base.GetSelectRect(), StrokeWidth);
         }
 
-        protected override DHitTest BodyHitTest(DPoint pt)
+        protected override DHitTest BodyHitTest(DPoint pt, List<Figure> children)
         {
             if (DGeom.PointInRect(pt, RectInclStroke))
                 return DHitTest.Body;
@@ -790,7 +792,7 @@ namespace DDraw
         public EllipseFigure(DRect rect, double rotation) : base(rect, rotation)
         { }
 
-        protected override DHitTest BodyHitTest(DPoint pt)
+        protected override DHitTest BodyHitTest(DPoint pt, List<Figure> children)
         {
             if (DGeom.PointInEllipse(pt, RectInclStroke))
                 return DHitTest.Body;
@@ -828,7 +830,7 @@ namespace DDraw
             // add in stroke width spacing
             DRect r = StrokeHelper.SelectRectIncludingStrokeWidth(base.GetSelectRect(), StrokeWidth);
             // add in marker spacing
-            double i = _selectIndent * ControlScale;
+            double i = _selectIndent * _controlScale;
             if (StartMarker != DMarker.None)
                 r = r.Union(GetStartMarkerRect().Offset(-i, -i).Inflate(i + i, i + i));
             if (EndMarker != DMarker.None)
@@ -1025,13 +1027,13 @@ namespace DDraw
 
         public DRect GetPt1HandleRect()
         {
-            double hs = HandleSize * ControlScale;
+            double hs = HandleSize * _controlScale;
             return new DRect(Pt1.X - hs, Pt1.Y - hs, hs + hs, hs + hs);
         }
 
         public DRect GetPt2HandleRect()
         {
-            double hs = HandleSize * ControlScale;
+            double hs = HandleSize * _controlScale;
             return new DRect(Pt2.X - hs, Pt2.Y - hs, hs + hs, hs + hs);
         }
         
@@ -1052,19 +1054,19 @@ namespace DDraw
                 // apply transform
                 ApplyTransforms(dg);
                 // draw pt1 handle
-                double hb = _handleBorder * ControlScale;
+                double hb = _handleBorder * _controlScale;
                 double hb2 = hb + hb;
                 DRect r = GetPt1HandleRect();
                 if (hb != 0)
                     r = r.Resize(hb, hb, -hb2, -hb2);
                 dg.FillEllipse(r.X, r.Y, r.Width, r.Height, DColor.Red, 1);
-                dg.DrawEllipse(r.X, r.Y, r.Width, r.Height, DColor.Black, 1, ControlScale, DStrokeStyle.Solid);
+                dg.DrawEllipse(r.X, r.Y, r.Width, r.Height, DColor.Black, 1, _controlScale, DStrokeStyle.Solid);
                 // draw pt2 handle
                 r = GetPt2HandleRect();
                 if (hb != 0)
                     r = r.Resize(hb, hb, -hb2, -hb2);
                 dg.FillEllipse(r.X, r.Y, r.Width, r.Height, DColor.Red, 1);
-                dg.DrawEllipse(r.X, r.Y, r.Width, r.Height, DColor.Black, 1, ControlScale, DStrokeStyle.Solid);
+                dg.DrawEllipse(r.X, r.Y, r.Width, r.Height, DColor.Black, 1, _controlScale, DStrokeStyle.Solid);
                 // view outline
                 //dg.DrawRect(GetEncompassingRect(), DColor.Black);
                 // load previous transform
@@ -1087,7 +1089,7 @@ namespace DDraw
                     n++;
                     // do paint op
                     if (g.IsVisible(Selected))
-                        g.Paint(dg, this, ControlScale);
+                        g.Paint(dg, this, _controlScale);
                     // set gylph position back to original
                     g.Position = temp;
                 }
@@ -1107,7 +1109,7 @@ namespace DDraw
                     g.CenterStack(Glyphs.Count, n);
                     n++;
                     // do hit test
-                    DHitTest ht = g.HitTest(pt, this, ControlScale);
+                    DHitTest ht = g.HitTest(pt, this, _controlScale);
                     // set gylph position back to original
                     g.Position = temp;
                     // return if positive result
@@ -1122,7 +1124,7 @@ namespace DDraw
             return DHitTest.None;
         }
 
-        protected override DHitTest BodyHitTest(DPoint pt)
+        protected override DHitTest BodyHitTest(DPoint pt, List<Figure> children)
         {
             if (Pt1 != null && Pt2 != null)
             {
@@ -1138,7 +1140,7 @@ namespace DDraw
         {
             if (Pt1 != null && Pt2 != null)
             {
-                if (Selected && DGeom.PointInLine(pt, Pt1, Pt2, HandleSize * ControlScale))
+                if (Selected && DGeom.PointInLine(pt, Pt1, Pt2, HandleSize * _controlScale))
                     return DHitTest.SelectRect;
             }
             return DHitTest.None;
@@ -1339,7 +1341,7 @@ namespace DDraw
             StrokeWidth = strokeWidthFactor * (Width + Height);
         }
 
-        protected override DHitTest BodyHitTest(DPoint pt)
+        protected override DHitTest BodyHitTest(DPoint pt, List<Figure> children)
         {
             if (Points != null)
             {
@@ -2076,7 +2078,7 @@ namespace DDraw
             originalRect = boundingBox;
         }
 
-        public override DHitTest HitTest(DPoint pt, out IGlyph glyph)
+        public override DHitTest HitTest(DPoint pt, List<Figure> children, out IGlyph glyph)
         {
             pt = RotatePointToFigure(pt);
             DHitTest res = GlyphHitTest(pt, out glyph);
@@ -2088,13 +2090,17 @@ namespace DDraw
                     res = ResizeHitTest(pt);
                     if (res == DHitTest.None)
                     {
-                        foreach (Figure child in childFigs)
+                        foreach (Figure f in childFigs)
                         {
-                            res = child.HitTest(pt, out glyph);
-                            if (res == DHitTest.Glyph)
-                                return res;
-                            else if (res != DHitTest.None)
+                            res = f.HitTest(pt, children, out glyph);
+                            if (res != DHitTest.None)
+                            {
+                                if (children != null)
+                                    children.Add(f);
+                                if (res == DHitTest.Glyph)
+                                    return res;
                                 break;
+                            }
                         }
                         DHitTest temp = res;
                         res = SelectHitTest(pt);
@@ -2105,20 +2111,7 @@ namespace DDraw
             }
             return res;
         }
-        /*
-        protected override DHitTest BodyHitTest(DPoint pt)
-        {
-            DHitTest ht;
-            IGlyph glyph;
-            foreach (Figure f in childFigs)
-            {
-                ht = f.HitTest(pt, out glyph);
-                if (ht == DHitTest.Body)
-                    return ht;
-            }
-            return DHitTest.None;
-        }
-        */
+
         protected override void PaintBody(DGraphics dg)
         {
             if (UseRealAlpha)
@@ -2132,7 +2125,7 @@ namespace DDraw
                     bmpGfx.Translate(-rS.X , -rS.Y);
                     foreach (Figure f in childFigs)
                     {
-                        f.ControlScale = ControlScale;
+                        f._controlScale = _controlScale;
                         f.GlyphsVisible = GlyphsVisible;
                         f.Paint(bmpGfx);
                     }
@@ -2144,26 +2137,12 @@ namespace DDraw
             else
                 foreach (Figure f in childFigs)
                 {
-                    f.ControlScale = ControlScale;
+                    f._controlScale = _controlScale;
                     f.GlyphsVisible = GlyphsVisible;
                     f.Paint(dg);
                 }
         }
-        /*
-        public override DHitTest GlyphHitTest(DPoint pt, out IGlyph glyph)
-        {
-            DHitTest ht = base.GlyphHitTest(pt, out glyph);
-            if (ht == DHitTest.None)
-                foreach (Figure child in childFigs)
-                {
-                    DPoint childPt = child.RotatePointToFigure(pt);
-                    ht = child.GlyphHitTest(childPt, out glyph);
-                    if (ht != DHitTest.None)
-                        return ht;
-                }
-            return ht;
-        }
-        */
+
         public override double Alpha
         {
             get

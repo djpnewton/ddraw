@@ -232,21 +232,18 @@ namespace DDraw
             double invScale = 1 / scale;
             foreach (Figure figure in figures)
             {
-                figure.ControlScale = invScale;
+                figure._controlScale = invScale;
                 figure.GlyphsVisible = editFigures;
                 figure.Paint(dg);
-            }
-            if (editFigures)
-            {
-                foreach (Figure figure in figures)
+                if (editFigures)
                     figure.PaintSelectionChrome(dg);
-                if (controlFigures != null)
-                    foreach (Figure figure in controlFigures)
-                    {
-                        figure.ControlScale = invScale;
-                        figure.Paint(dg);
-                    }
             }
+            if (editFigures && controlFigures != null)
+                foreach (Figure figure in controlFigures)
+                {
+                    figure._controlScale = invScale;
+                    figure.Paint(dg);
+                }
         }
 
         // Abstract Methods //

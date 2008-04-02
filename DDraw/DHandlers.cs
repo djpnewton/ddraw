@@ -229,32 +229,23 @@ namespace DDraw
             }
         }
 
-        public Figure HitTestFigures(DPoint pt, out DHitTest hitTest, out IGlyph glyph)
+        public Figure HitTestFigures(DPoint pt, out DHitTest hitTest, List<Figure> children, out IGlyph glyph)
         {
             glyph = null;
             hitTest = DHitTest.None;
-            // first hittest for selection chrome
             for (int i = figures.Count - 1; i >= 0; i--)
             {
                 Figure f = figures[i];
-                hitTest = f.HitTest(pt, out glyph);
-                if (hitTest != DHitTest.None && hitTest != DHitTest.Body && hitTest != DHitTest.Glyph)
-                    return f;
-            }
-            // now hittest for any part of the figure
-            for (int i = figures.Count - 1; i >= 0; i--)
-            {
-                Figure f = figures[i];
-                hitTest = f.HitTest(pt, out glyph);
+                hitTest = f.HitTest(pt, children, out glyph);
                 if (hitTest != DHitTest.None)
                     return f;
             }
             return null;
         }
 
-        public Figure HitTestSelect(DPoint pt, out DHitTest hitTest, out IGlyph glyph, bool add)
+        public Figure HitTestSelect(DPoint pt, out DHitTest hitTest, List<Figure> children, out IGlyph glyph, bool add)
         {
-            Figure f = HitTestFigures(pt, out hitTest, out glyph);
+            Figure f = HitTestFigures(pt, out hitTest, children, out glyph);
             // update selected figures
             if (f != null)
             {

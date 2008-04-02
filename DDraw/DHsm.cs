@@ -110,7 +110,6 @@ namespace DDraw
     public enum DHsmState { Select, SelectMeasure, DrawLine, DrawText, TextEdit, DrawRect, FigureEdit, Eraser };
 
     public delegate void HsmStateChangedHandler(DEngine de, DHsmState state);
-
     public class DHsm : QHsm
     {
         // private variables
@@ -281,7 +280,8 @@ namespace DDraw
         }
 
         public event DebugMessageHandler DebugMessage;
-        public event ContextClickHandler ContextClick;
+        public event ClickHandler FigureClick;
+        public event ClickHandler ContextClick;
         public event DragFigureHandler DragFigureStart;
         public event DragFigureHandler DragFigureEvt;
         public event DragFigureHandler DragFigureEnd;
@@ -575,8 +575,9 @@ namespace DDraw
             if (btn == DMouseButton.Left)
             {
                 // find and select clicked figure
+                List<Figure> children = new List<Figure>();
                 IGlyph glyph;
-                Figure f = figureHandler.HitTestSelect(pt, out mouseHitTest, out glyph, figureSelectAddToSelection);
+                Figure f = figureHandler.HitTestSelect(pt, out mouseHitTest, children, out glyph, figureSelectAddToSelection);
                 // update selected figures
                 if (glyph != null)
                 {
@@ -589,6 +590,14 @@ namespace DDraw
                     switch (mouseHitTest)
                     {
                         case DHitTest.Body:
+                            // exit if a figure is clickable
+                            if (f.ClickEvent)
+                                return;
+                            else
+                                foreach (Figure child in children)
+                                    if (child.ClickEvent)
+                                        return;
+                            // store drag point
                             dragPt = pt;
                             // drag figure start event
                             if (DragFigureStart != null)
@@ -624,7 +633,6 @@ namespace DDraw
                 }
                 // update drawing
                 dv.Update();
-
             }
         }
 
@@ -632,8 +640,9 @@ namespace DDraw
         {
             // set cursor
             DHitTest hitTest;
+            List<Figure> children = new List<Figure>();
             IGlyph glyph;
-            figureHandler.HitTestFigures(pt, out hitTest, out glyph);
+            Figure f = figureHandler.HitTestFigures(pt, out hitTest, children, out glyph);
             switch (hitTest)
             {
                 case DHitTest.None:
@@ -641,6 +650,12 @@ namespace DDraw
                     break;
                 case DHitTest.Body:
                     dv.SetCursor(DCursor.MoveAll);
+                    if (f.ClickEvent)
+                        dv.SetCursor(DCursor.Hand);
+                    else
+                        foreach (Figure child in children)
+                            if (child.ClickEvent)
+                                dv.SetCursor(DCursor.Hand);
                     break;
                 case DHitTest.SelectRect:
                     goto case DHitTest.Body;
@@ -664,16 +679,30 @@ namespace DDraw
         void DoSelectDefaultMouseUp(DTkViewer dv, DMouseButton btn, DPoint pt)
         {
             DHitTest hitTest;
+            List<Figure> children = new List<Figure>();
             IGlyph glyph;
             if (btn == DMouseButton.Left)
             {
-                Figure f = figureHandler.HitTestFigures(pt, out hitTest, out glyph);
+                Figure f = figureHandler.HitTestFigures(pt, out hitTest, children, out glyph);
                 if (hitTest == DHitTest.Glyph)
-                    glyph.CallClicked(glyph.HitTestFigure, dv.EngineToClient(pt));
+                {
+                    if (children.Count > 0)
+                        glyph.CallClicked(children[0], dv.EngineToClient(pt));
+                    else
+                        glyph.CallClicked(f, dv.EngineToClient(pt));
+                }
+                else if ((hitTest == DHitTest.Body || hitTest == DHitTest.SelectRect) && FigureClick != null)
+                {
+                    foreach (Figure child in children)
+                        if (child.ClickEvent)
+                            FigureClick(null, child, dv.EngineToClient(pt));
+                    if (f.ClickEvent)
+                        FigureClick(null, f, dv.EngineToClient(pt));
+                }
             }
             else if (btn == DMouseButton.Right)
             {
-                Figure f = figureHandler.HitTestSelect(pt, out hitTest, out glyph, figureSelectAddToSelection);
+                Figure f = figureHandler.HitTestSelect(pt, out hitTest, null, out glyph, figureSelectAddToSelection);
                 dv.SetCursor(DCursor.Default);
                 dv.Update();
                 if (ContextClick != null)
@@ -951,7 +980,7 @@ namespace DDraw
         {
             DHitTest ht;
             IGlyph glyph;
-            Figure f = figureHandler.HitTestFigures(pt, out ht, out glyph);
+            Figure f = figureHandler.HitTestFigures(pt, out ht, null, out glyph);
             if (f is TextFigure)
             {
                 currentFigure = f;
@@ -1351,7 +1380,7 @@ namespace DDraw
             {
                 // find and select clicked figure
                 IGlyph glyph;
-                Figure f = figureHandler.HitTestSelect(pt, out mouseHitTest, out glyph, false);
+                Figure f = figureHandler.HitTestSelect(pt, out mouseHitTest, null, out glyph, false);
                 // select the TextFigure from the TextEditFigure
                 TextEditFigure tef = (TextEditFigure)currentFigure;
                 if (f == tef)

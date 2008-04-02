@@ -460,6 +460,7 @@ namespace WinFormsDemo.Converters
         }
 
         const string NBLinkShortCutAttr = "shortcut";
+        const string NBLinkShortCutAreaAttr = "shortcutArea";
         const string NBLinkHttpPrefix = "http://";
         const string NBLinkPagePrefix = "page://";
         const string NBLinkFirstPage = "firstPage();";
@@ -514,6 +515,9 @@ namespace WinFormsDemo.Converters
                     f.UserAttrs[Links.LinkType] = LinkType.File.ToString();
                     f.UserAttrs[Links.Link] = shortcut.Substring(NBLinkFilePrefix.Length);
                 }
+                // link body?
+                if (e.Attributes.ContainsKey(NBLinkShortCutAreaAttr) && (string)e.Attributes[NBLinkShortCutAreaAttr] == "1")
+                    f.UserAttrs[Links.LinkBody] = "";
             }
         }
 

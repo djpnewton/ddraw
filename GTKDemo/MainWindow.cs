@@ -53,7 +53,7 @@ namespace GTKDemo
 			de.AddViewer(dv);
 			de.HsmState = DHsmState.Select;
 			de.DebugMessage += new DebugMessageHandler(DebugMessage);
-            de.ContextClick += new ContextClickHandler(de_ContextClick);
+            de.ContextClick += new ClickHandler(de_ContextClick);
 			// add figures
             de.UndoRedoStart("add initial figures");
 			de.AddFigure(new EllipseFigure(new DRect(20, 30, 100, 100), 0));

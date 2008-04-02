@@ -36,8 +36,8 @@ namespace DDraw
 
         protected override void PaintBody(DGraphics dg)
         {
-            dg.DrawRect(X, Y, Width, Height, DColor.White, Alpha, ControlScale);
-            dg.DrawRect(X, Y, Width, Height, DColor.Black, Alpha, ControlScale, DStrokeStyle.Dot, DStrokeJoin.Mitre);
+            dg.DrawRect(X, Y, Width, Height, DColor.White, Alpha, _controlScale);
+            dg.DrawRect(X, Y, Width, Height, DColor.Black, Alpha, _controlScale, DStrokeStyle.Dot, DStrokeJoin.Mitre);
         }
     }
 
@@ -148,11 +148,6 @@ namespace DDraw
 
         event GlyphClickedHandler Clicked;
         void CallClicked(Figure f, DPoint pt);
-
-        Figure HitTestFigure
-        {
-            get;
-        }
     }
 
     public abstract class BasicGlyph : IGlyph
@@ -239,12 +234,11 @@ namespace DDraw
             return visiblility == DGlyphVisiblity.Always || (visiblility == DGlyphVisiblity.WhenFigureSelected && figureSelected);
         }
 
-        public DHitTest HitTest(DPoint pt, Figure hitTestFigure, double scale)
+        public DHitTest HitTest(DPoint pt, Figure f, double scale)
         {
-            this.hitTestFigure = hitTestFigure;
-            if (IsVisible(hitTestFigure.Selected))
+            if (IsVisible(f.Selected))
             {
-                if (DGeom.PointInRect(pt, GetRect(pos, hitTestFigure.GetSelectRect(), scale)))
+                if (DGeom.PointInRect(pt, GetRect(pos, f.GetSelectRect(), scale)))
                     return DHitTest.Glyph;
             }
             return DHitTest.None;
@@ -262,12 +256,6 @@ namespace DDraw
         {
             if (Clicked != null)
                 Clicked(this, f, pt);
-        }
-
-        Figure hitTestFigure;
-        public Figure HitTestFigure
-        {
-            get { return hitTestFigure; }
         }
     }
 

@@ -38,7 +38,7 @@ namespace DDraw
             get { return true; }
         }
 
-        protected override DHitTest BodyHitTest(DPoint pt)
+        protected override DHitTest BodyHitTest(DPoint pt, List<Figure> children)
         {
             if (editing && DGeom.PointInRect(pt, GetClockRect()))
                 return DHitTest.Body;
@@ -65,7 +65,7 @@ namespace DDraw
         public void MouseDown(DTkViewer dv, DMouseButton btn, DPoint pt)
         {
             IGlyph glyph;
-            if (editing && HitTest(pt, out glyph) == DHitTest.Body)
+            if (editing && HitTest(pt, null, out glyph) == DHitTest.Body)
             {
                 DRect r = GetClockRect();
                 DPoint fhp = FirstHandPoint(r);
@@ -99,7 +99,7 @@ namespace DDraw
                 secondHandAngle.Value = DGeom.AngleBetweenPoints(GetClockRect().Center, pt);
                 dv.Update(GetClockRect());
             }
-            else if (editing && HitTest(pt, out glyph) == DHitTest.Body) 
+            else if (editing && HitTest(pt, null, out glyph) == DHitTest.Body) 
                 dv.SetCursor(DCursor.Crosshair);
             else
                 dv.SetCursor(DCursor.Default);
