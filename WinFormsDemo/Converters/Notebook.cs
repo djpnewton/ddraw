@@ -325,8 +325,9 @@ namespace WinFormsDemo.Converters
                     ((TextFigure)f).Underline = underline;
 
                     DPoint scale = GetSvgElementScale((SvgTextElement)e);
-                    f.Width *= scale.X;
-                    f.Height *= scale.Y;
+                    const double scaleMod = 0.694;
+                    f.Width *= scale.X * scaleMod;
+                    f.Height *= scale.Y * scaleMod;
                 }
             }
 
