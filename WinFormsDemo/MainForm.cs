@@ -54,10 +54,10 @@ namespace WinFormsDemo
             else
                 dem.AddEngine(de);
             de.PageSize = new DPoint(500, 400);
-            InitDEngine(de);
+            InitDEngine(de, true);
         }
 
-        void InitDEngine(DEngine de)
+        void InitDEngine(DEngine de, bool showIt)
         {
             // DEngine settings
             WorkBookUtils.SetupDEngine(de);
@@ -75,7 +75,8 @@ namespace WinFormsDemo
             foreach (Figure f in de.Figures)
                 AddDefaultGlyphs(f);
             // show it
-            SetCurrentDe(de);
+            if (showIt)
+                SetCurrentDe(de);
         }
 
         private void SetCurrentDe(DEngine de)
@@ -880,7 +881,7 @@ namespace WinFormsDemo
                     // init new dengines
                     foreach (DEngine newDe in engines)
                     {
-                        InitDEngine(newDe);
+                        InitDEngine(newDe, false);
                         dem.AddEngine(newDe);
                         Application.DoEvents(); // update progress form
                     }
@@ -897,6 +898,8 @@ namespace WinFormsDemo
                     this.fileName = fileName;
                     beenSaved = true;
                     UpdateTitleBar();
+                    // show first page
+                    ShowFirstPage();
                 }
                 catch (Exception e2)
                 {
@@ -1443,7 +1446,7 @@ namespace WinFormsDemo
                             // add new pages
                             foreach (DEngine de in engines)
                             {
-                                InitDEngine(de);
+                                InitDEngine(de, false);
                                 dem.AddEngine(de);
                                 Application.DoEvents(); // update progress form
                             }
@@ -1457,6 +1460,8 @@ namespace WinFormsDemo
                             fileName = Path.GetFileNameWithoutExtension(ofd.FileName);
                             beenSaved = false;
                             UpdateTitleBar();
+                            // show first page
+                            ShowFirstPage();
                         }
                         catch (Exception e3)
                         {
@@ -1468,6 +1473,12 @@ namespace WinFormsDemo
                     pf.ShowDialog();
                 }
             }
+        }
+
+        void ShowFirstPage()
+        {
+            if (dem.EngineCount > 0)
+                previewBar1.SetPreviewSelected(dem.GetEngine(0));
         }
     }
 }
