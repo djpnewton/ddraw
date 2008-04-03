@@ -21,6 +21,7 @@ namespace WinFormsDemo
             de.AutoGroupPolylinesYLimit = 50;
             de.UsePolylineDots = true;
             de.FiguresBoundToPage = true;
+            de.FiguresDeselectOnSingleClick = true;
         }
 
         public static void ViewerKeyDown(DEngine de, KeyEventArgs e)

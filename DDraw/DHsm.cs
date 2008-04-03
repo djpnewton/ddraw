@@ -168,6 +168,13 @@ namespace DDraw
             set { figureSelectAddToSelection = value; }
         }
 
+        bool figuresDeselectOnSingleClick = true;
+        public bool FiguresDeselectOnSingleClick
+        {
+            get { return figuresDeselectOnSingleClick; }
+            set { figuresDeselectOnSingleClick = value; }
+        }
+
         bool simplifyPolylines = false;
         public bool SimplifyPolylines
         {
@@ -590,13 +597,6 @@ namespace DDraw
                     switch (mouseHitTest)
                     {
                         case DHitTest.Body:
-                            // exit if a figure is clickable
-                            if (f.ClickEvent)
-                                return;
-                            else
-                                foreach (Figure child in children)
-                                    if (child.ClickEvent)
-                                        return;
                             // store drag point
                             dragPt = pt;
                             // drag figure start event
@@ -620,8 +620,6 @@ namespace DDraw
                                 dragRot = dragRot - (Math.PI * 2);
                             break;
                     }
-                    // transition
-                    TransitionTo(DragFigure);
                 }
                 else
                 {
@@ -655,7 +653,10 @@ namespace DDraw
                     else
                         foreach (Figure child in children)
                             if (child.ClickEvent)
+                            {
                                 dv.SetCursor(DCursor.Hand);
+                                break;
+                            }
                     break;
                 case DHitTest.SelectRect:
                     goto case DHitTest.Body;
@@ -698,6 +699,11 @@ namespace DDraw
                             FigureClick(null, child, dv.EngineToClient(pt));
                     if (f.ClickEvent)
                         FigureClick(null, f, dv.EngineToClient(pt));
+                    if (FiguresDeselectOnSingleClick && !FigureSelectAddToSelection)
+                    {
+                        figureHandler.Select(new List<Figure>(new Figure[] { f }));
+                        dv.Update();
+                    }
                 }
             }
             else if (btn == DMouseButton.Right)
@@ -707,6 +713,25 @@ namespace DDraw
                 dv.Update();
                 if (ContextClick != null)
                     ContextClick(null, f, dv.EngineToClient(pt));
+            }
+            // nullify current figure for DoSelectDefault -> DHsmSignals.MouseMove:
+            currentFigure = null;
+        }
+
+        void DoSelectDefaultDoubleClick(DTkViewer dv, DPoint pt)
+        {
+            DHitTest ht;
+            IGlyph glyph;
+            Figure f = figureHandler.HitTestFigures(pt, out ht, null, out glyph);
+            if (f is TextFigure)
+            {
+                currentFigure = f;
+                TransitionTo(TextEdit);
+            }
+            else if (f is IEditable)
+            {
+                currentFigure = f;
+                TransitionTo(FigureEdit);
             }
         }
 
@@ -749,10 +774,19 @@ namespace DDraw
                     DoSelectDefaultMouseDown(((QMouseEvent)qevent).Dv, ((QMouseEvent)qevent).Button, ((QMouseEvent)qevent).Pt);
                     return null;
                 case (int)DHsmSignals.MouseMove:
-                    DoSelectDefaultMouseMove(((QMouseEvent)qevent).Dv, ((QMouseEvent)qevent).Pt);
+                    if (currentFigure != null && (((QMouseEvent)qevent).Pt.X != dragPt.X || ((QMouseEvent)qevent).Pt.Y != dragPt.Y))
+                    {
+                        TransitionTo(DragFigure);
+                        DoDragFigureMouseMove(((QMouseEvent)qevent).Dv, ((QMouseEvent)qevent).Pt);
+                    }
+                    else
+                        DoSelectDefaultMouseMove(((QMouseEvent)qevent).Dv, ((QMouseEvent)qevent).Pt);
                     return null;
                 case (int)DHsmSignals.MouseUp:
                     DoSelectDefaultMouseUp(((QMouseEvent)qevent).Dv, ((QMouseEvent)qevent).Button, ((QMouseEvent)qevent).Pt);
+                    return null;
+                case (int)DHsmSignals.DoubleClick:
+                    DoSelectDefaultDoubleClick(((QMouseEvent)qevent).Dv, ((QMouseEvent)qevent).Pt);
                     return null;
                 case (int)DHsmSignals.KeyPress:
                     DoSelectDefaultKeyPress(((QKeyPressEvent)qevent).Dv, ((QKeyPressEvent)qevent).Key);
@@ -976,23 +1010,6 @@ namespace DDraw
             }
         }
 
-        void DoDragFigureDoubleClick(DTkViewer dv, DPoint pt)
-        {
-            DHitTest ht;
-            IGlyph glyph;
-            Figure f = figureHandler.HitTestFigures(pt, out ht, null, out glyph);
-            if (f is TextFigure)
-            {
-                currentFigure = f;
-                TransitionTo(TextEdit);
-            }
-            else if (f is IEditable)
-            {
-                currentFigure = f;
-                TransitionTo(FigureEdit);
-            }
-        }
-
         QState DoDragFigure(IQEvent qevent)
         {
             switch (qevent.QSignal)
@@ -1011,9 +1028,6 @@ namespace DDraw
                     return null;
                 case (int)DHsmSignals.MouseUp:
                     DoDragFigureMouseUp(((QMouseEvent)qevent).Dv, ((QMouseEvent)qevent).Button, ((QMouseEvent)qevent).Pt);
-                    return null;
-                case (int)DHsmSignals.DoubleClick:
-                    DoDragFigureDoubleClick(((QMouseEvent)qevent).Dv, ((QMouseEvent)qevent).Pt);
                     return null;
                 case (int)DHsmSignals.GCancelFigureDrag:
                     // tell DoDragFigureMouseMove to quit
@@ -1080,9 +1094,6 @@ namespace DDraw
                     ((QMouseEvent)qevent).Dv.Update(updateRect2);
                     // transition back
                     TransitionTo(SelectDefault);
-                    return null;
-                case (int)DHsmSignals.DoubleClick:
-                    DoDragFigureDoubleClick(((QMouseEvent)qevent).Dv, ((QMouseEvent)qevent).Pt);
                     return null;
             }
             return this.Select;

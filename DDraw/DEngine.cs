@@ -258,6 +258,11 @@ namespace DDraw
             get { return hsm.FigureSelectAddToSelection; }
             set { hsm.FigureSelectAddToSelection = value; }
         }
+        public bool FiguresDeselectOnSingleClick
+        {
+            get { return hsm.FiguresDeselectOnSingleClick; }
+            set { hsm.FiguresDeselectOnSingleClick = value; }
+        }
         public bool SimplifyPolylines
         {
             get { return hsm.SimplifyPolylines; }

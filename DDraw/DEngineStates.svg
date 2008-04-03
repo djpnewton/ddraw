@@ -12,13 +12,20 @@
    height="744.09448"
    id="svg2"
    sodipodi:version="0.32"
-   inkscape:version="0.46dev+devel"
+   inkscape:version="0.46+pre4"
    version="1.0"
    sodipodi:docname="DEngineStates.svg"
    inkscape:output_extension="org.inkscape.output.svg.inkscape"
    sodipodi:docbase="/home/daniel/Projects/ddraw/DDraw">
   <defs
      id="defs4">
+    <inkscape:perspective
+       sodipodi:type="inkscape:persp3d"
+       inkscape:vp_x="0 : 372.04724 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_z="1052.3622 : 372.04724 : 1"
+       inkscape:persp3d-origin="526.18109 : 248.03149 : 1"
+       id="perspective2678" />
     <marker
        inkscape:stockid="Arrow1Lend"
        orient="auto"
@@ -96,16 +103,17 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="0.79022223"
-     inkscape:cx="221.09658"
-     inkscape:cy="265.80502"
+     inkscape:cx="554.01147"
+     inkscape:cy="395.04238"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      width="1052.3622px"
      height="744.09448px"
      inkscape:window-width="1280"
      inkscape:window-height="744"
-     inkscape:window-x="-4"
-     inkscape:window-y="-4" />
+     inkscape:window-x="0"
+     inkscape:window-y="22"
+     showgrid="false" />
   <metadata
      id="metadata7">
     <rdf:RDF>
@@ -197,7 +205,8 @@
      inkscape:label="states"
      inkscape:groupmode="layer"
      id="layer1"
-     style="opacity:1;display:inline">
+     style="opacity:1;display:inline"
+     sodipodi:insensitive="true">
     <g
        id="g6197"
        transform="translate(16.672291,-203.92175)">
@@ -844,7 +853,7 @@
       </g>
     </g>
     <g
-       id="g2599">
+       id="g2725">
       <g
          id="g2589">
         <rect
@@ -890,7 +899,7 @@
              id="tspan6181" /></text>
       </g>
       <g
-         transform="translate(-65.644953,-22.730851)"
+         transform="translate(-55.521219,-11.34165)"
          id="g3724">
         <rect
            style="fill:#00d700;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:1.62819517;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;display:inline"
@@ -935,13 +944,13 @@
              id="tspan3802">DOUBLECLICK</tspan></text>
       </g>
       <g
-         transform="translate(-65.644953,-22.730851)"
+         transform="translate(-58.052152,-25.261785)"
          id="g3742">
         <rect
            style="fill:#00d700;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:1.59165025;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
            id="rect3499"
-           width="205.90736"
-           height="56.819839"
+           width="204.64189"
+           height="74.536377"
            x="155.244"
            y="207.97206"
            ry="8.5229769" />
@@ -973,16 +982,20 @@
              sodipodi:role="line"
              id="tspan3740"
              x="163.04117"
-             y="248.05411">MOUSEMOVE</tspan><tspan
+             y="248.05411">MOUSEDOWN</tspan><tspan
+             id="tspan2717"
+             sodipodi:role="line"
+             x="163.04117"
+             y="263.05411">MOUSEMOVE</tspan><tspan
              id="tspan2432"
              sodipodi:role="line"
              x="163.04117"
-             y="263.05411">MOUSEUP</tspan></text>
+             y="278.05411">MOUSEUP</tspan></text>
       </g>
       <g
          transform="translate(-109.03248,65.97779)"
          id="g2561"
-         style="opacity:1;display:inline">
+         style="display:inline">
         <g
            transform="translate(-8.8582676,-1.2654668)"
            id="g2579">
@@ -1241,24 +1254,24 @@
          id="tspan2809">[btn==Left]/AddTextFigure()</tspan></text>
     <path
        style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;marker-start:url(#Arrow1Lstart);stroke-opacity:1;display:inline"
-       d="M 412.52374,418.159 C 357.50446,381.67279 339.32754,366.05279 264.84842,310.97297"
+       d="M 385.94894,482.69781 C 295.49658,358.89438 292.50527,377.44198 292.68869,256.55789"
        id="path2831"
        sodipodi:nodetypes="cc" />
     <text
        xml:space="preserve"
        style="font-size:12px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;display:inline;font-family:Bitstream Vera Sans"
-       x="408.3587"
-       y="99.949326"
+       x="477.37976"
+       y="-45.232128"
        id="text2833"
-       transform="matrix(0.8215212,0.570178,-0.570178,0.8215212,0,0)"><tspan
+       transform="matrix(0.5928732,0.8052958,-0.8052958,0.5928732,0,0)"><tspan
          sodipodi:role="line"
-         id="tspan2835"
-         x="408.3587"
-         y="99.949326">DOUBLECLICK [fig is ITextable]</tspan><tspan
+         x="477.37976"
+         y="-45.232128"
+         id="tspan3459">DOUBLECLICK</tspan><tspan
          sodipodi:role="line"
-         x="408.3587"
-         y="114.94933"
-         id="tspan3459" /></text>
+         x="477.37976"
+         y="-30.232128"
+         id="tspan2723">[fig is ITextable]</tspan></text>
     <path
        style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;marker-start:url(#Arrow1Lstart);stroke-opacity:1;display:inline"
        d="M 103.346,427.29381 C 166.91738,499.13827 345.31138,550.7549 390.25576,540.96286"
@@ -1282,42 +1295,38 @@
     <text
        xml:space="preserve"
        style="font-size:12.00000191px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;display:inline;font-family:Bitstream Vera Sans"
-       x="312.61731"
-       y="-156.57678"
+       x="323.68652"
+       y="-160.26347"
        id="text3513"
        transform="matrix(0.5147077,0.8573657,-0.8573657,0.5147077,0,0)"><tspan
          sodipodi:role="line"
-         x="312.61731"
-         y="-156.57678"
-         id="tspan3519">MOUSEDOWN</tspan><tspan
-         sodipodi:role="line"
-         x="312.61731"
-         y="-141.57678"
-         id="tspan3523" /></text>
+         x="323.68652"
+         y="-160.26347"
+         id="tspan3523">MOUSEMOVE</tspan></text>
     <text
        xml:space="preserve"
        style="font-size:12px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;display:inline;font-family:Bitstream Vera Sans"
-       x="269.38779"
-       y="53.597782"
+       x="287.23669"
+       y="47.654091"
        id="text3557"
        transform="matrix(0.4895124,0.8719963,-0.8719963,0.4895124,0,0)"><tspan
          sodipodi:role="line"
-         x="269.38779"
-         y="53.597782"
+         x="287.23669"
+         y="47.654091"
          id="tspan3567">MOUSEUP</tspan></text>
     <path
        style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:0.82558382;stroke-linecap:butt;stroke-linejoin:miter;marker-start:url(#Arrow1Mstart);marker-end:url(#Dot_l);stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;display:inline"
-       d="M 86.329432,213.69237 C 86.329432,213.69237 82.626262,209.66611 76.347847,203.58884 C 71.478137,198.87515 71.632887,189.82994 71.632887,189.82994"
+       d="M 93.922233,212.4269 C 93.922233,212.4269 90.219063,208.40064 83.940648,202.32337 C 79.070938,197.60968 79.225688,188.56447 79.225688,188.56447"
        id="path3637"
        sodipodi:nodetypes="csc" />
     <path
        style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;marker-start:url(#Arrow1Lstart);marker-end:none;stroke-opacity:1;display:inline"
-       d="M 327.04953,251.50965 L 295.62615,194.257"
+       d="M 335.9078,262.89885 L 304.48442,205.6462"
        id="path3678"
        sodipodi:nodetypes="cs" />
     <path
        style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;marker-start:url(#Arrow1Lstart);marker-end:none;stroke-opacity:1;display:inline"
-       d="M 91.369082,242.60929 L 126.15029,305.90828"
+       d="M 102.75828,253.99849 L 137.53949,317.29748"
        id="path3686"
        sodipodi:nodetypes="cs" />
     <text
@@ -1477,43 +1486,43 @@
          y="7.7786956">GUI_ERASER</tspan></text>
     <path
        style="opacity:1;fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;marker-start:url(#Arrow1Lstart);stroke-opacity:1;display:inline"
-       d="M 321.13012,311.26972 C 331.6235,384.66384 570.76788,395.79378 683.65052,409.83622"
+       d="M 333.78479,321.39345 C 425.26805,401.1149 570.76788,395.79378 683.65052,409.83622"
        id="path2422"
        sodipodi:nodetypes="cc" />
     <text
        xml:space="preserve"
        style="font-size:12px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;display:inline;font-family:Bitstream Vera Sans"
-       x="265.3118"
-       y="-119.02628"
+       x="241.65858"
+       y="-139.26334"
        id="text2638"
-       transform="matrix(-0.1145953,0.9934123,-0.9934123,-0.1145953,0,0)"><tspan
+       transform="matrix(-0.2297179,0.9732573,-0.9732573,-0.2297179,0,0)"><tspan
          sodipodi:role="line"
-         x="265.3118"
-         y="-119.02628"
+         x="241.65858"
+         y="-139.26334"
          id="tspan2640">MOUSEUP</tspan></text>
     <path
        style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;marker-start:url(#Arrow1Lstart);marker-end:none;stroke-opacity:1;display:inline"
-       d="M 88.958155,240.94846 L 76.917091,338.41506"
+       d="M 94.020022,249.80673 L 75.651624,339.68053"
        id="path2642"
        sodipodi:nodetypes="cs" />
     <text
        xml:space="preserve"
        style="font-size:12.00000191px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;display:inline;font-family:Bitstream Vera Sans"
-       x="148.99883"
-       y="-331.54556"
+       x="158.3158"
+       y="-343.86642"
        id="text2644"
        transform="matrix(-0.3075494,0.9515321,-0.9515321,-0.3075494,0,0)"><tspan
          sodipodi:role="line"
-         x="148.99883"
-         y="-331.54556"
+         x="158.3158"
+         y="-343.86642"
          id="tspan2646">MOUSEDOWN</tspan><tspan
          sodipodi:role="line"
-         x="148.99883"
-         y="-316.54556"
+         x="158.3158"
+         y="-328.86642"
          id="tspan2648" /></text>
     <path
        style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;marker-start:url(#Arrow1Lstart);marker-end:none;stroke-opacity:1;display:inline"
-       d="M 232.27464,339.38081 L 264.1246,242.89869"
+       d="M 244.92931,339.38081 L 272.98287,256.81882"
        id="path2650"
        sodipodi:nodetypes="cs" />
     <path
