@@ -473,7 +473,7 @@ namespace DDraw
 
         public void SelectFigures(IList<Figure> figs)
         {
-            figureHandler.Select(figs);
+            figureHandler.SelectFigures(figs, false);
         }
 
         public void AddViewer(DTkViewer dv)
@@ -709,7 +709,7 @@ namespace DDraw
 
         public void SelectAll()
         {
-            figureHandler.Select(figureHandler.Figures);
+            figureHandler.SelectFigures(figureHandler.Figures, false);
             UpdateViewers();
         }
 

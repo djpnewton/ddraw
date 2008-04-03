@@ -701,7 +701,7 @@ namespace DDraw
                         FigureClick(null, f, dv.EngineToClient(pt));
                     if (FiguresDeselectOnSingleClick && !FigureSelectAddToSelection)
                     {
-                        figureHandler.Select(new List<Figure>(new Figure[] { f }));
+                        figureHandler.SelectFigures(new List<Figure>(new Figure[] { f }), false);
                         dv.Update();
                     }
                 }

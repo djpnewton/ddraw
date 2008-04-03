@@ -80,27 +80,50 @@ namespace DDraw
             figures.Remove(f);
         }
 
-        public void Select(IList<Figure> figs)
-        {
-            ClearSelectedFiguresList();
-            foreach (Figure f in figs)
-                AddToSelected(f);
-            DoSelectedFiguresChanged();
-        }
-
         public void ClearSelected()
         {
-            ClearSelectedFiguresList();
-            DoSelectedFiguresChanged();
+            if (selectedFigures.Count > 0)
+            {
+                ClearSelectedFiguresList();
+                DoSelectedFiguresChanged();
+            }
         }
 
-        public void SelectFigures(List<Figure> figs, bool add)
+        public void SelectFigures(IList<Figure> figs, bool add)
         {
-            if (!add)
-                ClearSelectedFiguresList();
-            foreach (Figure f in figs)
-                AddToSelected(f);
-            DoSelectedFiguresChanged();
+            // check that there is any change to selected figures
+            bool changes = false;
+            if (add)
+            {
+                foreach (Figure f in figs)
+                    if (!selectedFigures.Contains(f))
+                    {
+                        changes = true;
+                        break;
+                    }
+            }
+            else
+            {
+                if (figs.Count != selectedFigures.Count)
+                    changes = true;
+                else
+                    foreach (Figure f in selectedFigures)
+                        if (!figs.Contains(f))
+                        {
+                            changes = true;
+                            break;
+                        }
+            }
+            if (changes)
+            {
+                // clear if replacing selected figures
+                if (!add)
+                    ClearSelectedFiguresList();
+                // add new selected figures
+                foreach (Figure f in figs)
+                    AddToSelected(f);
+                DoSelectedFiguresChanged();
+            }
         }
 
         public void SendToBack(List<Figure> figs)
