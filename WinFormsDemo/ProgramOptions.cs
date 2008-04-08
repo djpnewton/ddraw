@@ -7,6 +7,7 @@ using System.Windows.Forms;
 
 using DDraw;
 using Nini.Config;
+using WinFormsDemo.PersonalToolbar;
 
 namespace WinFormsDemo
 {
@@ -78,18 +79,19 @@ namespace WinFormsDemo
             else
                 source = new IniConfigSource();
 
-            if (source.Configs[MAIN_SECTION] == null)
-                source.AddConfig(MAIN_SECTION);
-            FormRect = StrToRect(source.Configs[MAIN_SECTION].Get(FORMRECT_OPT, "50,50,750,550"));
-            string formWindowStateStr = source.Configs[MAIN_SECTION].Get(FORMWINDOWSTATE_OPT, FormWindowState.Normal.ToString());
+            IConfig config = source.Configs[MAIN_SECTION];
+            if (config == null)
+                config = source.AddConfig(MAIN_SECTION);
+            FormRect = StrToRect(config.Get(FORMRECT_OPT, "50,50,750,550"));
+            string formWindowStateStr = config.Get(FORMWINDOWSTATE_OPT, FormWindowState.Normal.ToString());
             FormWindowState = (FormWindowState)Enum.Parse(typeof(FormWindowState), formWindowStateStr, true);
-            string SidebarSideStr = source.Configs[MAIN_SECTION].Get(SIDEBARSIDE_OPT, SidebarSide.Right.ToString());
+            string SidebarSideStr = config.Get(SIDEBARSIDE_OPT, SidebarSide.Right.ToString());
             SidebarSide = (SidebarSide)Enum.Parse(typeof(SidebarSide), SidebarSideStr, true);
-            SidebarWidth = source.Configs[MAIN_SECTION].GetInt(SIDEBARWIDTH_OPT, 100);
-            string zoomStr = source.Configs[MAIN_SECTION].Get(ZOOM_OPT, Zoom.Custom.ToString());
+            SidebarWidth = config.GetInt(SIDEBARWIDTH_OPT, 100);
+            string zoomStr = config.Get(ZOOM_OPT, Zoom.Custom.ToString());
             Zoom = (Zoom)Enum.Parse(typeof(Zoom), zoomStr, true);
-            Scale = source.Configs[MAIN_SECTION].GetDouble(SCALE_OPT, 1);
-            AntiAlias = source.Configs[MAIN_SECTION].GetBoolean(ANTIALIAS_OPT, true);
+            Scale = config.GetDouble(SCALE_OPT, 1);
+            AntiAlias = config.GetBoolean(ANTIALIAS_OPT, true);
         }
 
         public void WriteIni()
@@ -98,15 +100,16 @@ namespace WinFormsDemo
                 File.Create(IniFile).Close();
             IConfigSource source = new IniConfigSource(IniFile);
 
-            if (source.Configs[MAIN_SECTION] == null)
-                source.AddConfig(MAIN_SECTION);
-            source.Configs[MAIN_SECTION].Set(FORMRECT_OPT, RectToStr(FormRect));
-            source.Configs[MAIN_SECTION].Set(FORMWINDOWSTATE_OPT, FormWindowState);
-            source.Configs[MAIN_SECTION].Set(SIDEBARSIDE_OPT, SidebarSide);
-            source.Configs[MAIN_SECTION].Set(SIDEBARWIDTH_OPT, SidebarWidth);
-            source.Configs[MAIN_SECTION].Set(ZOOM_OPT, Zoom);
-            source.Configs[MAIN_SECTION].Set(SCALE_OPT, Scale);
-            source.Configs[MAIN_SECTION].Set(ANTIALIAS_OPT, AntiAlias);
+            IConfig config = source.Configs[MAIN_SECTION];
+            if (config == null)
+                config = source.AddConfig(MAIN_SECTION);
+            config.Set(FORMRECT_OPT, RectToStr(FormRect));
+            config.Set(FORMWINDOWSTATE_OPT, FormWindowState);
+            config.Set(SIDEBARSIDE_OPT, SidebarSide);
+            config.Set(SIDEBARWIDTH_OPT, SidebarWidth);
+            config.Set(ZOOM_OPT, Zoom);
+            config.Set(SCALE_OPT, Scale);
+            config.Set(ANTIALIAS_OPT, AntiAlias);
 
             source.Save();
         }

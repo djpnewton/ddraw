@@ -46,6 +46,7 @@ namespace WinFormsDemo
             this.linkToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.cmsCanvas = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.pasteToolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
+            this.selectAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.clearPageToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator8 = new System.Windows.Forms.ToolStripSeparator();
             this.pageSizeToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
@@ -94,6 +95,8 @@ namespace WinFormsDemo
             this.pasteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.deleteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator9 = new System.Windows.Forms.ToolStripSeparator();
+            this.selectAllToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator13 = new System.Windows.Forms.ToolStripSeparator();
             this.clearPageToolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
             this.deletePageToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.viewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -134,6 +137,8 @@ namespace WinFormsDemo
             this.btnPaste = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator12 = new System.Windows.Forms.ToolStripSeparator();
             this.btnDelete = new System.Windows.Forms.ToolStripButton();
+            this.tsPersonal = new WinFormsDemo.ToolStripEx();
+            this.btnEditPersonalToolbar = new System.Windows.Forms.ToolStripButton();
             this.actionListProvider1 = new Burkovsky.Controls.ActionListProvider(this.components);
             this.actCut = new Burkovsky.Controls.Action();
             this.actCopy = new Burkovsky.Controls.Action();
@@ -145,6 +150,7 @@ namespace WinFormsDemo
             this.actSendBackward = new Burkovsky.Controls.Action();
             this.actBringForward = new Burkovsky.Controls.Action();
             this.actLink = new Burkovsky.Controls.Action();
+            this.actSelectAll = new Burkovsky.Controls.Action();
             this.actClearPage = new Burkovsky.Controls.Action();
             this.actPageSize = new Burkovsky.Controls.Action();
             this.actBackground = new Burkovsky.Controls.Action();
@@ -159,10 +165,6 @@ namespace WinFormsDemo
             this.actUndo = new Burkovsky.Controls.Action();
             this.actRedo = new Burkovsky.Controls.Action();
             this.actFloatingTools = new Burkovsky.Controls.Action();
-            this.actSelectAll = new Burkovsky.Controls.Action();
-            this.selectAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.selectAllToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator13 = new System.Windows.Forms.ToolStripSeparator();
             this.cmsFigure.SuspendLayout();
             this.cmsCanvas.SuspendLayout();
             this.cmsPreview.SuspendLayout();
@@ -179,6 +181,7 @@ namespace WinFormsDemo
             this.statusStrip1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.tsEdit.SuspendLayout();
+            this.tsPersonal.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.actionListProvider1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -311,41 +314,49 @@ namespace WinFormsDemo
             this.pageSizeToolStripMenuItem1,
             this.backgroundToolStripMenuItem1});
             this.cmsCanvas.Name = "cmsCanvas";
-            this.cmsCanvas.Size = new System.Drawing.Size(151, 120);
+            this.cmsCanvas.Size = new System.Drawing.Size(168, 120);
             // 
             // pasteToolStripMenuItem2
             // 
             this.actionListProvider1.SetAction(this.pasteToolStripMenuItem2, this.actPaste);
             this.pasteToolStripMenuItem2.Name = "pasteToolStripMenuItem2";
             this.pasteToolStripMenuItem2.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.V)));
-            this.pasteToolStripMenuItem2.Size = new System.Drawing.Size(150, 22);
+            this.pasteToolStripMenuItem2.Size = new System.Drawing.Size(167, 22);
             this.pasteToolStripMenuItem2.Text = "Paste";
+            // 
+            // selectAllToolStripMenuItem
+            // 
+            this.actionListProvider1.SetAction(this.selectAllToolStripMenuItem, this.actSelectAll);
+            this.selectAllToolStripMenuItem.Name = "selectAllToolStripMenuItem";
+            this.selectAllToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.A)));
+            this.selectAllToolStripMenuItem.Size = new System.Drawing.Size(167, 22);
+            this.selectAllToolStripMenuItem.Text = "Select All";
             // 
             // clearPageToolStripMenuItem1
             // 
             this.actionListProvider1.SetAction(this.clearPageToolStripMenuItem1, this.actClearPage);
             this.clearPageToolStripMenuItem1.Name = "clearPageToolStripMenuItem1";
-            this.clearPageToolStripMenuItem1.Size = new System.Drawing.Size(150, 22);
+            this.clearPageToolStripMenuItem1.Size = new System.Drawing.Size(167, 22);
             this.clearPageToolStripMenuItem1.Text = "Clear Page";
             // 
             // toolStripSeparator8
             // 
             this.actionListProvider1.SetAction(this.toolStripSeparator8, null);
             this.toolStripSeparator8.Name = "toolStripSeparator8";
-            this.toolStripSeparator8.Size = new System.Drawing.Size(147, 6);
+            this.toolStripSeparator8.Size = new System.Drawing.Size(164, 6);
             // 
             // pageSizeToolStripMenuItem1
             // 
             this.actionListProvider1.SetAction(this.pageSizeToolStripMenuItem1, this.actPageSize);
             this.pageSizeToolStripMenuItem1.Name = "pageSizeToolStripMenuItem1";
-            this.pageSizeToolStripMenuItem1.Size = new System.Drawing.Size(150, 22);
+            this.pageSizeToolStripMenuItem1.Size = new System.Drawing.Size(167, 22);
             this.pageSizeToolStripMenuItem1.Text = "Page Size";
             // 
             // backgroundToolStripMenuItem1
             // 
             this.actionListProvider1.SetAction(this.backgroundToolStripMenuItem1, this.actBackground);
             this.backgroundToolStripMenuItem1.Name = "backgroundToolStripMenuItem1";
-            this.backgroundToolStripMenuItem1.Size = new System.Drawing.Size(150, 22);
+            this.backgroundToolStripMenuItem1.Size = new System.Drawing.Size(167, 22);
             this.backgroundToolStripMenuItem1.Text = "Background";
             // 
             // cmsPreview
@@ -394,7 +405,7 @@ namespace WinFormsDemo
             // 
             this.toolStripContainer1.ContentPanel.Controls.Add(this.pnlMain);
             this.toolStripContainer1.ContentPanel.Controls.Add(this.statusStrip1);
-            this.toolStripContainer1.ContentPanel.Size = new System.Drawing.Size(540, 216);
+            this.toolStripContainer1.ContentPanel.Size = new System.Drawing.Size(540, 191);
             this.toolStripContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.toolStripContainer1.Location = new System.Drawing.Point(0, 0);
             this.toolStripContainer1.Name = "toolStripContainer1";
@@ -408,6 +419,7 @@ namespace WinFormsDemo
             this.toolStripContainer1.TopToolStripPanel.Controls.Add(this.tsEngineState);
             this.toolStripContainer1.TopToolStripPanel.Controls.Add(this.tsPropState);
             this.toolStripContainer1.TopToolStripPanel.Controls.Add(this.tsEdit);
+            this.toolStripContainer1.TopToolStripPanel.Controls.Add(this.tsPersonal);
             // 
             // pnlMain
             // 
@@ -415,7 +427,7 @@ namespace WinFormsDemo
             this.pnlMain.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pnlMain.Location = new System.Drawing.Point(0, 0);
             this.pnlMain.Name = "pnlMain";
-            this.pnlMain.Size = new System.Drawing.Size(540, 194);
+            this.pnlMain.Size = new System.Drawing.Size(540, 169);
             this.pnlMain.TabIndex = 0;
             // 
             // splitContainer1
@@ -435,7 +447,7 @@ namespace WinFormsDemo
             this.splitContainer1.Panel2.Controls.Add(this.attachmentView1);
             this.splitContainer1.Panel2.Controls.Add(this.tsSidebarPanel);
             this.splitContainer1.Panel2MinSize = 120;
-            this.splitContainer1.Size = new System.Drawing.Size(540, 194);
+            this.splitContainer1.Size = new System.Drawing.Size(540, 169);
             this.splitContainer1.SplitterDistance = 416;
             this.splitContainer1.TabIndex = 3;
             // 
@@ -445,7 +457,7 @@ namespace WinFormsDemo
             this.wfvcEditor.Dock = System.Windows.Forms.DockStyle.Fill;
             this.wfvcEditor.Location = new System.Drawing.Point(0, 0);
             this.wfvcEditor.Name = "wfvcEditor";
-            this.wfvcEditor.Size = new System.Drawing.Size(416, 194);
+            this.wfvcEditor.Size = new System.Drawing.Size(416, 169);
             this.wfvcEditor.TabIndex = 0;
             this.wfvcEditor.DragDrop += new System.Windows.Forms.DragEventHandler(this.wfvcEditor_DragDrop);
             this.wfvcEditor.KeyUp += new System.Windows.Forms.KeyEventHandler(this.wfvcEditor_KeyUp);
@@ -459,7 +471,7 @@ namespace WinFormsDemo
             this.previewBar1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.previewBar1.Location = new System.Drawing.Point(0, 50);
             this.previewBar1.Name = "previewBar1";
-            this.previewBar1.Size = new System.Drawing.Size(120, 144);
+            this.previewBar1.Size = new System.Drawing.Size(120, 119);
             this.previewBar1.TabIndex = 0;
             this.previewBar1.PreviewMove += new WinFormsDemo.PreviewMoveHandler(this.previewBar1_PreviewMove);
             this.previewBar1.PreviewSelected += new WinFormsDemo.PreviewSelectedHandler(this.previewBar1_PreviewSelected);
@@ -474,7 +486,7 @@ namespace WinFormsDemo
             this.attachmentView1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.attachmentView1.Location = new System.Drawing.Point(0, 50);
             this.attachmentView1.Name = "attachmentView1";
-            this.attachmentView1.Size = new System.Drawing.Size(120, 144);
+            this.attachmentView1.Size = new System.Drawing.Size(120, 119);
             this.attachmentView1.TabIndex = 0;
             this.attachmentView1.UseCompatibleStateImageBehavior = false;
             this.attachmentView1.View = System.Windows.Forms.View.Details;
@@ -599,7 +611,7 @@ namespace WinFormsDemo
             // 
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.lbInfo});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 194);
+            this.statusStrip1.Location = new System.Drawing.Point(0, 169);
             this.statusStrip1.Name = "statusStrip1";
             this.statusStrip1.Size = new System.Drawing.Size(540, 22);
             this.statusStrip1.TabIndex = 11;
@@ -747,7 +759,7 @@ namespace WinFormsDemo
             this.actionListProvider1.SetAction(this.undoToolStripMenuItem, this.actUndo);
             this.undoToolStripMenuItem.Name = "undoToolStripMenuItem";
             this.undoToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Z)));
-            this.undoToolStripMenuItem.Size = new System.Drawing.Size(165, 22);
+            this.undoToolStripMenuItem.Size = new System.Drawing.Size(167, 22);
             this.undoToolStripMenuItem.Text = "Undo";
             // 
             // redoToolStripMenuItem
@@ -755,21 +767,21 @@ namespace WinFormsDemo
             this.actionListProvider1.SetAction(this.redoToolStripMenuItem, this.actRedo);
             this.redoToolStripMenuItem.Name = "redoToolStripMenuItem";
             this.redoToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Y)));
-            this.redoToolStripMenuItem.Size = new System.Drawing.Size(165, 22);
+            this.redoToolStripMenuItem.Size = new System.Drawing.Size(167, 22);
             this.redoToolStripMenuItem.Text = "Redo";
             // 
             // toolStripSeparator4
             // 
             this.actionListProvider1.SetAction(this.toolStripSeparator4, null);
             this.toolStripSeparator4.Name = "toolStripSeparator4";
-            this.toolStripSeparator4.Size = new System.Drawing.Size(162, 6);
+            this.toolStripSeparator4.Size = new System.Drawing.Size(164, 6);
             // 
             // cutToolStripMenuItem
             // 
             this.actionListProvider1.SetAction(this.cutToolStripMenuItem, this.actCut);
             this.cutToolStripMenuItem.Name = "cutToolStripMenuItem";
             this.cutToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.X)));
-            this.cutToolStripMenuItem.Size = new System.Drawing.Size(165, 22);
+            this.cutToolStripMenuItem.Size = new System.Drawing.Size(167, 22);
             this.cutToolStripMenuItem.Text = "Cut";
             // 
             // copyToolStripMenuItem
@@ -777,7 +789,7 @@ namespace WinFormsDemo
             this.actionListProvider1.SetAction(this.copyToolStripMenuItem, this.actCopy);
             this.copyToolStripMenuItem.Name = "copyToolStripMenuItem";
             this.copyToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.C)));
-            this.copyToolStripMenuItem.Size = new System.Drawing.Size(165, 22);
+            this.copyToolStripMenuItem.Size = new System.Drawing.Size(167, 22);
             this.copyToolStripMenuItem.Text = "Copy";
             // 
             // pasteToolStripMenuItem
@@ -785,7 +797,7 @@ namespace WinFormsDemo
             this.actionListProvider1.SetAction(this.pasteToolStripMenuItem, this.actPaste);
             this.pasteToolStripMenuItem.Name = "pasteToolStripMenuItem";
             this.pasteToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.V)));
-            this.pasteToolStripMenuItem.Size = new System.Drawing.Size(165, 22);
+            this.pasteToolStripMenuItem.Size = new System.Drawing.Size(167, 22);
             this.pasteToolStripMenuItem.Text = "Paste";
             // 
             // deleteToolStripMenuItem
@@ -793,20 +805,34 @@ namespace WinFormsDemo
             this.actionListProvider1.SetAction(this.deleteToolStripMenuItem, this.actDelete);
             this.deleteToolStripMenuItem.Name = "deleteToolStripMenuItem";
             this.deleteToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.Delete;
-            this.deleteToolStripMenuItem.Size = new System.Drawing.Size(165, 22);
+            this.deleteToolStripMenuItem.Size = new System.Drawing.Size(167, 22);
             this.deleteToolStripMenuItem.Text = "Delete";
             // 
             // toolStripSeparator9
             // 
             this.actionListProvider1.SetAction(this.toolStripSeparator9, null);
             this.toolStripSeparator9.Name = "toolStripSeparator9";
-            this.toolStripSeparator9.Size = new System.Drawing.Size(162, 6);
+            this.toolStripSeparator9.Size = new System.Drawing.Size(164, 6);
+            // 
+            // selectAllToolStripMenuItem1
+            // 
+            this.actionListProvider1.SetAction(this.selectAllToolStripMenuItem1, this.actSelectAll);
+            this.selectAllToolStripMenuItem1.Name = "selectAllToolStripMenuItem1";
+            this.selectAllToolStripMenuItem1.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.A)));
+            this.selectAllToolStripMenuItem1.Size = new System.Drawing.Size(167, 22);
+            this.selectAllToolStripMenuItem1.Text = "Select All";
+            // 
+            // toolStripSeparator13
+            // 
+            this.actionListProvider1.SetAction(this.toolStripSeparator13, null);
+            this.toolStripSeparator13.Name = "toolStripSeparator13";
+            this.toolStripSeparator13.Size = new System.Drawing.Size(164, 6);
             // 
             // clearPageToolStripMenuItem2
             // 
             this.actionListProvider1.SetAction(this.clearPageToolStripMenuItem2, this.actClearPage);
             this.clearPageToolStripMenuItem2.Name = "clearPageToolStripMenuItem2";
-            this.clearPageToolStripMenuItem2.Size = new System.Drawing.Size(165, 22);
+            this.clearPageToolStripMenuItem2.Size = new System.Drawing.Size(167, 22);
             this.clearPageToolStripMenuItem2.Text = "Clear Page";
             // 
             // deletePageToolStripMenuItem1
@@ -814,7 +840,7 @@ namespace WinFormsDemo
             this.actionListProvider1.SetAction(this.deletePageToolStripMenuItem1, this.actDeletePage);
             this.deletePageToolStripMenuItem1.Name = "deletePageToolStripMenuItem1";
             this.deletePageToolStripMenuItem1.ShortcutKeys = System.Windows.Forms.Keys.Delete;
-            this.deletePageToolStripMenuItem1.Size = new System.Drawing.Size(165, 22);
+            this.deletePageToolStripMenuItem1.Size = new System.Drawing.Size(167, 22);
             this.deletePageToolStripMenuItem1.Text = "Delete Page";
             // 
             // viewToolStripMenuItem
@@ -1166,6 +1192,30 @@ namespace WinFormsDemo
             this.btnDelete.Size = new System.Drawing.Size(23, 22);
             this.btnDelete.Text = "Delete";
             // 
+            // tsPersonal
+            // 
+            this.tsPersonal.ClickThrough = true;
+            this.tsPersonal.Dock = System.Windows.Forms.DockStyle.None;
+            this.tsPersonal.FocusControl = null;
+            this.tsPersonal.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.btnEditPersonalToolbar});
+            this.tsPersonal.Location = new System.Drawing.Point(3, 99);
+            this.tsPersonal.ManagedFocus = true;
+            this.tsPersonal.Name = "tsPersonal";
+            this.tsPersonal.Size = new System.Drawing.Size(66, 25);
+            this.tsPersonal.TabIndex = 6;
+            // 
+            // btnEditPersonalToolbar
+            // 
+            this.actionListProvider1.SetAction(this.btnEditPersonalToolbar, null);
+            this.btnEditPersonalToolbar.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.btnEditPersonalToolbar.Image = ((System.Drawing.Image)(resources.GetObject("btnEditPersonalToolbar.Image")));
+            this.btnEditPersonalToolbar.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnEditPersonalToolbar.Name = "btnEditPersonalToolbar";
+            this.btnEditPersonalToolbar.Size = new System.Drawing.Size(23, 22);
+            this.btnEditPersonalToolbar.Text = "Customize Personal Toolbar";
+            this.btnEditPersonalToolbar.Click += new System.EventHandler(this.btnEditPersonalToolbar_Click);
+            // 
             // actionListProvider1
             // 
             this.actionListProvider1.Actions.Add(this.actGroupFigures);
@@ -1256,6 +1306,12 @@ namespace WinFormsDemo
             this.actLink.Text = "Link";
             this.actLink.Execute += new System.EventHandler(this.actLink_Execute);
             // 
+            // actSelectAll
+            // 
+            this.actSelectAll.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.A)));
+            this.actSelectAll.Text = "Select All";
+            this.actSelectAll.Execute += new System.EventHandler(this.actSelectAll_Execute);
+            // 
             // actClearPage
             // 
             this.actClearPage.ShortcutKeys = System.Windows.Forms.Keys.None;
@@ -1340,32 +1396,6 @@ namespace WinFormsDemo
             this.actFloatingTools.Text = "Floating Tools";
             this.actFloatingTools.Execute += new System.EventHandler(this.actFloatingTools_Execute);
             // 
-            // actSelectAll
-            // 
-            this.actSelectAll.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.A)));
-            this.actSelectAll.Text = "Select All";
-            this.actSelectAll.Execute += new System.EventHandler(this.actSelectAll_Execute);
-            // 
-            // selectAllToolStripMenuItem
-            // 
-            this.actionListProvider1.SetAction(this.selectAllToolStripMenuItem, this.actSelectAll);
-            this.selectAllToolStripMenuItem.Name = "selectAllToolStripMenuItem";
-            this.selectAllToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
-            this.selectAllToolStripMenuItem.Text = "Select All";
-            // 
-            // selectAllToolStripMenuItem1
-            // 
-            this.actionListProvider1.SetAction(this.selectAllToolStripMenuItem1, this.actSelectAll);
-            this.selectAllToolStripMenuItem1.Name = "selectAllToolStripMenuItem1";
-            this.selectAllToolStripMenuItem1.Size = new System.Drawing.Size(165, 22);
-            this.selectAllToolStripMenuItem1.Text = "Select All";
-            // 
-            // toolStripSeparator13
-            // 
-            this.actionListProvider1.SetAction(this.toolStripSeparator13, null);
-            this.toolStripSeparator13.Name = "toolStripSeparator13";
-            this.toolStripSeparator13.Size = new System.Drawing.Size(162, 6);
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1405,6 +1435,8 @@ namespace WinFormsDemo
             this.menuStrip1.PerformLayout();
             this.tsEdit.ResumeLayout(false);
             this.tsEdit.PerformLayout();
+            this.tsPersonal.ResumeLayout(false);
+            this.tsPersonal.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.actionListProvider1)).EndInit();
             this.ResumeLayout(false);
 
@@ -1545,6 +1577,8 @@ namespace WinFormsDemo
         private System.Windows.Forms.ToolStripMenuItem selectAllToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem selectAllToolStripMenuItem1;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator13;
+        private ToolStripEx tsPersonal;
+        private System.Windows.Forms.ToolStripButton btnEditPersonalToolbar;
     }
 }
 

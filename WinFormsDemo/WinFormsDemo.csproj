@@ -91,6 +91,21 @@
     <Compile Include="LinkForm.Designer.cs">
       <DependentUpon>LinkForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="PersonalToolbar\PtButtonForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="PersonalToolbar\PtButtonForm.Designer.cs">
+      <DependentUpon>PtButtonForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="PersonalToolbar\PtForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="PersonalToolbar\PtForm.Designer.cs">
+      <DependentUpon>PtForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="PersonalToolbar\PtUtils.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="ProgramOptions.cs" />
     <Compile Include="ProgressForm.cs">
       <SubType>Form</SubType>
@@ -150,6 +165,14 @@
     <EmbeddedResource Include="MainForm.resx">
       <SubType>Designer</SubType>
       <DependentUpon>MainForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PersonalToolbar\PtButtonForm.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>PtButtonForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PersonalToolbar\PtForm.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>PtForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="PreviewBar.resx">
       <SubType>Designer</SubType>
@@ -285,6 +308,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\arrow_right.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\folder.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\cog.png" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

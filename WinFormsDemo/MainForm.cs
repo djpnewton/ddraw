@@ -12,6 +12,7 @@ using System.Drawing.Printing;
 
 using DDraw;
 using DDraw.WinForms;
+using WinFormsDemo.PersonalToolbar;
 
 namespace WinFormsDemo
 {
@@ -171,6 +172,8 @@ namespace WinFormsDemo
                 dvEditor.Scale = options.Scale;
             else
                 dvEditor.Zoom = options.Zoom;
+            // load personal toolbar
+            PtUtils.LoadPersonalTools(tsPersonal);
         }
 
         void WriteOptions()
@@ -190,6 +193,8 @@ namespace WinFormsDemo
             options.AntiAlias = dvEditor.AntiAlias;
             // write to file
             options.WriteIni();
+            // save personal toolbar
+            PtUtils.SavePersonalTools(tsPersonal);
         }
 
         void ActionCommandLine()
@@ -1479,6 +1484,24 @@ namespace WinFormsDemo
         {
             if (dem.EngineCount > 0)
                 previewBar1.SetPreviewSelected(dem.GetEngine(0));
+        }
+
+        private void btnEditPersonalToolbar_Click(object sender, EventArgs e)
+        {
+            PtForm pf = new PtForm();
+            pf.PersonalToolstrip = tsPersonal;
+            if (pf.ShowDialog() == DialogResult.OK)
+            {
+                for (int i = tsPersonal.Items.Count - 1; i > 0; i--)
+                    tsPersonal.Items.RemoveAt(i);
+                foreach (object o in pf.ToolItems)
+                {
+                    if (o is RunCmdT)
+                        tsPersonal.Items.Add(new RunCmdToolButton(((RunCmdT)o).Command, ((RunCmdT)o).Arguments));
+                    else if (o is ShowDirT)
+                        tsPersonal.Items.Add(new ShowDirToolButton(((ShowDirT)o).Dir));
+                }
+            }
         }
     }
 }
