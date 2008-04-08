@@ -1204,6 +1204,7 @@ namespace WinFormsDemo
             this.tsPersonal.Name = "tsPersonal";
             this.tsPersonal.Size = new System.Drawing.Size(66, 25);
             this.tsPersonal.TabIndex = 6;
+            this.tsPersonal.ItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.tsPersonal_ItemClicked);
             // 
             // btnEditPersonalToolbar
             // 

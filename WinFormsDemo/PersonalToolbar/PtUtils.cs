@@ -5,11 +5,12 @@ using System.Windows.Forms;
 using System.IO;
 
 using Nini.Config;
+using DDraw;
 
 namespace WinFormsDemo.PersonalToolbar
 {
 
-    public enum PersonalToolbuttonType { RunCmd, ShowDir };
+    public enum PersonalToolButtonType { CustomFigure, RunCmd, ShowDir };
 
     public struct RunCmdT
     {
@@ -40,6 +41,26 @@ namespace WinFormsDemo.PersonalToolbar
         public override string ToString()
         {
             return string.Concat("Open Directory: \"", Dir, "\"");
+        }
+    }
+
+    public struct CustomFigureT
+    {
+        public Type FigureClass;
+        public DAuthorProperties Dap;
+
+        public CustomFigureT(Type figureClass, DAuthorProperties dap)
+        {
+            FigureClass = figureClass;
+            Dap = dap;
+        }
+
+        public override string ToString()
+        {
+            if (FigureClass != null)
+                return string.Concat("Custom ", FigureClass.ToString());
+            else 
+                return base.ToString();
         }
     }
 
@@ -123,10 +144,60 @@ namespace WinFormsDemo.PersonalToolbar
         }
     }
 
+    public class CustomFigureToolButton : ToolStripButton
+    {
+        Type figureClass = null;
+        public Type FigureClass
+        {
+            get { return figureClass; }
+            set
+            {
+                figureClass = value;
+                ToolTipText = CustomFigureT.ToString();
+            }
+        }
+
+        DAuthorProperties dap = null;
+        public DAuthorProperties Dap
+        {
+            get { return dap; }
+            set { dap = value; }
+        }
+
+        public CustomFigureT CustomFigureT
+        {
+            get { return new CustomFigureT(figureClass, dap); }
+        }
+
+        public CustomFigureToolButton()
+        {
+            Image = Resource1.technocolor;
+        }
+
+        public CustomFigureToolButton(Type figureClass, DAuthorProperties dap) : this()
+        {
+            FigureClass = figureClass;
+            Dap = dap;
+        }
+    }
+
     public static class PtUtils
     {
         const string _INIFILE = "PersonalToolbar.ini";
         const string TYPE_OPT = "Type";
+        const string FIGURECLASS_OPT = "FigureClass";
+        const string FILL_OPT = "Fill";
+        const string STROKE_OPT = "Stroke";
+        const string STROKEWIDTH_OPT = "StrokeWidth";
+        const string STROKESTYLE_OPT = "StrokeStyle";
+        const string ALPHA_OPT = "Alpha";
+        const string STARTMARKER_OPT = "StartMarker";
+        const string ENDMARKER_OPT = "EndMarker";
+        const string FONTNAME_OPT = "FontName";
+        const string BOLD_OPT = "Bold";
+        const string ITALICS_OPT = "Italics";
+        const string UNDERLINE_OPT = "Underline";
+        const string STRIKETHROUGH_OPT = "Strikethrough";
         const string RUNCMD_OPT = "RunCmd";
         const string ARGS_OPT = "Args";
         const string DIR_OPT = "Dir";
@@ -151,15 +222,35 @@ namespace WinFormsDemo.PersonalToolbar
             foreach (IConfig config in source.Configs)
                 if (config.Contains(TYPE_OPT))
                 {
-                    PersonalToolbuttonType type = (PersonalToolbuttonType)Enum.Parse(
-                        typeof(PersonalToolbuttonType), config.Get(TYPE_OPT), true);
+                    PersonalToolButtonType type = (PersonalToolButtonType)Enum.Parse(
+                        typeof(PersonalToolButtonType), config.Get(TYPE_OPT), true);
                     switch (type)
                     {
-                        case PersonalToolbuttonType.RunCmd:
+                        case PersonalToolButtonType.CustomFigure:
+                            Type figureClass = Type.GetType(config.Get(FIGURECLASS_OPT));
+                            if (figureClass != null)
+                            {
+                                DAuthorProperties dap = new DAuthorProperties();
+                                dap.Fill = DColor.FromString(config.Get(FILL_OPT));
+                                dap.Stroke = DColor.FromString(config.Get(STROKE_OPT));
+                                dap.StrokeWidth = config.GetInt(STROKEWIDTH_OPT);
+                                dap.StrokeStyle = (DStrokeStyle)Enum.Parse(typeof(DStrokeStyle), config.Get(STROKESTYLE_OPT), true);
+                                dap.Alpha = config.GetDouble(ALPHA_OPT);
+                                dap.StartMarker = (DMarker)Enum.Parse(typeof(DMarker), config.Get(STARTMARKER_OPT), true);
+                                dap.EndMarker = (DMarker)Enum.Parse(typeof(DMarker), config.Get(ENDMARKER_OPT), true);
+                                dap.FontName = config.Get(FONTNAME_OPT);
+                                dap.Bold = config.GetBoolean(BOLD_OPT);
+                                dap.Italics = config.GetBoolean(ITALICS_OPT);
+                                dap.Underline = config.GetBoolean(UNDERLINE_OPT);
+                                dap.Strikethrough = config.GetBoolean(STRIKETHROUGH_OPT);
+                                tsPersonal.Items.Add(new CustomFigureToolButton(figureClass, dap));
+                            }
+                            break;
+                        case PersonalToolButtonType.RunCmd:
                             tsPersonal.Items.Add(new RunCmdToolButton(config.Get(RUNCMD_OPT),
                                 config.Get(ARGS_OPT)));
                             break;
-                        case PersonalToolbuttonType.ShowDir:
+                        case PersonalToolButtonType.ShowDir:
                             tsPersonal.Items.Add(new ShowDirToolButton(config.Get(DIR_OPT)));
                             break;
                     }
@@ -171,21 +262,47 @@ namespace WinFormsDemo.PersonalToolbar
             if (!File.Exists(IniFile))
                 File.Create(IniFile).Close();
             IConfigSource source = new IniConfigSource(IniFile);
+            source.Configs.Clear();
             for (int i = 1; i < tsPersonal.Items.Count; i++)
             {
-                source.Configs.Clear();
                 IConfig config = source.AddConfig(i.ToString());
                 ToolStripItem b = tsPersonal.Items[i];
-                if (b is RunCmdToolButton)
+                if (b is CustomFigureToolButton)
                 {
-                    config.Set(TYPE_OPT, PersonalToolbuttonType.RunCmd);
-                    config.Set(RUNCMD_OPT, ((RunCmdToolButton)b).RunCmdT.Command);
-                    config.Set(ARGS_OPT, ((RunCmdToolButton)b).RunCmdT.Arguments);
+                    CustomFigureT t = ((CustomFigureToolButton)b).CustomFigureT;
+                    config.Set(TYPE_OPT, PersonalToolButtonType.CustomFigure);
+                    config.Set(FIGURECLASS_OPT, t.FigureClass.AssemblyQualifiedName);
+                    config.Set(FILL_OPT, DColor.FormatToString(t.Dap.Fill));
+                    config.Set(STROKE_OPT, DColor.FormatToString(t.Dap.Stroke));
+                    config.Set(STROKEWIDTH_OPT, t.Dap.StrokeWidth);
+                    config.Set(STROKESTYLE_OPT, t.Dap.StrokeStyle.ToString());
+                    config.Set(ALPHA_OPT, t.Dap.Alpha);
+                    config.Set(STARTMARKER_OPT, t.Dap.StartMarker);
+                    config.Set(ENDMARKER_OPT, t.Dap.EndMarker);
+                    config.Set(FONTNAME_OPT, t.Dap.FontName);
+                    config.Set(BOLD_OPT, t.Dap.Bold);
+                    config.Set(ITALICS_OPT, t.Dap.Italics);
+                    config.Set(UNDERLINE_OPT, t.Dap.Underline);
+                    config.Set(STRIKETHROUGH_OPT, t.Dap.Strikethrough);
+                }
+                else if (b is RunCmdToolButton)
+                {
+                    RunCmdT t = ((RunCmdToolButton)b).RunCmdT;
+                    if (t.Command != null && t.Arguments != null)
+                    {
+                        config.Set(TYPE_OPT, PersonalToolButtonType.RunCmd);
+                        config.Set(RUNCMD_OPT, ((RunCmdToolButton)b).RunCmdT.Command);
+                        config.Set(ARGS_OPT, ((RunCmdToolButton)b).RunCmdT.Arguments);
+                    }
                 }
                 else if (b is ShowDirToolButton)
                 {
-                    config.Set(TYPE_OPT, PersonalToolbuttonType.ShowDir);
-                    config.Set(DIR_OPT, ((ShowDirToolButton)b).ShowDirT.Dir);
+                    ShowDirT t = ((ShowDirToolButton)b).ShowDirT;
+                    if (t.Dir != null)
+                    {
+                        config.Set(TYPE_OPT, PersonalToolButtonType.ShowDir);
+                        config.Set(DIR_OPT, (t.Dir));
+                    }
                 }
             }
             source.Save();

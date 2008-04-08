@@ -7,6 +7,8 @@ using System.Text;
 using System.Windows.Forms;
 using System.IO;
 
+using DDraw;
+
 namespace WinFormsDemo.PersonalToolbar
 {
     public partial class PtForm : Form
@@ -40,7 +42,9 @@ namespace WinFormsDemo.PersonalToolbar
             listBox1.Items.Clear();
             for (int i = 1; i < personalToolstrip.Items.Count; i++)
             {
-                if (personalToolstrip.Items[i] is RunCmdToolButton)
+                if (personalToolstrip.Items[i] is CustomFigureToolButton)
+                    listBox1.Items.Add(((CustomFigureToolButton)personalToolstrip.Items[i]).CustomFigureT);
+                else if (personalToolstrip.Items[i] is RunCmdToolButton)
                     listBox1.Items.Add(((RunCmdToolButton)personalToolstrip.Items[i]).RunCmdT);
                 else if (personalToolstrip.Items[i] is ShowDirToolButton)
                     listBox1.Items.Add(((ShowDirToolButton)personalToolstrip.Items[i]).ShowDirT);
@@ -51,9 +55,12 @@ namespace WinFormsDemo.PersonalToolbar
         private void btnAdd_Click(object sender, EventArgs e)
         {
             PtButtonForm pf = new PtButtonForm();
-            pf.ToolbuttonData = new RunCmdT();
+            pf.ToolButtonData = new CustomFigureT(typeof(RectFigure), DAuthorProperties.GlobalAP.Clone());
             if (pf.ShowDialog() == DialogResult.OK)
-                listBox1.Items.Add(pf.ToolbuttonData);
+            {
+                listBox1.Items.Add(pf.ToolButtonData);
+                listBox1.SelectedIndex = listBox1.Items.Count - 1;
+            }
         }
 
         private void btnEdit_Click(object sender, EventArgs e)
@@ -61,16 +68,24 @@ namespace WinFormsDemo.PersonalToolbar
             if (listBox1.SelectedIndex != -1)
             {
                 PtButtonForm pf = new PtButtonForm();
-                pf.ToolbuttonData = listBox1.SelectedItem;
+                pf.ToolButtonData = listBox1.SelectedItem;
                 if (pf.ShowDialog() == DialogResult.OK)
-                    listBox1.Items[listBox1.SelectedIndex] = pf.ToolbuttonData;
+                    listBox1.Items[listBox1.SelectedIndex] = pf.ToolButtonData;
             }
         }
 
         private void btnDelete_Click(object sender, EventArgs e)
         {
             if (listBox1.SelectedIndex != -1)
+            {
+                int idx = listBox1.SelectedIndex;
                 listBox1.Items.Remove(listBox1.SelectedItem);
+                if (idx < listBox1.Items.Count)
+                    listBox1.SelectedIndex = idx;
+                else
+                    listBox1.SelectedIndex = listBox1.Items.Count - 1;
+
+            }
         }
 
         private void btnMoveUp_Click(object sender, EventArgs e)

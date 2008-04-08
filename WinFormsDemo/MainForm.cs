@@ -1496,11 +1496,24 @@ namespace WinFormsDemo
                     tsPersonal.Items.RemoveAt(i);
                 foreach (object o in pf.ToolItems)
                 {
-                    if (o is RunCmdT)
+                    if (o is CustomFigureT)
+                        tsPersonal.Items.Add(new CustomFigureToolButton(((CustomFigureT)o).FigureClass,
+                            ((CustomFigureT)o).Dap));
+                    else if (o is RunCmdT)
                         tsPersonal.Items.Add(new RunCmdToolButton(((RunCmdT)o).Command, ((RunCmdT)o).Arguments));
                     else if (o is ShowDirT)
                         tsPersonal.Items.Add(new ShowDirToolButton(((ShowDirT)o).Dir));
                 }
+            }
+        }
+
+        private void tsPersonal_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
+        {
+            if (e.ClickedItem is CustomFigureToolButton)
+            {
+                CustomFigureToolButton b = (CustomFigureToolButton)e.ClickedItem;
+                de.HsmSetStateByFigureClass(b.FigureClass);
+                dap.SetProperties(b.Dap);
             }
         }
     }

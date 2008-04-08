@@ -42,6 +42,7 @@ namespace WinFormsDemo.PersonalToolbar
             this.lbDir = new System.Windows.Forms.Label();
             this.tbDir = new System.Windows.Forms.TextBox();
             this.btnDirBrowse = new System.Windows.Forms.Button();
+            this.pnlCustomFigure = new System.Windows.Forms.Panel();
             this.pnlRunCmd.SuspendLayout();
             this.pnlShowDir.SuspendLayout();
             this.SuspendLayout();
@@ -79,6 +80,7 @@ namespace WinFormsDemo.PersonalToolbar
             this.cbType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cbType.FormattingEnabled = true;
             this.cbType.Items.AddRange(new object[] {
+            "Custom Figure",
             "Run Command",
             "Show Directory"});
             this.cbType.Location = new System.Drawing.Point(12, 12);
@@ -177,13 +179,21 @@ namespace WinFormsDemo.PersonalToolbar
             this.btnDirBrowse.UseVisualStyleBackColor = true;
             this.btnDirBrowse.Click += new System.EventHandler(this.btnDirBrowse_Click);
             // 
-            // PersonalToolbuttonForm
+            // pnlCustomFigure
+            // 
+            this.pnlCustomFigure.Location = new System.Drawing.Point(12, 39);
+            this.pnlCustomFigure.Name = "pnlCustomFigure";
+            this.pnlCustomFigure.Size = new System.Drawing.Size(433, 55);
+            this.pnlCustomFigure.TabIndex = 20;
+            // 
+            // PtButtonForm
             // 
             this.AcceptButton = this.btnOk;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btnCancel;
             this.ClientSize = new System.Drawing.Size(457, 141);
+            this.Controls.Add(this.pnlCustomFigure);
             this.Controls.Add(this.pnlShowDir);
             this.Controls.Add(this.pnlRunCmd);
             this.Controls.Add(this.cbType);
@@ -193,7 +203,7 @@ namespace WinFormsDemo.PersonalToolbar
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
-            this.Name = "PersonalToolbuttonForm";
+            this.Name = "PtButtonForm";
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Personal Toolbutton";
@@ -221,5 +231,6 @@ namespace WinFormsDemo.PersonalToolbar
         private System.Windows.Forms.Label lbRunCmd;
         private System.Windows.Forms.TextBox tbArgs;
         private System.Windows.Forms.Label lbDir;
+        private System.Windows.Forms.Panel pnlCustomFigure;
     }
 }

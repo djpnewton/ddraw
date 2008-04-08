@@ -6,29 +6,39 @@ using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
 
+using DDraw;
+
 namespace WinFormsDemo.PersonalToolbar
 {
     public partial class PtButtonForm : Form
     {
-        public object ToolbuttonData
+        public object ToolButtonData
         {
             set
             {
-                if (value is RunCmdT)
+                if (value is CustomFigureT)
+                {
+                    //TODO
+                    cbType.SelectedIndex = (int)PersonalToolButtonType.CustomFigure;
+                }
+                else if (value is RunCmdT)
                 {
                     tbRun.Text = ((RunCmdT)value).Command;
                     tbArgs.Text = ((RunCmdT)value).Arguments;
-                    cbType.SelectedIndex = (int)PersonalToolbuttonType.RunCmd;
+                    cbType.SelectedIndex = (int)PersonalToolButtonType.RunCmd;
                 }
-                else
+                else if (value is ShowDirT)
                 {
                     tbDir.Text = ((ShowDirT)value).Dir;
-                    cbType.SelectedIndex = (int)PersonalToolbuttonType.ShowDir;
+                    cbType.SelectedIndex = (int)PersonalToolButtonType.ShowDir;
                 }
             }
             get 
             {
-                if (cbType.SelectedIndex == (int)PersonalToolbuttonType.RunCmd)
+                if (cbType.SelectedIndex == (int)PersonalToolButtonType.CustomFigure)
+                    //TODO
+                    return new CustomFigureT(typeof(RectFigure), DAuthorProperties.GlobalAP.Clone());
+                else if (cbType.SelectedIndex == (int)PersonalToolButtonType.RunCmd)
                     return new RunCmdT(tbRun.Text, tbArgs.Text);
                 else
                     return new ShowDirT(tbDir.Text);
@@ -42,10 +52,18 @@ namespace WinFormsDemo.PersonalToolbar
 
         private void cbType_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (cbType.SelectedIndex == (int)PersonalToolbuttonType.RunCmd)
-                pnlRunCmd.BringToFront();
-            else
-                pnlShowDir.BringToFront();
+            switch (cbType.SelectedIndex)
+            {
+                case (int)PersonalToolButtonType.RunCmd:
+                    pnlRunCmd.BringToFront();
+                    break;
+                case (int)PersonalToolButtonType.ShowDir:
+                    pnlShowDir.BringToFront();
+                    break;
+                default:
+                    pnlCustomFigure.BringToFront();
+                    break;
+            }
         }
 
         private void btnDirBrowse_Click(object sender, EventArgs e)

@@ -599,18 +599,13 @@ namespace WinFormsDemo
 
         void UpdateToDap()
         {
-            // TODO update controls to dap
-        }
-
-        void UpdateToFigures()
-        {
-            // TODO update controls to figures
+            if (de != null)
+                InitPropertyControls(de.HsmState);
         }
 
         void dap_PropertyChanged(DAuthorProperties dap)
         {
-            if (de.HsmState == DHsmState.Select)
-                UpdateToDap();
+            UpdateToDap();
         }
 
         void btnClick(object sender, EventArgs e)

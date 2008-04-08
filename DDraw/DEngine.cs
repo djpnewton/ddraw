@@ -128,6 +128,23 @@ namespace DDraw
             DoPropertyChanged();
         }
 
+        public void SetProperties(DAuthorProperties dap)
+        {
+            this.fill = dap.Fill;
+            this.stroke = dap.Stroke;
+            this.strokeWidth = dap.StrokeWidth;
+            this.strokeStyle = dap.StrokeStyle;
+            this.startMarker = dap.StartMarker;
+            this.endMarker = dap.EndMarker;
+            this.alpha = dap.Alpha;
+            this.fontName = dap.FontName;
+            this.bold = dap.Bold;
+            this.italics = dap.Italics;
+            this.underline = dap.Underline;
+            this.strikethrough = dap.Strikethrough;
+            DoPropertyChanged();
+        }
+
         void DoPropertyChanged()
         {
             if (PropertyChanged != null)
@@ -170,6 +187,13 @@ namespace DDraw
                     ap = new DAuthorProperties();
                 return ap;
             }
+        }
+
+        public DAuthorProperties Clone()
+        {
+            DAuthorProperties dap = new DAuthorProperties();
+            dap.SetProperties(this);
+            return dap;
         }
     }
 
