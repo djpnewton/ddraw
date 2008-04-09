@@ -443,10 +443,10 @@ namespace DDraw
 
         // private methods
 
-        void CommitOrRollback()
+        void CommitOrRollback(bool dontAllowZeroArea)
         {
             // roll back if current figure has zero areasize
-            if (currentFigure.Width == 0 || currentFigure.Height == 0)
+            if (dontAllowZeroArea && (currentFigure.Width == 0 || currentFigure.Height == 0))
                 undoRedoArea.Cancel();
             else
                 // commit to undo/redo
@@ -510,8 +510,6 @@ namespace DDraw
         {
             return DGeom.AngleBetweenPoints(f.GetSelectRect().Center, pt);
         }
-
-        protected const int MIN_SIZE = 5;
 
         void DoDebugMessage(string msg)
         {
@@ -859,15 +857,15 @@ namespace DDraw
                             dSize = dSizeUnlocked;
                         }
                     }
-                    if (currentFigure.Width + dSize.X < MIN_SIZE)
+                    if (currentFigure.Width > 0 && currentFigure.Width + dSize.X < currentFigure.MinSize)
                     {
-                        dSize.X = MIN_SIZE - currentFigure.Width;
+                        dSize.X = currentFigure.MinSize - currentFigure.Width;
                         if (LockingAspectRatio || currentFigure.LockAspectRatio)
                             dSize.Y = (currentFigure.Height / currentFigure.Width) * dSize.X;
                     }
-                    if (currentFigure.Height + dSize.Y < MIN_SIZE)
+                    if (currentFigure.Height > 0 && currentFigure.Height + dSize.Y < currentFigure.MinSize)
                     {
-                        dSize.Y = MIN_SIZE - currentFigure.Height;
+                        dSize.Y = currentFigure.MinSize - currentFigure.Height;
                         if (LockingAspectRatio || currentFigure.LockAspectRatio)
                             dSize.X = (currentFigure.Width / currentFigure.Height) * dSize.Y;
                     }
@@ -1315,7 +1313,7 @@ namespace DDraw
             }
             autoGroupPolylineStart = Environment.TickCount;
             // commit to undo/redo
-            CommitOrRollback();
+            CommitOrRollback(false);
             // transition
             TransitionTo(DrawLineDefault);
         }
@@ -1585,7 +1583,7 @@ namespace DDraw
 
         void DoDrawingRectMouseUp(DTkViewer dv, DMouseButton btn, DPoint pt)
         {
-            CommitOrRollback();
+            CommitOrRollback(true);
             // transition
             TransitionTo(DrawRectDefault);
             // update drawing

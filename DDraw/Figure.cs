@@ -338,7 +338,10 @@ namespace DDraw
     public abstract class Figure: IDimension, ISelectable, IGlyphable
     {
         public double _controlScale = 1;
-
+        public virtual double MinSize
+        {
+            get { return 0.1; }
+        }
         public bool ClickEvent = false;
 
         UndoRedo<double> _x = new UndoRedo<double>(0);
@@ -1283,12 +1286,26 @@ namespace DDraw
         {
             set
             {
-                if (Points != null)
+                if (Points != null && Points.Count > 1)
                 {
-                    double scale = value / Width;
+                    bool flat = true;
+                    DPoint lastPt = Points[0];
                     foreach (DPoint pt in Points)
-                        pt.X += (pt.X - X) * (scale - 1);
-                    Points = Points;
+                    {
+                        if (pt.X != lastPt.X)
+                        {
+                            flat = false;
+                            break;
+                        }
+                        lastPt = pt;
+                    }
+                    if (!flat)
+                    {
+                        double scale = value / Width;
+                        foreach (DPoint pt in Points)
+                            pt.X += (pt.X - X) * (scale - 1);
+                        Points = Points;
+                    }
                 }
             }
         }
@@ -1297,12 +1314,26 @@ namespace DDraw
         {
             set
             {
-                if (Points != null)
+                if (Points != null && Points.Count > 1)
                 {
-                    double scale = value / Height;
+                    bool flat = true;
+                    DPoint lastPt = Points[0];
                     foreach (DPoint pt in Points)
-                        pt.Y += (pt.Y - Y) * (scale - 1);
-                    Points = Points;
+                    {
+                        if (pt.Y != lastPt.Y)
+                        {
+                            flat = false;
+                            break;
+                        }
+                        lastPt = pt;
+                    }
+                    if (!flat)
+                    {
+                        double scale = value / Height;
+                        foreach (DPoint pt in Points)
+                            pt.Y += (pt.Y - Y) * (scale - 1);
+                        Points = Points;
+                    }
                 }
             }
         }
@@ -1533,6 +1564,11 @@ namespace DDraw
 
     public class TextFigure : RectbaseFigure, IFillable, ITextable
     {
+        public override double MinSize
+        {
+            get { return 5; }
+        }
+
         UndoRedo<string> _fontName = new UndoRedo<string>("Courier New");
         public string FontName
         {
@@ -1945,6 +1981,11 @@ namespace DDraw
 
     public class GroupFigure : RectbaseFigure, IChildFigureable
     {
+        public override double MinSize
+        {
+            get { return 10; }
+        }
+
         public override double X
         {
             get { return boundingBox.X; }
