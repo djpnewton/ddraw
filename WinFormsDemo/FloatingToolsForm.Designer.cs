@@ -37,8 +37,8 @@ namespace WinFormsDemo
             this.btnUndo = new System.Windows.Forms.ToolStripButton();
             this.btnImportArea = new System.Windows.Forms.ToolStripButton();
             this.btnImportPage = new System.Windows.Forms.ToolStripButton();
-            this.tsEngineState = new WinFormsDemo.ToolStripDEngineState();
-            this.tsPropState = new WinFormsDemo.ToolStripDAuthorPropsState();
+            this.tsEngineState = new WinFormsDemo.FigureToolStrip();
+            this.tsPropState = new WinFormsDemo.FigurePropertiesToolStrip();
             this.toolStripPanel1.SuspendLayout();
             this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -182,8 +182,8 @@ namespace WinFormsDemo
         private System.Windows.Forms.ToolStripButton btnImportArea;
         private System.Windows.Forms.ToolStripButton btnImportPage;
         private System.Windows.Forms.ToolStripButton btnUndo;
-        private ToolStripDEngineState tsEngineState;
-        private ToolStripDAuthorPropsState tsPropState;
+        private FigureToolStrip tsEngineState;
+        private FigurePropertiesToolStrip tsPropState;
         private System.Windows.Forms.ToolStripPanel toolStripPanel1;
     }
 }

@@ -11,7 +11,11 @@ using DDraw.WinForms;
 
 namespace WinFormsDemo
 {
-    public class ToolStripDEngineState : ToolStripEx
+    public enum FigureToolStripMode { DEngineState, FigureClassSelect };
+
+    public delegate void FigureClassChangedHandler(object sender, Type figureClass);
+
+    public class FigureToolStrip : ToolStripEx
     {
         ToolStripButton btnSelect;
         ToolStripButton btnPen;
@@ -25,6 +29,18 @@ namespace WinFormsDemo
         ToolStripButton btnPentagon;
         ToolStripButton btnLine;
         ToolStripButton btnEraser;
+
+        FigureToolStripMode mode = FigureToolStripMode.DEngineState;
+        public FigureToolStripMode Mode
+        {
+            get { return mode; }
+            set
+            {
+                mode = value;
+                btnSelect.Visible = mode == FigureToolStripMode.DEngineState;
+                btnEraser.Visible = mode == FigureToolStripMode.DEngineState;
+            }
+        }
 
         DEngine de;
         public DEngine De
@@ -42,7 +58,21 @@ namespace WinFormsDemo
             }
         }
 
-        public ToolStripDEngineState()
+        Type figureClass;
+        public Type FigureClass
+        {
+            get { return figureClass; }
+            set
+            {
+                figureClass = value;
+                UpdateToFigureClass();
+                DoFigureClassChanged();
+            }
+        }
+
+        public event FigureClassChangedHandler FigureClassChanged;
+
+        public FigureToolStrip()
         {
             btnSelect = new ToolStripButton("Select", Resource1.cursor, btnClick);
             Items.Add(btnSelect);
@@ -93,8 +123,9 @@ namespace WinFormsDemo
 
         void btnClick(object sender, EventArgs e)
         {
-            if (de != null)
+            if (mode == FigureToolStripMode.DEngineState)
             {
+                System.Diagnostics.Debug.Assert(de != null, "ERROR: \"de\" property needs to be set");
                 if (sender == btnSelect)
                     de.HsmState = DHsmState.Select;
                 else if (sender == btnPen)
@@ -123,10 +154,55 @@ namespace WinFormsDemo
                     de.SetEraserSize(25);
                 }
             }
+            else if (mode == FigureToolStripMode.FigureClassSelect)
+            {
+                if (sender == btnPen)
+                    figureClass = typeof(PolylineFigure);
+                else if (sender == btnRect)
+                    figureClass = typeof(RectFigure);
+                else if (sender == btnEllipse)
+                    figureClass = typeof(EllipseFigure);
+                else if (sender == btnText)
+                    figureClass = typeof(TextFigure);
+                else if (sender == btnClock)
+                    figureClass = typeof(ClockFigure);
+                else if (sender == btnTriangle)
+                    figureClass = typeof(TriangleFigure);
+                else if (sender == btnRATriangle)
+                    figureClass = typeof(RightAngleTriangleFigure);
+                else if (sender == btnDiamond)
+                    figureClass = typeof(DiamondFigure);
+                else if (sender == btnPentagon)
+                    figureClass = typeof(PentagonFigure);
+                else if (sender == btnLine)
+                    figureClass = typeof(LineFigure);
+                UpdateToFigureClass();
+                DoFigureClassChanged();
+            }
+        }
+
+        void UpdateToFigureClass()
+        {
+            btnPen.Checked = typeof(PolylineFigure).Equals(figureClass);
+            btnRect.Checked = typeof(RectFigure).Equals(figureClass);
+            btnEllipse.Checked = typeof(EllipseFigure).Equals(figureClass);
+            btnText.Checked = typeof(TextFigure).Equals(figureClass);
+            btnClock.Checked = typeof(ClockFigure).Equals(figureClass);
+            btnTriangle.Checked = typeof(TriangleFigure).Equals(figureClass);
+            btnRATriangle.Checked = typeof(RightAngleTriangleFigure).Equals(figureClass);
+            btnDiamond.Checked = typeof(DiamondFigure).Equals(figureClass);
+            btnPentagon.Checked = typeof(PentagonFigure).Equals(figureClass);
+            btnLine.Checked = typeof(LineFigure).Equals(figureClass);
+        }
+
+        void DoFigureClassChanged()
+        {
+            if (FigureClassChanged != null)
+                FigureClassChanged(this, figureClass);
         }
     }
 
-    public class ToolStripDAuthorPropsState : ToolStripEx
+    public class FigurePropertiesToolStrip : ToolStripEx
     {
         ToolStripColorButton btnFill;
         ToolStripColorButton btnStroke;
@@ -155,6 +231,19 @@ namespace WinFormsDemo
                     UpdateToDap();
                 }
             }
+            get { return dap; }
+        }
+
+        Type figureClass;
+        public Type FigureClass
+        {
+            get { return figureClass; }
+            set 
+            {
+                figureClass = value;
+                InitPropertyControlsToFigureClass();
+                UpdateToDap();
+            }
         }
 
         DEngine de;
@@ -171,9 +260,8 @@ namespace WinFormsDemo
                 if (de != null)
                 {
                     de.HsmStateChanged += new HsmStateChangedHandler(de_HsmStateChanged);
-                    de_HsmStateChanged(de, de.HsmState);
                     de.SelectedFiguresChanged += new SelectedFiguresHandler(de_SelectedFiguresChanged);
-                    de_SelectedFiguresChanged();
+                    InitPropertyControlsToDEngine(de.HsmState);
                 }
             }
         }
@@ -184,7 +272,7 @@ namespace WinFormsDemo
             set { dv = value; }
         }
 
-        public ToolStripDAuthorPropsState()
+        public FigurePropertiesToolStrip()
         {
             btnFill = new ToolStripColorButton();
             btnFill.ColorType = ColorType.Fill;
@@ -239,13 +327,13 @@ namespace WinFormsDemo
 
         void de_HsmStateChanged(DEngine de, DHsmState state)
         {
-            InitPropertyControls(state);
+            InitPropertyControlsToDEngine(state);
         }
 
 
         void de_SelectedFiguresChanged()
         {
-            InitPropertyControls(de.HsmState);
+            InitPropertyControlsToDEngine(de.HsmState);
         }
 
         Color GetFillMatch(List<Figure> figs)
@@ -468,11 +556,8 @@ namespace WinFormsDemo
             return strikethrough;
         }
 
-        void InitPropertyControls(DHsmState state)
+        void DefaultControlProperties()
         {
-            // disable events
-            cbFontName.FontNameChanged -= cbFontName_FontNameChanged;
-            // set default (blank) values for property controls
             btnFill.Color = Color.Empty;
             btnStroke.Color = Color.Empty;
             btnStrokeWidth.Value = ToolStripStrokeWidthButton.Empty;
@@ -485,7 +570,10 @@ namespace WinFormsDemo
             btnItalic.Checked = false;
             btnUnderline.Checked = false;
             btnStrikethrough.Checked = false;
-            // deselect controls
+        }
+
+        void DeselectControls()
+        {
             btnFill.Enabled = false;
             btnStroke.Enabled = false;
             btnStrokeWidth.Enabled = false;
@@ -498,6 +586,16 @@ namespace WinFormsDemo
             btnItalic.Enabled = false;
             btnUnderline.Enabled = false;
             btnStrikethrough.Enabled = false;
+        }
+
+        void InitPropertyControlsToDEngine(DHsmState state)
+        {
+            // disable events
+            cbFontName.FontNameChanged -= cbFontName_FontNameChanged;
+            // set default (blank) values for property controls
+            DefaultControlProperties();
+            // deselect controls
+            DeselectControls();
             // update controls based on the state of DEngine
             switch (state)
             {
@@ -599,8 +697,59 @@ namespace WinFormsDemo
 
         void UpdateToDap()
         {
-            if (de != null)
-                InitPropertyControls(de.HsmState);
+            if (btnFill.Enabled)
+                btnFill.Color = WFHelper.MakeColor(dap.Fill);
+            if (btnStroke.Enabled)
+                btnStroke.Color = WFHelper.MakeColor(dap.Stroke);
+            if (btnStrokeWidth.Enabled)
+                btnStrokeWidth.Value = (int)Math.Round(dap.StrokeWidth);
+            if (btnStrokeStyle.Enabled)
+                btnStrokeStyle.Value = dap.StrokeStyle;
+            if (btnStartMarker.Enabled)
+                btnStartMarker.Value = dap.StartMarker;
+            if (btnEndMarker.Enabled)
+                btnEndMarker.Value = dap.EndMarker;
+            if (btnAlpha.Enabled)
+                btnAlpha.Value = dap.Alpha;
+            if (cbFontName.Enabled)
+                cbFontName.Value = dap.FontName;
+            if (btnBold.Enabled)
+                btnBold.Checked = dap.Bold;
+            if (btnItalic.Enabled)
+                btnItalic.Checked = dap.Italics;
+            if (btnUnderline.Enabled)
+                btnUnderline.Checked = dap.Underline;
+            if (btnStrikethrough.Enabled)
+                btnStrikethrough.Checked = dap.Strikethrough;
+        }
+
+        void InitPropertyControlsToFigureClass()
+        {
+            DefaultControlProperties();
+            DeselectControls();
+            if (typeof(IFillable).IsAssignableFrom(figureClass))
+                btnFill.Enabled = true;
+            if (typeof(IStrokeable).IsAssignableFrom(figureClass))
+            {
+                btnStroke.Enabled = true;
+                btnStrokeWidth.Enabled = true;
+                btnStrokeStyle.Enabled = true;
+            }
+            if (typeof(IMarkable).IsAssignableFrom(figureClass))
+            {
+                btnStartMarker.Enabled = true;
+                btnEndMarker.Enabled = true;
+            }
+            if (typeof(IAlphaBlendable).IsAssignableFrom(figureClass))
+                btnAlpha.Enabled = true;
+            if (typeof(ITextable).IsAssignableFrom(figureClass))
+            {
+                cbFontName.Enabled = true;
+                btnBold.Enabled = true;
+                btnItalic.Enabled = true;
+                btnUnderline.Enabled = true;
+                btnStrikethrough.Enabled = true;
+            }
         }
 
         void dap_PropertyChanged(DAuthorProperties dap)
@@ -620,7 +769,7 @@ namespace WinFormsDemo
                     f.ColorSelected += delegate(object sender2, EventArgs ea)
                     {
                         btnFill.Color = ((ColorPicker)sender2).SelectedColor;
-                        if (de.HsmState == DHsmState.Select)
+                        if (de != null && de.HsmState == DHsmState.Select)
                             UpdateSelectedFigures(btnFill);
                         else
                             dap.Fill = WFHelper.MakeColor(btnFill.Color);
@@ -635,7 +784,7 @@ namespace WinFormsDemo
                     f.ColorSelected += delegate(object sender2, EventArgs ea)
                     {
                         btnStroke.Color = ((ColorPicker)sender2).SelectedColor;
-                        if (de.HsmState == DHsmState.Select)
+                        if (de != null && de.HsmState == DHsmState.Select)
                             UpdateSelectedFigures(btnStroke);
                         else
                             dap.Stroke = WFHelper.MakeColor(btnStroke.Color);
@@ -645,28 +794,28 @@ namespace WinFormsDemo
                 }
                 else if (sender == btnBold)
                 {
-                    if (de.HsmState == DHsmState.Select)
+                    if (de != null && de.HsmState == DHsmState.Select)
                         UpdateSelectedFigures(btnBold);
                     else
                         dap.Bold = btnBold.Checked;
                 }
                 else if (sender == btnItalic)
                 {
-                    if (de.HsmState == DHsmState.Select)
+                    if (de != null && de.HsmState == DHsmState.Select)
                         UpdateSelectedFigures(btnItalic);
                     else
                         dap.Italics = btnItalic.Checked;
                 }
                 else if (sender == btnUnderline)
                 {
-                    if (de.HsmState == DHsmState.Select)
+                    if (de != null && de.HsmState == DHsmState.Select)
                         UpdateSelectedFigures(btnUnderline);
                     else
                         dap.Underline = btnUnderline.Checked;
                 }
                 else if (sender == btnStrikethrough)
                 {
-                    if (de.HsmState == DHsmState.Select)
+                    if (de != null && de.HsmState == DHsmState.Select)
                         UpdateSelectedFigures(btnStrikethrough);
                     else
                         dap.Strikethrough = btnStrikethrough.Checked;
@@ -676,7 +825,7 @@ namespace WinFormsDemo
 
         void btnAlpha_AlphaChanged(object sender, double alpha)
         {
-            if (de.HsmState == DHsmState.Select)
+            if (de != null && de.HsmState == DHsmState.Select)
                 UpdateSelectedFigures(btnAlpha);
             else
                 dap.Alpha = btnAlpha.Value;
@@ -684,7 +833,7 @@ namespace WinFormsDemo
 
         void btnStrokeWidth_StrokeWidthChanged(object sender, int strokeWidth)
         {
-            if (de.HsmState == DHsmState.Select)
+            if (de != null && de.HsmState == DHsmState.Select)
                 UpdateSelectedFigures(btnStrokeWidth);
             else
                 dap.StrokeWidth = btnStrokeWidth.Value;
@@ -692,7 +841,7 @@ namespace WinFormsDemo
 
         void btnStrokeStyle_StrokeStyleChanged(object sender, DStrokeStyle strokeStyle)
         {
-            if (de.HsmState == DHsmState.Select)
+            if (de != null && de.HsmState == DHsmState.Select)
                 UpdateSelectedFigures(btnStrokeStyle);
             else
                 dap.StrokeStyle = btnStrokeStyle.Value;
@@ -702,14 +851,14 @@ namespace WinFormsDemo
         {
             if (sender == btnStartMarker)
             {
-                if (de.HsmState == DHsmState.Select)
+                if (de != null && de.HsmState == DHsmState.Select)
                     UpdateSelectedFigures(btnStartMarker);
                 else
                     dap.StartMarker = btnStartMarker.Value;
             }
             else if (sender == btnEndMarker)
             {
-                if (de.HsmState == DHsmState.Select)
+                if (de != null && de.HsmState == DHsmState.Select)
                     UpdateSelectedFigures(btnEndMarker);
                 else
                     dap.EndMarker = btnEndMarker.Value;
@@ -718,7 +867,7 @@ namespace WinFormsDemo
 
         private void cbFontName_FontNameChanged(object sender, EventArgs e)
         {
-            if (de.HsmState == DHsmState.Select)
+            if (de != null && de.HsmState == DHsmState.Select)
                 UpdateSelectedFigures(cbFontName);
             else
                 dap.FontName = cbFontName.Value;

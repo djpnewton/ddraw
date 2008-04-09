@@ -43,8 +43,13 @@ namespace WinFormsDemo.PersonalToolbar
             this.tbDir = new System.Windows.Forms.TextBox();
             this.btnDirBrowse = new System.Windows.Forms.Button();
             this.pnlCustomFigure = new System.Windows.Forms.Panel();
+            this.toolStripPanel1 = new System.Windows.Forms.ToolStripPanel();
+            this.tsCustomFigureType = new WinFormsDemo.FigureToolStrip();
+            this.tsCustomFigureProps = new WinFormsDemo.FigurePropertiesToolStrip();
             this.pnlRunCmd.SuspendLayout();
             this.pnlShowDir.SuspendLayout();
+            this.pnlCustomFigure.SuspendLayout();
+            this.toolStripPanel1.SuspendLayout();
             this.SuspendLayout();
             // 
             // panel1
@@ -181,10 +186,51 @@ namespace WinFormsDemo.PersonalToolbar
             // 
             // pnlCustomFigure
             // 
+            this.pnlCustomFigure.Controls.Add(this.toolStripPanel1);
             this.pnlCustomFigure.Location = new System.Drawing.Point(12, 39);
             this.pnlCustomFigure.Name = "pnlCustomFigure";
             this.pnlCustomFigure.Size = new System.Drawing.Size(433, 55);
             this.pnlCustomFigure.TabIndex = 20;
+            // 
+            // toolStripPanel1
+            // 
+            this.toolStripPanel1.Controls.Add(this.tsCustomFigureType);
+            this.toolStripPanel1.Controls.Add(this.tsCustomFigureProps);
+            this.toolStripPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.toolStripPanel1.Location = new System.Drawing.Point(0, 0);
+            this.toolStripPanel1.Name = "toolStripPanel1";
+            this.toolStripPanel1.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            this.toolStripPanel1.RowMargin = new System.Windows.Forms.Padding(3, 0, 0, 0);
+            this.toolStripPanel1.Size = new System.Drawing.Size(433, 55);
+            // 
+            // tsCustomFigureType
+            // 
+            this.tsCustomFigureType.ClickThrough = false;
+            this.tsCustomFigureType.Dock = System.Windows.Forms.DockStyle.None;
+            this.tsCustomFigureType.FigureClass = null;
+            this.tsCustomFigureType.FocusControl = null;
+            this.tsCustomFigureType.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
+            this.tsCustomFigureType.Location = new System.Drawing.Point(3, 0);
+            this.tsCustomFigureType.ManagedFocus = false;
+            this.tsCustomFigureType.Mode = WinFormsDemo.FigureToolStripMode.FigureClassSelect;
+            this.tsCustomFigureType.Name = "tsCustomFigureType";
+            this.tsCustomFigureType.Size = new System.Drawing.Size(264, 25);
+            this.tsCustomFigureType.TabIndex = 1;
+            this.tsCustomFigureType.FigureClassChanged += new WinFormsDemo.FigureClassChangedHandler(this.tsCustomFigureType_FigureClassChanged);
+            // 
+            // tsCustomFigureProps
+            // 
+            this.tsCustomFigureProps.ClickThrough = false;
+            this.tsCustomFigureProps.Dap = null;
+            this.tsCustomFigureProps.Dock = System.Windows.Forms.DockStyle.None;
+            this.tsCustomFigureProps.FigureClass = null;
+            this.tsCustomFigureProps.FocusControl = null;
+            this.tsCustomFigureProps.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
+            this.tsCustomFigureProps.Location = new System.Drawing.Point(3, 25);
+            this.tsCustomFigureProps.ManagedFocus = false;
+            this.tsCustomFigureProps.Name = "tsCustomFigureProps";
+            this.tsCustomFigureProps.Size = new System.Drawing.Size(362, 25);
+            this.tsCustomFigureProps.TabIndex = 0;
             // 
             // PtButtonForm
             // 
@@ -211,6 +257,10 @@ namespace WinFormsDemo.PersonalToolbar
             this.pnlRunCmd.PerformLayout();
             this.pnlShowDir.ResumeLayout(false);
             this.pnlShowDir.PerformLayout();
+            this.pnlCustomFigure.ResumeLayout(false);
+            this.pnlCustomFigure.PerformLayout();
+            this.toolStripPanel1.ResumeLayout(false);
+            this.toolStripPanel1.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -232,5 +282,8 @@ namespace WinFormsDemo.PersonalToolbar
         private System.Windows.Forms.TextBox tbArgs;
         private System.Windows.Forms.Label lbDir;
         private System.Windows.Forms.Panel pnlCustomFigure;
+        private System.Windows.Forms.ToolStripPanel toolStripPanel1;
+        private FigurePropertiesToolStrip tsCustomFigureProps;
+        private FigureToolStrip tsCustomFigureType;
     }
 }

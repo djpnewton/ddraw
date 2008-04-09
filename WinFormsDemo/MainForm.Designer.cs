@@ -126,8 +126,8 @@ namespace WinFormsDemo
             this.resetToolbarsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.tsEngineState = new WinFormsDemo.ToolStripDEngineState();
-            this.tsPropState = new WinFormsDemo.ToolStripDAuthorPropsState();
+            this.tsEngineState = new WinFormsDemo.FigureToolStrip();
+            this.tsPropState = new WinFormsDemo.FigurePropertiesToolStrip();
             this.tsEdit = new WinFormsDemo.ToolStripEx();
             this.btnUndo = new System.Windows.Forms.ToolStripButton();
             this.btnRedo = new System.Windows.Forms.ToolStripButton();
@@ -1541,8 +1541,8 @@ namespace WinFormsDemo
         private System.Windows.Forms.ToolStripMenuItem deletePageToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem toolsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem floatingToolsToolStripMenuItem;
-        private ToolStripDEngineState tsEngineState;
-        private ToolStripDAuthorPropsState tsPropState;
+        private FigureToolStrip tsEngineState;
+        private FigurePropertiesToolStrip tsPropState;
         private Burkovsky.Controls.Action actFloatingTools;
         private Burkovsky.Controls.Action actLink;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator10;

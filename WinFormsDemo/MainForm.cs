@@ -1513,7 +1513,7 @@ namespace WinFormsDemo
             {
                 CustomFigureToolButton b = (CustomFigureToolButton)e.ClickedItem;
                 de.HsmSetStateByFigureClass(b.FigureClass);
-                dap.SetProperties(b.Dap);
+                dap.SetProperties(b.FigureClass, b.Dap);
             }
         }
     }

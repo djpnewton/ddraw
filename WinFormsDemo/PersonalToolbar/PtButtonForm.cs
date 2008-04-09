@@ -18,7 +18,9 @@ namespace WinFormsDemo.PersonalToolbar
             {
                 if (value is CustomFigureT)
                 {
-                    //TODO
+                    tsCustomFigureType.FigureClass = ((CustomFigureT)value).FigureClass;
+                    tsCustomFigureProps.FigureClass = ((CustomFigureT)value).FigureClass;
+                    tsCustomFigureProps.Dap = ((CustomFigureT)value).Dap;
                     cbType.SelectedIndex = (int)PersonalToolButtonType.CustomFigure;
                 }
                 else if (value is RunCmdT)
@@ -36,8 +38,7 @@ namespace WinFormsDemo.PersonalToolbar
             get 
             {
                 if (cbType.SelectedIndex == (int)PersonalToolButtonType.CustomFigure)
-                    //TODO
-                    return new CustomFigureT(typeof(RectFigure), DAuthorProperties.GlobalAP.Clone());
+                    return new CustomFigureT(tsCustomFigureProps.FigureClass, tsCustomFigureProps.Dap);
                 else if (cbType.SelectedIndex == (int)PersonalToolButtonType.RunCmd)
                     return new RunCmdT(tbRun.Text, tbArgs.Text);
                 else
@@ -48,6 +49,7 @@ namespace WinFormsDemo.PersonalToolbar
         public PtButtonForm()
         {
             InitializeComponent();
+            tsCustomFigureProps.Dap = DAuthorProperties.GlobalAP.Clone();
         }
 
         private void cbType_SelectedIndexChanged(object sender, EventArgs e)
@@ -79,6 +81,11 @@ namespace WinFormsDemo.PersonalToolbar
             fd.Filter = "All Files|*.*";
             if (fd.ShowDialog() == DialogResult.OK)
                 tbRun.Text = fd.FileName;
+        }
+
+        private void tsCustomFigureType_FigureClassChanged(object sender, Type figureClass)
+        {
+            tsCustomFigureProps.FigureClass = figureClass;
         }
     }
 }

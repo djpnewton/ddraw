@@ -145,6 +145,34 @@ namespace DDraw
             DoPropertyChanged();
         }
 
+        public void SetProperties(Type figureClass, DAuthorProperties dap)
+        {
+            if (typeof(IFillable).IsAssignableFrom(figureClass))
+                this.fill = dap.Fill;
+            if (typeof(IStrokeable).IsAssignableFrom(figureClass))
+            {
+                this.stroke = dap.Stroke;
+                this.strokeWidth = dap.StrokeWidth;
+                this.strokeStyle = dap.StrokeStyle;
+            }
+            if (typeof(IMarkable).IsAssignableFrom(figureClass))
+            {
+                this.startMarker = dap.StartMarker;
+                this.endMarker = dap.EndMarker;
+            }
+            if (typeof(IAlphaBlendable).IsAssignableFrom(figureClass))
+                this.alpha = dap.Alpha;
+            if (typeof(ITextable).IsAssignableFrom(figureClass))
+            {
+                this.fontName = dap.FontName;
+                this.bold = dap.Bold;
+                this.italics = dap.Italics;
+                this.underline = dap.Underline;
+                this.strikethrough = dap.Strikethrough;
+            }
+            DoPropertyChanged();
+        }
+
         void DoPropertyChanged()
         {
             if (PropertyChanged != null)
