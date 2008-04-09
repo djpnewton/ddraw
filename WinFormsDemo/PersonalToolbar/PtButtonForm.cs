@@ -7,6 +7,7 @@ using System.Text;
 using System.Windows.Forms;
 
 using DDraw;
+using DDraw.WinForms;
 
 namespace WinFormsDemo.PersonalToolbar
 {
@@ -18,9 +19,10 @@ namespace WinFormsDemo.PersonalToolbar
             {
                 if (value is CustomFigureT)
                 {
+                    tsCustomFigureProps.Dap = ((CustomFigureT)value).Dap;
                     tsCustomFigureType.FigureClass = ((CustomFigureT)value).FigureClass;
                     tsCustomFigureProps.FigureClass = ((CustomFigureT)value).FigureClass;
-                    tsCustomFigureProps.Dap = ((CustomFigureT)value).Dap;
+                    ((CustomFigureT)value).Dap.PropertyChanged += new AuthorPropertyChanged(Dap_PropertyChanged);
                     cbType.SelectedIndex = (int)PersonalToolButtonType.CustomFigure;
                 }
                 else if (value is RunCmdT)
@@ -46,10 +48,23 @@ namespace WinFormsDemo.PersonalToolbar
             }
         }
 
+        DEngine de;
+        DTkViewer dv;
+
         public PtButtonForm()
         {
             InitializeComponent();
             tsCustomFigureProps.Dap = DAuthorProperties.GlobalAP.Clone();
+            dv = new WFViewer(vcCustomFigure);
+            dv.EditFigures = false;
+            dv.AntiAlias = true;
+            dv.Preview = true;
+            de = new DEngine(tsCustomFigureProps.Dap, false);
+            de.AddViewer(dv);
+            // set page height to viewer size
+            de.UndoRedoStart("blah");
+            de.PageSize = new DPoint(vcCustomFigure.Width, vcCustomFigure.Height);
+            de.UndoRedoCommit();
         }
 
         private void cbType_SelectedIndexChanged(object sender, EventArgs e)
@@ -86,6 +101,46 @@ namespace WinFormsDemo.PersonalToolbar
         private void tsCustomFigureType_FigureClassChanged(object sender, Type figureClass)
         {
             tsCustomFigureProps.FigureClass = figureClass;
+            // add figure de so it shows on the viewer
+            de.ClearPage();
+            de.UndoRedoStart("blah");
+            Figure f = (Figure)Activator.CreateInstance(figureClass);
+            tsCustomFigureProps.Dap.ApplyPropertiesToFigure(f);
+            if (f is PolylineFigure || f is LineFigure)
+            {
+                DPoint pt1 = new DPoint(vcCustomFigure.Width / 4.0, vcCustomFigure.Height / 2.0);
+                DPoint pt2 = new DPoint(vcCustomFigure.Width * 3 / 4.0, vcCustomFigure.Height / 2.0);
+                if (f is PolylineFigure)
+                {
+                    DPoints pts = new DPoints();
+                    pts.Add(pt1);
+                    pts.Add(pt2);
+                    ((PolylineFigure)f).Points = pts;
+                }
+                else if (f is LineFigure)
+                {
+                    ((LineFigure)f).Pt1 = pt1;
+                    ((LineFigure)f).Pt2 = pt2;
+                }
+            }
+            else if (f is TextFigure)
+                ((TextFigure)f).Text = "Hello";
+            f.Left = vcCustomFigure.Width / 4.0;
+            f.Top = vcCustomFigure.Height / 4.0;
+            f.Width = vcCustomFigure.Width / 2.0;
+            f.Height = vcCustomFigure.Height / 2.0;
+            de.AddFigure(f);
+            de.UndoRedoCommit();
+            dv.Update();
+        }
+
+        void Dap_PropertyChanged(DAuthorProperties dap)
+        {
+            de.UndoRedoStart("blah");
+            foreach (Figure f in de.Figures)
+                dap.ApplyPropertiesToFigure(f);
+            de.UndoRedoCommit();
+            dv.Update();
         }
     }
 }

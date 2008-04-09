@@ -306,6 +306,7 @@ namespace WinFormsDemo
             Items.Add(btnAlpha);
             cbFontName = new ToolStripFontNameChooser();
             cbFontName.Text = "Font Name";
+            cbFontName.FontNameChanged += cbFontName_FontNameChanged;
             Items.Add(cbFontName);
             btnBold = new ToolStripButton("Bold", Resource1.text_bold);
             Items.Add(btnBold);
