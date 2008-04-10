@@ -651,7 +651,7 @@ namespace DDraw
         {
             if (CanCopy(figs))
             {
-                string data = Copy(figs, out bmp, bmpAntiAlias);
+                string data = Copy(figs, out bmp, bmpAntiAlias, DColor.White);
                 UndoRedoStart("Cut");
                 foreach (Figure f in figs)
                     RemoveFigure(f);
@@ -669,9 +669,9 @@ namespace DDraw
             return figs.Count > 0;
         }
 
-        public string Copy(List<Figure> figs, out DBitmap bmp, bool bmpAntiAlias)
+        public string Copy(List<Figure> figs, out DBitmap bmp, bool bmpAntiAlias, DColor bmpBackgroundColor)
         {
-            bmp = FigureSerialize.FormatToBmp(figs, bmpAntiAlias);
+            bmp = FigureSerialize.FormatToBmp(figs, bmpAntiAlias, bmpBackgroundColor);
             return FigureSerialize.FormatToXml(figs, null);
         }
 

@@ -190,7 +190,7 @@ namespace WinFormsDemo
                 foreach (Figure f in annotationForm.De.Figures)
                     figs.Add(f);
                 // format the figures to bitmap
-                DBitmap initialBmp = FigureSerialize.FormatToBmp(figs, annotationForm.Dv.AntiAlias);
+                DBitmap initialBmp = FigureSerialize.FormatToBmp(figs, annotationForm.Dv.AntiAlias, DColor.White);
                 // crop the bitmap to the rect
                 Bitmap croppedBmp = new Bitmap((int)rect.Width, (int)rect.Height);
                 Graphics g = Graphics.FromImage(croppedBmp);

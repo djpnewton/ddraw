@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Windows.Forms;
 using System.IO;
+using System.Drawing;
 
 using Nini.Config;
 using DDraw;
@@ -48,11 +49,13 @@ namespace WinFormsDemo.PersonalToolbar
     {
         public Type FigureClass;
         public DAuthorProperties Dap;
+        public string Base64Icon;
 
-        public CustomFigureT(Type figureClass, DAuthorProperties dap)
+        public CustomFigureT(Type figureClass, DAuthorProperties dap, string base64Icon)
         {
             FigureClass = figureClass;
             Dap = dap;
+            Base64Icon = base64Icon;
         }
 
         public override string ToString()
@@ -94,10 +97,10 @@ namespace WinFormsDemo.PersonalToolbar
             Image = Resource1.cog;
         }
 
-        public RunCmdToolButton(string cmd, string args) : this()
+        public RunCmdToolButton(RunCmdT t) : this()
         {
-            Cmd = cmd;
-            Arguments = args;
+            Cmd = t.Command;
+            Arguments = t.Arguments;
         }
 
         protected override void OnClick(EventArgs e)
@@ -131,9 +134,9 @@ namespace WinFormsDemo.PersonalToolbar
             Image = Resource1.folder;
         }
 
-        public ShowDirToolButton(string dir) : this()
+        public ShowDirToolButton(ShowDirT t) : this()
         {
-            Dir = dir;
+            Dir = t.Dir;
         }
 
         protected override void OnClick(EventArgs e)
@@ -166,7 +169,7 @@ namespace WinFormsDemo.PersonalToolbar
 
         public CustomFigureT CustomFigureT
         {
-            get { return new CustomFigureT(figureClass, dap); }
+            get { return new CustomFigureT(figureClass, dap, WorkBookUtils.BitmapToBase64((Bitmap)Image)); }
         }
 
         public CustomFigureToolButton()
@@ -174,10 +177,12 @@ namespace WinFormsDemo.PersonalToolbar
             Image = Resource1.technocolor;
         }
 
-        public CustomFigureToolButton(Type figureClass, DAuthorProperties dap) : this()
+        public CustomFigureToolButton(CustomFigureT t) : this()
         {
-            FigureClass = figureClass;
-            Dap = dap;
+            FigureClass = t.FigureClass;
+            Dap = t.Dap;
+            if (t.Base64Icon != null)
+                Image = WorkBookUtils.Base64ToBitmap(t.Base64Icon);
         }
     }
 
@@ -198,6 +203,7 @@ namespace WinFormsDemo.PersonalToolbar
         const string ITALICS_OPT = "Italics";
         const string UNDERLINE_OPT = "Underline";
         const string STRIKETHROUGH_OPT = "Strikethrough";
+        const string BASE64ICON_OPT = "base64Icon";
         const string RUNCMD_OPT = "RunCmd";
         const string ARGS_OPT = "Args";
         const string DIR_OPT = "Dir";
@@ -243,15 +249,16 @@ namespace WinFormsDemo.PersonalToolbar
                                 dap.Italics = config.GetBoolean(ITALICS_OPT);
                                 dap.Underline = config.GetBoolean(UNDERLINE_OPT);
                                 dap.Strikethrough = config.GetBoolean(STRIKETHROUGH_OPT);
-                                tsPersonal.Items.Add(new CustomFigureToolButton(figureClass, dap));
+                                string base64Icon = config.Get(BASE64ICON_OPT);
+                                tsPersonal.Items.Add(new CustomFigureToolButton(new CustomFigureT(figureClass, dap, base64Icon)));
                             }
                             break;
                         case PersonalToolButtonType.RunCmd:
-                            tsPersonal.Items.Add(new RunCmdToolButton(config.Get(RUNCMD_OPT),
-                                config.Get(ARGS_OPT)));
+                            tsPersonal.Items.Add(new RunCmdToolButton(new RunCmdT(config.Get(RUNCMD_OPT),
+                                config.Get(ARGS_OPT))));
                             break;
                         case PersonalToolButtonType.ShowDir:
-                            tsPersonal.Items.Add(new ShowDirToolButton(config.Get(DIR_OPT)));
+                            tsPersonal.Items.Add(new ShowDirToolButton(new ShowDirT(config.Get(DIR_OPT))));
                             break;
                     }
                 }
@@ -284,6 +291,7 @@ namespace WinFormsDemo.PersonalToolbar
                     config.Set(ITALICS_OPT, t.Dap.Italics);
                     config.Set(UNDERLINE_OPT, t.Dap.Underline);
                     config.Set(STRIKETHROUGH_OPT, t.Dap.Strikethrough);
+                    config.Set(BASE64ICON_OPT, t.Base64Icon);
                 }
                 else if (b is RunCmdToolButton)
                 {

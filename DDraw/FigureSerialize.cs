@@ -266,7 +266,7 @@ namespace DDraw
                 return DGeom.BoundingBoxOfRotatedRect(f.Rect, f.Rotation);
         }
 
-        public static DBitmap FormatToBmp(IList<Figure> figures, bool antiAlias)
+        public static DBitmap FormatToBmp(IList<Figure> figures, bool antiAlias, DColor backgroundColor)
         {
             double left, top, right, bottom;
             if (figures.Count > 0)
@@ -292,7 +292,7 @@ namespace DDraw
                 DBitmap bmp = GraphicsHelper.MakeBitmap(right - left, bottom - top);
                 DGraphics dg = GraphicsHelper.MakeGraphics(bmp);
                 dg.AntiAlias = antiAlias;
-                dg.FillRect(-1, -1, right - left + 2, bottom - top + 2, DColor.White, 1);
+                dg.FillRect(-1, -1, right - left + 2, bottom - top + 2, backgroundColor, 1);
                 dg.Translate(-left, -top);
                 foreach (Figure f in figures)
                     f.Paint(dg);

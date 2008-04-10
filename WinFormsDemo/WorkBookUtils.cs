@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Text;
 using System.Windows.Forms;
 using System.Runtime.InteropServices;
+using System.Drawing;
+using System.IO;
 
 using DDraw;
 
@@ -94,6 +96,23 @@ namespace WinFormsDemo
 
                 return false;
             }
+        }
+
+        public static string BitmapToBase64(Bitmap bmp)
+        {
+            MemoryStream ms = new MemoryStream();
+            bmp.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
+            string base64 = Convert.ToBase64String(ms.ToArray());
+            ms.Close();
+            return base64;
+        }
+
+        public static Bitmap Base64ToBitmap(string base64)
+        {
+            MemoryStream ms = new MemoryStream(Convert.FromBase64String(base64));
+            Bitmap bmp = new Bitmap(ms);
+            ms.Close();
+            return bmp;
         }
     }
 

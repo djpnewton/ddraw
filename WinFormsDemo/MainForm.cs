@@ -713,7 +713,7 @@ namespace WinFormsDemo
         {
             List<Figure> figs = de.SelectedFigures;
             DBitmap bmp;
-            string data = de.Copy(figs, out bmp, dvEditor.AntiAlias);
+            string data = de.Copy(figs, out bmp, dvEditor.AntiAlias, DColor.White);
             CopyToClipboard(data, (Bitmap)bmp.NativeBmp, figs);
         }
 
@@ -1497,12 +1497,11 @@ namespace WinFormsDemo
                 foreach (object o in pf.ToolItems)
                 {
                     if (o is CustomFigureT)
-                        tsPersonal.Items.Add(new CustomFigureToolButton(((CustomFigureT)o).FigureClass,
-                            ((CustomFigureT)o).Dap));
+                        tsPersonal.Items.Add(new CustomFigureToolButton((CustomFigureT)o));
                     else if (o is RunCmdT)
-                        tsPersonal.Items.Add(new RunCmdToolButton(((RunCmdT)o).Command, ((RunCmdT)o).Arguments));
+                        tsPersonal.Items.Add(new RunCmdToolButton((RunCmdT)o));
                     else if (o is ShowDirT)
-                        tsPersonal.Items.Add(new ShowDirToolButton(((ShowDirT)o).Dir));
+                        tsPersonal.Items.Add(new ShowDirToolButton((ShowDirT)o));
                 }
             }
         }

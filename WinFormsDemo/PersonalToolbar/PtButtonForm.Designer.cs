@@ -46,8 +46,8 @@ namespace WinFormsDemo.PersonalToolbar
             this.toolStripPanel1 = new System.Windows.Forms.ToolStripPanel();
             this.panel2 = new System.Windows.Forms.Panel();
             this.vcCustomFigure = new DDraw.WinForms.WFViewerControl();
-            this.tsCustomFigureProps = new WinFormsDemo.FigurePropertiesToolStrip();
             this.tsCustomFigureType = new WinFormsDemo.FigureToolStrip();
+            this.tsCustomFigureProps = new WinFormsDemo.FigurePropertiesToolStrip();
             this.pnlRunCmd.SuspendLayout();
             this.pnlShowDir.SuspendLayout();
             this.pnlCustomFigure.SuspendLayout();
@@ -60,13 +60,13 @@ namespace WinFormsDemo.PersonalToolbar
             this.panel1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.panel1.Location = new System.Drawing.Point(12, 100);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(434, 4);
+            this.panel1.Size = new System.Drawing.Size(464, 4);
             this.panel1.TabIndex = 9;
             // 
             // btnCancel
             // 
             this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.btnCancel.Location = new System.Drawing.Point(370, 110);
+            this.btnCancel.Location = new System.Drawing.Point(401, 110);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(75, 23);
             this.btnCancel.TabIndex = 8;
@@ -76,7 +76,7 @@ namespace WinFormsDemo.PersonalToolbar
             // btnOk
             // 
             this.btnOk.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.btnOk.Location = new System.Drawing.Point(289, 110);
+            this.btnOk.Location = new System.Drawing.Point(320, 110);
             this.btnOk.Name = "btnOk";
             this.btnOk.Size = new System.Drawing.Size(75, 23);
             this.btnOk.TabIndex = 7;
@@ -106,7 +106,7 @@ namespace WinFormsDemo.PersonalToolbar
             this.pnlRunCmd.Controls.Add(this.btnRunBrowse);
             this.pnlRunCmd.Location = new System.Drawing.Point(12, 39);
             this.pnlRunCmd.Name = "pnlRunCmd";
-            this.pnlRunCmd.Size = new System.Drawing.Size(433, 55);
+            this.pnlRunCmd.Size = new System.Drawing.Size(463, 55);
             this.pnlRunCmd.TabIndex = 11;
             // 
             // lbArgs
@@ -131,19 +131,19 @@ namespace WinFormsDemo.PersonalToolbar
             // 
             this.tbArgs.Location = new System.Drawing.Point(89, 29);
             this.tbArgs.Name = "tbArgs";
-            this.tbArgs.Size = new System.Drawing.Size(341, 20);
+            this.tbArgs.Size = new System.Drawing.Size(371, 20);
             this.tbArgs.TabIndex = 16;
             // 
             // tbRun
             // 
             this.tbRun.Location = new System.Drawing.Point(89, 3);
             this.tbRun.Name = "tbRun";
-            this.tbRun.Size = new System.Drawing.Size(260, 20);
+            this.tbRun.Size = new System.Drawing.Size(294, 20);
             this.tbRun.TabIndex = 15;
             // 
             // btnRunBrowse
             // 
-            this.btnRunBrowse.Location = new System.Drawing.Point(355, 1);
+            this.btnRunBrowse.Location = new System.Drawing.Point(385, 1);
             this.btnRunBrowse.Name = "btnRunBrowse";
             this.btnRunBrowse.Size = new System.Drawing.Size(75, 23);
             this.btnRunBrowse.TabIndex = 14;
@@ -158,7 +158,7 @@ namespace WinFormsDemo.PersonalToolbar
             this.pnlShowDir.Controls.Add(this.btnDirBrowse);
             this.pnlShowDir.Location = new System.Drawing.Point(12, 39);
             this.pnlShowDir.Name = "pnlShowDir";
-            this.pnlShowDir.Size = new System.Drawing.Size(433, 55);
+            this.pnlShowDir.Size = new System.Drawing.Size(463, 55);
             this.pnlShowDir.TabIndex = 12;
             // 
             // lbDir
@@ -174,12 +174,12 @@ namespace WinFormsDemo.PersonalToolbar
             // 
             this.tbDir.Location = new System.Drawing.Point(61, 5);
             this.tbDir.Name = "tbDir";
-            this.tbDir.Size = new System.Drawing.Size(288, 20);
+            this.tbDir.Size = new System.Drawing.Size(322, 20);
             this.tbDir.TabIndex = 13;
             // 
             // btnDirBrowse
             // 
-            this.btnDirBrowse.Location = new System.Drawing.Point(355, 3);
+            this.btnDirBrowse.Location = new System.Drawing.Point(385, 3);
             this.btnDirBrowse.Name = "btnDirBrowse";
             this.btnDirBrowse.Size = new System.Drawing.Size(75, 23);
             this.btnDirBrowse.TabIndex = 12;
@@ -193,13 +193,13 @@ namespace WinFormsDemo.PersonalToolbar
             this.pnlCustomFigure.Controls.Add(this.panel2);
             this.pnlCustomFigure.Location = new System.Drawing.Point(12, 39);
             this.pnlCustomFigure.Name = "pnlCustomFigure";
-            this.pnlCustomFigure.Size = new System.Drawing.Size(433, 55);
+            this.pnlCustomFigure.Size = new System.Drawing.Size(463, 55);
             this.pnlCustomFigure.TabIndex = 20;
             // 
             // toolStripPanel1
             // 
-            this.toolStripPanel1.Controls.Add(this.tsCustomFigureProps);
             this.toolStripPanel1.Controls.Add(this.tsCustomFigureType);
+            this.toolStripPanel1.Controls.Add(this.tsCustomFigureProps);
             this.toolStripPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.toolStripPanel1.Location = new System.Drawing.Point(0, 0);
             this.toolStripPanel1.Name = "toolStripPanel1";
@@ -213,30 +213,16 @@ namespace WinFormsDemo.PersonalToolbar
             this.panel2.Dock = System.Windows.Forms.DockStyle.Left;
             this.panel2.Location = new System.Drawing.Point(0, 0);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(367, 55);
+            this.panel2.Size = new System.Drawing.Size(372, 55);
             this.panel2.TabIndex = 20;
             // 
             // vcCustomFigure
             // 
             this.vcCustomFigure.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.vcCustomFigure.Location = new System.Drawing.Point(367, 0);
+            this.vcCustomFigure.Location = new System.Drawing.Point(372, 0);
             this.vcCustomFigure.Name = "vcCustomFigure";
-            this.vcCustomFigure.Size = new System.Drawing.Size(66, 55);
+            this.vcCustomFigure.Size = new System.Drawing.Size(91, 55);
             this.vcCustomFigure.TabIndex = 21;
-            // 
-            // tsCustomFigureProps
-            // 
-            this.tsCustomFigureProps.ClickThrough = false;
-            this.tsCustomFigureProps.Dap = null;
-            this.tsCustomFigureProps.Dock = System.Windows.Forms.DockStyle.None;
-            this.tsCustomFigureProps.FigureClass = null;
-            this.tsCustomFigureProps.FocusControl = null;
-            this.tsCustomFigureProps.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
-            this.tsCustomFigureProps.Location = new System.Drawing.Point(3, 25);
-            this.tsCustomFigureProps.ManagedFocus = false;
-            this.tsCustomFigureProps.Name = "tsCustomFigureProps";
-            this.tsCustomFigureProps.Size = new System.Drawing.Size(362, 25);
-            this.tsCustomFigureProps.TabIndex = 0;
             // 
             // tsCustomFigureType
             // 
@@ -253,20 +239,34 @@ namespace WinFormsDemo.PersonalToolbar
             this.tsCustomFigureType.TabIndex = 1;
             this.tsCustomFigureType.FigureClassChanged += new WinFormsDemo.FigureClassChangedHandler(this.tsCustomFigureType_FigureClassChanged);
             // 
+            // tsCustomFigureProps
+            // 
+            this.tsCustomFigureProps.ClickThrough = false;
+            this.tsCustomFigureProps.Dap = null;
+            this.tsCustomFigureProps.Dock = System.Windows.Forms.DockStyle.None;
+            this.tsCustomFigureProps.FigureClass = null;
+            this.tsCustomFigureProps.FocusControl = null;
+            this.tsCustomFigureProps.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
+            this.tsCustomFigureProps.Location = new System.Drawing.Point(3, 25);
+            this.tsCustomFigureProps.ManagedFocus = false;
+            this.tsCustomFigureProps.Name = "tsCustomFigureProps";
+            this.tsCustomFigureProps.Size = new System.Drawing.Size(364, 25);
+            this.tsCustomFigureProps.TabIndex = 0;
+            // 
             // PtButtonForm
             // 
             this.AcceptButton = this.btnOk;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btnCancel;
-            this.ClientSize = new System.Drawing.Size(457, 141);
+            this.ClientSize = new System.Drawing.Size(487, 141);
             this.Controls.Add(this.pnlCustomFigure);
-            this.Controls.Add(this.pnlShowDir);
-            this.Controls.Add(this.pnlRunCmd);
             this.Controls.Add(this.cbType);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.btnOk);
+            this.Controls.Add(this.pnlRunCmd);
+            this.Controls.Add(this.pnlShowDir);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
