@@ -249,7 +249,7 @@ namespace DDraw
 
         public DRect Union(DRect r2)
         {
-            if (r2.Width > 0 && r2.Height > 0)
+            if (r2.Width > 0 || r2.Height > 0)
                 return new DRect(Math.Min(X, r2.X), Math.Min(Y, r2.Y),
                     Math.Max(Right, r2.Right), Math.Max(Bottom, r2.Bottom), 0);
             else
