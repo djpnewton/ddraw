@@ -41,6 +41,11 @@ namespace WinFormsDemo
         const string FileExt = ".ddraw";
         const string FileTypeFilter = "DDraw files|*.ddraw";
 
+        public PersonalToolStrip PersonalToolStrip
+        {
+            get { return tsPersonal; }
+        }
+
         void CreateDEngine(DEngine sibling)
         {
             DEngine de = new DEngine(dap, true);
@@ -102,6 +107,9 @@ namespace WinFormsDemo
             tsPropState.De = de;
             // null textInsertionPoint
             textInsertionPoint = null;
+            // personal toolbar
+            tsPersonal.De = de;
+            tsPersonal.Dap = dap;
         }
 
         public MainForm()
@@ -172,6 +180,13 @@ namespace WinFormsDemo
                 dvEditor.Scale = options.Scale;
             else
                 dvEditor.Zoom = options.Zoom;
+            // toolbar options
+            editToolStripMenuItem1.Checked = options.EditToolbar;
+            personalToolStripMenuItem.Checked = options.PersonalToolbar;
+            modeSelectToolStripMenuItem.Checked = options.EngineStateToolbar;
+            propertySelectToolStripMenuItem.Checked = options.PropertyStateToolbar;
+            pageNavigationToolStripMenuItem.Checked = options.PageNavigationToolbar;
+            UpdateToolbars();
             // load personal toolbar
             PtUtils.LoadPersonalTools(tsPersonal);
         }
@@ -191,6 +206,12 @@ namespace WinFormsDemo
             options.Zoom = dvEditor.Zoom;
             options.Scale = dvEditor.Scale;
             options.AntiAlias = dvEditor.AntiAlias;
+            // toolbar options
+            options.EditToolbar = editToolStripMenuItem1.Checked;
+            options.PersonalToolbar = personalToolStripMenuItem.Checked;
+            options.EngineStateToolbar = modeSelectToolStripMenuItem.Checked;
+            options.PropertyStateToolbar = propertySelectToolStripMenuItem.Checked;
+            options.PageNavigationToolbar = pageNavigationToolStripMenuItem.Checked;
             // write to file
             options.WriteIni();
             // save personal toolbar
@@ -1486,34 +1507,20 @@ namespace WinFormsDemo
                 previewBar1.SetPreviewSelected(dem.GetEngine(0));
         }
 
-        private void btnEditPersonalToolbar_Click(object sender, EventArgs e)
+        private void Toolbars_MenuItem_Click(object sender, EventArgs e)
         {
-            PtForm pf = new PtForm();
-            pf.PersonalToolstrip = tsPersonal;
-            if (pf.ShowDialog() == DialogResult.OK)
-            {
-                for (int i = tsPersonal.Items.Count - 1; i > 0; i--)
-                    tsPersonal.Items.RemoveAt(i);
-                foreach (object o in pf.ToolItems)
-                {
-                    if (o is CustomFigureT)
-                        tsPersonal.Items.Add(new CustomFigureToolButton((CustomFigureT)o));
-                    else if (o is RunCmdT)
-                        tsPersonal.Items.Add(new RunCmdToolButton((RunCmdT)o));
-                    else if (o is ShowDirT)
-                        tsPersonal.Items.Add(new ShowDirToolButton((ShowDirT)o));
-                }
-            }
+            ToolStripMenuItem mi = ((ToolStripMenuItem)sender);
+            mi.Checked = !mi.Checked;
+            UpdateToolbars();
         }
 
-        private void tsPersonal_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
+        void UpdateToolbars()
         {
-            if (e.ClickedItem is CustomFigureToolButton)
-            {
-                CustomFigureToolButton b = (CustomFigureToolButton)e.ClickedItem;
-                de.HsmSetStateByFigureClass(b.FigureClass);
-                dap.SetProperties(b.FigureClass, b.Dap);
-            }
+            tsEdit.Visible = editToolStripMenuItem1.Checked;
+            tsPersonal.Visible = personalToolStripMenuItem.Checked;
+            tsEngineState.Visible = modeSelectToolStripMenuItem.Checked;
+            tsPropState.Visible = propertySelectToolStripMenuItem.Checked;
+            tsPageManage.Visible = pageNavigationToolStripMenuItem.Checked;
         }
     }
 }

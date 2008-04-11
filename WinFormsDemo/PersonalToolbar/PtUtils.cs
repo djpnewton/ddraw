@@ -217,14 +217,9 @@ namespace WinFormsDemo.PersonalToolbar
             }
         }
 
-        public static void LoadPersonalTools(ToolStripEx tsPersonal)
+        public static void LoadPersonalToolsFromSource(PersonalToolStrip ts, IConfigSource source)
         {
-            IConfigSource source;
-            if (File.Exists(IniFile))
-                source = new IniConfigSource(IniFile);
-            else
-                source = new IniConfigSource();
-
+            ts.Clear();
             foreach (IConfig config in source.Configs)
                 if (config.Contains(TYPE_OPT))
                 {
@@ -250,30 +245,37 @@ namespace WinFormsDemo.PersonalToolbar
                                 dap.Underline = config.GetBoolean(UNDERLINE_OPT);
                                 dap.Strikethrough = config.GetBoolean(STRIKETHROUGH_OPT);
                                 string base64Icon = config.Get(BASE64ICON_OPT);
-                                tsPersonal.Items.Add(new CustomFigureToolButton(new CustomFigureT(figureClass, dap, base64Icon)));
+                                ts.Items.Add(new CustomFigureToolButton(new CustomFigureT(figureClass, dap, base64Icon)));
                             }
                             break;
                         case PersonalToolButtonType.RunCmd:
-                            tsPersonal.Items.Add(new RunCmdToolButton(new RunCmdT(config.Get(RUNCMD_OPT),
+                            ts.Items.Add(new RunCmdToolButton(new RunCmdT(config.Get(RUNCMD_OPT),
                                 config.Get(ARGS_OPT))));
                             break;
                         case PersonalToolButtonType.ShowDir:
-                            tsPersonal.Items.Add(new ShowDirToolButton(new ShowDirT(config.Get(DIR_OPT))));
+                            ts.Items.Add(new ShowDirToolButton(new ShowDirT(config.Get(DIR_OPT))));
                             break;
                     }
                 }
         }
 
-        public static void SavePersonalTools(ToolStripEx tsPersonal)
+        public static void LoadPersonalTools(PersonalToolStrip ts)
         {
-            if (!File.Exists(IniFile))
-                File.Create(IniFile).Close();
-            IConfigSource source = new IniConfigSource(IniFile);
-            source.Configs.Clear();
-            for (int i = 1; i < tsPersonal.Items.Count; i++)
+            IConfigSource source;
+            if (File.Exists(IniFile))
+                source = new IniConfigSource(IniFile);
+            else
+                source = new IniConfigSource();
+            LoadPersonalToolsFromSource(ts, source);
+        }
+
+        public static IniConfigSource CreatePersonalToolsSource(PersonalToolStrip ts)
+        {
+            IniConfigSource source = new IniConfigSource();
+            for (int i = 1; i < ts.Items.Count; i++)
             {
                 IConfig config = source.AddConfig(i.ToString());
-                ToolStripItem b = tsPersonal.Items[i];
+                ToolStripItem b = ts.Items[i];
                 if (b is CustomFigureToolButton)
                 {
                     CustomFigureT t = ((CustomFigureToolButton)b).CustomFigureT;
@@ -313,7 +315,13 @@ namespace WinFormsDemo.PersonalToolbar
                     }
                 }
             }
-            source.Save();
+            return source;
+        }
+
+        public static void SavePersonalTools(PersonalToolStrip ts)
+        {
+            IniConfigSource source = CreatePersonalToolsSource(ts);
+            source.Save(IniFile);
         }
     }
 }

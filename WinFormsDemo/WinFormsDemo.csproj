@@ -91,6 +91,9 @@
     <Compile Include="LinkForm.Designer.cs">
       <DependentUpon>LinkForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="PersonalToolbar\PersonalToolStrip.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="PersonalToolbar\PtButtonForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -314,6 +317,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\cog.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\user_add.png" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

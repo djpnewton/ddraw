@@ -39,6 +39,7 @@ namespace WinFormsDemo
             this.btnImportPage = new System.Windows.Forms.ToolStripButton();
             this.tsEngineState = new WinFormsDemo.FigureToolStrip();
             this.tsPropState = new WinFormsDemo.FigurePropertiesToolStrip();
+            this.tsPersonal = new WinFormsDemo.PersonalToolbar.PersonalToolStrip();
             this.toolStripPanel1.SuspendLayout();
             this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -46,6 +47,7 @@ namespace WinFormsDemo
             // toolStripPanel1
             // 
             this.toolStripPanel1.Controls.Add(this.toolStrip1);
+            this.toolStripPanel1.Controls.Add(this.tsPersonal);
             this.toolStripPanel1.Controls.Add(this.tsEngineState);
             this.toolStripPanel1.Controls.Add(this.tsPropState);
             this.toolStripPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -59,6 +61,7 @@ namespace WinFormsDemo
             // 
             this.toolStrip1.ClickThrough = true;
             this.toolStrip1.Dock = System.Windows.Forms.DockStyle.None;
+            this.toolStrip1.FocusControl = null;
             this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.btnMouse,
             this.btnScreenAnnotate,
@@ -132,8 +135,11 @@ namespace WinFormsDemo
             // 
             this.tsEngineState.ClickThrough = true;
             this.tsEngineState.Dock = System.Windows.Forms.DockStyle.None;
+            this.tsEngineState.FigureClass = null;
+            this.tsEngineState.FocusControl = null;
             this.tsEngineState.Location = new System.Drawing.Point(3, 25);
             this.tsEngineState.ManagedFocus = true;
+            this.tsEngineState.Mode = WinFormsDemo.FigureToolStripMode.DEngineState;
             this.tsEngineState.Name = "tsEngineState";
             this.tsEngineState.Size = new System.Drawing.Size(288, 25);
             this.tsEngineState.TabIndex = 2;
@@ -142,14 +148,30 @@ namespace WinFormsDemo
             // tsPropState
             // 
             this.tsPropState.ClickThrough = true;
+            this.tsPropState.Dap = null;
             this.tsPropState.Dock = System.Windows.Forms.DockStyle.None;
+            this.tsPropState.FigureClass = null;
+            this.tsPropState.FocusControl = null;
             this.tsPropState.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.HorizontalStackWithOverflow;
             this.tsPropState.Location = new System.Drawing.Point(3, 50);
             this.tsPropState.ManagedFocus = true;
             this.tsPropState.Name = "tsPropState";
-            this.tsPropState.Size = new System.Drawing.Size(291, 25);
+            this.tsPropState.Size = new System.Drawing.Size(314, 25);
             this.tsPropState.TabIndex = 3;
             this.tsPropState.Text = "tsPropState";
+            // 
+            // tsPersonal
+            // 
+            this.tsPersonal.ClickThrough = true;
+            this.tsPersonal.Dap = null;
+            this.tsPersonal.De = null;
+            this.tsPersonal.Dock = System.Windows.Forms.DockStyle.None;
+            this.tsPersonal.FocusControl = null;
+            this.tsPersonal.Location = new System.Drawing.Point(137, 0);
+            this.tsPersonal.ManagedFocus = true;
+            this.tsPersonal.Name = "tsPersonal";
+            this.tsPersonal.Size = new System.Drawing.Size(66, 25);
+            this.tsPersonal.TabIndex = 4;
             // 
             // FloatingToolsForm
             // 
@@ -185,5 +207,6 @@ namespace WinFormsDemo
         private FigureToolStrip tsEngineState;
         private FigurePropertiesToolStrip tsPropState;
         private System.Windows.Forms.ToolStripPanel toolStripPanel1;
+        private WinFormsDemo.PersonalToolbar.PersonalToolStrip tsPersonal;
     }
 }

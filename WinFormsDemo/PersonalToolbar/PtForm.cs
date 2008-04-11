@@ -13,12 +13,12 @@ namespace WinFormsDemo.PersonalToolbar
 {
     public partial class PtForm : Form
     {
-        ToolStripEx personalToolstrip = null;
-        public ToolStripEx PersonalToolstrip
+        PersonalToolStrip personalToolStrip = null;
+        public PersonalToolStrip PersonalToolStrip
         {
             set 
             { 
-                personalToolstrip = value;
+                personalToolStrip = value;
                 UpdateListbox();
             }
         }
@@ -40,14 +40,14 @@ namespace WinFormsDemo.PersonalToolbar
         void UpdateListbox()
         {
             listBox1.Items.Clear();
-            for (int i = 1; i < personalToolstrip.Items.Count; i++)
+            for (int i = 1; i < personalToolStrip.Items.Count; i++)
             {
-                if (personalToolstrip.Items[i] is CustomFigureToolButton)
-                    listBox1.Items.Add(((CustomFigureToolButton)personalToolstrip.Items[i]).CustomFigureT);
-                else if (personalToolstrip.Items[i] is RunCmdToolButton)
-                    listBox1.Items.Add(((RunCmdToolButton)personalToolstrip.Items[i]).RunCmdT);
-                else if (personalToolstrip.Items[i] is ShowDirToolButton)
-                    listBox1.Items.Add(((ShowDirToolButton)personalToolstrip.Items[i]).ShowDirT);
+                if (personalToolStrip.Items[i] is CustomFigureToolButton)
+                    listBox1.Items.Add(((CustomFigureToolButton)personalToolStrip.Items[i]).CustomFigureT);
+                else if (personalToolStrip.Items[i] is RunCmdToolButton)
+                    listBox1.Items.Add(((RunCmdToolButton)personalToolStrip.Items[i]).RunCmdT);
+                else if (personalToolStrip.Items[i] is ShowDirToolButton)
+                    listBox1.Items.Add(((ShowDirToolButton)personalToolStrip.Items[i]).ShowDirT);
                     
             }
         }

@@ -24,6 +24,11 @@ namespace WinFormsDemo
         const string ZOOM_OPT = "Zoom";
         const string SCALE_OPT = "Scale";
         const string ANTIALIAS_OPT = "AntiAlias";
+        const string EDITTOOLBAR_OPT = "EditToolbar";
+        const string PERSONALTOOLBAR_OPT = "PersonalToolbar";
+        const string ENGINESTATETOOLBAR_OPT = "EngineStateToolbar";
+        const string PROPERTYSTATETOOLBAR_OPT = "PropertyStateToolbar";
+        const string PAGENAVIGATIONTOOLBAR_OPT = "PageNavigationToolbar";
 
         public string IniFile
         {
@@ -41,6 +46,11 @@ namespace WinFormsDemo
         public Zoom Zoom;
         public double Scale;
         public bool AntiAlias;
+       public bool EditToolbar;
+         public bool PersonalToolbar;
+           public bool EngineStateToolbar;
+           public bool PropertyStateToolbar;
+        public bool PageNavigationToolbar;
 
         public ProgramOptions()
         {
@@ -92,6 +102,11 @@ namespace WinFormsDemo
             Zoom = (Zoom)Enum.Parse(typeof(Zoom), zoomStr, true);
             Scale = config.GetDouble(SCALE_OPT, 1);
             AntiAlias = config.GetBoolean(ANTIALIAS_OPT, true);
+            EditToolbar = config.GetBoolean(EDITTOOLBAR_OPT, true);
+            PersonalToolbar = config.GetBoolean(PERSONALTOOLBAR_OPT, true);
+            EngineStateToolbar = config.GetBoolean(ENGINESTATETOOLBAR_OPT, true);
+            PropertyStateToolbar = config.GetBoolean(PROPERTYSTATETOOLBAR_OPT, true);
+            PageNavigationToolbar = config.GetBoolean(PAGENAVIGATIONTOOLBAR_OPT, true);
         }
 
         public void WriteIni()
@@ -110,6 +125,11 @@ namespace WinFormsDemo
             config.Set(ZOOM_OPT, Zoom);
             config.Set(SCALE_OPT, Scale);
             config.Set(ANTIALIAS_OPT, AntiAlias);
+            config.Set(EDITTOOLBAR_OPT, EditToolbar);
+            config.Set(PERSONALTOOLBAR_OPT, PersonalToolbar);
+            config.Set(ENGINESTATETOOLBAR_OPT, EngineStateToolbar);
+            config.Set(PROPERTYSTATETOOLBAR_OPT, PropertyStateToolbar);
+            config.Set(PAGENAVIGATIONTOOLBAR_OPT, PageNavigationToolbar);
 
             source.Save();
         }

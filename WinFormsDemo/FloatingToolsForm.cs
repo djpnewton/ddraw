@@ -8,6 +8,7 @@ using System.Windows.Forms;
 
 using DDraw;
 using DDraw.WinForms;
+using WinFormsDemo.PersonalToolbar;
 
 namespace WinFormsDemo
 {
@@ -17,6 +18,7 @@ namespace WinFormsDemo
     public partial class FloatingToolsForm : WorkBookForm
     {
         Form mainForm;
+
         AnnotationForm annotationForm = null;
 
         bool haveImportedAnnotations = false;
@@ -98,7 +100,14 @@ namespace WinFormsDemo
             // hide state tools
             tsEngineState.Visible = false;
             tsPropState.Visible = false;
-
+            // personal toolbar
+            tsPersonal.Visible = false;
+            if (mainForm != null)
+            {
+                System.Diagnostics.Debug.Assert(mainForm is MainForm, "ERROR: mainForm is not of type MainForm");
+                PtUtils.LoadPersonalToolsFromSource(((MainForm)mainForm).PersonalToolStrip,
+                    PtUtils.CreatePersonalToolsSource(tsPersonal));
+            }
             return true;
         }
 
@@ -135,6 +144,13 @@ namespace WinFormsDemo
                 tsPropState.Dap = DAuthorProperties.GlobalAP;
                 tsPropState.De = annotationForm.De;
                 tsPropState.Dv = annotationForm.Dv;
+                // personal toolbar
+                tsPersonal.Visible = true;
+                System.Diagnostics.Debug.Assert(mainForm is MainForm, "ERROR: mainForm is not of type MainForm");
+                PtUtils.LoadPersonalToolsFromSource(tsPersonal,
+                    PtUtils.CreatePersonalToolsSource(((MainForm)mainForm).PersonalToolStrip));
+                tsPersonal.De = annotationForm.De;
+                tsPersonal.Dap = DAuthorProperties.GlobalAP;
             }
         }
 
