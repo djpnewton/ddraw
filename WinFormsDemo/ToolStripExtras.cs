@@ -712,7 +712,8 @@ namespace WinFormsDemo
         }
     }
 
-    public class FontNameChooser : ComboBox
+    [ToolStripItemDesignerAvailability(ToolStripItemDesignerAvailability.ToolStrip | ToolStripItemDesignerAvailability.StatusStrip)]
+    public class ToolStripFontNameChooser : ToolStripComboBox
     {
         public string Value
         {
@@ -720,7 +721,7 @@ namespace WinFormsDemo
             set { SelectedItem = value; }
         }
 
-        public FontNameChooser() : base()
+        public ToolStripFontNameChooser() : base()
         {
             DropDownStyle = ComboBoxStyle.DropDownList;
             System.Drawing.Text.InstalledFontCollection ifc = new System.Drawing.Text.InstalledFontCollection();
@@ -728,48 +729,6 @@ namespace WinFormsDemo
                 Items.Add(ff.Name);
         }
 
-    }
-
-    [ToolStripItemDesignerAvailability(ToolStripItemDesignerAvailability.ToolStrip | ToolStripItemDesignerAvailability.StatusStrip)]
-    public class ToolStripFontNameChooser : ToolStripControlHost
-    {
-        public string Value
-        {
-            get { return FontNameChooser.Value; }
-            set { FontNameChooser.Value = value; }
-        }
-
-        public FontNameChooser FontNameChooser
-        {
-            get { return Control as FontNameChooser; }
-        }
-
-        private static Control CreateControlInstance()
-        {
-            return new FontNameChooser();
-        }
-
-        public ToolStripFontNameChooser() : base(CreateControlInstance()) { }
-
-        protected override void OnSubscribeControlEvents(Control c)
-        {
-            base.OnSubscribeControlEvents(c);
-            FontNameChooser.SelectedIndexChanged += new EventHandler(FontNameChooser_SelectedIndexChanged);
-        }
-
-        protected override void OnUnsubscribeControlEvents(Control c)
-        {
-            base.OnUnsubscribeControlEvents(c);
-            FontNameChooser.SelectedIndexChanged -= new EventHandler(FontNameChooser_SelectedIndexChanged);
-        }
-
-        public event EventHandler FontNameChanged;
-
-        void FontNameChooser_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (FontNameChanged != null)
-                FontNameChanged(this, e);
-        }
     }
 
     // based off code in Paint.Net for mono (http://code.google.com/p/paint-mono/)

@@ -306,7 +306,7 @@ namespace WinFormsDemo
             Items.Add(btnAlpha);
             cbFontName = new ToolStripFontNameChooser();
             cbFontName.Text = "Font Name";
-            cbFontName.FontNameChanged += cbFontName_FontNameChanged;
+            cbFontName.SelectedIndexChanged += cbFontName_SelectedIndexChanged;
             Items.Add(cbFontName);
             btnBold = new ToolStripButton("Bold", Resource1.text_bold);
             Items.Add(btnBold);
@@ -592,7 +592,7 @@ namespace WinFormsDemo
         void InitPropertyControlsToDEngine(DHsmState state)
         {
             // disable events
-            cbFontName.FontNameChanged -= cbFontName_FontNameChanged;
+            cbFontName.SelectedIndexChanged -= cbFontName_SelectedIndexChanged;
             // set default (blank) values for property controls
             DefaultControlProperties();
             // deselect controls
@@ -693,7 +693,7 @@ namespace WinFormsDemo
                     break;
             }
             // re-enable events
-            cbFontName.FontNameChanged += cbFontName_FontNameChanged;
+            cbFontName.SelectedIndexChanged += cbFontName_SelectedIndexChanged;
         }
 
         void UpdateToDap()
@@ -866,7 +866,7 @@ namespace WinFormsDemo
             }
         }
 
-        private void cbFontName_FontNameChanged(object sender, EventArgs e)
+        private void cbFontName_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (de != null && de.HsmState == DHsmState.Select)
                 UpdateSelectedFigures(cbFontName);
