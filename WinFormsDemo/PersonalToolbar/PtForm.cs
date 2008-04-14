@@ -19,7 +19,7 @@ namespace WinFormsDemo.PersonalToolbar
             set 
             { 
                 personalToolStrip = value;
-                UpdateListbox();
+                UpdateListView();
             }
         }
 
@@ -27,28 +27,75 @@ namespace WinFormsDemo.PersonalToolbar
         {
             get
             {
-                foreach (object o in listBox1.Items)
-                    yield return o;
+                foreach (ListViewItem o in listView1.Items)
+                    yield return o.Tag;
             }
         }
+
+        const string ShowDirImage = "ShowDirImage";
+        const string RunCmdImage = "RunCmdImage";
 
         public PtForm()
         {
             InitializeComponent();
+
+            imageList1.Images.Add(ShowDirImage, Resource1.folder);
+            imageList1.Images.Add(RunCmdImage, Resource1.cog);
         }
 
-        void UpdateListbox()
+        ListViewItem CreateListViewItem(object item)
         {
-            listBox1.Items.Clear();
+            ListViewItem li = new ListViewItem();
+            if (item is CustomFigureT)
+                li.Tag = item;
+            else if (item is RunCmdT)
+                li.Tag = item;
+            else if (item is ShowDirT)
+                li.Tag = item;
+            if (li.Tag != null)
+            {
+                li.Text = li.Tag.ToString();
+                li.ToolTipText = li.Tag.ToString();
+            }
+            return li;
+        }
+
+        void SetImage(ListViewItem li)
+        {
+            if (li.Tag is CustomFigureT)
+            {
+                imageList1.Images.Add(WorkBookUtils.Base64ToBitmap(((CustomFigureT)li.Tag).Base64Icon));
+                li.ImageIndex = imageList1.Images.Count - 1;
+            }
+            else if (li.Tag is RunCmdT)
+                li.ImageKey = RunCmdImage;
+            else if (li.Tag is ShowDirT)
+                li.ImageKey = ShowDirImage;
+        }
+
+        void AddToListView(object item, int idx)
+        {
+            ListViewItem li = CreateListViewItem(item);
+            SetImage(li);
+            listView1.Items.Insert(idx, li);
+        }
+
+        void AddToListView(object item)
+        {
+            AddToListView(item, listView1.Items.Count);
+        }
+
+        void UpdateListView()
+        {
+            listView1.Items.Clear();
             for (int i = 1; i < personalToolStrip.Items.Count; i++)
             {
                 if (personalToolStrip.Items[i] is CustomFigureToolButton)
-                    listBox1.Items.Add(((CustomFigureToolButton)personalToolStrip.Items[i]).CustomFigureT);
+                    AddToListView(((CustomFigureToolButton)personalToolStrip.Items[i]).CustomFigureT);
                 else if (personalToolStrip.Items[i] is RunCmdToolButton)
-                    listBox1.Items.Add(((RunCmdToolButton)personalToolStrip.Items[i]).RunCmdT);
+                    AddToListView(((RunCmdToolButton)personalToolStrip.Items[i]).RunCmdT);
                 else if (personalToolStrip.Items[i] is ShowDirToolButton)
-                    listBox1.Items.Add(((ShowDirToolButton)personalToolStrip.Items[i]).ShowDirT);
-                    
+                    AddToListView(((ShowDirToolButton)personalToolStrip.Items[i]).ShowDirT);
             }
         }
 
@@ -58,66 +105,79 @@ namespace WinFormsDemo.PersonalToolbar
             pf.ToolButtonData = new CustomFigureT(typeof(PolylineFigure), DAuthorProperties.GlobalAP.Clone(), null);
             if (pf.ShowDialog() == DialogResult.OK)
             {
-                listBox1.Items.Add(pf.ToolButtonData);
-                listBox1.SelectedIndex = listBox1.Items.Count - 1;
+                AddToListView(pf.ToolButtonData);
+                listView1.SelectedIndices.Clear();
+                listView1.SelectedIndices.Add(listView1.Items.Count - 1);
             }
         }
 
         private void btnEdit_Click(object sender, EventArgs e)
         {
-            if (listBox1.SelectedIndex != -1)
+            if (listView1.SelectedItems.Count == 1)
             {
                 PtButtonForm pf = new PtButtonForm();
-                pf.ToolButtonData = listBox1.SelectedItem;
+                pf.ToolButtonData = listView1.SelectedItems[0].Tag;
                 if (pf.ShowDialog() == DialogResult.OK)
-                    listBox1.Items[listBox1.SelectedIndex] = pf.ToolButtonData;
+                {
+                    ListViewItem li = CreateListViewItem(pf.ToolButtonData);
+                    SetImage(li);
+                    listView1.Items[listView1.SelectedIndices[0]] = li;
+                }
             }
         }
 
         private void btnDelete_Click(object sender, EventArgs e)
         {
-            if (listBox1.SelectedIndex != -1)
+            if (listView1.SelectedItems.Count == 1)
             {
-                int idx = listBox1.SelectedIndex;
-                listBox1.Items.Remove(listBox1.SelectedItem);
-                if (idx < listBox1.Items.Count)
-                    listBox1.SelectedIndex = idx;
+                int idx = listView1.SelectedIndices[0];
+                listView1.Items.Remove(listView1.SelectedItems[0]);
+                listView1.SelectedIndices.Clear();
+                if (idx < listView1.Items.Count)
+                    listView1.SelectedIndices.Add(idx);
                 else
-                    listBox1.SelectedIndex = listBox1.Items.Count - 1;
+                    listView1.SelectedIndices.Add(listView1.Items.Count - 1);
 
             }
         }
 
         private void btnMoveUp_Click(object sender, EventArgs e)
         {
-            if (listBox1.SelectedIndex > 0)
+            if (listView1.SelectedItems.Count == 1 && listView1.SelectedIndices[0] > 0)
             {
-                int idx = listBox1.SelectedIndex;
-                object item = listBox1.SelectedItem;
-                listBox1.Items.Remove(listBox1.SelectedItem);
-                listBox1.Items.Insert(idx - 1, item);
-                listBox1.SelectedItem = item;
+                int idx = listView1.SelectedIndices[0];
+                ListViewItem item = listView1.SelectedItems[0];
+                listView1.Items.Remove(listView1.SelectedItems[0]);
+                listView1.Items.Insert(idx - 1, item);
+                listView1.SelectedItems.Clear();
+                listView1.SelectedIndices.Add(idx - 1);
             }
         }
 
         private void btnMoveDown_Click(object sender, EventArgs e)
         {
-            if (listBox1.SelectedIndex != -1 && listBox1.SelectedIndex < listBox1.Items.Count - 1)
+            if (listView1.SelectedItems.Count == 1 && listView1.SelectedIndices[0] < listView1.Items.Count - 1)
             {
-                int idx = listBox1.SelectedIndex;
-                object item = listBox1.SelectedItem;
-                listBox1.Items.Remove(listBox1.SelectedItem);
-                listBox1.Items.Insert(idx + 1, item);
-                listBox1.SelectedItem = item;
+                int idx = listView1.SelectedIndices[0];
+                ListViewItem item = listView1.SelectedItems[0];
+                listView1.Items.Remove(listView1.SelectedItems[0]);
+                listView1.Items.Insert(idx + 1, item);
+                listView1.SelectedIndices.Clear();
+                listView1.SelectedIndices.Add(idx + 1);
             }
         }
 
-        private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
+        private void listView1_SelectedIndexChanged(object sender, EventArgs e)
         {
-            btnEdit.Enabled = listBox1.SelectedIndex != -1;
-            btnDelete.Enabled = listBox1.SelectedIndex != -1;
-            btnMoveUp.Enabled = listBox1.SelectedIndex != -1;
-            btnMoveDown.Enabled = listBox1.SelectedIndex != -1;
+            btnEdit.Enabled = listView1.SelectedItems.Count == 1;
+            btnDelete.Enabled = listView1.SelectedItems.Count == 1;
+            btnMoveUp.Enabled = listView1.SelectedItems.Count == 1;
+            btnMoveDown.Enabled = listView1.SelectedItems.Count == 1;
+        }
+
+        private void listView1_ItemActivate(object sender, EventArgs e)
+        {
+            btnEdit_Click(sender, e);
         }
     }
 }
