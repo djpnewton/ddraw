@@ -112,12 +112,39 @@ namespace WinFormsDemo
             return null;
         }
 
+        // from http://www.binaryartist.com/post/C-File-size-in-human-terms2c-GB2c-MB2c-KB2c-Bytes.aspx
+        string GetFileSize(long bytes)
+        {
+            if (bytes >= 1073741824)
+            {
+                Decimal size = Decimal.Divide(bytes, 1073741824);
+                return String.Format("{0:##.##} GB", size);
+            }
+            else if (bytes >= 1048576)
+            {
+                Decimal size = Decimal.Divide(bytes, 1048576);
+                return String.Format("{0:##.##} MB", size);
+            }
+            else if (bytes >= 1024)
+            {
+                Decimal size = Decimal.Divide(bytes, 1024);
+                return String.Format("{0:##.##} KB", size);
+            }
+            else if (bytes > 0 & bytes < 1024)
+            {
+                Decimal size = bytes;
+                return String.Format("{0:##.##} Bytes", size);
+            }
+            else
+                return "0 Bytes";
+        } 
+
         public void AddAttachment(string name, byte[] buf)
         {
             name = Path.GetFileName(name);
             attachmentDict[name] = buf;
             ListViewItem item = new ListViewItem(name);
-            item.SubItems.Add(buf.Length.ToString());
+            item.SubItems.Add(GetFileSize(buf.Length));
             Items.Add(item);
         }
 
