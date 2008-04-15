@@ -1417,7 +1417,7 @@ namespace DDraw
             if (currentFigure != null && currentFigure is TextEditFigure)
             {
                 TextEditFigure te = (TextEditFigure)currentFigure;
-                DRect updateRect = currentFigure.Rect;
+                DRect updateRect = te.Rect;
                 switch ((DKeys)k)
                 {
                     case DKeys.Backspace:
@@ -1427,8 +1427,8 @@ namespace DDraw
                         te.InsertAtCursor('\n');
                         break;
                     case DKeys.Escape:
-                        State = DHsmState.Select;
-                        break;
+                        TransitionTo(SelectDefault);
+                        return;
                     case DKeys.Delete:
                         te.DeleteAtCursor();
                         break;
@@ -1442,7 +1442,7 @@ namespace DDraw
                         te.InsertAtCursor((char)k);
                         break;
                 }
-                dv.Update(updateRect.Union(currentFigure.Rect));
+                dv.Update(updateRect.Union(te.Rect));
             }
         }
 
@@ -1471,6 +1471,8 @@ namespace DDraw
                             figureHandler.Insert(((TextEditFigure)currentFigure).TextFigure, currentFigure);
                         figureHandler.Remove(currentFigure);
                     }
+                    // nullify currentfigure
+                    currentFigure = null;
                     // record text edit to undo manager
                     undoRedoArea.Commit();
                     return null;
