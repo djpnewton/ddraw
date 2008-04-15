@@ -1404,6 +1404,7 @@ namespace DDraw
                 dragPt = pt;
                 // transition to select state
                 TransitionTo(DragFigure);
+                currentFigure = f;
             }
         }
 
@@ -1470,9 +1471,9 @@ namespace DDraw
                         if (((TextEditFigure)currentFigure).HasText)
                             figureHandler.Insert(((TextEditFigure)currentFigure).TextFigure, currentFigure);
                         figureHandler.Remove(currentFigure);
+                        // nullify currentfigure
+                        currentFigure = null;
                     }
-                    // nullify currentfigure
-                    currentFigure = null;
                     // record text edit to undo manager
                     undoRedoArea.Commit();
                     return null;
