@@ -1071,6 +1071,10 @@ namespace DDraw
             switch (qevent.QSignal)
             {
                 case (int)QSignals.Entry:
+                    // move selection figure out of view
+                    figureHandler.SelectionFigure.Left = int.MinValue;
+                    figureHandler.SelectionFigure.Width = 0;
+                    // enable selection figure drawing
                     drawSelection = true;
                     return null;
                 case (int)QSignals.Exit:
