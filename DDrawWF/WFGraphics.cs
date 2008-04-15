@@ -117,12 +117,13 @@ namespace DDraw.WinForms
 
         public WFGraphics(Graphics g)
         {
-            this.g = g;    
+            this.g = g;
+            g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAlias;
+
         }
 
-        public WFGraphics(DBitmap bmp)
+        public WFGraphics(DBitmap bmp) : this(Graphics.FromImage((Bitmap)bmp.NativeBmp))
         {
-            g = Graphics.FromImage((Bitmap)bmp.NativeBmp);
         }
 
         // Helper Functions //
