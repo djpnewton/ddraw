@@ -2031,7 +2031,7 @@ namespace DDraw
                 int i = 0;
                 foreach (Figure f in childFigs)
                 {
-                    DRect ocr = originalChildRects[i];
+                    UndoRect ocr = originalChildRects[i];
                     f.X = originalRect.X + (sx * (ocr.X - originalRect.X));
                     f.Width = sx * ocr.Width;
                     i++;
@@ -2049,7 +2049,7 @@ namespace DDraw
                 int i = 0;
                 foreach (Figure f in childFigs)
                 {
-                    DRect ocr = originalChildRects[i];
+                    UndoRect ocr = originalChildRects[i];
                     f.Y = originalRect.Y + (sy * (ocr.Y - originalRect.Y));
                     f.Height = sy * ocr.Height;
                     i++;
@@ -2060,13 +2060,13 @@ namespace DDraw
 
         public override double Right
         {
-            get { return boundingBox.Right; }
+            get { return boundingBox.X + boundingBox.Width; }
             set { Width = value - X; }
         }
 
         public override double Bottom
         {
-            get { return boundingBox.Bottom; }
+            get { return boundingBox.Y + boundingBox.Height; }
             set { Height = value - Y; }
         }
 
@@ -2086,9 +2086,9 @@ namespace DDraw
             }
         }
 
-        DRect[] originalChildRects;
-        DRect originalRect;
-        DRect boundingBox = new DRect();
+        UndoRect[] originalChildRects;
+        UndoRect originalRect;
+        UndoRect boundingBox = new UndoRect(new DRect());
 
         public GroupFigure() : this(new List<Figure>())
         { }
@@ -2108,15 +2108,15 @@ namespace DDraw
 
         void CreateOriginalRects()
         {
-            originalChildRects = new DRect[childFigs.Count];
+            originalChildRects = new UndoRect[childFigs.Count];
             int i = 0;
             foreach (Figure f in childFigs)
             {
-                originalChildRects[i] = f.Rect;
+                originalChildRects[i] = new UndoRect(f.Rect);
                 i++;
             }
             CreateBoundingBox();
-            originalRect = boundingBox;
+            originalRect = new UndoRect(boundingBox.Rect);
         }
 
         public override DHitTest HitTest(DPoint pt, List<Figure> children, out IGlyph glyph)
@@ -2224,13 +2224,15 @@ namespace DDraw
         {
             if (childFigs.Count > 0)
             {
-                boundingBox = DGeom.BoundingBoxOfRotatedRect(childFigs[0].Rect, childFigs[0].Rotation);
+                boundingBox.Rect = DGeom.BoundingBoxOfRotatedRect(childFigs[0].Rect, childFigs[0].Rotation);
                 foreach (Figure f in childFigs)
                 {
                     DRect r2 = DGeom.BoundingBoxOfRotatedRect(f.Rect, f.Rotation);
-                    boundingBox = boundingBox.Union(r2);
+                    boundingBox.Rect = boundingBox.Rect.Union(r2);
                 }
             }
+            else
+                boundingBox.Rect = new DRect();
         }
         
         public override DRect GetSelectRect()
