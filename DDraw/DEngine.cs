@@ -675,13 +675,6 @@ namespace DDraw
             return FigureSerialize.FormatToXml(figs, null);
         }
 
-        public void PasteAsSelectedFigures(string data)
-        {
-            UndoRedoStart("Paste");
-            PasteAsSelectedFigures(FigureSerialize.FromXml(data));
-            UndoRedoCommit();
-        }
-
         public void PasteAsSelectedFigures(IList<Figure> figs)
         {
             foreach (Figure f in figs)

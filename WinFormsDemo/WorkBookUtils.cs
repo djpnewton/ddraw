@@ -114,6 +114,19 @@ namespace WinFormsDemo
             ms.Close();
             return bmp;
         }
+
+        public static void PutInBounds(DEngine de, Figure f)
+        {
+            // make sure figure is within page bounds
+            if (f.Left < 0)
+                f.Left = 0;
+            else if (f.Right > de.PageSize.X)
+                f.Left = de.PageSize.X - f.Width;
+            if (f.Top < 0)
+                f.Top = 0;
+            else if (f.Bottom > de.PageSize.Y)
+                f.Top = de.PageSize.Y - f.Height;
+        }
     }
 
     public class WorkBookForm : Form

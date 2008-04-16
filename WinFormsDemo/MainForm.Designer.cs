@@ -111,6 +111,9 @@ namespace WinFormsDemo
             this.toolbarsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.personalToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.modeSelectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.propertySelectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.pageNavigationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.insertToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.imageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.newPageToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
@@ -168,9 +171,6 @@ namespace WinFormsDemo
             this.actUndo = new Burkovsky.Controls.Action();
             this.actRedo = new Burkovsky.Controls.Action();
             this.actFloatingTools = new Burkovsky.Controls.Action();
-            this.modeSelectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.propertySelectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.pageNavigationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.cmsFigure.SuspendLayout();
             this.cmsCanvas.SuspendLayout();
             this.cmsPreview.SuspendLayout();
@@ -871,7 +871,7 @@ namespace WinFormsDemo
             this._100PcToolStripMenuItem,
             this._150PcToolStripMenuItem});
             this.zoomToolStripMenuItem.Name = "zoomToolStripMenuItem";
-            this.zoomToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.zoomToolStripMenuItem.Size = new System.Drawing.Size(126, 22);
             this.zoomToolStripMenuItem.Text = "Zoom";
             // 
             // fitToPageToolStripMenuItem
@@ -918,7 +918,7 @@ namespace WinFormsDemo
             // 
             this.actionListProvider1.SetAction(this.antialiasToolStripMenuItem, null);
             this.antialiasToolStripMenuItem.Name = "antialiasToolStripMenuItem";
-            this.antialiasToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.antialiasToolStripMenuItem.Size = new System.Drawing.Size(126, 22);
             this.antialiasToolStripMenuItem.Text = "Antialias";
             this.antialiasToolStripMenuItem.Click += new System.EventHandler(this.antialiasToolStripMenuItem_Click);
             // 
@@ -926,7 +926,7 @@ namespace WinFormsDemo
             // 
             this.actionListProvider1.SetAction(this.toolStripSeparator14, null);
             this.toolStripSeparator14.Name = "toolStripSeparator14";
-            this.toolStripSeparator14.Size = new System.Drawing.Size(149, 6);
+            this.toolStripSeparator14.Size = new System.Drawing.Size(123, 6);
             // 
             // toolbarsToolStripMenuItem
             // 
@@ -938,7 +938,7 @@ namespace WinFormsDemo
             this.propertySelectToolStripMenuItem,
             this.pageNavigationToolStripMenuItem});
             this.toolbarsToolStripMenuItem.Name = "toolbarsToolStripMenuItem";
-            this.toolbarsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.toolbarsToolStripMenuItem.Size = new System.Drawing.Size(126, 22);
             this.toolbarsToolStripMenuItem.Text = "Toolbars";
             // 
             // editToolStripMenuItem1
@@ -956,6 +956,30 @@ namespace WinFormsDemo
             this.personalToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
             this.personalToolStripMenuItem.Text = "Personal";
             this.personalToolStripMenuItem.Click += new System.EventHandler(this.Toolbars_MenuItem_Click);
+            // 
+            // modeSelectToolStripMenuItem
+            // 
+            this.actionListProvider1.SetAction(this.modeSelectToolStripMenuItem, null);
+            this.modeSelectToolStripMenuItem.Name = "modeSelectToolStripMenuItem";
+            this.modeSelectToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
+            this.modeSelectToolStripMenuItem.Text = "Mode Select";
+            this.modeSelectToolStripMenuItem.Click += new System.EventHandler(this.Toolbars_MenuItem_Click);
+            // 
+            // propertySelectToolStripMenuItem
+            // 
+            this.actionListProvider1.SetAction(this.propertySelectToolStripMenuItem, null);
+            this.propertySelectToolStripMenuItem.Name = "propertySelectToolStripMenuItem";
+            this.propertySelectToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
+            this.propertySelectToolStripMenuItem.Text = "Property Select";
+            this.propertySelectToolStripMenuItem.Click += new System.EventHandler(this.Toolbars_MenuItem_Click);
+            // 
+            // pageNavigationToolStripMenuItem
+            // 
+            this.actionListProvider1.SetAction(this.pageNavigationToolStripMenuItem, null);
+            this.pageNavigationToolStripMenuItem.Name = "pageNavigationToolStripMenuItem";
+            this.pageNavigationToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
+            this.pageNavigationToolStripMenuItem.Text = "Page Navigation";
+            this.pageNavigationToolStripMenuItem.Click += new System.EventHandler(this.Toolbars_MenuItem_Click);
             // 
             // insertToolStripMenuItem
             // 
@@ -1143,7 +1167,7 @@ namespace WinFormsDemo
             this.tsPropState.Location = new System.Drawing.Point(3, 49);
             this.tsPropState.ManagedFocus = true;
             this.tsPropState.Name = "tsPropState";
-            this.tsPropState.Size = new System.Drawing.Size(371, 25);
+            this.tsPropState.Size = new System.Drawing.Size(373, 25);
             this.tsPropState.TabIndex = 4;
             // 
             // tsEdit
@@ -1430,30 +1454,6 @@ namespace WinFormsDemo
             this.actFloatingTools.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.F)));
             this.actFloatingTools.Text = "Floating Tools";
             this.actFloatingTools.Execute += new System.EventHandler(this.actFloatingTools_Execute);
-            // 
-            // modeSelectToolStripMenuItem
-            // 
-            this.actionListProvider1.SetAction(this.modeSelectToolStripMenuItem, null);
-            this.modeSelectToolStripMenuItem.Name = "modeSelectToolStripMenuItem";
-            this.modeSelectToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
-            this.modeSelectToolStripMenuItem.Text = "Mode Select";
-            this.modeSelectToolStripMenuItem.Click += new System.EventHandler(this.Toolbars_MenuItem_Click);
-            // 
-            // propertySelectToolStripMenuItem
-            // 
-            this.actionListProvider1.SetAction(this.propertySelectToolStripMenuItem, null);
-            this.propertySelectToolStripMenuItem.Name = "propertySelectToolStripMenuItem";
-            this.propertySelectToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
-            this.propertySelectToolStripMenuItem.Text = "Property Select";
-            this.propertySelectToolStripMenuItem.Click += new System.EventHandler(this.Toolbars_MenuItem_Click);
-            // 
-            // pageNavigationToolStripMenuItem
-            // 
-            this.actionListProvider1.SetAction(this.pageNavigationToolStripMenuItem, null);
-            this.pageNavigationToolStripMenuItem.Name = "pageNavigationToolStripMenuItem";
-            this.pageNavigationToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
-            this.pageNavigationToolStripMenuItem.Text = "Page Navigation";
-            this.pageNavigationToolStripMenuItem.Click += new System.EventHandler(this.Toolbars_MenuItem_Click);
             // 
             // MainForm
             // 

@@ -525,6 +525,7 @@ namespace WinFormsDemo
                 dem.UndoRedoStart("Drag to New Page");
                 foreach (Figure f in figs)
                 {
+                    WorkBookUtils.PutInBounds(p.DEngine, f);
                     de.RemoveFigure(f);
                     p.DEngine.AddFigure(f);
                 }
@@ -694,6 +695,8 @@ namespace WinFormsDemo
                     de.PageSize = f.PageSize;
                 else
                     de.PageFormat = f.PageFormat;
+                foreach (Figure fig in de.Figures)
+                    WorkBookUtils.PutInBounds(de, fig);
                 de.UndoRedoCommit();
             }
         }
@@ -741,7 +744,14 @@ namespace WinFormsDemo
         void PasteDataObject(IDataObject iData, string opPrefix, double objX, double objY)
         {
             if (iData.GetDataPresent(FigureSerialize.DDRAW_FIGURE_XML))
-                de.PasteAsSelectedFigures((string)iData.GetData(FigureSerialize.DDRAW_FIGURE_XML));
+            {
+                de.UndoRedoStart(string.Format("{0} Figures", opPrefix));
+                List<Figure> figs = FigureSerialize.FromXml((string)iData.GetData(FigureSerialize.DDRAW_FIGURE_XML));
+                foreach (Figure f in figs)
+                    WorkBookUtils.PutInBounds(de, f);
+                de.PasteAsSelectedFigures(figs);
+                de.UndoRedoCommit();
+            }
             else if (iData.GetDataPresent(DataFormats.Text))
             {
                 de.UndoRedoStart(string.Format("{0} Text", opPrefix));
