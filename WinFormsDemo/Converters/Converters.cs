@@ -20,8 +20,12 @@ namespace WinFormsDemo.Converters
             foreach (string entry in pageEntries)
             {
                 DEngine de = new DEngine(DAuthorProperties.GlobalAP, true);
-                nbk.AddPageToEngine(nbk.GetPage(entry), de);
-                result.Add(de);
+                XmlDocument page = nbk.GetPage(entry);
+                if (page != null)
+                {
+                    nbk.AddPageToEngine(page, de);
+                    result.Add(de);
+                }
             }
             // read attachments
             attachments = new Dictionary<string, byte[]>();
