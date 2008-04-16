@@ -464,6 +464,7 @@ namespace WinFormsDemo
             this.wfvcEditor.Name = "wfvcEditor";
             this.wfvcEditor.Size = new System.Drawing.Size(416, 169);
             this.wfvcEditor.TabIndex = 0;
+            this.wfvcEditor.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.wfvcEditor_PreviewKeyDown);
             this.wfvcEditor.DragDrop += new System.Windows.Forms.DragEventHandler(this.wfvcEditor_DragDrop);
             this.wfvcEditor.KeyUp += new System.Windows.Forms.KeyEventHandler(this.wfvcEditor_KeyUp);
             this.wfvcEditor.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.wfvcEditor_KeyPress);

@@ -619,6 +619,13 @@ namespace WinFormsDemo
             Close();
         }
 
+        private void wfvcEditor_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
+        {
+            // stop the Del shortcut from absorbing the key input when in textedit state
+            if (de.HsmState == DHsmState.TextEdit && e.KeyCode == Keys.Delete)
+                e.IsInputKey = true;
+        }
+
         private void wfvcEditor_KeyDown(object sender, KeyEventArgs e)
         {
             WorkBookUtils.ViewerKeyDown(de, e);
