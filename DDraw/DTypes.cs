@@ -21,7 +21,8 @@ namespace DDraw
     public enum DMouseButton { Left, Right, Middle, NotApplicable };
 
     public enum DKeys { Backspace = (int)'\b', Tab = (int)'\t', Enter = (int)'\r', Escape = 27, Delete = 127, 
-        Left = 100000, Right = 100001, Up = 1000002, Down = 100003 };
+        Left = 100000, Right = 100001, Up = 1000002, Down = 100003,
+        Home = 100004, End = 100005, PageUp = 100006, PageDown = 100007 };
 
     public struct DKey
     {

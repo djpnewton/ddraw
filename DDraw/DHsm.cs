@@ -124,6 +124,7 @@ namespace DDraw
         double dragRot;
         DHitTest mouseHitTest;
         bool cancelledFigureDrag;
+        DKey textEditKey;
 
         bool lockInitialAspectRatio = false;
         double unlockInitalAspectRatioThreshold = 50;
@@ -1417,6 +1418,11 @@ namespace DDraw
             DoSelectDefaultMouseMove(dv, pt);
         }
 
+        void DoTextEditKeyDown(DTkViewer dv, DKey k)
+        {
+            textEditKey = k;
+        }
+
         void DoTextEditKeyPress(DTkViewer dv, int k)
         {
             if (currentFigure != null && currentFigure is TextEditFigure)
@@ -1438,11 +1444,15 @@ namespace DDraw
                         te.DeleteAtCursor();
                         break;
                     case DKeys.Left:
-                        te.MoveCursor((DKeys)k);
+                        te.MoveCursor((DKeys)k, textEditKey.Ctrl);
                         break;
                     case DKeys.Right: goto case DKeys.Left;
                     case DKeys.Up: goto case DKeys.Left;
                     case DKeys.Down: goto case DKeys.Left;
+                    case DKeys.Home: goto case DKeys.Left;
+                    case DKeys.End: goto case DKeys.Left;
+                    case DKeys.PageUp: break;
+                    case DKeys.PageDown: break;
                     default:
                         te.InsertAtCursor((char)k);
                         break;
@@ -1451,11 +1461,18 @@ namespace DDraw
             }
         }
 
+        void DoTextEditKeyUp(DTkViewer dv, DKey k)
+        {
+            textEditKey = k;
+        }
+
         QState DoTextEdit(IQEvent qevent)
         {
             switch (qevent.QSignal)
             {
                 case (int)QSignals.Entry:
+                    // reset textEditKey
+                    textEditKey = new DKey();
                     // start undo record
                     undoRedoArea.StartSpan("Text Edit", false);
                     // add TextEditFigure
@@ -1487,8 +1504,14 @@ namespace DDraw
                 case (int)DHsmSignals.MouseMove:
                     DoTextEditMouseMove(((QMouseEvent)qevent).Dv, ((QMouseEvent)qevent).Pt);
                     return null;
+                case (int)DHsmSignals.KeyDown:
+                    DoTextEditKeyDown(((QKeyEvent)qevent).Dv, ((QKeyEvent)qevent).Key);
+                    return null;
                 case (int)DHsmSignals.KeyPress:
                     DoTextEditKeyPress(((QKeyPressEvent)qevent).Dv, ((QKeyPressEvent)qevent).Key);
+                    return null;
+                case (int)DHsmSignals.KeyUp:
+                    DoTextEditKeyUp(((QKeyEvent)qevent).Dv, ((QKeyEvent)qevent).Key);
                     return null;
             }
             return this.Main;

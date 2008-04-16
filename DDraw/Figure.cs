@@ -1852,6 +1852,52 @@ namespace DDraw
             dg.DrawLine(new DPoint(pt.X + cpt.X, pt.Y + cpt.Y), new DPoint(pt.X + cpt.X, pt.Y + cpt.Y + height), DColor.Black, 1, DStrokeStyle.Solid, 2, DStrokeCap.Butt);
         }
 
+        int FindPrevWord()
+        {
+            int i = cursorPosition;
+            if (i > 0)
+            {
+                bool startAtWhitespace = Char.IsWhiteSpace(Text[i - 1]);
+                while (i > 0)
+                {
+                    i--;
+                    if (i == 0)
+                        break;
+                    if (startAtWhitespace)
+                    {
+                        if (!Char.IsWhiteSpace(Text[i - 1]))
+                            startAtWhitespace = false;
+                    }
+                    else if (Char.IsWhiteSpace(Text[i - 1]))
+                        break;
+                }
+            }
+            return i;
+        }
+
+        int FindNextWord()
+        {
+            int i = cursorPosition;
+            if (i < Text.Length)
+            {
+                bool startAtWord = !Char.IsWhiteSpace(Text[i]);
+                while (i <= Text.Length)
+                {
+                    i++;
+                    if (i == Text.Length)
+                        break;
+                    if (startAtWord)
+                    {
+                        if (Char.IsWhiteSpace(Text[i]))
+                            startAtWord = false;
+                    }
+                    else if (!Char.IsWhiteSpace(Text[i]))
+                        break;
+                }
+            }
+            return i;
+        }
+
         DPoint MeasureCursorPosition(string[] lines, out double height)
         {
             // find the x,y position of the cursor
@@ -1923,15 +1969,21 @@ namespace DDraw
                 return newLineChar - currentLineChar;
         }
 
-        public void MoveCursor(DKeys k)
+        public void MoveCursor(DKeys k, bool moveWord)
         {
             switch (k)
             {
                 case DKeys.Left:
-                    if (cursorPosition > 0) cursorPosition -= 1;
+                    if (moveWord)
+                        cursorPosition = FindPrevWord();
+                    else if (cursorPosition > 0) 
+                        cursorPosition -= 1;
                     break;
                 case DKeys.Right:
-                    if (cursorPosition < Text.Length) cursorPosition += 1;
+                    if (moveWord)
+                        cursorPosition = FindNextWord();
+                    else if (cursorPosition < Text.Length)
+                        cursorPosition += 1;
                     break;
                 case DKeys.Up:
                     string[] lines = Lines;
@@ -1951,6 +2003,14 @@ namespace DDraw
                     break;
                 case DKeys.Down:
                     goto case DKeys.Up;
+                case DKeys.Home:
+                    while (cursorPosition > 0 && Text[cursorPosition - 1] != '\n')
+                        cursorPosition--;
+                    break;
+                case DKeys.End:
+                    while (cursorPosition < Text.Length && Text[cursorPosition] != '\n')
+                        cursorPosition++;
+                    break;
             }
         }
 
@@ -1960,7 +2020,7 @@ namespace DDraw
                 Text = Text.Insert(cursorPosition, c.ToString());
             else
                 Text = string.Concat(Text, c);
-            MoveCursor(DKeys.Right);
+            MoveCursor(DKeys.Right, false);
         }
 
         public void BackspaceAtCursor()
@@ -1968,7 +2028,7 @@ namespace DDraw
             if (cursorPosition > 0)
             {
                 Text = Text.Remove(cursorPosition - 1, 1);
-                MoveCursor(DKeys.Left);
+                MoveCursor(DKeys.Left, false);
             }
         }
 

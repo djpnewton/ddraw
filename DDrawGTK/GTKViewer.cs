@@ -199,6 +199,18 @@ namespace DDraw.GTK
                     case Gdk.Key.Down:
                         DoKeyPress((int)DKeys.Down);
                         break;
+                    case Gdk.Key.Home:
+                        DoKeyPress((int)DKeys.Home);
+                        break;
+                    case Gdk.Key.End:
+                        DoKeyPress((int)DKeys.End);
+                        break;
+                    case Gdk.Key.Page_Up:
+                        DoKeyPress((int)DKeys.PageUp);
+                        break;
+                    case Gdk.Key.Page_Down:
+                        DoKeyPress((int)DKeys.PageDown);
+                        break;
                     default:
                         // only call DoKeyPress if there is an ascii eqivalent of KeyValue 
                         // (not on modifier keys, arrow keys etc)

@@ -186,19 +186,8 @@ namespace DDraw.WinForms
         void control_KeyDown(object sender, KeyEventArgs e)
         {
             if (EditFigures)
-               DoKeyDown(KeyFromWFEvent(e));
-        }
-
-        void control_KeyPress(object sender, KeyPressEventArgs e)
-        {
-            if (EditFigures)
-                DoKeyPress(e.KeyChar);
-        }
-
-        void control_KeyUp(object sender, KeyEventArgs e)
-        {
-            if (EditFigures)
             {
+                DoKeyDown(KeyFromWFEvent(e));
                 switch (e.KeyCode)
                 {
                     case Keys.Delete:
@@ -216,7 +205,32 @@ namespace DDraw.WinForms
                     case Keys.Down:
                         DoKeyPress((int)DKeys.Down);
                         break;
+                    case Keys.Home:
+                        DoKeyPress((int)DKeys.Home);
+                        break;
+                    case Keys.End:
+                        DoKeyPress((int)DKeys.End);
+                        break;
+                    case Keys.PageUp:
+                        DoKeyPress((int)DKeys.PageUp);
+                        break;
+                    case Keys.PageDown:
+                        DoKeyPress((int)DKeys.PageDown);
+                        break;
                 }
+            }
+        }
+
+        void control_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (EditFigures)
+                DoKeyPress(e.KeyChar);
+        }
+
+        void control_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (EditFigures)
+            {
                 DoKeyUp(KeyFromWFEvent(e));
             }
         }
