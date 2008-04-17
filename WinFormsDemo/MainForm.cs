@@ -906,6 +906,7 @@ namespace WinFormsDemo
 
         void OpenFile(string fileName)
         {
+            CheckState();
             // create progress form
             ProgressForm pf = new ProgressForm();
             pf.Text = "Opening File";
@@ -965,6 +966,7 @@ namespace WinFormsDemo
 
         void Save()
         {
+            CheckState();
             // progress form
             ProgressForm pf = new ProgressForm();
             pf.Text = "Saving File";
@@ -1470,6 +1472,7 @@ namespace WinFormsDemo
                 ofd.Filter = "Smart Notebook|*.notebook";
                 if (ofd.ShowDialog() == DialogResult.OK)
                 {
+                    CheckState();
                     // setup progress form
                     ProgressForm pf = new ProgressForm();
                     pf.Text = "Importing Notebook File";
