@@ -108,6 +108,10 @@ namespace DDraw.WinForms
 
     public class WFGraphics : DGraphics
     {
+        // GDI+ can crash on certain operations (DrawText, MeasureCharacterRangers)
+        // if a smaller font size is used
+        double MinFontSize = 0.05; 
+
         public static void Init()
         {
             GraphicsHelper.Init(typeof(WFBitmap), typeof(WFGraphics));
@@ -454,7 +458,8 @@ namespace DDraw.WinForms
 
         public override void DrawText(string text, string fontName, double fontSize, bool bold, bool italics, bool underline, bool strikethrough, DPoint pt, DColor color, double alpha)
         {
-            g.DrawString(text, new Font(fontName, (float)fontSize, MakeFontStyle(bold, italics, underline, strikethrough)), new SolidBrush(WFHelper.MakeColor(color, alpha)), new PointF((float)pt.X, (float)pt.Y), StringFormat.GenericDefault);
+            if (fontSize >= MinFontSize)
+                g.DrawString(text, new Font(fontName, (float)fontSize, MakeFontStyle(bold, italics, underline, strikethrough)), new SolidBrush(WFHelper.MakeColor(color, alpha)), new PointF((float)pt.X, (float)pt.Y), StringFormat.GenericDefault);
         }
 
         public override DPoint MeasureText(string text, string fontName, double fontSize)
@@ -470,12 +475,15 @@ namespace DDraw.WinForms
             StringFormat sf = StringFormat.GenericDefault;
             sf.FormatFlags |= StringFormatFlags.MeasureTrailingSpaces;
             SizeF sz = g.MeasureString(text, f, new PointF(0, 0), sf);
-            sf.SetMeasurableCharacterRanges(new CharacterRange[] { new CharacterRange(0, text.Length) });
-            Region[] regs = g.MeasureCharacterRanges(text, f, new RectangleF(0, 0, sz.Width, sz.Height), sf);
-            if (regs.Length > 0)
+            if (fontSize >= MinFontSize)
             {
-                RectangleF r = regs[0].GetBounds(g);
-                sz.Width = r.Left + r.Width;
+                sf.SetMeasurableCharacterRanges(new CharacterRange[] { new CharacterRange(0, text.Length) });
+                Region[] regs = g.MeasureCharacterRanges(text, f, new RectangleF(0, 0, sz.Width, sz.Height), sf);
+                if (regs.Length > 0)
+                {
+                    RectangleF r = regs[0].GetBounds(g);
+                    sz.Width = r.Left + r.Width;
+                }
             }
             // measure a new or empty line as if it had text on it
             if (text.EndsWith("\n") || text == "")
