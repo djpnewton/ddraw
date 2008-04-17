@@ -99,5 +99,10 @@ namespace DDraw
         {
             get { return new DColor(255, 255, 255); }
         }
+
+        public static DColor LightGray
+        {
+            get { return new DColor(192, 192, 192); }
+        }
     }
 }

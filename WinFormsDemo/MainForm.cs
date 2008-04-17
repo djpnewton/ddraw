@@ -622,8 +622,13 @@ namespace WinFormsDemo
         private void wfvcEditor_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
         {
             // stop the Del shortcut from absorbing the key input when in textedit state
-            if (de.HsmState == DHsmState.TextEdit && e.KeyCode == Keys.Delete)
-                e.IsInputKey = true;
+            if (de.HsmState == DHsmState.TextEdit)
+            {
+                if (e.KeyCode == Keys.Delete)
+                    e.IsInputKey = true;
+                else if (e.Shift)
+                    e.IsInputKey = true;
+            }
         }
 
         private void wfvcEditor_KeyDown(object sender, KeyEventArgs e)

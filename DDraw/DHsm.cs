@@ -1444,7 +1444,7 @@ namespace DDraw
                         te.DeleteAtCursor();
                         break;
                     case DKeys.Left:
-                        te.MoveCursor((DKeys)k, textEditKey.Ctrl);
+                        te.MoveCursor((DKeys)k, textEditKey.Ctrl, textEditKey.Shift);
                         break;
                     case DKeys.Right: goto case DKeys.Left;
                     case DKeys.Up: goto case DKeys.Left;

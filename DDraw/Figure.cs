@@ -1812,7 +1812,13 @@ namespace DDraw
         }
 
         // cursor position can range from 0 to Text.Length
-        int cursorPosition;
+        int _cursorPos;
+        int cursorPosition
+        {
+            get { return _cursorPos; }
+        }
+        // selection length is the number of chars selected after the cursor
+        int selectionLength;
 
         string[] Lines
         {
@@ -1822,7 +1828,7 @@ namespace DDraw
         public TextEditFigure(TextFigure tf)
         {
             this.tf = tf;
-            cursorPosition = Text.Length;
+            SetCursorPos(Text.Length, false);
         }
 
         public TextEditFigure(DPoint pt, TextFigure tf) : this(tf)
@@ -1844,11 +1850,16 @@ namespace DDraw
             tf.Paint(dg);
             tf.Alpha = alpha;
             tf.Rotation = rot;
-            // paint cursor
+            // paint selection & cursor
             string[] lines = Lines;
             DPoint pt = tf.Rect.TopLeft;
             double height;
             DPoint cpt = MeasureCursorPosition(lines, out height);
+            DRect[] selRects = MeasureSelectionRects(lines, height);
+
+            foreach (DRect sr in selRects)
+                dg.FillRect(pt.X + sr.X, pt.Y + sr.Y, sr.Width, sr.Height, DColor.LightGray, 0.5);
+
             dg.DrawLine(new DPoint(pt.X + cpt.X, pt.Y + cpt.Y), new DPoint(pt.X + cpt.X, pt.Y + cpt.Y + height), DColor.Black, 1, DStrokeStyle.Solid, 2, DStrokeCap.Butt);
         }
 
@@ -1919,6 +1930,71 @@ namespace DDraw
             return new DPoint(0, 0);
         }
 
+        DRect[] MeasureSelectionRects(string[] lines, double lineHeight)
+        {
+            DRect[] res = new DRect[0];
+            if (selectionLength != 0)
+            {
+                // init selection variables
+                int selStart = cursorPosition;
+                int selEnd;
+                if (selectionLength < 0)
+                {
+                    selStart += selectionLength;
+                    selEnd = cursorPosition;
+                }
+                else
+                    selEnd = cursorPosition + selectionLength;
+                // start measuring selection rectangles line by line
+                int n = 0;
+                for (int i = 0; i < lines.Length; i++)
+                {
+                    string line = lines[i];
+                    string selText = null;
+                    int selIdx = 0;
+                    if (selStart >= n && selStart < n + line.Length) // start line
+                    {
+                        selIdx = selStart - n;
+                        selText = line.Substring(selIdx, Math.Min(selEnd - selStart, line.Length - selIdx));
+                    }
+                    else if (selEnd > n && selEnd <= n + line.Length) // end line
+                    {
+                        selIdx = 0;
+                        selText = line.Substring(selIdx, selEnd - n);
+                    }
+                    else if (n > selStart && n < selEnd) // in between line
+                    {
+                        selIdx = 0;
+                        selText = line;
+                    }
+                    if (selText != null)
+                    {
+                        // start of selection rect for this line
+                        double x;
+                        if (selIdx != 0)
+                            x = GraphicsHelper.MeasureText(line.Substring(0, selIdx), FontName, FontSize, Bold, Italics, Underline, Strikethrough).X;
+                        else
+                            x = 0;
+                        // width of selection rect for this line
+                        double w = GraphicsHelper.MeasureText(selText, FontName, FontSize, Bold, Italics, Underline, Strikethrough).X;
+                        if (selIdx != 0)
+                        {
+                            // take into account the space that is put infront of the first character
+                            double w2 = GraphicsHelper.MeasureText(string.Concat(selText, selText),
+                            FontName, FontSize, Bold, Italics, Underline, Strikethrough).X;
+                            w = w2 - w;
+                        }
+                        // add selection rect to function result
+                        Array.Resize(ref res, res.Length + 1);
+                        res[res.Length - 1] = new DRect(x, lineHeight * i, w, lineHeight);
+
+                    }
+                    n += line.Length + 1;
+                }
+            }
+            return res;
+        }
+
         int FindLineByCharacter(string[] lines, int textChar, out int lineChar)
         {
             // find the line a character is on based on the index (also find the character index on the line)
@@ -1969,21 +2045,35 @@ namespace DDraw
                 return newLineChar - currentLineChar;
         }
 
-        public void MoveCursor(DKeys k, bool moveWord)
+        void SetCursorPos(int pos, bool select)
+        {
+            if (select)
+            {
+                selectionLength += _cursorPos - pos;
+                _cursorPos = pos;
+            }
+            else
+            {
+                _cursorPos = pos;
+                selectionLength = 0;
+            }
+        }
+
+        public void MoveCursor(DKeys k, bool moveWord, bool select)
         {
             switch (k)
             {
                 case DKeys.Left:
                     if (moveWord)
-                        cursorPosition = FindPrevWord();
+                        SetCursorPos(FindPrevWord(), select);
                     else if (cursorPosition > 0) 
-                        cursorPosition -= 1;
+                        SetCursorPos(cursorPosition - 1, select);
                     break;
                 case DKeys.Right:
                     if (moveWord)
-                        cursorPosition = FindNextWord();
+                        SetCursorPos(FindNextWord(), select);
                     else if (cursorPosition < Text.Length)
-                        cursorPosition += 1;
+                        SetCursorPos(cursorPosition + 1, select);
                     break;
                 case DKeys.Up:
                     string[] lines = Lines;
@@ -1999,43 +2089,68 @@ namespace DDraw
                     double height;
                     DPoint cpt = MeasureCursorPosition(lines, out height);
                     int newLineCharNo = FindEquivCharacterPosition(lines[newLineNo], currentlineCharNo, cpt.X);
-                    cursorPosition += CharNumberChange(lines, lineNo, newLineNo, currentlineCharNo, newLineCharNo);                    
+                    SetCursorPos(cursorPosition + CharNumberChange(lines, lineNo, newLineNo, currentlineCharNo, newLineCharNo),
+                        select);
                     break;
                 case DKeys.Down:
                     goto case DKeys.Up;
                 case DKeys.Home:
                     while (cursorPosition > 0 && Text[cursorPosition - 1] != '\n')
-                        cursorPosition--;
+                        SetCursorPos(cursorPosition - 1, select);
                     break;
                 case DKeys.End:
                     while (cursorPosition < Text.Length && Text[cursorPosition] != '\n')
-                        cursorPosition++;
+                        SetCursorPos(cursorPosition + 1, select);
                     break;
             }
+        }
+
+        void DeleteSelection()
+        {
+            if (selectionLength < 0)
+            {
+                Text = Text.Remove(cursorPosition + selectionLength, Math.Abs(selectionLength));
+                SetCursorPos(cursorPosition - Math.Abs(selectionLength), false);
+            }
+            else
+                Text = Text.Remove(cursorPosition, selectionLength);
+            selectionLength = 0;
         }
 
         public void InsertAtCursor(char c)
         {
+            if (selectionLength != 0)
+                DeleteSelection();
             if (cursorPosition < Text.Length)
                 Text = Text.Insert(cursorPosition, c.ToString());
             else
                 Text = string.Concat(Text, c);
-            MoveCursor(DKeys.Right, false);
+            MoveCursor(DKeys.Right, false, false);
         }
 
         public void BackspaceAtCursor()
         {
-            if (cursorPosition > 0)
+            if (selectionLength == 0)
             {
-                Text = Text.Remove(cursorPosition - 1, 1);
-                MoveCursor(DKeys.Left, false);
+                if (cursorPosition > 0)
+                {
+                    Text = Text.Remove(cursorPosition - 1, 1);
+                    MoveCursor(DKeys.Left, false, false);
+                }
             }
+            else
+                DeleteSelection();
         }
 
         public void DeleteAtCursor()
         {
-            if (cursorPosition < Text.Length)
-                Text = Text.Remove(cursorPosition, 1);
+            if (selectionLength == 0)
+            {
+                if (cursorPosition < Text.Length)
+                    Text = Text.Remove(cursorPosition, 1);
+            }
+            else
+                DeleteSelection();
         }
     }
 

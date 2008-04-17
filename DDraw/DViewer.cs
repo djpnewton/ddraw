@@ -220,7 +220,7 @@ namespace DDraw
                 dg.Scale(Width / PageSize.X, Height / PageSize.Y); // scale to width & height as this is a preview viewer
             else
             {
-                dg.FillRect(0, 0, Width, Height, new DColor(200, 200, 200), 1); // gray background
+                dg.FillRect(0, 0, Width, Height, DColor.LightGray, 1); // gray background
                 DPoint offset = CanvasOffset();
                 dg.Translate(offset.X, offset.Y); // center drawing
                 dg.Scale(scale, scale); // scale canvas
