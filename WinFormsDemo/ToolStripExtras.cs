@@ -731,12 +731,6 @@ namespace WinFormsDemo
             DisplayStyle = ToolStripItemDisplayStyle.Image;
             Image = Resource1.font;
         }
-
-        protected override void OnClick(EventArgs e)
-        {
-
-            base.OnClick(e);
-        }
     }
 
     // based off code in Paint.Net for mono (http://code.google.com/p/paint-mono/)

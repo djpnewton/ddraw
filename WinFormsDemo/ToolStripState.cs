@@ -307,20 +307,22 @@ namespace WinFormsDemo
             btnFontName = new ToolStripFontNameButton();
             Items.Add(btnFontName);
             btnBold = new ToolStripButton("Bold", Resource1.text_bold);
+            btnBold.CheckOnClick = true;
             Items.Add(btnBold);
             btnItalic = new ToolStripButton("Italic", Resource1.text_italic);
+            btnItalic.CheckOnClick = true;
             Items.Add(btnItalic);
             btnUnderline = new ToolStripButton("Underline", Resource1.text_underline);
+            btnUnderline.CheckOnClick = true;
             Items.Add(btnUnderline);
             btnStrikethrough = new ToolStripButton("Strikethrough", Resource1.text_strikethrough);
+            btnStrikethrough.CheckOnClick = true;
             Items.Add(btnStrikethrough);
             foreach (ToolStripItem b in Items)
             {
                 b.DisplayStyle = ToolStripItemDisplayStyle.Image;
                 b.ImageScaling = ToolStripItemImageScaling.None;
                 b.Click += btnClick;
-                if (b is ToolStripButton)
-                    ((ToolStripButton)b).CheckOnClick = true;
             }
         }
 
