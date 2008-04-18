@@ -713,22 +713,30 @@ namespace WinFormsDemo
     }
 
     [ToolStripItemDesignerAvailability(ToolStripItemDesignerAvailability.ToolStrip | ToolStripItemDesignerAvailability.StatusStrip)]
-    public class ToolStripFontNameChooser : ToolStripComboBox
+    public class ToolStripFontNameButton : ToolStripButton
     {
+        string fontName = "";
         public string Value
         {
-            get { return SelectedItem as string; }
-            set { SelectedItem = value; }
+            get { return fontName; }
+            set 
+            { 
+                fontName = value;
+                ToolTipText = value;
+            }
         }
 
-        public ToolStripFontNameChooser() : base()
+        public ToolStripFontNameButton() : base()
         {
-            DropDownStyle = ComboBoxStyle.DropDownList;
-            System.Drawing.Text.InstalledFontCollection ifc = new System.Drawing.Text.InstalledFontCollection();
-            foreach (FontFamily ff in ifc.Families)
-                Items.Add(ff.Name);
+            DisplayStyle = ToolStripItemDisplayStyle.Image;
+            Image = Resource1.font;
         }
 
+        protected override void OnClick(EventArgs e)
+        {
+
+            base.OnClick(e);
+        }
     }
 
     // based off code in Paint.Net for mono (http://code.google.com/p/paint-mono/)

@@ -211,7 +211,7 @@ namespace WinFormsDemo
         ToolStripMarkerButton btnStartMarker;
         ToolStripMarkerButton btnEndMarker;
         ToolStripAlphaButton btnAlpha;
-        ToolStripFontNameChooser cbFontName;
+        ToolStripFontNameButton btnFontName;
         ToolStripButton btnBold;
         ToolStripButton btnItalic;
         ToolStripButton btnUnderline;
@@ -304,10 +304,8 @@ namespace WinFormsDemo
             btnAlpha.Text = "Opacity";
             btnAlpha.AlphaChanged += new AlphaChangedHandler(btnAlpha_AlphaChanged);
             Items.Add(btnAlpha);
-            cbFontName = new ToolStripFontNameChooser();
-            cbFontName.Text = "Font Name";
-            cbFontName.SelectedIndexChanged += cbFontName_SelectedIndexChanged;
-            Items.Add(cbFontName);
+            btnFontName = new ToolStripFontNameButton();
+            Items.Add(btnFontName);
             btnBold = new ToolStripButton("Bold", Resource1.text_bold);
             Items.Add(btnBold);
             btnItalic = new ToolStripButton("Italic", Resource1.text_italic);
@@ -566,7 +564,7 @@ namespace WinFormsDemo
             btnStartMarker.Value = DMarker.None;
             btnEndMarker.Value = DMarker.None;
             btnAlpha.Value = ToolStripAlphaButton.Empty;
-            cbFontName.Value = "";
+            btnFontName.Value = "";
             btnBold.Checked = false;
             btnItalic.Checked = false;
             btnUnderline.Checked = false;
@@ -582,7 +580,7 @@ namespace WinFormsDemo
             btnStartMarker.Enabled = false;
             btnEndMarker.Enabled = false;
             btnAlpha.Enabled = false;
-            cbFontName.Enabled = false;
+            btnFontName.Enabled = false;
             btnBold.Enabled = false;
             btnItalic.Enabled = false;
             btnUnderline.Enabled = false;
@@ -591,8 +589,6 @@ namespace WinFormsDemo
 
         void InitPropertyControlsToDEngine(DHsmState state)
         {
-            // disable events
-            cbFontName.SelectedIndexChanged -= cbFontName_SelectedIndexChanged;
             // set default (blank) values for property controls
             DefaultControlProperties();
             // deselect controls
@@ -626,7 +622,7 @@ namespace WinFormsDemo
                     foreach (Figure f in figs)
                         if (f is ITextable)
                         {
-                            cbFontName.Enabled = true;
+                            btnFontName.Enabled = true;
                             btnBold.Enabled = true;
                             btnItalic.Enabled = true;
                             btnUnderline.Enabled = true;
@@ -642,7 +638,7 @@ namespace WinFormsDemo
                         btnStartMarker.Value = GetMarkerMatch(figs, true);
                         btnEndMarker.Value = GetMarkerMatch(figs, false);
                         btnAlpha.Value = GetAlphaMatch(figs);
-                        cbFontName.Value = GetFontNameMatch(figs);
+                        btnFontName.Value = GetFontNameMatch(figs);
                         btnBold.Checked = GetBoldMatch(figs);
                         btnItalic.Checked = GetItalicMatch(figs);
                         btnUnderline.Checked = GetUnderlineMatch(figs);
@@ -679,8 +675,8 @@ namespace WinFormsDemo
                     }
                     if (de.HsmCurrentFigClassImpls(typeof(ITextable)))
                     {
-                        cbFontName.Enabled = true;
-                        cbFontName.Value = dap.FontName;
+                        btnFontName.Enabled = true;
+                        btnFontName.Value = dap.FontName;
                         btnBold.Enabled = true;
                         btnBold.Checked = dap.Bold;
                         btnItalic.Enabled = true;
@@ -692,8 +688,6 @@ namespace WinFormsDemo
                     }
                     break;
             }
-            // re-enable events
-            cbFontName.SelectedIndexChanged += cbFontName_SelectedIndexChanged;
         }
 
         void UpdateToDap()
@@ -712,8 +706,8 @@ namespace WinFormsDemo
                 btnEndMarker.Value = dap.EndMarker;
             if (btnAlpha.Enabled)
                 btnAlpha.Value = dap.Alpha;
-            if (cbFontName.Enabled)
-                cbFontName.Value = dap.FontName;
+            if (btnFontName.Enabled)
+                btnFontName.Value = dap.FontName;
             if (btnBold.Enabled)
                 btnBold.Checked = dap.Bold;
             if (btnItalic.Enabled)
@@ -745,7 +739,7 @@ namespace WinFormsDemo
                 btnAlpha.Enabled = true;
             if (typeof(ITextable).IsAssignableFrom(figureClass))
             {
-                cbFontName.Enabled = true;
+                btnFontName.Enabled = true;
                 btnBold.Enabled = true;
                 btnItalic.Enabled = true;
                 btnUnderline.Enabled = true;
@@ -769,7 +763,7 @@ namespace WinFormsDemo
                     ColorPicker f = new ColorPicker(pt.X, pt.Y);
                     f.ColorSelected += delegate(object sender2, EventArgs ea)
                     {
-                        btnFill.Color = ((ColorPicker)sender2).SelectedColor;
+                        btnFill.Color = f.SelectedColor;
                         if (de != null && de.HsmState == DHsmState.Select)
                             UpdateSelectedFigures(btnFill);
                         else
@@ -784,11 +778,27 @@ namespace WinFormsDemo
                     ColorPicker f = new ColorPicker(pt.X, pt.Y);
                     f.ColorSelected += delegate(object sender2, EventArgs ea)
                     {
-                        btnStroke.Color = ((ColorPicker)sender2).SelectedColor;
+                        btnStroke.Color = f.SelectedColor;
                         if (de != null && de.HsmState == DHsmState.Select)
                             UpdateSelectedFigures(btnStroke);
                         else
                             dap.Stroke = WFHelper.MakeColor(btnStroke.Color);
+
+                    };
+                    f.Show();
+                }
+                else if (sender == btnFontName)
+                {
+                    Point pt = new Point(btnFontName.Bounds.Left, btnFontName.Bounds.Bottom);
+                    pt = btnFontName.Owner.PointToScreen(pt);
+                    FontNamePicker f = new FontNamePicker(pt.X, pt.Y, btnFontName.Value);
+                    f.FontNameSelected += delegate(object sender2, EventArgs ea)
+                    {
+                        btnFontName.Value = f.SelectedFontName;
+                        if (de != null && de.HsmState == DHsmState.Select)
+                            UpdateSelectedFigures(btnFontName);
+                        else
+                            dap.FontName = btnFontName.Value;
 
                     };
                     f.Show();
@@ -866,14 +876,6 @@ namespace WinFormsDemo
             }
         }
 
-        private void cbFontName_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (de != null && de.HsmState == DHsmState.Select)
-                UpdateSelectedFigures(cbFontName);
-            else
-                dap.FontName = cbFontName.Value;
-        }
-
         private void UpdateSelectedFigures(object sender)
         {
             if (de != null && dv != null)
@@ -903,8 +905,10 @@ namespace WinFormsDemo
                         ((IAlphaBlendable)f).Alpha = btnAlpha.Value;
                     if (f is ITextable)
                     {
-                        if (sender == cbFontName)
-                            ((ITextable)f).FontName = cbFontName.Value;
+                        if (sender == btnFontName)
+                            ((ITextable)f).FontName = btnFontName.Value;
+                        if (sender == btnFontName)
+                            ((ITextable)f).FontName = btnFontName.Value;
                         if (sender == btnBold)
                             ((ITextable)f).Bold = btnBold.Checked;
                         if (sender == btnItalic)

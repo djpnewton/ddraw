@@ -130,6 +130,13 @@ namespace WinFormsDemo {
             }
         }
         
+        internal static System.Drawing.Bitmap font {
+            get {
+                object obj = ResourceManager.GetObject("font", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
         internal static System.Drawing.Bitmap line {
             get {
                 object obj = ResourceManager.GetObject("line", resourceCulture);

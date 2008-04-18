@@ -7,7 +7,7 @@ using System.Drawing;
 
 namespace WinFormsDemo
 {
-    public class ColorPicker : Form
+    public class ColorPicker : PopupForm
     {
         byte max = 40;
         Panel[] panel = new Panel[40];
@@ -45,7 +45,6 @@ namespace WinFormsDemo
 	    };
 
         Button moreColorsButton = new Button();
-        Button cancelButton = new Button();
 
         Color selectedColor;
         public Color SelectedColor
@@ -62,17 +61,9 @@ namespace WinFormsDemo
         }
 
         public event EventHandler ColorSelected;
-        bool useDeactivate = true;
 
-        public ColorPicker(int x, int y)
+        public ColorPicker(int x, int y) : base(x, y)
         {
-            Size = new Size(158, 132);
-            FormBorderStyle = FormBorderStyle.FixedDialog;
-            MinimizeBox = MaximizeBox = ControlBox = false;
-            ShowInTaskbar = false;
-            CenterToScreen();
-            Location = new Point(x, y);
-
             BuildPalette();
 
             moreColorsButton.Text = "More colors ...";
@@ -81,18 +72,6 @@ namespace WinFormsDemo
             moreColorsButton.Click += new EventHandler(moreColorsButton_Click);
             moreColorsButton.FlatStyle = FlatStyle.Popup;
             Controls.Add(moreColorsButton);
-
-            //"invisible" button to cancel at Escape
-            cancelButton.Size = new Size(5, 5);
-            cancelButton.Location = new Point(-10, -10);
-            cancelButton.Click += new EventHandler(cancelButton_Click);
-            Controls.Add(cancelButton);
-            cancelButton.TabIndex = 0;
-            cancelButton.DialogResult = DialogResult.Cancel;
-            this.CancelButton = cancelButton;
-
-            // focus changed event
-            this.Deactivate += new EventHandler(ColorPicker_Deactivate);
         }
 
         void BuildPalette()
@@ -133,7 +112,7 @@ namespace WinFormsDemo
 
         void moreColorsButton_Click(object sender, System.EventArgs e)
         {
-            useDeactivate = false;
+            UseDeactivate = false;
 
             ColorDialog colDialog = new ColorDialog();
             colDialog.FullOpen = true;
@@ -141,12 +120,7 @@ namespace WinFormsDemo
                 SelectedColor = colDialog.Color;
             colDialog.Dispose();
 
-            useDeactivate = true;
-        }
-
-        void cancelButton_Click(object sender, System.EventArgs e)
-        {
-            Close();
+            UseDeactivate = true;
         }
 
         void OnMouseEnterPanel(object sender, EventArgs e)
@@ -210,12 +184,6 @@ namespace WinFormsDemo
         void OnPanelPaint(Object sender, PaintEventArgs e)
         {
             DrawPanel(sender, 0);
-        }
-
-        void ColorPicker_Deactivate(object sender, EventArgs e)
-        {
-            if (useDeactivate && !Modal)
-                Close();
         }
     }
 }
