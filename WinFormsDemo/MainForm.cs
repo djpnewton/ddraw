@@ -163,6 +163,8 @@ namespace WinFormsDemo
             // read toolstrip settings
             ToolStripManager.SaveSettings(this, "reset");
             ToolStripManager.LoadSettings(this);
+            // ensure menustrip is visible
+            menuStrip1.Visible = true;
         }
 
         void ReadOptions()
@@ -207,11 +209,11 @@ namespace WinFormsDemo
             options.Scale = dvEditor.Scale;
             options.AntiAlias = dvEditor.AntiAlias;
             // toolbar options
-            options.EditToolbar = editToolStripMenuItem1.Checked;
-            options.PersonalToolbar = personalToolStripMenuItem.Checked;
-            options.EngineStateToolbar = modeSelectToolStripMenuItem.Checked;
-            options.PropertyStateToolbar = propertySelectToolStripMenuItem.Checked;
-            options.PageNavigationToolbar = pageNavigationToolStripMenuItem.Checked;
+            options.EditToolbar = tsEdit.Visible;
+            options.PersonalToolbar = tsPersonal.Visible;
+            options.EngineStateToolbar = tsEngineState.Visible;
+            options.PropertyStateToolbar = tsPropState.Visible;
+            options.PageNavigationToolbar = tsPageManage.Visible;
             // write to file
             options.WriteIni();
             // save personal toolbar
@@ -257,7 +259,7 @@ namespace WinFormsDemo
         {
             if (!CheckDirty())
                 e.Cancel = true;
-            else
+            else if (Visible)
             {
                 // write user options
                 WriteOptions();
@@ -569,6 +571,7 @@ namespace WinFormsDemo
         private void resetToolbarsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             ToolStripManager.LoadSettings(this, "reset");
+            UpdateToolbars();
         }
 
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
