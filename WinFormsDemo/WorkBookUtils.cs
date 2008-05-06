@@ -127,6 +127,15 @@ namespace WinFormsDemo
             else if (f.Bottom > de.PageSize.Y)
                 f.Top = de.PageSize.Y - f.Height;
         }
+
+        public static byte[] GetBytesFromFile(string fileName)
+        {
+            FileStream fs = File.OpenRead(fileName);
+            byte[] bytes = new byte[fs.Length];
+            fs.Read(bytes, 0, Convert.ToInt32(fs.Length));
+            fs.Close();
+            return bytes;
+        }
     }
 
     public class WorkBookForm : Form

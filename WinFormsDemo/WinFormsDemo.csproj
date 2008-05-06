@@ -15,7 +15,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -235,6 +235,10 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\DDrawCairo\DDrawCairo.csproj">
+      <Project>{89A2EB1E-7605-4862-995F-76616B0F55E9}</Project>
+      <Name>DDrawCairo</Name>
+    </ProjectReference>
     <ProjectReference Include="..\DDrawWF\DDrawWF.csproj">
       <Project>{5A55F6B3-6748-402C-B910-C8543B97BE73}</Project>
       <Name>DDrawWF</Name>

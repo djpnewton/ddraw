@@ -208,15 +208,15 @@ namespace WinFormsDemo
                 // format the figures to bitmap
                 DBitmap initialBmp = FigureSerialize.FormatToBmp(figs, annotationForm.Dv.AntiAlias, DColor.White);
                 // crop the bitmap to the rect
-                Bitmap croppedBmp = new Bitmap((int)rect.Width, (int)rect.Height);
-                Graphics g = Graphics.FromImage(croppedBmp);
-                g.DrawImage((Bitmap)initialBmp.NativeBmp, (int)-rect.X, (int)-rect.Y);
-                g.Dispose();
+                DBitmap croppedBmp = WFHelper.MakeBitmap((int)rect.Width, (int)rect.Height);
+                DGraphics dg = WFHelper.MakeGraphics(croppedBmp);
+                dg.DrawBitmap(initialBmp, new DPoint(-rect.X, -rect.Y));
+                dg.Dispose();
                 initialBmp.Dispose();
                 // set haveImportedAnnotations
                 haveImportedAnnotations = true;
                 // call the ImportAnnotationsArea event passing it the cropped bitmap
-                ImportAnnotationsArea(new WFBitmap(croppedBmp));
+                ImportAnnotationsArea(croppedBmp);
             }
             // select the selection tool
             annotationForm.De.HsmState = DHsmState.Select;

@@ -26,7 +26,7 @@ namespace GTKDemo
             Table table = new Table(2, 3, false);
             Add(table);
             // Initialze DGraphics
-            GTKGraphics.Init();
+            GTKHelper.InitGraphics();
 			// create DViewerControl and attach to table
 			GTKViewerControl dvc = new GTKViewerControl();
             table.Attach(dvc, 0, 1, 0, 1, AttachOptions.Fill | AttachOptions.Expand, 
@@ -177,7 +177,7 @@ namespace GTKDemo
             };
             po.DrawPage += delegate(object o2, DrawPageArgs args2)
             {
-                GTKGraphics dg = new GTKGraphics(args2.Context.CairoContext);
+                GTKGraphics dg = new GTKGraphics(CairoHelper.GetContext(args2.Context));
                 DPrintViewer dvPrint = new DPrintViewer();
                 dvPrint.SetPageSize(de.PageSize);
                 GTKPrintSettings dps = 

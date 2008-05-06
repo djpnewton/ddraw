@@ -1,5 +1,4 @@
-﻿
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -42,21 +41,31 @@
   <ItemGroup>
     <Reference Include="atk-sharp, Version=2.10.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <Reference Include="glib-sharp, Version=2.10.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="NDesk.Cairo, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\libs\NDesk.Cairo.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Xml" />
-    <Reference Include="Mono.Cairo" />
     <Reference Include="gdk-sharp, Version=2.10.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <Reference Include="gtk-sharp, Version=2.10.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="GTKGraphics.cs" />
+    <Compile Include="GTKGraphics.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="GTKViewer.cs" />
     <Compile Include="GTKViewerControl.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="sysdraw.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\DDrawCairo\DDrawCairo.csproj">
+      <Project>{89A2EB1E-7605-4862-995F-76616B0F55E9}</Project>
+      <Name>DDrawCairo</Name>
+    </ProjectReference>
     <ProjectReference Include="..\DDraw\DDraw.csproj">
       <Project>{483D8236-B660-429C-A441-19FF82EA3867}</Project>
       <Name>DDraw</Name>

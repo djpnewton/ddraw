@@ -82,7 +82,7 @@ namespace WinFormsDemo
             else if (BackgroundType == BackgroundType.Image)
             {
                 if (backgroundFigure.Bitmap != null)
-                    pictureBox1.Image = (Bitmap)backgroundFigure.Bitmap.NativeBmp;
+                    pictureBox1.Image = WFHelper.FromImageData(backgroundFigure.ImageData);
                 ImagePosition = backgroundFigure.Position;
                 imageFileName = backgroundFigure.FileName;
                 rbImage.Checked = true;

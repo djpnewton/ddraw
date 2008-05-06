@@ -124,11 +124,12 @@ namespace DDraw.WinForms
             // start stopwatch
 			stopWatch.Start();
             // create DGraphics object for the paint routine
-            DGraphics dg = new WFGraphics(e.Graphics);
+            DGraphics dg = WFHelper.MakeGraphics(e.Graphics);
             // call paint events
             DoNeedRepaint(dg);
             // clear DGraphics
-            dg = null; // no need to dispose (we did not create the base GDI graphics object)
+            dg.Dispose();
+            dg = null;
             // stop stopwatch and report duration
             stopWatch.Stop();
 			DoDebugMessage("control_Paint duration: " + stopWatch.ElapsedMilliseconds.ToString());

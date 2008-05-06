@@ -41,7 +41,7 @@ namespace WinFormsDemo.PersonalToolbar
             {
                 if (cbType.SelectedIndex == (int)PersonalToolButtonType.CustomFigure)
                 {
-                    DBitmap bmp = new WFBitmap(vcCustomFigure.Width, vcCustomFigure.Height);
+                    DBitmap bmp = new GDIBitmap(vcCustomFigure.Width, vcCustomFigure.Height);
                     de.Copy(de.Figures, out bmp, false, DColor.Clear);
                     return new CustomFigureT(tsCustomFigureProps.FigureClass, tsCustomFigureProps.Dap,
                         WorkBookUtils.BitmapToBase64((Bitmap)bmp.NativeBmp));

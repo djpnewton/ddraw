@@ -9,3 +9,9 @@ Nini website: http://nini.sourceforge.net/
 	(built library from svn rev 248)
 
 SvgNet website: http://www.jbrowse.com/svgnet/
+
+NDesk.Cairo website: http://git.ndesk.org/?p=cairo-sharp
+
+Cairo website: http://cairographics.org/
+
+Free Image website: http://freeimage.sourceforge.net/

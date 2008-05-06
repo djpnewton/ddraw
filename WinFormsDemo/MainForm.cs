@@ -116,7 +116,7 @@ namespace WinFormsDemo
         {
             InitializeComponent();
             // Initialze DGraphics
-            WFGraphics.Init();
+            WFHelper.InitGraphics();
             // DEngine Manager
             dem = new DEngineManager();
             dem.UndoRedoChanged += new EventHandler(dem_UndoRedoChanged);
@@ -129,10 +129,10 @@ namespace WinFormsDemo
             dvEditor.EditFigures = true;
             dvEditor.DebugMessage += new DebugMessageHandler(DebugMessage);
             // glyphs
-            contextGlyph = new BitmapGlyph(new WFBitmap(Resource1.arrow), DGlyphPosition.TopRight);
+            contextGlyph = new BitmapGlyph(WFHelper.MakeBitmap(Resource1.arrow), DGlyphPosition.TopRight);
             contextGlyph.Cursor = DCursor.Hand;
             contextGlyph.Clicked += new GlyphClickedHandler(contextGlyph_Clicked);
-            linkGlyph = new BitmapGlyph(new WFBitmap(Resource1.link), DGlyphPosition.BottomLeft);
+            linkGlyph = new BitmapGlyph(WFHelper.MakeBitmap(Resource1.link), DGlyphPosition.BottomLeft);
             linkGlyph.Visiblility = DGlyphVisiblity.Always;
             linkGlyph.Cursor = DCursor.Hand;
             linkGlyph.Clicked += new GlyphClickedHandler(linkGlyph_Clicked);
@@ -546,9 +546,9 @@ namespace WinFormsDemo
             {
                 CheckState();
                 de.ClearSelected();
-                WFBitmap bmp = new WFBitmap(ofd.FileName);
+                DBitmap bmp =  WFHelper.MakeBitmap(ofd.FileName);
+                byte[] imageData = WorkBookUtils.GetBytesFromFile(ofd.FileName);
                 de.UndoRedoStart("Add Image");
-                byte[] imageData = WFHelper.ToImageData((Bitmap)bmp.NativeBmp);
                 de.AddFigure(new ImageFigure(new DRect(10, 10, bmp.Width, bmp.Height), 0, imageData, ofd.FileName));
                 de.UndoRedoCommit();
                 de.UpdateViewers();
@@ -1117,7 +1117,9 @@ namespace WinFormsDemo
                         // print the page using the e2.Graphics GDI+ object
                         dvPrint.SetPageSize(de.PageSize);
                         WFPrintSettings dps = new WFPrintSettings(e2.PageSettings);
-                        dvPrint.Paint(new WFGraphics(e2.Graphics), dps, de.GetBackgroundFigure(), de.Figures);
+                        DGraphics dg = WFHelper.MakeGraphics(e2.Graphics);
+                        dvPrint.Paint(dg, dps, de.GetBackgroundFigure(), de.Figures);
+                        dg.Dispose();
                     };
                     // call print operation
                     pd.Print();
@@ -1326,7 +1328,7 @@ namespace WinFormsDemo
                 Application.DoEvents();
                 // import annotations
                 de.UndoRedoStart("Import Annotations");
-                ImageFigure f = new ImageFigure(new DRect(10, 10, bmp.Width, bmp.Height), 0, WFHelper.ToImageData((Bitmap)bmp.NativeBmp), "annotations.png");
+                ImageFigure f = new ImageFigure(new DRect(10, 10, bmp.Width, bmp.Height), 0, WFHelper.ToImageData(bmp), "annotations.png");
                 de.AddFigure(f);
                 dvEditor.Update();
                 de.UndoRedoCommit();

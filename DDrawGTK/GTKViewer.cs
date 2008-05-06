@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using Gtk;
 
+using DDrawCairo;
+
 namespace DDraw.GTK
 {
     public class GTKViewer : DTkViewer
@@ -100,8 +102,8 @@ namespace DDraw.GTK
             if (a.Event.Window != control.BinWindow)
                 return;
             // create DGraphics object for the paint routine
-            Cairo.Context cr = Gdk.CairoHelper.Create(a.Event.Window);
-            DGraphics dg = new GTKGraphics(cr);
+            Cairo.Context cr = CairoHelper.CreateContext(a.Event.Window);
+            DGraphics dg = new CairoGraphics(cr);
             // call paint events
             DoNeedRepaint(dg);
             // free graphics resources
@@ -307,30 +309,32 @@ namespace DDraw.GTK
             DpiY = dpiY;
             PageSetup = pageSetup;
         }
+
+        Unit printUnit = Unit.Pixel;
         
         public override double MarginLeft
         {
-            get { return PageSetup.GetLeftMargin(Unit.Pixel); }
+            get { return PageSetup.GetLeftMargin(printUnit); }
         }
         public override double MarginTop
         {
-            get { return PageSetup.GetTopMargin(Unit.Pixel); }
+            get { return PageSetup.GetTopMargin(printUnit); }
         }
         public override double MarginRight
         {
-            get { return PageSetup.GetRightMargin(Unit.Pixel); }
+            get { return PageSetup.GetRightMargin(printUnit); }
         }
         public override double MarginBottom
         {
-            get { return PageSetup.GetBottomMargin(Unit.Pixel); }
+            get { return PageSetup.GetBottomMargin(printUnit); }
         }
         public override double PageWidth
         {
-            get { return PageSetup.GetPageWidth(Unit.Pixel); }
+            get { return PageSetup.GetPageWidth(printUnit); }
         }
         public override double PageHeight
         {
-            get { return PageSetup.GetPageHeight(Unit.Pixel); }
+            get { return PageSetup.GetPageHeight(printUnit); }
         }
     }
 }
