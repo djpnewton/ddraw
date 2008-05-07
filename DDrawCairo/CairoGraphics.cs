@@ -671,6 +671,7 @@ namespace DDrawCairo
 
         public override void Dispose()
         {
+            ((IDisposable)cr.Target).Dispose();
             ((IDisposable)cr).Dispose();
         }
     }
