@@ -753,7 +753,7 @@ namespace WinFormsDemo
             List<Figure> figs = de.SelectedFigures;
             DBitmap bmp;
             string data = de.Copy(figs, out bmp, dvEditor.AntiAlias, DColor.White);
-            CopyToClipboard(data, (Bitmap)bmp.NativeBmp, figs);
+            CopyToClipboard(data, WFHelper.FromImageData(WFHelper.ToImageData(bmp)), figs);
         }
 
         void PasteDataObject(IDataObject iData, string opPrefix, double objX, double objY)

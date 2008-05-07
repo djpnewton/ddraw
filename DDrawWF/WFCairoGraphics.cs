@@ -60,20 +60,17 @@ namespace DDraw.WinForms
         }
 
         System.Drawing.Graphics g = null;
-        Win32Surface surf = null;
 
         public WFCairoGraphics(System.Drawing.Graphics g)
         {
             this.g = g;
-            surf = new Cairo.Win32Surface(g.GetHdc());
+            Win32Surface surf = new Cairo.Win32Surface(g.GetHdc());
             cr = new Cairo.Context(surf);
         }
 
         public override void Dispose()
         {
             base.Dispose();
-            if (surf != null)
-                surf.Destroy();
             if (g != null)
                 g.ReleaseHdc();
         }

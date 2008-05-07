@@ -111,7 +111,10 @@ namespace DDrawCairo
 
         protected override object LoadBitmap(string filename)
         {
-            return LoadBitmap(new FileStream(filename, FileMode.Open));
+            FileStream fs = new FileStream(filename, FileMode.Open);
+            object obj = LoadBitmap(fs);
+            fs.Close();
+            return obj;
         }
 
         public override void Dispose()
