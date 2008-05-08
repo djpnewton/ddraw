@@ -1322,7 +1322,7 @@ namespace DDraw
                 autoGroupPolylineStart = Environment.TickCount;
             }
             // commit to undo/redo
-            CommitOrRollback(true);
+            CommitOrRollback(false);
             // transition
             TransitionTo(DrawLineDefault);
         }
