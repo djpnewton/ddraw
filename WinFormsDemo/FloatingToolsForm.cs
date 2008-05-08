@@ -198,25 +198,12 @@ namespace WinFormsDemo
         void De_MeasureRect(DEngine de, DRect rect)
         {
             de.MeasureRect -= De_MeasureRect;
-            if (ImportAnnotationsArea != null)
+            if (ImportAnnotationsArea != null && rect.Width > 0 && rect.Height > 0)
             {
-                //  create list of figures to format to bitmap
-                List<Figure> figs = new List<Figure>();
-                figs.Add(annotationForm.De.GetBackgroundFigure());
-                foreach (Figure f in annotationForm.De.Figures)
-                    figs.Add(f);
-                // format the figures to bitmap
-                DBitmap initialBmp = FigureSerialize.FormatToBmp(figs, annotationForm.Dv.AntiAlias, DColor.White);
-                // crop the bitmap to the rect
-                DBitmap croppedBmp = WFHelper.MakeBitmap((int)rect.Width, (int)rect.Height);
-                DGraphics dg = WFHelper.MakeGraphics(croppedBmp);
-                dg.DrawBitmap(initialBmp, new DPoint(-rect.X, -rect.Y));
-                dg.Dispose();
-                initialBmp.Dispose();
                 // set haveImportedAnnotations
                 haveImportedAnnotations = true;
                 // call the ImportAnnotationsArea event passing it the cropped bitmap
-                ImportAnnotationsArea(croppedBmp);
+                ImportAnnotationsArea(annotationForm.CaptureImage(rect));
             }
             // select the selection tool
             annotationForm.De.HsmState = DHsmState.Select;

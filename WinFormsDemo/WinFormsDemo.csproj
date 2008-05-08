@@ -122,6 +122,12 @@
     <Compile Include="ProgressForm.Designer.cs">
       <DependentUpon>ProgressForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="ScreenCaptureForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ScreenCaptureForm.Designer.cs">
+      <DependentUpon>ScreenCaptureForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="ToolStripState.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -204,6 +210,10 @@
     <EmbeddedResource Include="AnnotationForm.resx">
       <SubType>Designer</SubType>
       <DependentUpon>AnnotationForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ScreenCaptureForm.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>ScreenCaptureForm.cs</DependentUpon>
     </EmbeddedResource>
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>

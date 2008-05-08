@@ -70,5 +70,25 @@ namespace WinFormsDemo
         {
             WorkBookUtils.ViewerKeyUp(de, e);
         }
+
+        public DBitmap CaptureImage(DRect rect)
+        {
+            System.Diagnostics.Debug.Assert(rect.Width > 0, "ERROR: rect.Width <= 0");
+            System.Diagnostics.Debug.Assert(rect.Height > 0, "ERROR: rect.Height <= 0");
+            //  create list of figures to format to bitmap
+            List<Figure> figs = new List<Figure>();
+            figs.Add(de.GetBackgroundFigure());
+            foreach (Figure f in de.Figures)
+                figs.Add(f);
+            // format the figures to bitmap
+            DBitmap initialBmp = FigureSerialize.FormatToBmp(figs, dv.AntiAlias, DColor.White);
+            // crop the bitmap to the rect
+            DBitmap croppedBmp = WFHelper.MakeBitmap((int)rect.Width, (int)rect.Height);
+            DGraphics dg = WFHelper.MakeGraphics(croppedBmp);
+            dg.DrawBitmap(initialBmp, new DPoint(-rect.X, -rect.Y));
+            dg.Dispose();
+            initialBmp.Dispose();
+            return croppedBmp;
+        }
     }
 }

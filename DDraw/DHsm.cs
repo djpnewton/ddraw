@@ -1125,6 +1125,9 @@ namespace DDraw
         {
             switch (qevent.QSignal)
             {
+                case (int)DHsmSignals.MouseMove:
+                    ((QMouseEvent)qevent).Dv.SetCursor(DCursor.Crosshair);
+                    return null;
                 case (int)DHsmSignals.MouseDown:
                     // store drag point
                     dragPt = ((QMouseEvent)qevent).Pt;

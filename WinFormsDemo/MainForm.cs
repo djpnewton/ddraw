@@ -1552,5 +1552,32 @@ namespace WinFormsDemo
             tsPropState.Visible = propertySelectToolStripMenuItem.Checked;
             tsPageManage.Visible = pageNavigationToolStripMenuItem.Checked;
         }
+
+        private void screenCaptureToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ScreenCaptureForm screenCaptureForm = new ScreenCaptureForm();
+            screenCaptureForm.CaptureImage += new ImportAnnotationsImageHandler(screenCaptureForm_CaptureImage);
+            screenCaptureForm.Show();
+        }
+
+        void screenCaptureForm_CaptureImage(DBitmap bmp)
+        {
+            // progress form
+            ProgressForm pf = new ProgressForm();
+            pf.Text = "Importing Screen Capture";
+            pf.Shown += delegate(object s, EventArgs e)
+            {
+                Application.DoEvents();
+                // import annotations
+                de.UndoRedoStart("Import Screen Capture");
+                ImageFigure f = new ImageFigure(new DRect(10, 10, bmp.Width, bmp.Height), 0, WFHelper.ToImageData(bmp), "screencap.png");
+                de.AddFigure(f);
+                dvEditor.Update();
+                de.UndoRedoCommit();
+                // close dialog
+                pf.Close();
+            };
+            pf.ShowDialog();
+        }
     }
 }

@@ -171,6 +171,7 @@ namespace WinFormsDemo
             this.actUndo = new Burkovsky.Controls.Action();
             this.actRedo = new Burkovsky.Controls.Action();
             this.actFloatingTools = new Burkovsky.Controls.Action();
+            this.screenCaptureToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.cmsFigure.SuspendLayout();
             this.cmsCanvas.SuspendLayout();
             this.cmsPreview.SuspendLayout();
@@ -1106,6 +1107,7 @@ namespace WinFormsDemo
             this.actionListProvider1.SetAction(this.toolsToolStripMenuItem, null);
             this.toolsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.floatingToolsToolStripMenuItem,
+            this.screenCaptureToolStripMenuItem,
             this.resetToolbarsToolStripMenuItem});
             this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
             this.toolsToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
@@ -1168,7 +1170,7 @@ namespace WinFormsDemo
             this.tsPropState.Location = new System.Drawing.Point(3, 49);
             this.tsPropState.ManagedFocus = true;
             this.tsPropState.Name = "tsPropState";
-            this.tsPropState.Size = new System.Drawing.Size(373, 25);
+            this.tsPropState.Size = new System.Drawing.Size(273, 25);
             this.tsPropState.TabIndex = 4;
             // 
             // tsEdit
@@ -1456,6 +1458,14 @@ namespace WinFormsDemo
             this.actFloatingTools.Text = "Floating Tools";
             this.actFloatingTools.Execute += new System.EventHandler(this.actFloatingTools_Execute);
             // 
+            // screenCaptureToolStripMenuItem
+            // 
+            this.actionListProvider1.SetAction(this.screenCaptureToolStripMenuItem, null);
+            this.screenCaptureToolStripMenuItem.Name = "screenCaptureToolStripMenuItem";
+            this.screenCaptureToolStripMenuItem.Size = new System.Drawing.Size(189, 22);
+            this.screenCaptureToolStripMenuItem.Text = "Screen Capture";
+            this.screenCaptureToolStripMenuItem.Click += new System.EventHandler(this.screenCaptureToolStripMenuItem_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1643,6 +1653,7 @@ namespace WinFormsDemo
         private System.Windows.Forms.ToolStripMenuItem modeSelectToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem propertySelectToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem pageNavigationToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem screenCaptureToolStripMenuItem;
     }
 }
 
