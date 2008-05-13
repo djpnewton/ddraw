@@ -32,12 +32,32 @@ namespace DDraw
             set { height = value; }
         }
 
-        public SelectionFigure(DRect rect, double rotation) : base(rect, rotation) { }
+        int strokeWidth = 1;
+        public int StrokeWidth
+        {
+            get { return strokeWidth; }
+            set { strokeWidth = value; }
+        }
+
+        DColor color = DColor.Black;
+        public DColor Color
+        {
+            get { return color; }
+            set { color = value; }
+        }
+
+        public SelectionFigure(DRect rect)
+        {
+            x = rect.X;
+            y = rect.Y;
+            width = rect.Width;
+            height = rect.Height;
+        }
 
         protected override void PaintBody(DGraphics dg)
         {
-            dg.DrawRect(X, Y, Width, Height, DColor.White, Alpha, _controlScale);
-            dg.DrawRect(X, Y, Width, Height, DColor.Black, Alpha, _controlScale, DStrokeStyle.Dot, DStrokeJoin.Mitre);
+            dg.DrawRect(X, Y, Width, Height, DColor.White, Alpha, strokeWidth * _controlScale);
+            dg.DrawRect(X, Y, Width, Height, color, Alpha, strokeWidth * _controlScale, DStrokeStyle.Dot, DStrokeJoin.Mitre);
         }
     }
 

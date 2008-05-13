@@ -21,7 +21,7 @@ namespace DDraw
                     _backgroundFigure.Value = value; 
             }
         }
-        SelectionFigure selectionFigure = new SelectionFigure(new DRect(), 0);
+        SelectionFigure selectionFigure = new SelectionFigure(new DRect());
         public SelectionFigure SelectionFigure
         {
             get { return selectionFigure; }

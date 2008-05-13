@@ -28,25 +28,49 @@ namespace WinFormsDemo
         /// </summary>
         private void InitializeComponent()
         {
-            this.btnCapture = new System.Windows.Forms.Button();
+            this.btnCaptureRect = new System.Windows.Forms.Button();
+            this.btnCaptureFull = new System.Windows.Forms.Button();
+            this.btnCaptureWindow = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
-            // btnCapture
+            // btnCaptureRect
             // 
-            this.btnCapture.Location = new System.Drawing.Point(12, 12);
-            this.btnCapture.Name = "btnCapture";
-            this.btnCapture.Size = new System.Drawing.Size(154, 23);
-            this.btnCapture.TabIndex = 0;
-            this.btnCapture.Text = "Capture Rectangular Area";
-            this.btnCapture.UseVisualStyleBackColor = true;
-            this.btnCapture.Click += new System.EventHandler(this.btnCapture_Click);
+            this.btnCaptureRect.Location = new System.Drawing.Point(12, 12);
+            this.btnCaptureRect.Name = "btnCaptureRect";
+            this.btnCaptureRect.Size = new System.Drawing.Size(154, 23);
+            this.btnCaptureRect.TabIndex = 0;
+            this.btnCaptureRect.Text = "Capture Rectangular Area";
+            this.btnCaptureRect.UseVisualStyleBackColor = true;
+            this.btnCaptureRect.Click += new System.EventHandler(this.btnCaptureRect_Click);
+            // 
+            // btnCaptureFull
+            // 
+            this.btnCaptureFull.Location = new System.Drawing.Point(12, 41);
+            this.btnCaptureFull.Name = "btnCaptureFull";
+            this.btnCaptureFull.Size = new System.Drawing.Size(154, 23);
+            this.btnCaptureFull.TabIndex = 1;
+            this.btnCaptureFull.Text = "Capture Full Screen";
+            this.btnCaptureFull.UseVisualStyleBackColor = true;
+            this.btnCaptureFull.Click += new System.EventHandler(this.btnCaptureFull_Click);
+            // 
+            // btnCaptureWindow
+            // 
+            this.btnCaptureWindow.Location = new System.Drawing.Point(12, 70);
+            this.btnCaptureWindow.Name = "btnCaptureWindow";
+            this.btnCaptureWindow.Size = new System.Drawing.Size(154, 23);
+            this.btnCaptureWindow.TabIndex = 2;
+            this.btnCaptureWindow.Text = "Capture Window";
+            this.btnCaptureWindow.UseVisualStyleBackColor = true;
+            this.btnCaptureWindow.Click += new System.EventHandler(this.btnCaptureWindow_Click);
             // 
             // ScreenCaptureForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(181, 47);
-            this.Controls.Add(this.btnCapture);
+            this.ClientSize = new System.Drawing.Size(181, 108);
+            this.Controls.Add(this.btnCaptureWindow);
+            this.Controls.Add(this.btnCaptureFull);
+            this.Controls.Add(this.btnCaptureRect);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
@@ -61,6 +85,8 @@ namespace WinFormsDemo
 
         #endregion
 
-        private System.Windows.Forms.Button btnCapture;
+        private System.Windows.Forms.Button btnCaptureRect;
+        private System.Windows.Forms.Button btnCaptureFull;
+        private System.Windows.Forms.Button btnCaptureWindow;
     }
 }

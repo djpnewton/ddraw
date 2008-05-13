@@ -395,7 +395,9 @@ namespace DDraw
         public event DragFigureHandler DragFigureStart;
         public event DragFigureHandler DragFigureEvt;
         public event DragFigureHandler DragFigureEnd;
+        public event DMouseMoveEventHandler MouseMove;
         public event DMouseButtonEventHandler MouseDown;
+        public event DMouseButtonEventHandler MouseUp;
         public event PageSizeChangedHandler PageSizeChanged;
         public event EventHandler UndoRedoChanged;
         public event EventHandler<CommandDoneEventArgs> UndoRedoCommandDone;
@@ -412,7 +414,9 @@ namespace DDraw
             undoRedoArea.CommandDone += new EventHandler<CommandDoneEventArgs>(undoRedoArea_CommandDone);
             // create viewer handler
             viewerHandler = new DViewerHandler();
+            viewerHandler.MouseMove += new DMouseMoveEventHandler(viewerHandler_MouseMove);
             viewerHandler.MouseDown += new DMouseButtonEventHandler(viewerHandler_MouseDown);
+            viewerHandler.MouseUp += new DMouseButtonEventHandler(viewerHandler_MouseUp);
             // create figure handler
             if (!usingEngineManager)
                 undoRedoArea.Start("create figure handler");
@@ -442,10 +446,22 @@ namespace DDraw
             instanceNumber++;
         }
 
+        void viewerHandler_MouseMove(DTkViewer dv, DPoint pt)
+        {
+            if (MouseMove != null)
+                MouseMove(dv, pt);
+        }
+
         void viewerHandler_MouseDown(DTkViewer dv, DMouseButton btn, DPoint pt)
         {
             if (MouseDown != null)
                 MouseDown(dv, btn, pt);
+        }
+
+        void viewerHandler_MouseUp(DTkViewer dv, DMouseButton btn, DPoint pt)
+        {
+            if (MouseUp != null)
+                MouseUp(dv, btn, pt);
         }
 
         void undoRedoArea_CommandDone(object sender, CommandDoneEventArgs e)
