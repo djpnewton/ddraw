@@ -10,6 +10,18 @@ namespace DDraw.WinForms
 {
     public static class WFHelper
     {
+        public static bool Cairo
+        {
+            get 
+            { 
+#if CAIRO
+                return true; 
+#else
+                return false;
+#endif
+            }
+        }
+
         public static void InitGraphics()
         {
 #if CAIRO
@@ -96,6 +108,26 @@ namespace DDraw.WinForms
 #else
             return new GDIGraphics(g);
 #endif
+        }
+
+        public static WFCairoGraphics MakePDFCairoGraphics(string pdfFile, double width, double height)
+        {
+            return new WFCairoGraphics(pdfFile, width, height);
+        }
+
+        public static void SetCairoPDFSurfaceSize(WFCairoGraphics dg, DPoint pgSzMM)
+        {
+            System.Diagnostics.Debug.Assert(dg.Target is Cairo.PdfSurface);
+            //  Convert page size in MM to cairo pdf points (1/72 inch , http://cairographics.org/manual/cairo-PDF-Surfaces.html#cairo-pdf-surface-set-size)
+            double width = (pgSzMM.X / PageTools.MMPerInch) * 72;
+            double height = (pgSzMM.Y / PageTools.MMPerInch) * 72;
+            ((Cairo.PdfSurface)dg.Target).SetSize(width, height);
+        }
+
+        public static void ShowCairoPDFPage(WFCairoGraphics dg)
+        {
+            System.Diagnostics.Debug.Assert(dg.Target is Cairo.PdfSurface);
+            dg.ShowPage();
         }
     }
 }

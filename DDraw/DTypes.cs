@@ -322,7 +322,7 @@ namespace DDraw
         const int A5W = 148, A5H = 210;
         const int LtW = 216, LtH = 279;
 
-        const float MMPerInch = 25.4f;
+        public const float MMPerInch = 25.4f;
 
         public static DPoint FormatToSizeMM(PageFormat pf)
         {

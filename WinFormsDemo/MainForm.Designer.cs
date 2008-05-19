@@ -130,6 +130,7 @@ namespace WinFormsDemo
             this.bringForwardToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.floatingToolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.screenCaptureToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.resetToolbarsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -171,7 +172,7 @@ namespace WinFormsDemo
             this.actUndo = new Burkovsky.Controls.Action();
             this.actRedo = new Burkovsky.Controls.Action();
             this.actFloatingTools = new Burkovsky.Controls.Action();
-            this.screenCaptureToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.exportPDFToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.cmsFigure.SuspendLayout();
             this.cmsCanvas.SuspendLayout();
             this.cmsPreview.SuspendLayout();
@@ -658,6 +659,7 @@ namespace WinFormsDemo
             this.saveAsToolStripMenuItem,
             this.toolStripSeparator11,
             this.importNotebookToolStripMenuItem,
+            this.exportPDFToolStripMenuItem,
             this.toolStripSeparator7,
             this.printToolStripMenuItem,
             this.toolStripSeparator3,
@@ -1121,6 +1123,14 @@ namespace WinFormsDemo
             this.floatingToolsToolStripMenuItem.Size = new System.Drawing.Size(189, 22);
             this.floatingToolsToolStripMenuItem.Text = "Floating Tools";
             // 
+            // screenCaptureToolStripMenuItem
+            // 
+            this.actionListProvider1.SetAction(this.screenCaptureToolStripMenuItem, null);
+            this.screenCaptureToolStripMenuItem.Name = "screenCaptureToolStripMenuItem";
+            this.screenCaptureToolStripMenuItem.Size = new System.Drawing.Size(189, 22);
+            this.screenCaptureToolStripMenuItem.Text = "Screen Capture";
+            this.screenCaptureToolStripMenuItem.Click += new System.EventHandler(this.screenCaptureToolStripMenuItem_Click);
+            // 
             // resetToolbarsToolStripMenuItem
             // 
             this.actionListProvider1.SetAction(this.resetToolbarsToolStripMenuItem, null);
@@ -1458,13 +1468,13 @@ namespace WinFormsDemo
             this.actFloatingTools.Text = "Floating Tools";
             this.actFloatingTools.Execute += new System.EventHandler(this.actFloatingTools_Execute);
             // 
-            // screenCaptureToolStripMenuItem
+            // exportPDFToolStripMenuItem
             // 
-            this.actionListProvider1.SetAction(this.screenCaptureToolStripMenuItem, null);
-            this.screenCaptureToolStripMenuItem.Name = "screenCaptureToolStripMenuItem";
-            this.screenCaptureToolStripMenuItem.Size = new System.Drawing.Size(189, 22);
-            this.screenCaptureToolStripMenuItem.Text = "Screen Capture";
-            this.screenCaptureToolStripMenuItem.Click += new System.EventHandler(this.screenCaptureToolStripMenuItem_Click);
+            this.actionListProvider1.SetAction(this.exportPDFToolStripMenuItem, null);
+            this.exportPDFToolStripMenuItem.Name = "exportPDFToolStripMenuItem";
+            this.exportPDFToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
+            this.exportPDFToolStripMenuItem.Text = "Export PDF";
+            this.exportPDFToolStripMenuItem.Click += new System.EventHandler(this.exportPDFToolStripMenuItem_Click);
             // 
             // MainForm
             // 
@@ -1654,6 +1664,7 @@ namespace WinFormsDemo
         private System.Windows.Forms.ToolStripMenuItem propertySelectToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem pageNavigationToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem screenCaptureToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem exportPDFToolStripMenuItem;
     }
 }
 

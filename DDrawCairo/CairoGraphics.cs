@@ -119,7 +119,7 @@ namespace DDrawCairo
 
         public override void Dispose()
         {
-            surface.Destroy();
+            ((IDisposable)surface).Dispose();
             if (_gc_h_surface_data_buffer.IsAllocated)
                 _gc_h_surface_data_buffer.Free();
         }
@@ -189,6 +189,11 @@ namespace DDrawCairo
     {
         protected Context cr;
 
+        public Surface Target
+        {
+            get { return cr.Target; }
+        }
+
         public CairoGraphics(Context cr)
         {
             this.cr = cr;
@@ -201,6 +206,17 @@ namespace DDrawCairo
 
         protected CairoGraphics()
         {
+        }
+
+        public CairoGraphics(string pdfFile, double width, double height)
+        {
+            Surface surf = new PdfSurface(pdfFile, width, height);
+            cr = new Context(surf);
+        }
+
+        public void ShowPage()
+        {
+            cr.ShowPage();
         }
 
         // Helper Functions //
@@ -671,7 +687,6 @@ namespace DDrawCairo
 
         public override void Dispose()
         {
-            ((IDisposable)cr.Target).Dispose();
             ((IDisposable)cr).Dispose();
         }
     }

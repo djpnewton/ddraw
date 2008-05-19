@@ -735,7 +735,7 @@ namespace WinFormsDemo
             List<Figure> figs = de.SelectedFigures;
             DBitmap bmp;
             string data = de.Cut(figs, out bmp, dvEditor.AntiAlias);
-            CopyToClipboard(data, (Bitmap)bmp.NativeBmp, figs);
+            CopyToClipboard(data, WFHelper.FromImageData(WFHelper.ToImageData(bmp)), figs);
         }
 
         void CopyToClipboard(string data, Bitmap bmp, List<Figure> figs)
@@ -1529,6 +1529,43 @@ namespace WinFormsDemo
                     pf.ShowDialog();
                 }
             }
+        }
+
+        private void exportPDFToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (WFHelper.Cairo)
+            {
+                SaveFileDialog sfd = new SaveFileDialog();
+                sfd.Filter = "PDF Document|*.pdf";
+                sfd.FileName = Path.GetFileNameWithoutExtension(fileName) + ".pdf";
+                if (sfd.ShowDialog() == DialogResult.OK)
+                {
+                    CheckState();
+                    // setup progress form
+                    ProgressForm pf = new ProgressForm();
+                    pf.Text = "Exporting to PDF Document";
+                    pf.Shown += delegate(object s, EventArgs e2)
+                    {
+                        WFCairoGraphics dg = WFHelper.MakePDFCairoGraphics(sfd.FileName, 0, 0);
+                        dg.Scale(0.75, 0.75); // TODO figure out why this is needed (gak!)
+                        foreach (DEngine de in dem.GetEngines())
+                        {
+                            Application.DoEvents();
+                            WFHelper.SetCairoPDFSurfaceSize(dg, PageTools.SizetoSizeMM(de.PageSize));
+                            DPrintViewer dvPrint = new DPrintViewer();
+                            //dvPrint.SetPageSize(de.PageSize);
+                            dvPrint.Paint(dg, de.GetBackgroundFigure(), de.Figures);
+                            WFHelper.ShowCairoPDFPage(dg);
+                        }
+                        dg.Dispose();
+                        pf.Close();
+                        System.Diagnostics.Process.Start(sfd.FileName);
+                    };
+                    pf.ShowDialog();
+                }
+            }
+            else
+                MessageBox.Show("Export to PDF only works with Cairo enabled builds", "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
 
         void ShowFirstPage()

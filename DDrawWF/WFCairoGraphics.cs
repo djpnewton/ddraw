@@ -60,17 +60,28 @@ namespace DDraw.WinForms
         }
 
         System.Drawing.Graphics g = null;
+        Win32Surface surf = null;
 
         public WFCairoGraphics(System.Drawing.Graphics g)
         {
             this.g = g;
-            Win32Surface surf = new Cairo.Win32Surface(g.GetHdc());
+            System.Drawing.RectangleF cb = g.ClipBounds;
+            surf = new Cairo.Win32Surface(g.GetHdc());
             cr = new Cairo.Context(surf);
+            cr.Rectangle(cb.X, cb.Y, cb.Width, cb.Height);
+            cr.Clip();
+        }
+
+        public WFCairoGraphics(string pdfFile, double width, double height)
+            : base(pdfFile, width, height)
+        {
         }
 
         public override void Dispose()
         {
             base.Dispose();
+            if (surf != null)
+                ((IDisposable)surf).Dispose();
             if (g != null)
                 g.ReleaseHdc();
         }

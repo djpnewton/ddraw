@@ -75,11 +75,6 @@ namespace DDraw
         {
             nativeBmp = LoadBitmap(s);
         }
-
-        ~DBitmap()
-        {
-            Dispose();
-        }
         
         public bool Equals(DBitmap bitmap)
         {
