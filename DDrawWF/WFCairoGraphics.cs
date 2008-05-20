@@ -72,6 +72,13 @@ namespace DDraw.WinForms
             cr.Clip();
         }
 
+        public WFCairoGraphics(System.Drawing.Graphics g, int print)
+        {
+            this.g = g;
+            surf = Cairo.Win32Surface.PrintingSurface(g.GetHdc());
+            cr = new Cairo.Context(surf);
+        }
+
         public WFCairoGraphics(string pdfFile, double width, double height)
             : base(pdfFile, width, height)
         {

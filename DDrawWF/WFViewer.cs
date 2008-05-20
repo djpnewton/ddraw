@@ -310,30 +310,72 @@ namespace DDraw.WinForms
         {
             PageSettings = pageSettings;
         }
-        
+
         public override double MarginLeft
         {
-            get { return PageSettings.Margins.Left; }
+            get 
+            {
+#if CAIRO
+                return PageSettings.Margins.Left * (PageSettings.PrinterResolution.X / PageTools.DpiX); 
+#else
+                return PageSettings.Margins.Left; 
+#endif
+            }
         }
         public override double MarginTop
         {
-            get { return PageSettings.Margins.Top; }
+            get 
+            { 
+#if CAIRO
+                return PageSettings.Margins.Top * (PageSettings.PrinterResolution.Y / PageTools.DpiY); 
+#else
+                return PageSettings.Margins.Top; 
+#endif
+            }
         }
         public override double MarginRight
         {
-            get { return PageSettings.Margins.Right; }
+            get 
+            {
+#if CAIRO
+                return PageSettings.Margins.Right * (PageSettings.PrinterResolution.X / PageTools.DpiX);
+#else
+                return PageSettings.Margins.Right; 
+#endif
+            }
         }
         public override double MarginBottom
         {
-            get { return PageSettings.Margins.Bottom; }
+            get 
+            {
+#if CAIRO
+                return PageSettings.Margins.Bottom * (PageSettings.PrinterResolution.Y / PageTools.DpiY);
+#else
+                return PageSettings.Margins.Bottom; 
+#endif
+            }
         }
         public override double PageWidth
         {
-            get { return PageSettings.PaperSize.Width; }
+            get 
+            {
+#if CAIRO
+                return PageSettings.PaperSize.Width * (PageSettings.PrinterResolution.X / PageTools.DpiX);
+#else
+                return PageSettings.PaperSize.Width; 
+#endif
+            }
         }
         public override double PageHeight
         {
-            get { return PageSettings.PaperSize.Height; }
+            get 
+            {
+#if CAIRO
+                return PageSettings.PaperSize.Height * (PageSettings.PrinterResolution.Y / PageTools.DpiY);
+#else
+                return PageSettings.PaperSize.Height; 
+#endif
+            }
         }
     }
 }

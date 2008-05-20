@@ -315,8 +315,8 @@ namespace DDraw
         public const int DefaultPageHeight = 400;
 
         // TODO: find these out cross platform
-        const int DpiX = 96;
-        const int DpiY = 96;
+        public const int DpiX = 96;
+        public const int DpiY = 96;
 
         const int A4W = 210, A4H = 297;
         const int A5W = 148, A5H = 210;

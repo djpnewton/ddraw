@@ -1117,7 +1117,7 @@ namespace WinFormsDemo
                         // print the page using the e2.Graphics GDI+ object
                         dvPrint.SetPageSize(de.PageSize);
                         WFPrintSettings dps = new WFPrintSettings(e2.PageSettings);
-                        DGraphics dg = WFHelper.MakeGraphics(e2.Graphics);
+                        DGraphics dg = WFHelper.MakePrintGraphics(e2.Graphics);
                         dvPrint.Paint(dg, dps, de.GetBackgroundFigure(), de.Figures);
                         dg.Dispose();
                     };

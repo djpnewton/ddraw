@@ -110,6 +110,15 @@ namespace DDraw.WinForms
 #endif
         }
 
+        public static DGraphics MakePrintGraphics(Graphics g)
+        {
+#if CAIRO
+            return new WFCairoGraphics(g, 0);
+#else
+            return MakeGraphics(g);
+#endif
+        }
+
         public static WFCairoGraphics MakePDFCairoGraphics(string pdfFile, double width, double height)
         {
             return new WFCairoGraphics(pdfFile, width, height);
