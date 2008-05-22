@@ -602,6 +602,17 @@ namespace DDrawCairo
             return new DPoint(w, h - fe.Height + fe.Ascent);
         }
 
+        public override void StartGroup(double x, double y, double width, double height, double offsetX, double offsetY)
+        {
+            cr.PushGroup();
+        }
+
+        public override void DrawGroup(double alpha)
+        {
+            cr.PopGroupToSource();
+            cr.PaintWithAlpha(alpha);
+        }
+
         public override DMatrix SaveTransform()
         {
             return MakeMatrix(cr.Matrix);

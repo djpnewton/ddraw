@@ -467,6 +467,30 @@ namespace DDraw.WinForms
             return new DPoint(sz.Width, sz.Height);
         }
 
+        Stack<Bitmap> groupBmpStack = new Stack<Bitmap>();
+        Stack<Graphics> preGroupGfxStack = new Stack<Graphics>();
+        Stack<DPoint> groupPtStack = new Stack<DPoint>();
+
+        public override void StartGroup(double x, double y, double width, double height, double offsetX, double offsetY)
+        {
+            preGroupGfxStack.Push(g);
+            groupBmpStack.Push(new Bitmap((int)width, (int)height));
+            g = Graphics.FromImage(groupBmpStack.Peek());
+            g.SmoothingMode = preGroupGfxStack.Peek().SmoothingMode;
+            g.TranslateTransform((float)(-x + offsetX), (float)(-y + offsetY));
+            groupPtStack.Push(new DPoint(x - offsetX, y - offsetY));
+        }
+
+        public override void DrawGroup(double alpha)
+        {
+            Graphics groupGfx = g;
+            Bitmap groupBmp = groupBmpStack.Pop();
+            g = preGroupGfxStack.Pop();
+            DrawBitmap(new GDIBitmap(groupBmp), groupPtStack.Pop(), alpha);
+            groupGfx.Dispose();
+            groupBmp.Dispose();
+        }
+
         public override DMatrix SaveTransform()
         {
             return new DMatrix(g.Transform.Elements[0], g.Transform.Elements[1], g.Transform.Elements[2],

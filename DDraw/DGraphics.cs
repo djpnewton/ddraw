@@ -140,6 +140,8 @@ namespace DDraw
         abstract public void DrawText(string text, string fontName, double fontSize, bool bold, bool italics, bool underline, bool strikethrough, DPoint pt, DColor color, double alpha);
         abstract public DPoint MeasureText(string text, string fontName, double fontSize);
         abstract public DPoint MeasureText(string text, string fontName, double fontSize, bool bold, bool italics, bool underline, bool strikethrough);
+        abstract public void StartGroup(double x, double y, double width, double height, double offsetX, double offsetY);
+        abstract public void DrawGroup(double alpha);
 
         abstract public DMatrix SaveTransform();
         abstract public void LoadTransform(DMatrix matrix);

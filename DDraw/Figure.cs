@@ -711,15 +711,10 @@ namespace DDraw
         {
             if (UseRealAlpha && Alpha != 1 && StrokeWidth > 0)
             {
-                DBitmap bmp = GraphicsHelper.MakeBitmap(Width + StrokeWidth, Height + StrokeWidth);
-                DGraphics bmpGfx = GraphicsHelper.MakeGraphics(bmp);
-                bmpGfx.AntiAlias = dg.AntiAlias;
-                bmpGfx.Translate(SwHalf, SwHalf);
-                bmpGfx.FillRect(0, 0, Width, Height, Fill, 1);
-                bmpGfx.DrawRect(0, 0, Width, Height, Stroke, 1, StrokeWidth, StrokeStyle, StrokeJoin);
-                dg.DrawBitmap(bmp, new DPoint(X - SwHalf, Y - SwHalf), Alpha);
-                bmpGfx.Dispose();
-                bmp.Dispose();
+                dg.StartGroup(X, Y, Width + StrokeWidth, Height + StrokeWidth, SwHalf, SwHalf);
+                dg.FillRect(X, Y, Width, Height, Fill, 1);
+                dg.DrawRect(X, Y, Width, Height, Stroke, 1, StrokeWidth, StrokeStyle, StrokeJoin);
+                dg.DrawGroup(Alpha);
             }
             else
             {
@@ -806,15 +801,10 @@ namespace DDraw
         {
             if (UseRealAlpha && Alpha != 1 && StrokeWidth > 0)
             {
-                DBitmap bmp = GraphicsHelper.MakeBitmap(Width + StrokeWidth, Height + StrokeWidth);
-                DGraphics bmpGfx = GraphicsHelper.MakeGraphics(bmp);
-                bmpGfx.AntiAlias = dg.AntiAlias;
-                bmpGfx.Translate(SwHalf, SwHalf);
-                bmpGfx.FillEllipse(0, 0, Width, Height, Fill, 1);
-                bmpGfx.DrawEllipse(0, 0, Width, Height, Stroke, 1, StrokeWidth, StrokeStyle);
-                dg.DrawBitmap(bmp, new DPoint(X - SwHalf, Y - SwHalf), Alpha);
-                bmpGfx.Dispose();
-                bmp.Dispose();
+                dg.StartGroup(X, Y, Width + StrokeWidth, Height + StrokeWidth, SwHalf, SwHalf);
+                dg.FillEllipse(X, Y, Width, Height, Fill);
+                dg.DrawEllipse(X, Y, Width, Height, Stroke, 1, StrokeWidth, StrokeStyle);
+                dg.DrawGroup(Alpha);
             }
             else
             {
@@ -1206,18 +1196,14 @@ namespace DDraw
                 else
                     emp = MarkerHelper.MarkerPoints(DMarker.Square, Pt2, 0, MarkerSize);
                 DRect R = GetEncompassingRect().Union(smp.Bounds()).Union(emp.Bounds());
-                DBitmap bmp = GraphicsHelper.MakeBitmap(R.Width, R.Height);
-                DGraphics bmpGfx = GraphicsHelper.MakeGraphics(bmp);
-                bmpGfx.AntiAlias = dg.AntiAlias;
-                bmpGfx.Translate((X - R.X) - X, (Y - R.Y) - Y);
-                bmpGfx.DrawLine(Pt1, Pt2, Stroke, 1, StrokeStyle, StrokeWidth, StrokeCap);
+
+                dg.StartGroup(X, Y, R.Width, R.Height, X - R.X, Y - R.Y);
+                dg.DrawLine(Pt1, Pt2, Stroke, 1, StrokeStyle, StrokeWidth, StrokeCap);
                 if (StartMarker != DMarker.None)
-                    bmpGfx.FillPolygon(smp, Stroke, 1);
+                    dg.FillPolygon(GetStartMarkerPoints(), Stroke, 1);
                 if (EndMarker != DMarker.None)
-                    bmpGfx.FillPolygon(emp, Stroke, 1);
-                dg.DrawBitmap(bmp, new DPoint(X - (X - R.X), Y - (Y - R.Y)), Alpha);
-                bmpGfx.Dispose();
-                bmp.Dispose();
+                    dg.FillPolygon(GetEndMarkerPoints(), Stroke, 1);
+                dg.DrawGroup(Alpha);
             }
             else
             {
@@ -1438,18 +1424,14 @@ namespace DDraw
                     }
                     DRect R = StrokeHelper.RectIncludingStrokeWidth(GetEncompassingRect(), StrokeWidth)
                         .Union(smp.Bounds()).Union(emp.Bounds());
-                    DBitmap bmp = GraphicsHelper.MakeBitmap(R.Width, R.Height);
-                    DGraphics bmpGfx = GraphicsHelper.MakeGraphics(bmp);
-                    bmpGfx.AntiAlias = dg.AntiAlias;
-                    bmpGfx.Translate((X - R.X) - X, (Y - R.Y) - Y);
-                    bmpGfx.DrawPolyline(Points, Stroke, 1, StrokeWidth, StrokeStyle, StrokeJoin, StrokeCap);
+
+                    dg.StartGroup(X, Y, R.Width, R.Height, X - R.X, Y - R.Y);
+                    dg.DrawPolyline(Points, Stroke, 1, StrokeWidth, StrokeStyle, StrokeJoin, StrokeCap);
                     if (StartMarker != DMarker.None)
-                        bmpGfx.FillPolygon(smp, Stroke, 1);
+                        dg.FillPolygon(GetStartMarkerPoints(), Stroke, 1);
                     if (EndMarker != DMarker.None)
-                        bmpGfx.FillPolygon(emp, Stroke, 1);
-                    dg.DrawBitmap(bmp, new DPoint(X - (X - R.X), Y - (Y - R.Y)), Alpha);
-                    bmpGfx.Dispose();
-                    bmp.Dispose();
+                        dg.FillPolygon(GetEndMarkerPoints(), Stroke, 1);
+                    dg.DrawGroup(Alpha);
                 }
                 else
                 {
@@ -2335,19 +2317,14 @@ namespace DDraw
                 if (Width > 0 && Height > 0)
                 {
                     DRect rS = GetSelectRect();
-                    DBitmap bmp = GraphicsHelper.MakeBitmap(rS.Width, rS.Height);
-                    DGraphics bmpGfx = GraphicsHelper.MakeGraphics(bmp);
-                    bmpGfx.AntiAlias = dg.AntiAlias;
-                    bmpGfx.Translate(-rS.X , -rS.Y);
+                    dg.StartGroup(rS.X, rS.Y, rS.Width, rS.Height, 0, 0);
                     foreach (Figure f in childFigs)
                     {
                         f._controlScale = _controlScale;
                         f.GlyphsVisible = GlyphsVisible;
-                        f.Paint(bmpGfx);
+                        f.Paint(dg);
                     }
-                    dg.DrawBitmap(bmp, rS, Alpha);
-                    bmpGfx.Dispose();
-                    bmp.Dispose();
+                    dg.DrawGroup(Alpha);
                 }
             }
             else
