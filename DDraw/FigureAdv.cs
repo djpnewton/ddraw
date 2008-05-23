@@ -160,7 +160,9 @@ namespace DDraw
             }
             dg.FillEllipse(r, DColor.White, alpha);
             dg.DrawEllipse(r, DColor.Black, alpha);
-            dg.DrawText("12", "Arial", 8, new DPoint(r.Center.X - 8, r.Y), DColor.Black, alpha);
+            string text = "12"; string font = "Arial"; double fontSz = 8;
+            DPoint textSz = dg.MeasureText(text, font, fontSz);
+            dg.DrawText(text, font, fontSz, new DPoint(r.Center.X - textSz.X / 2, r.Y), DColor.Black, alpha);
             dg.DrawLine(r.Center, FirstHandPoint(r), DColor.Red, alpha);
             dg.DrawLine(r.Center, SecondHandPoint(r), DColor.Blue, alpha);
         }

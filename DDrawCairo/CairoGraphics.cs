@@ -274,7 +274,8 @@ namespace DDrawCairo
                     SurfacePattern pat = new SurfacePattern(patSurf);
                     pat.Extend = Extend.Repeat;
                     cr.SetSource(pat);
-                    patSurf.Destroy();
+                    ((IDisposable)patCr).Dispose();
+                    ((IDisposable)patSurf).Dispose();
                     break;
                 default:
                     cr.SetSource(MakeColor(color, alpha));
