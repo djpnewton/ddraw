@@ -82,6 +82,7 @@ namespace WinFormsDemo
             this.saveAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator11 = new System.Windows.Forms.ToolStripSeparator();
             this.importNotebookToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.exportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator7 = new System.Windows.Forms.ToolStripSeparator();
             this.printToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
@@ -172,7 +173,6 @@ namespace WinFormsDemo
             this.actUndo = new Burkovsky.Controls.Action();
             this.actRedo = new Burkovsky.Controls.Action();
             this.actFloatingTools = new Burkovsky.Controls.Action();
-            this.exportPDFToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.cmsFigure.SuspendLayout();
             this.cmsCanvas.SuspendLayout();
             this.cmsPreview.SuspendLayout();
@@ -659,7 +659,7 @@ namespace WinFormsDemo
             this.saveAsToolStripMenuItem,
             this.toolStripSeparator11,
             this.importNotebookToolStripMenuItem,
-            this.exportPDFToolStripMenuItem,
+            this.exportToolStripMenuItem,
             this.toolStripSeparator7,
             this.printToolStripMenuItem,
             this.toolStripSeparator3,
@@ -712,6 +712,14 @@ namespace WinFormsDemo
             this.importNotebookToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
             this.importNotebookToolStripMenuItem.Text = "Import Notebook";
             this.importNotebookToolStripMenuItem.Click += new System.EventHandler(this.importNotebookToolStripMenuItem_Click);
+            // 
+            // exportToolStripMenuItem
+            // 
+            this.actionListProvider1.SetAction(this.exportToolStripMenuItem, null);
+            this.exportToolStripMenuItem.Name = "exportToolStripMenuItem";
+            this.exportToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
+            this.exportToolStripMenuItem.Text = "Export";
+            this.exportToolStripMenuItem.Click += new System.EventHandler(this.exportToolStripMenuItem_Click);
             // 
             // toolStripSeparator7
             // 
@@ -1468,14 +1476,6 @@ namespace WinFormsDemo
             this.actFloatingTools.Text = "Floating Tools";
             this.actFloatingTools.Execute += new System.EventHandler(this.actFloatingTools_Execute);
             // 
-            // exportPDFToolStripMenuItem
-            // 
-            this.actionListProvider1.SetAction(this.exportPDFToolStripMenuItem, null);
-            this.exportPDFToolStripMenuItem.Name = "exportPDFToolStripMenuItem";
-            this.exportPDFToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
-            this.exportPDFToolStripMenuItem.Text = "Export PDF";
-            this.exportPDFToolStripMenuItem.Click += new System.EventHandler(this.exportPDFToolStripMenuItem_Click);
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1664,7 +1664,7 @@ namespace WinFormsDemo
         private System.Windows.Forms.ToolStripMenuItem propertySelectToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem pageNavigationToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem screenCaptureToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem exportPDFToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem exportToolStripMenuItem;
     }
 }
 
