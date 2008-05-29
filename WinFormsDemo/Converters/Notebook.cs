@@ -146,7 +146,7 @@ namespace WinFormsDemo.Converters
                 {
                     BackgroundFigure bf = new BackgroundFigure();
                     bf.Fill = ((RectFigure)f).Fill;
-                    de.SetBackgroundFigure(bf);
+                    de.SetBackgroundFigure(bf, true);
                 }
             }
             // try to find foreground group

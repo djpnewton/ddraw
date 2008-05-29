@@ -717,16 +717,22 @@ namespace DDraw
             }
         }
 
-        public BackgroundFigure GetBackgroundFigure()
+        public bool CustomBackgroundFigure
         {
-            return figureHandler.BackgroundFigure;
+            get { return figureHandler.CustomBackgroundFigure; }
         }
 
-        public void SetBackgroundFigure(BackgroundFigure f)
+        public BackgroundFigure BackgroundFigure
+        {
+            get { return figureHandler.BackgroundFigure; }
+        }
+
+        public void SetBackgroundFigure(BackgroundFigure f, bool isCustom)
         {
             f.Rect = new DRect(0, 0, PageSize.X, PageSize.Y);
             figureHandler.BackgroundFigure = f;
             viewerHandler.Update();
+            figureHandler.CustomBackgroundFigure = isCustom;
         }
 
         public void SetEraserSize(double size)

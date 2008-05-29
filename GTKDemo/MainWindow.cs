@@ -181,8 +181,8 @@ namespace GTKDemo
                 DPrintViewer dvPrint = new DPrintViewer();
                 dvPrint.SetPageSize(de.PageSize);
                 GTKPrintSettings dps = 
-                    new GTKPrintSettings(args2.Context.DpiX, args2.Context.DpiY, args2.Context.PageSetup);                                                                                    
-                dvPrint.Paint(dg, dps, de.GetBackgroundFigure(), de.Figures);
+                    new GTKPrintSettings(args2.Context.DpiX, args2.Context.DpiY, args2.Context.PageSetup);
+                dvPrint.Paint(dg, dps, de.BackgroundFigure, de.Figures);
             };
             po.Run(PrintOperationAction.PrintDialog, this);
         }

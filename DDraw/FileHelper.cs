@@ -17,6 +17,7 @@ namespace DDraw
         const string FIGURELIST = "figureList";
         const string BACKGROUNDFIGURE = "backgroundFigure";
         const string IMAGES_DIR = "images";
+        const string GENBKGNDFIGURE = "genBkgndFigure.xml";
 
         static void Write(ZipOutputStream zipOut, string entryName, byte[] data)
         {
@@ -27,7 +28,7 @@ namespace DDraw
             zipOut.Write(data, 0, data.Length);
         }
 
-        public static void Save(string fileName, List<DEngine> engines, Dictionary<string, byte[]> extraEntries)
+        public static void Save(string fileName, List<DEngine> engines, BackgroundFigure bf, Dictionary<string, byte[]> extraEntries)
         {
             System.Text.ASCIIEncoding encoding = new System.Text.ASCIIEncoding();
             using (ZipOutputStream zipOut = new ZipOutputStream(File.Create(fileName)))
@@ -44,11 +45,20 @@ namespace DDraw
                     byte[] data = encoding.GetBytes(FigureSerialize.FormatToXml(de.Figures, images));
                     config.Set(FIGURELIST, figureListName);
                     Write(zipOut, figureListName, data);
-                    string backgroundFigureName = string.Format("backgroundFigure{0}.xml", i);
-                    config.Set(BACKGROUNDFIGURE, backgroundFigureName);
-                    data = encoding.GetBytes(FigureSerialize.FormatToXml(de.GetBackgroundFigure(), images));
-                    Write(zipOut, backgroundFigureName, data);
+                    if (de.CustomBackgroundFigure)
+                    {
+                        string backgroundFigureName = string.Format("backgroundFigure{0}.xml", i);
+                        config.Set(BACKGROUNDFIGURE, backgroundFigureName);
+                        data = encoding.GetBytes(FigureSerialize.FormatToXml(de.BackgroundFigure, images));
+                        Write(zipOut, backgroundFigureName, data);
+                    }
                     i += 1;
+                }
+                // write background figure
+                if (bf != null)
+                {
+                    byte[] data = encoding.GetBytes(FigureSerialize.FormatToXml(bf, images));
+                    Write(zipOut, GENBKGNDFIGURE, data);
                 }
                 // write images
                 foreach (KeyValuePair<string, byte[]> kvp in images)
@@ -84,9 +94,11 @@ namespace DDraw
                 return null;
         }
 
-        public static List<DEngine> Load(string fileName, DAuthorProperties dap, bool usingEngineManager, string[] extraEntryDirs, out Dictionary<string, byte[]> extraEntries)
+        public static List<DEngine> Load(string fileName, DAuthorProperties dap, bool usingEngineManager, out BackgroundFigure bf, string[] extraEntryDirs, out Dictionary<string, byte[]> extraEntries)
         {
             System.Text.ASCIIEncoding encoding = new System.Text.ASCIIEncoding();
+            bf = null;
+            extraEntries = null;
             List<DEngine> res = new List<DEngine>();
             // load zipfile
             ZipFile zf = new ZipFile(fileName);
@@ -133,7 +145,7 @@ namespace DDraw
                             if (figs.Count == 1 && figs[0] is BackgroundFigure)
                             {
                                 LoadImage(zf, figs[0]);
-                                de.SetBackgroundFigure((BackgroundFigure)figs[0]);
+                                de.SetBackgroundFigure((BackgroundFigure)figs[0], true);
                             }
                         }
                     }
@@ -145,6 +157,17 @@ namespace DDraw
                     }
                     // add to list of DEngines
                     res.Add(de);
+                }
+                // read general background figure
+                data = Read(zf, GENBKGNDFIGURE);
+                if (data != null)
+                {
+                    List<Figure> figs = FigureSerialize.FromXml(encoding.GetString(data));
+                    if (figs.Count == 1 && figs[0] is BackgroundFigure)
+                    {
+                        LoadImage(zf, figs[0]);
+                        bf = (BackgroundFigure)figs[0];
+                    }
                 }
                 // read extra entries
                 if (extraEntryDirs != null)
@@ -162,11 +185,7 @@ namespace DDraw
                         }
                     }
                 }
-                else
-                    extraEntries = null;
             }
-            else
-                extraEntries = null;
             return res;
         }
 

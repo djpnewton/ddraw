@@ -108,7 +108,7 @@ namespace WinFormsDemo
                             WFHelper.SetCairoPDFSurfaceSize(dg, PageTools.SizetoSizeMM(de.PageSize));
                             DPrintViewer dvPrint = new DPrintViewer();
                             //dvPrint.SetPageSize(de.PageSize);
-                            dvPrint.Paint(dg, de.GetBackgroundFigure(), de.Figures);
+                            dvPrint.Paint(dg, de.BackgroundFigure, de.Figures);
                             WFHelper.ShowCairoPDFPage(dg);
                         }
                         dg.Dispose();
@@ -146,7 +146,7 @@ namespace WinFormsDemo
                         {
                             DBitmap bmp = WFHelper.MakeBitmap((int)de.PageSize.X, (int)de.PageSize.Y);
                             DGraphics dg = WFHelper.MakeGraphics(bmp);
-                            dvPrint.Paint(dg, de.GetBackgroundFigure(), de.Figures);
+                            dvPrint.Paint(dg, de.BackgroundFigure, de.Figures);
                             bmp.Save(Path.Combine(fbd.SelectedPath, string.Format(fileNameTemplate, dem.IndexOfEngine(de) + 1)));
                             dg.Dispose();
                             bmp.Dispose();

@@ -80,6 +80,9 @@ namespace WinFormsDemo
             // add glyphs to figures
             foreach (Figure f in de.Figures)
                 AddDefaultGlyphs(f);
+            // background figure
+            if (dem.BackgroundFigure != null && !de.CustomBackgroundFigure)
+                de.SetBackgroundFigure(dem.BackgroundFigure, false);
             // show it
             if (showIt)
                 SetCurrentDe(de);
@@ -719,15 +722,24 @@ namespace WinFormsDemo
         private void actBackground_Execute(object sender, EventArgs e)
         {
             BackgroundForm bf = new BackgroundForm();
-            bf.BackgroundFigure = de.GetBackgroundFigure();
-            de.UndoRedoStart("Set Background");
+            bf.BackgroundFigure = de.BackgroundFigure;
             if (bf.ShowDialog() == DialogResult.OK)
             {
-                de.SetBackgroundFigure(bf.BackgroundFigure);
-                de.UndoRedoCommit();
+                if (bf.ApplyAll)
+                {
+                    dem.UndoRedoStart("Set Global Background");
+                    dem.BackgroundFigure = bf.BackgroundFigure;
+                    foreach (DEngine en in dem.GetEngines())
+                        en.SetBackgroundFigure(dem.BackgroundFigure, false);
+                    dem.UndoRedoCommit();
+                }
+                else
+                {
+                    de.UndoRedoStart("Set Background");
+                    de.SetBackgroundFigure(bf.BackgroundFigure, true);
+                    de.UndoRedoCommit();
+                }
             }
-            else
-                de.UndoRedoCancel();
         }
 
         private void actCut_Execute(object sender, EventArgs e)
@@ -926,10 +938,15 @@ namespace WinFormsDemo
                 try
                 {
                     // load new engines
-                    Dictionary<string, byte[]> extraEntries;
-                    List<DEngine> engines = FileHelper.Load(fileName, dap, true,
-                        new string[] { AttachmentView.ATTACHMENTS_DIR }, out extraEntries);
                     dem.Clear();
+                    BackgroundFigure bf;
+                    Dictionary<string, byte[]> extraEntries;
+                    List<DEngine> engines = FileHelper.Load(fileName, dap, true, out bf,
+                        new string[] { AttachmentView.ATTACHMENTS_DIR }, out extraEntries);
+                    if (bf != null)
+                        dem.BackgroundFigure = bf;
+                    else
+                        dem.BackgroundFigure = new BackgroundFigure();
                     // init new dengines
                     foreach (DEngine newDe in engines)
                     {
@@ -989,7 +1006,7 @@ namespace WinFormsDemo
                         extraEntries.Add(AttachmentView.ATTACHMENTS_DIR + Path.DirectorySeparatorChar + name,
                             attachmentView1.GetAttachment(name));
                     // save
-                    FileHelper.Save(fileName, dem.GetEngines(), extraEntries);
+                    FileHelper.Save(fileName, dem.GetEngines(), dem.BackgroundFigure, extraEntries);
                     dem.Dirty = false;
                     beenSaved = true;
                     UpdateTitleBar();
@@ -1118,7 +1135,7 @@ namespace WinFormsDemo
                         dvPrint.SetPageSize(de.PageSize);
                         WFPrintSettings dps = new WFPrintSettings(e2.PageSettings);
                         DGraphics dg = WFHelper.MakePrintGraphics(e2.Graphics);
-                        dvPrint.Paint(dg, dps, de.GetBackgroundFigure(), de.Figures);
+                        dvPrint.Paint(dg, dps, de.BackgroundFigure, de.Figures);
                         dg.Dispose();
                     };
                     // call print operation
@@ -1146,13 +1163,16 @@ namespace WinFormsDemo
             dem.UndoRedoStart("Clone Page");
             // clone data
             string clonedFigures = FigureSerialize.FormatToXml(de.Figures, null);
-            string clonedBackground = FigureSerialize.FormatToXml(de.GetBackgroundFigure(), null);
+            string clonedBackground = null;
+            if (de.CustomBackgroundFigure)
+                clonedBackground = FigureSerialize.FormatToXml(de.BackgroundFigure, null);
             // create new DEngine
             DPoint sz = de.PageSize;
             CreateDEngine(de);
             de.PageSize = sz;
             // add figures from clone data
-            de.SetBackgroundFigure((BackgroundFigure)FigureSerialize.FromXml(clonedBackground)[0]);
+            if (clonedBackground != null)
+                de.SetBackgroundFigure((BackgroundFigure)FigureSerialize.FromXml(clonedBackground)[0], true);
             List<Figure> figs = FigureSerialize.FromXml(clonedFigures);
             foreach (Figure f in figs)
                 de.AddFigure(f);
@@ -1308,7 +1328,7 @@ namespace WinFormsDemo
                 dem.UndoRedoStart("Import Annotations");
                 CreateDEngine(null);
                 this.de.PageSize = de.PageSize;
-                this.de.SetBackgroundFigure(de.GetBackgroundFigure());
+                this.de.SetBackgroundFigure(de.BackgroundFigure, true);
                 foreach (Figure f in de.Figures)
                     this.de.AddFigure(f);
                 dem.UndoRedoCommit();

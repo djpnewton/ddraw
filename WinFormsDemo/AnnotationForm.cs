@@ -50,7 +50,7 @@ namespace WinFormsDemo
             bf.ImageData = WFHelper.ToImageData(bmp);
             bf.FileName = "screen_capture.png";
             bf.Position = DImagePosition.Normal;
-            de.SetBackgroundFigure(bf);
+            de.SetBackgroundFigure(bf, true);
             de.UndoRedoCommit();
             de.UndoRedoClearHistory();
             // set form to full screen
@@ -77,7 +77,7 @@ namespace WinFormsDemo
             System.Diagnostics.Debug.Assert(rect.Height > 0, "ERROR: rect.Height <= 0");
             //  create list of figures to format to bitmap
             List<Figure> figs = new List<Figure>();
-            figs.Add(de.GetBackgroundFigure());
+            figs.Add(de.BackgroundFigure);
             foreach (Figure f in de.Figures)
                 figs.Add(f);
             // format the figures to bitmap

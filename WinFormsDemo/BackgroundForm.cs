@@ -17,25 +17,42 @@ namespace WinFormsDemo
     {
         string imageFileName;
 
-        BackgroundFigure backgroundFigure;
         public BackgroundFigure BackgroundFigure
         {
-            get { return backgroundFigure; }
-            set 
-            { 
-                backgroundFigure = value;
-                UpdateControls();
-            }
-        }
-
-        BackgroundType BackgroundType
-        {
-            get
+            get 
             {
-                if (backgroundFigure.ImageData == null)
-                    return BackgroundType.Color;
+                BackgroundFigure bg = new BackgroundFigure();
+                bg.Fill = WFHelper.MakeColor(panel1.BackColor);
+                if (rbColor.Checked)
+                    bg.ImageData = null;
+                else if (rbImage.Checked)
+                {
+                    byte[] imgData = WFHelper.ToImageData((Bitmap)pictureBox1.Image);
+                    if (bg.Bitmap == null || bg.ImageData != imgData || bg.Position != ImagePosition)
+                    {
+                        bg.ImageData = imgData;
+                        bg.Position = ImagePosition;
+                        bg.FileName = imageFileName;
+                    }
+                }
+                return bg;
+            }
+            set 
+            {
+                panel1.BackColor = WFHelper.MakeColor(value.Fill);
+                if (value.Bitmap == null)
+                {
+                    rbColor.Checked = true;
+                    pictureBox1.Image = pictureBox1.ErrorImage;
+                }
                 else
-                    return BackgroundType.Image;
+                {
+                    rbImage.Checked = true;
+                    pictureBox1.Image = WFHelper.FromImageData(value.ImageData);
+                    ImagePosition = value.Position;
+                    imageFileName = value.FileName;
+                }
+                UpdateControls();
             }
         }
 
@@ -45,9 +62,15 @@ namespace WinFormsDemo
             set { cbImagePos.SelectedIndex = (int)value; }
         }
 
+        public bool ApplyAll
+        {
+            get { return cbApplyAll.Checked; }
+        }
+
         public BackgroundForm()
         {
             InitializeComponent();
+            ImagePosition = DImagePosition.Stretch;
         }
 
         private void btnColor_Click(object sender, EventArgs e)
@@ -72,24 +95,6 @@ namespace WinFormsDemo
             }
         }
 
-        private void BackgroundForm_Shown(object sender, EventArgs e)
-        {
-            panel1.BackColor = WFHelper.MakeColor(backgroundFigure.Fill);
-            pictureBox1.Image = pictureBox1.ErrorImage;
-            ImagePosition = DImagePosition.Stretch;
-            if (BackgroundType == BackgroundType.Color)
-                rbColor.Checked = true;
-            else if (BackgroundType == BackgroundType.Image)
-            {
-                if (backgroundFigure.Bitmap != null)
-                    pictureBox1.Image = WFHelper.FromImageData(backgroundFigure.ImageData);
-                ImagePosition = backgroundFigure.Position;
-                imageFileName = backgroundFigure.FileName;
-                rbImage.Checked = true;
-            }
-            UpdateControls();
-        }
-
         void UpdateControls()
         {
             panel1.Enabled = rbColor.Checked;
@@ -106,27 +111,6 @@ namespace WinFormsDemo
         private void rbImage_CheckedChanged(object sender, EventArgs e)
         {
             UpdateControls();
-        }
-
-        private void BackgroundForm_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            if (DialogResult == DialogResult.OK)
-            {
-                backgroundFigure.Fill = WFHelper.MakeColor(panel1.BackColor);
-                if (rbColor.Checked)
-                    backgroundFigure.ImageData = null;
-                else if (rbImage.Checked)
-                {
-                    if ((backgroundFigure.Bitmap == null) || 
-                        backgroundFigure.Bitmap.NativeBmp != (Bitmap)pictureBox1.Image ||
-                        backgroundFigure.Position != ImagePosition)
-                    {
-                        backgroundFigure.ImageData = WFHelper.ToImageData((Bitmap)pictureBox1.Image);
-                        backgroundFigure.Position = ImagePosition;
-                        backgroundFigure.FileName = imageFileName;
-                    }
-                }
-            }
         }
     }
 }

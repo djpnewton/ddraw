@@ -37,6 +37,7 @@ namespace WinFormsDemo
             this.btnCancel = new System.Windows.Forms.Button();
             this.panel1 = new System.Windows.Forms.Panel();
             this.cbImagePos = new System.Windows.Forms.ComboBox();
+            this.cbApplyAll = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -135,6 +136,16 @@ namespace WinFormsDemo
             this.cbImagePos.Size = new System.Drawing.Size(144, 21);
             this.cbImagePos.TabIndex = 8;
             // 
+            // cbApplyAll
+            // 
+            this.cbApplyAll.AutoSize = true;
+            this.cbApplyAll.Location = new System.Drawing.Point(35, 190);
+            this.cbApplyAll.Name = "cbApplyAll";
+            this.cbApplyAll.Size = new System.Drawing.Size(109, 17);
+            this.cbApplyAll.TabIndex = 9;
+            this.cbApplyAll.Text = "Apply to all pages";
+            this.cbApplyAll.UseVisualStyleBackColor = true;
+            // 
             // BackgroundForm
             // 
             this.AcceptButton = this.btnOk;
@@ -142,6 +153,7 @@ namespace WinFormsDemo
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btnCancel;
             this.ClientSize = new System.Drawing.Size(318, 218);
+            this.Controls.Add(this.cbApplyAll);
             this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.btnImageBrowse);
             this.Controls.Add(this.cbImagePos);
@@ -158,8 +170,6 @@ namespace WinFormsDemo
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Set Background";
-            this.Shown += new System.EventHandler(this.BackgroundForm_Shown);
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.BackgroundForm_FormClosing);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -177,5 +187,6 @@ namespace WinFormsDemo
         private System.Windows.Forms.Button btnCancel;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.ComboBox cbImagePos;
+        private System.Windows.Forms.CheckBox cbApplyAll;
     }
 }

@@ -11,6 +11,17 @@ namespace DDraw
 
     public class DFigureHandler
     {
+        UndoRedo<bool> _customBackgroundFigure = new UndoRedo<bool>(false);
+        public bool CustomBackgroundFigure
+        {
+            get { return _customBackgroundFigure.Value; }
+            set
+            {
+                if (_customBackgroundFigure.Value != value)
+                    _customBackgroundFigure.Value = value;
+            }
+        }
+
         UndoRedo<BackgroundFigure> _backgroundFigure = new UndoRedo<BackgroundFigure>();
         public BackgroundFigure BackgroundFigure
         {

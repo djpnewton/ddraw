@@ -42,6 +42,17 @@ namespace DDraw
             }
         }
 
+        UndoRedo<BackgroundFigure> _backgroundFigure = new UndoRedo<BackgroundFigure>();
+        public BackgroundFigure BackgroundFigure
+        {
+            get { return _backgroundFigure.Value; }
+            set
+            {
+                if (_backgroundFigure.Value != value)
+                    _backgroundFigure.Value = value;
+            }
+        }
+
         public DEngineManager()
         {
             undoRedoArea.CommandDone += new EventHandler<CommandDoneEventArgs>(undoRedoArea_CommandDone);
@@ -102,6 +113,7 @@ namespace DDraw
         public void Clear()
         {
             engines.Clear();
+            BackgroundFigure = new BackgroundFigure();
         }
 
         public DEngine GetEngine(int idx)
