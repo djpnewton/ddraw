@@ -283,9 +283,8 @@ namespace WinFormsDemo
 
         void CheckState()
         {
-            // Change to the 'Select' state if we are in a volatile state like text editing
-            if (de.HsmState == DHsmState.TextEdit)
-                de.HsmState = DHsmState.Select;
+            // Change to a safe state if we are in a volatile state like text editing or resizing etc
+            de.CheckState();
         }
 
         void de_SelectedFiguresChanged()
@@ -1288,11 +1287,13 @@ namespace WinFormsDemo
 
         private void actUndo_Execute(object sender, EventArgs e)
         {
+            CheckState();
             dem.Undo(de);
         }
 
         private void actRedo_Execute(object sender, EventArgs e)
         {
+            CheckState();
             dem.Redo(de);
         }
 

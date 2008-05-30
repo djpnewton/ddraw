@@ -780,6 +780,11 @@ namespace DDraw
             UpdateViewers();
         }
 
+        public void CheckState()
+        {
+            hsm.CheckState();
+        }
+
         // Other //
 
         void DoDebugMessage(string msg)

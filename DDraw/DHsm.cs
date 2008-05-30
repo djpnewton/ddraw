@@ -11,7 +11,7 @@ namespace DDraw
     public enum DHsmSignals : int
     {
         //enum values must start at UserSig value or greater
-        GSelect = QSignals.UserSig, GSelectMeasure, GDrawLine, GDrawText, GDrawRect, GEraser, GCancelFigureDrag, GTextEdit,
+        GSelect = QSignals.UserSig, GSelectMeasure, GDrawLine, GDrawText, GDrawRect, GEraser, GCancelFigureDrag, GTextEdit, GCheckState,
         TextEdit, FigureEdit,
         MouseDown, MouseMove, MouseUp, DoubleClick,
         KeyDown, KeyPress, KeyUp
@@ -442,6 +442,11 @@ namespace DDraw
             Dispatch(new QEvent((int)DHsmSignals.GCancelFigureDrag));
         }
 
+        public void CheckState()
+        {
+            Dispatch(new QEvent((int)DHsmSignals.GCheckState));
+        }
+
         // private methods
 
         void CommitOrRollback(bool dontAllowZeroArea)
@@ -571,6 +576,9 @@ namespace DDraw
                         figureHandler.ClearSelected();
                     viewerHandler.Update();
                     DoStateChanged(DHsmState.Select);
+                    return null;
+                case (int)DHsmSignals.GCheckState:
+                    TransitionTo(SelectDefault);
                     return null;
             }
             return this.Main;
@@ -1173,6 +1181,15 @@ namespace DDraw
                     viewerHandler.Update();
                     DoStateChanged(DHsmState.DrawLine);
                     return null;
+                case (int)DHsmSignals.GCheckState:
+                    // commit to undo/redo
+                    if (IsInState(DrawingLine))
+                    CommitOrRollback(false);
+                    // transition
+                    TransitionTo(DrawLineDefault);
+                    // nullify autoGroupPolylineFigure
+                    autoGroupPolylineFigure = null;
+                    return null;
             }
             return this.Main;
         }
@@ -1520,6 +1537,9 @@ namespace DDraw
                 case (int)DHsmSignals.KeyUp:
                     DoTextEditKeyUp(((QKeyEvent)qevent).Dv, ((QKeyEvent)qevent).Key);
                     return null;
+                case (int)DHsmSignals.GCheckState:
+                    TransitionTo(Select);
+                    return null;
             }
             return this.Main;
         }
@@ -1535,6 +1555,13 @@ namespace DDraw
                     figureHandler.ClearSelected();
                     viewerHandler.Update();
                     DoStateChanged(DHsmState.DrawRect);
+                    return null;
+                case (int)DHsmSignals.GCheckState:
+                    // commit to undo/redo
+                    if (IsInState(DrawingRect))
+                        CommitOrRollback(false);
+                    // transition
+                    TransitionTo(DrawRectDefault);
                     return null;
             }
             return this.Main;
@@ -1688,6 +1715,9 @@ namespace DDraw
                 case (int)DHsmSignals.KeyPress:
                     ((IEditable)currentFigure).KeyPress(((QKeyPressEvent)qevent).Dv, ((QKeyPressEvent)qevent).Key);
                     return null;
+                case (int)DHsmSignals.GCheckState:
+                    TransitionTo(Select);
+                    return null;
             }
             return this.Main;
         }
@@ -1707,6 +1737,9 @@ namespace DDraw
                     // update
                     viewerHandler.Update();
                     DoStateChanged(DHsmState.Eraser);
+                    return null;
+                case (int)DHsmSignals.GCheckState:
+                    TransitionTo(EraserDefault);
                     return null;
             }
             return this.Main;
