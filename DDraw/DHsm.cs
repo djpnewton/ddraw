@@ -1416,30 +1416,42 @@ namespace DDraw
         {
             if (btn == DMouseButton.Left)
             {
-                // find and select clicked figure
                 IGlyph glyph;
-                Figure f = figureHandler.HitTestSelect(pt, out mouseHitTest, null, out glyph, false);
-                // select the TextFigure from the TextEditFigure
-                TextEditFigure tef = (TextEditFigure)currentFigure;
-                if (f == tef)
+                if (currentFigure.HitTest(pt, null, out glyph) == DHitTest.Body)
                 {
-                    if (tef.HasText)
-                    {
-                        f = tef.TextFigure;
-                        figureHandler.SelectFigures(new List<Figure>(new Figure[] { f }), false);
-                    }
+                    ((TextEditFigure)currentFigure).SetCursor(pt);
+                    dv.Update(currentFigure.Rect);
                 }
-                // setup for select mouse move
-                dragPt = pt;
-                // transition to select state
-                TransitionTo(DragFigure);
-                currentFigure = f;
+                else
+                {
+                    // find and select clicked figure
+                    Figure f = figureHandler.HitTestSelect(pt, out mouseHitTest, null, out glyph, false);
+                    // select the TextFigure from the TextEditFigure
+                    TextEditFigure tef = (TextEditFigure)currentFigure;
+                    if (f == tef)
+                    {
+                        if (tef.HasText)
+                        {
+                            f = tef.TextFigure;
+                            figureHandler.SelectFigures(new List<Figure>(new Figure[] { f }), false);
+                        }
+                    }
+                    // setup for select mouse move
+                    dragPt = pt;
+                    // transition to select state
+                    TransitionTo(DragFigure);
+                    currentFigure = f;
+                }
             }
         }
 
         void DoTextEditMouseMove(DTkViewer dv, DPoint pt)
         {
-            DoSelectDefaultMouseMove(dv, pt);
+            IGlyph glyph;
+            if (currentFigure.HitTest(pt, null, out glyph) == DHitTest.Body)
+                dv.SetCursor(DCursor.IBeam);
+            else
+                DoSelectDefaultMouseMove(dv, pt);
         }
 
         void DoTextEditKeyDown(DTkViewer dv, DKey k)

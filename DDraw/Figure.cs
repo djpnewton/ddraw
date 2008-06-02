@@ -1835,8 +1835,8 @@ namespace DDraw
             // paint selection & cursor
             string[] lines = Lines;
             DPoint pt = tf.Rect.TopLeft;
-            double height;
-            DPoint cpt = MeasureCursorPosition(lines, out height);
+            double height = LineHeight(lines);
+            DPoint cpt = MeasureCursorPosition(lines, height);
             DRect[] selRects = MeasureSelectionRects(lines, height);
 
             foreach (DRect sr in selRects)
@@ -1891,11 +1891,15 @@ namespace DDraw
             return i;
         }
 
-        DPoint MeasureCursorPosition(string[] lines, out double height)
+        double LineHeight(string[] lines)
+        {
+            return GraphicsHelper.MeasureText(Text, FontName, FontSize, Bold, Italics, Underline, Strikethrough).Y / lines.Length;
+        }
+
+        DPoint MeasureCursorPosition(string[] lines, double height)
         {
             // find the x,y position of the cursor
             int n = cursorPosition;
-            height = GraphicsHelper.MeasureText(Text, FontName, FontSize, Bold, Italics, Underline, Strikethrough).Y / lines.Length;
             if (cursorPosition >= 0)
             {
                 for (int i = 0; i < lines.Length; i++)
@@ -2068,8 +2072,7 @@ namespace DDraw
                         newLineNo = lineNo + 1;
                     else
                         break;
-                    double height;
-                    DPoint cpt = MeasureCursorPosition(lines, out height);
+                    DPoint cpt = MeasureCursorPosition(lines, LineHeight(lines));
                     int newLineCharNo = FindEquivCharacterPosition(lines[newLineNo], currentlineCharNo, cpt.X);
                     SetCursorPos(cursorPosition + CharNumberChange(lines, lineNo, newLineNo, currentlineCharNo, newLineCharNo),
                         select);
@@ -2133,6 +2136,48 @@ namespace DDraw
             }
             else
                 DeleteSelection();
+        }
+
+        public void SetCursor(DPoint pt)
+        {
+            pt = new DPoint(pt.X - X - border, pt.Y - Y - border);
+            string[] lines = Lines;
+            double lineHeight = LineHeight(lines);
+            int pos = 0;
+            // find line that pt is on
+            for (int i = 0; i < lines.Length; i++)
+            {
+                pos += lines[i].Length;
+                if (lineHeight * (i + 1) >= pt.Y || i == lines.Length - 1)
+                {
+                    double lastWidth = 0;
+                    // find character in line that pt is on
+                    for (int j = 1; j <= lines[i].Length; j++)
+                    {
+                        string substr = lines[i].Substring(0, j);
+                        double width = GraphicsHelper.MeasureText(substr, FontName, FontSize, Bold, Italics, Underline, Strikethrough).X;
+                        if (width >= pt.X)
+                        {
+                            double middleCharX;
+                            if (j == 1)
+                                middleCharX = width / 2;
+                            else
+                                middleCharX = width - ((width - lastWidth) / 2);
+                            if (middleCharX > pt.X)
+                                pos -= lines[i].Length - (j - 1);
+                            else
+                                pos -= lines[i].Length - j;
+                            break;
+                        }
+                        lastWidth = width;
+                    }
+                    break;
+                }
+                else
+                    pos++;
+            }
+            // set new cursor position
+            SetCursorPos(pos, false);
         }
     }
 
