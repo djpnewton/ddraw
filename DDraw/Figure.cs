@@ -2179,6 +2179,17 @@ namespace DDraw
             // set new cursor position
             SetCursorPos(pos, select);
         }
+
+        public bool HitTestBorder(DPoint pt)
+        {
+            if (DGeom.PointInRect(pt, Rect))
+            {
+                DRect innerBorder = new DRect(X + border, Y + border, Width - border * 2, Height - border * 2);
+                if (!DGeom.PointInRect(pt, innerBorder))
+                    return true;
+            }
+            return false;
+        }
     }
 
     public class GroupFigure : RectbaseFigure, IChildFigureable

@@ -125,7 +125,7 @@ namespace DDraw
         DHitTest mouseHitTest;
         bool cancelledFigureDrag;
         DKey textEditKey;
-        bool textEditMouseDown;
+        bool textEditMouseDown, textEditMove;
 
         bool lockInitialAspectRatio = false;
         double unlockInitalAspectRatioThreshold = 50;
@@ -1417,19 +1417,26 @@ namespace DDraw
         {
             if (btn == DMouseButton.Left)
             {
+                TextEditFigure tef = (TextEditFigure)currentFigure;
                 IGlyph glyph;
                 if (currentFigure.HitTest(pt, null, out glyph) == DHitTest.Body)
                 {
                     textEditMouseDown = true;
-                    ((TextEditFigure)currentFigure).SetCursorPoint(pt, false);
-                    dv.Update(currentFigure.Rect);
+                    textEditMove = tef.HitTestBorder(pt);
+                    if (textEditMove)
+                        dragPt = pt;
+                    else
+                    {
+                        tef.SetCursorPoint(pt, false);
+                        dv.Update(currentFigure.Rect);
+                    }
+
                 }
                 else
                 {
                     // find and select clicked figure
                     Figure f = figureHandler.HitTestSelect(pt, out mouseHitTest, null, out glyph, false);
                     // select the TextFigure from the TextEditFigure
-                    TextEditFigure tef = (TextEditFigure)currentFigure;
                     if (f == tef)
                     {
                         if (tef.HasText)
@@ -1449,16 +1456,38 @@ namespace DDraw
 
         void DoTextEditMouseMove(DTkViewer dv, DPoint pt)
         {
+            TextEditFigure tef = (TextEditFigure)currentFigure;
             if (textEditMouseDown)
             {
-                ((TextEditFigure)currentFigure).SetCursorPoint(pt, true);
-                dv.Update(currentFigure.Rect);
+                if (textEditMove)
+                {
+                    // bound pt to canvas
+                    BoundPtToPage(pt);
+                    // initial update rect
+                    DRect updateRect = GetBoundingBox(tef);
+                    // move text edit figure
+                    tef.X += pt.X - dragPt.X;
+                    tef.Y += pt.Y - dragPt.Y;
+                    dragPt = pt;
+                    // update
+                    dv.Update(updateRect.Union(GetBoundingBox(tef)));
+                }
+                else
+                {
+                    tef.SetCursorPoint(pt, true);
+                    dv.Update(currentFigure.Rect);
+                }
             }
             else
             {
                 IGlyph glyph;
                 if (currentFigure.HitTest(pt, null, out glyph) == DHitTest.Body)
-                    dv.SetCursor(DCursor.IBeam);
+                {
+                    if (tef.HitTestBorder(pt))
+                        dv.SetCursor(DCursor.MoveAll);
+                    else
+                        dv.SetCursor(DCursor.IBeam);
+                }
                 else
                     DoSelectDefaultMouseMove(dv, pt);
             }
