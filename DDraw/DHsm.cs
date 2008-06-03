@@ -125,6 +125,7 @@ namespace DDraw
         DHitTest mouseHitTest;
         bool cancelledFigureDrag;
         DKey textEditKey;
+        bool textEditMouseDown;
 
         bool lockInitialAspectRatio = false;
         double unlockInitalAspectRatioThreshold = 50;
@@ -1419,7 +1420,8 @@ namespace DDraw
                 IGlyph glyph;
                 if (currentFigure.HitTest(pt, null, out glyph) == DHitTest.Body)
                 {
-                    ((TextEditFigure)currentFigure).SetCursor(pt);
+                    textEditMouseDown = true;
+                    ((TextEditFigure)currentFigure).SetCursorPoint(pt, false);
                     dv.Update(currentFigure.Rect);
                 }
                 else
@@ -1447,11 +1449,25 @@ namespace DDraw
 
         void DoTextEditMouseMove(DTkViewer dv, DPoint pt)
         {
-            IGlyph glyph;
-            if (currentFigure.HitTest(pt, null, out glyph) == DHitTest.Body)
-                dv.SetCursor(DCursor.IBeam);
+            if (textEditMouseDown)
+            {
+                ((TextEditFigure)currentFigure).SetCursorPoint(pt, true);
+                dv.Update(currentFigure.Rect);
+            }
             else
-                DoSelectDefaultMouseMove(dv, pt);
+            {
+                IGlyph glyph;
+                if (currentFigure.HitTest(pt, null, out glyph) == DHitTest.Body)
+                    dv.SetCursor(DCursor.IBeam);
+                else
+                    DoSelectDefaultMouseMove(dv, pt);
+            }
+        }
+
+
+        void DoTextEditMouseUp(DTkViewer dTkViewer, DMouseButton dMouseButton, DPoint dPoint)
+        {
+            textEditMouseDown = false;
         }
 
         void DoTextEditKeyDown(DTkViewer dv, DKey k)
@@ -1509,6 +1525,8 @@ namespace DDraw
                 case (int)QSignals.Entry:
                     // reset textEditKey
                     textEditKey = new DKey();
+                    // reset textEditMouseDown
+                    textEditMouseDown = false;
                     // start undo record
                     undoRedoArea.StartSpan("Text Edit", false);
                     // add TextEditFigure
@@ -1539,6 +1557,9 @@ namespace DDraw
                     return null;
                 case (int)DHsmSignals.MouseMove:
                     DoTextEditMouseMove(((QMouseEvent)qevent).Dv, ((QMouseEvent)qevent).Pt);
+                    return null;
+                case (int)DHsmSignals.MouseUp:
+                    DoTextEditMouseUp(((QMouseEvent)qevent).Dv, ((QMouseEvent)qevent).Button, ((QMouseEvent)qevent).Pt);
                     return null;
                 case (int)DHsmSignals.KeyDown:
                     DoTextEditKeyDown(((QKeyEvent)qevent).Dv, ((QKeyEvent)qevent).Key);

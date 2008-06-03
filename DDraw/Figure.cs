@@ -2138,7 +2138,7 @@ namespace DDraw
                 DeleteSelection();
         }
 
-        public void SetCursor(DPoint pt)
+        public void SetCursorPoint(DPoint pt, bool select)
         {
             pt = new DPoint(pt.X - X - border, pt.Y - Y - border);
             string[] lines = Lines;
@@ -2177,7 +2177,7 @@ namespace DDraw
                     pos++;
             }
             // set new cursor position
-            SetCursorPos(pos, false);
+            SetCursorPos(pos, select);
         }
     }
 
