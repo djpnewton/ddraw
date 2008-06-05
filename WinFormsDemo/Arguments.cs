@@ -175,9 +175,9 @@ namespace WinFormsDemo
         {
         }
 
-        public bool FloatingTools
+        public bool ScreenAnnotate
         {
-            get { return HasParam("floatingtools"); }
+            get { return HasParam("screenannotate"); }
         }
     }
 }

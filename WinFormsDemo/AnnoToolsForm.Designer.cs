@@ -1,6 +1,6 @@
 namespace WinFormsDemo
 {
-    partial class FloatingToolsForm
+    partial class AnnoToolsForm
     {
         /// <summary>
         /// Required designer variable.
@@ -28,25 +28,24 @@ namespace WinFormsDemo
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FloatingToolsForm));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(AnnoToolsForm));
             this.toolStripPanel1 = new System.Windows.Forms.ToolStripPanel();
-            this.toolStrip1 = new WinFormsDemo.ToolStripEx();
+            this.tsAnnotate = new WinFormsDemo.ToolStripEx();
             this.btnMouse = new System.Windows.Forms.ToolStripButton();
-            this.btnScreenAnnotate = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.btnUndo = new System.Windows.Forms.ToolStripButton();
             this.btnImportArea = new System.Windows.Forms.ToolStripButton();
             this.btnImportPage = new System.Windows.Forms.ToolStripButton();
+            this.tsPersonal = new WinFormsDemo.PersonalToolbar.PersonalToolStrip();
             this.tsEngineState = new WinFormsDemo.FigureToolStrip();
             this.tsPropState = new WinFormsDemo.FigurePropertiesToolStrip();
-            this.tsPersonal = new WinFormsDemo.PersonalToolbar.PersonalToolStrip();
             this.toolStripPanel1.SuspendLayout();
-            this.toolStrip1.SuspendLayout();
+            this.tsAnnotate.SuspendLayout();
             this.SuspendLayout();
             // 
             // toolStripPanel1
             // 
-            this.toolStripPanel1.Controls.Add(this.toolStrip1);
+            this.toolStripPanel1.Controls.Add(this.tsAnnotate);
             this.toolStripPanel1.Controls.Add(this.tsPersonal);
             this.toolStripPanel1.Controls.Add(this.tsEngineState);
             this.toolStripPanel1.Controls.Add(this.tsPropState);
@@ -57,24 +56,23 @@ namespace WinFormsDemo
             this.toolStripPanel1.RowMargin = new System.Windows.Forms.Padding(3, 0, 0, 0);
             this.toolStripPanel1.Size = new System.Drawing.Size(317, 74);
             // 
-            // toolStrip1
+            // tsAnnotate
             // 
-            this.toolStrip1.ClickThrough = true;
-            this.toolStrip1.Dock = System.Windows.Forms.DockStyle.None;
-            this.toolStrip1.FocusControl = null;
-            this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.tsAnnotate.ClickThrough = true;
+            this.tsAnnotate.Dock = System.Windows.Forms.DockStyle.None;
+            this.tsAnnotate.FocusControl = null;
+            this.tsAnnotate.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.btnMouse,
-            this.btnScreenAnnotate,
             this.toolStripSeparator1,
             this.btnUndo,
             this.btnImportArea,
             this.btnImportPage});
-            this.toolStrip1.Location = new System.Drawing.Point(3, 0);
-            this.toolStrip1.ManagedFocus = true;
-            this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Size = new System.Drawing.Size(133, 25);
-            this.toolStrip1.TabIndex = 0;
-            this.toolStrip1.Text = "toolStrip1";
+            this.tsAnnotate.Location = new System.Drawing.Point(3, 0);
+            this.tsAnnotate.ManagedFocus = true;
+            this.tsAnnotate.Name = "tsAnnotate";
+            this.tsAnnotate.Size = new System.Drawing.Size(110, 25);
+            this.tsAnnotate.TabIndex = 0;
+            this.tsAnnotate.Text = "toolStrip1";
             // 
             // btnMouse
             // 
@@ -85,16 +83,6 @@ namespace WinFormsDemo
             this.btnMouse.Size = new System.Drawing.Size(23, 22);
             this.btnMouse.Text = "Mouse";
             this.btnMouse.Click += new System.EventHandler(this.btnMouse_Click);
-            // 
-            // btnScreenAnnotate
-            // 
-            this.btnScreenAnnotate.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.btnScreenAnnotate.Image = ((System.Drawing.Image)(resources.GetObject("btnScreenAnnotate.Image")));
-            this.btnScreenAnnotate.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btnScreenAnnotate.Name = "btnScreenAnnotate";
-            this.btnScreenAnnotate.Size = new System.Drawing.Size(23, 22);
-            this.btnScreenAnnotate.Text = "Screen Annotate";
-            this.btnScreenAnnotate.Click += new System.EventHandler(this.btnScreenAnnotate_Click);
             // 
             // toolStripSeparator1
             // 
@@ -131,6 +119,19 @@ namespace WinFormsDemo
             this.btnImportPage.Text = "Import Screen as Page";
             this.btnImportPage.Click += new System.EventHandler(this.btnImportPage_Click);
             // 
+            // tsPersonal
+            // 
+            this.tsPersonal.ClickThrough = true;
+            this.tsPersonal.Dap = null;
+            this.tsPersonal.De = null;
+            this.tsPersonal.Dock = System.Windows.Forms.DockStyle.None;
+            this.tsPersonal.FocusControl = null;
+            this.tsPersonal.Location = new System.Drawing.Point(113, 0);
+            this.tsPersonal.ManagedFocus = true;
+            this.tsPersonal.Name = "tsPersonal";
+            this.tsPersonal.Size = new System.Drawing.Size(35, 25);
+            this.tsPersonal.TabIndex = 4;
+            // 
             // tsEngineState
             // 
             this.tsEngineState.ClickThrough = true;
@@ -144,6 +145,7 @@ namespace WinFormsDemo
             this.tsEngineState.Size = new System.Drawing.Size(288, 25);
             this.tsEngineState.TabIndex = 2;
             this.tsEngineState.Text = "tsEngineState";
+            this.tsEngineState.FigureClassChanged += new WinFormsDemo.FigureClassChangedHandler(this.tsEngineState_FigureClassChanged);
             // 
             // tsPropState
             // 
@@ -156,24 +158,11 @@ namespace WinFormsDemo
             this.tsPropState.Location = new System.Drawing.Point(3, 50);
             this.tsPropState.ManagedFocus = true;
             this.tsPropState.Name = "tsPropState";
-            this.tsPropState.Size = new System.Drawing.Size(314, 25);
+            this.tsPropState.Size = new System.Drawing.Size(273, 25);
             this.tsPropState.TabIndex = 3;
             this.tsPropState.Text = "tsPropState";
             // 
-            // tsPersonal
-            // 
-            this.tsPersonal.ClickThrough = true;
-            this.tsPersonal.Dap = null;
-            this.tsPersonal.De = null;
-            this.tsPersonal.Dock = System.Windows.Forms.DockStyle.None;
-            this.tsPersonal.FocusControl = null;
-            this.tsPersonal.Location = new System.Drawing.Point(137, 0);
-            this.tsPersonal.ManagedFocus = true;
-            this.tsPersonal.Name = "tsPersonal";
-            this.tsPersonal.Size = new System.Drawing.Size(66, 25);
-            this.tsPersonal.TabIndex = 4;
-            // 
-            // FloatingToolsForm
+            // AnnoToolsForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -181,15 +170,17 @@ namespace WinFormsDemo
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.ClientSize = new System.Drawing.Size(317, 74);
             this.Controls.Add(this.toolStripPanel1);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
-            this.Name = "FloatingToolsForm";
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
+            this.Name = "AnnoToolsForm";
             this.ShowInTaskbar = false;
-            this.Text = "Floating Tools";
+            this.Text = "Screen Annotate";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FloatingToolsForm_FormClosing);
             this.toolStripPanel1.ResumeLayout(false);
             this.toolStripPanel1.PerformLayout();
-            this.toolStrip1.ResumeLayout(false);
-            this.toolStrip1.PerformLayout();
+            this.tsAnnotate.ResumeLayout(false);
+            this.tsAnnotate.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -197,8 +188,7 @@ namespace WinFormsDemo
 
         #endregion
 
-        private ToolStripEx toolStrip1;
-        private System.Windows.Forms.ToolStripButton btnScreenAnnotate;
+        private ToolStripEx tsAnnotate;
         private System.Windows.Forms.ToolStripButton btnMouse;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripButton btnImportArea;

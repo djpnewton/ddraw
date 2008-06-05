@@ -118,6 +118,8 @@ namespace WinFormsDemo
         public MainForm()
         {
             InitializeComponent();
+            // Create Handle (so we can respond to ipc events from other threads without showing the form)
+            IntPtr h = Handle;
             // Initialze DGraphics
             WFHelper.InitGraphics();
             // DEngine Manager
@@ -225,8 +227,8 @@ namespace WinFormsDemo
 
         void ActionCommandLine()
         {
-            if (cmdArguments.FloatingTools)
-                ShowFloatingTools(true);
+            if (cmdArguments.ScreenAnnotate)
+                ShowAnnoTools();
             else
             {
                 // if second unnamed cmd line argument is a file open it (first is this executable)
@@ -248,12 +250,10 @@ namespace WinFormsDemo
                         if (WindowState == FormWindowState.Minimized)
                             WindowState = FormWindowState.Normal;
                         Show();
-                        Focus();
-                        if (FloatingToolsForm.GlobalFT.Visible)
-                            FloatingToolsForm.GlobalFT.Alone = false;
+                        Activate();
                         break;
-                    case IpcMessage.FloatingTools:
-                        ShowFloatingTools(false);
+                    case IpcMessage.ScreenAnnotate:
+                        ShowAnnoTools();
                         break;
                 }
         }
@@ -1184,9 +1184,9 @@ namespace WinFormsDemo
             de.ClearPage();
         }
 
-        private void actFloatingTools_Execute(object sender, EventArgs e)
+        private void actAnnoTools_Execute(object sender, EventArgs e)
         {
-            ShowFloatingTools(false);
+            ShowAnnoTools();
         }
 
         private void actLink_Execute(object sender, EventArgs e)
@@ -1303,21 +1303,21 @@ namespace WinFormsDemo
                 de.SelectAll();
         }
 
-        void ShowFloatingTools(bool floatingToolsAlone)
+        void ShowAnnoTools()
         {
-            FloatingToolsForm ff = FloatingToolsForm.GlobalFT;
-            if (!ff.Visible)
+            AnnoToolsForm atf = AnnoToolsForm.GlobalAtf;
+            if (!atf.Visible)
             {
-                ff.ImportAnnotationsPage += new ImportAnnotationsPageHandler(FloatingTools_ImportAnnotationsPage);
-                ff.ImportAnnotationsArea += new ImportAnnotationsImageHandler(FloatingTools_ImportAnnotationsArea);
-                ff.Owner = this;
-                ff.Alone = floatingToolsAlone;
-                ff.Show();
+                atf.ImportAnnotationsPage += new ImportAnnotationsPageHandler(AnnoTools_ImportAnnotationsPage);
+                atf.ImportAnnotationsArea += new ImportAnnotationsImageHandler(AnnoTools_ImportAnnotationsArea);
+                atf.MainForm = this;
+                atf.TopMost = true;
+                atf.Show();
             }
-            ff.Focus();
+            atf.Focus();
         }
 
-        void FloatingTools_ImportAnnotationsPage(DEngine de)
+        void AnnoTools_ImportAnnotationsPage(DEngine de)
         {
             // progress form
             ProgressForm pf = new ProgressForm();
@@ -1339,7 +1339,7 @@ namespace WinFormsDemo
             pf.ShowDialog();
         }
 
-        void FloatingTools_ImportAnnotationsArea(DBitmap bmp)
+        void AnnoTools_ImportAnnotationsArea(DBitmap bmp)
         {
             // progress form
             ProgressForm pf = new ProgressForm();

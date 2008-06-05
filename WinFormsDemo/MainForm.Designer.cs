@@ -130,7 +130,7 @@ namespace WinFormsDemo
             this.sendBackwardToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.bringForwardToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.floatingToolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.AnnoToolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.screenCaptureToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.resetToolbarsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -172,7 +172,7 @@ namespace WinFormsDemo
             this.actPrint = new Burkovsky.Controls.Action();
             this.actUndo = new Burkovsky.Controls.Action();
             this.actRedo = new Burkovsky.Controls.Action();
-            this.actFloatingTools = new Burkovsky.Controls.Action();
+            this.actAnnoTools = new Burkovsky.Controls.Action();
             this.cmsFigure.SuspendLayout();
             this.cmsCanvas.SuspendLayout();
             this.cmsPreview.SuspendLayout();
@@ -1116,26 +1116,25 @@ namespace WinFormsDemo
             // 
             this.actionListProvider1.SetAction(this.toolsToolStripMenuItem, null);
             this.toolsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.floatingToolsToolStripMenuItem,
+            this.AnnoToolsToolStripMenuItem,
             this.screenCaptureToolStripMenuItem,
             this.resetToolbarsToolStripMenuItem});
             this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
             this.toolsToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
             this.toolsToolStripMenuItem.Text = "Tools";
             // 
-            // floatingToolsToolStripMenuItem
+            // AnnoToolsToolStripMenuItem
             // 
-            this.actionListProvider1.SetAction(this.floatingToolsToolStripMenuItem, this.actFloatingTools);
-            this.floatingToolsToolStripMenuItem.Name = "floatingToolsToolStripMenuItem";
-            this.floatingToolsToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.F)));
-            this.floatingToolsToolStripMenuItem.Size = new System.Drawing.Size(189, 22);
-            this.floatingToolsToolStripMenuItem.Text = "Floating Tools";
+            this.actionListProvider1.SetAction(this.AnnoToolsToolStripMenuItem, this.actAnnoTools);
+            this.AnnoToolsToolStripMenuItem.Name = "AnnoToolsToolStripMenuItem";
+            this.AnnoToolsToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
+            this.AnnoToolsToolStripMenuItem.Text = "Screen Annotate";
             // 
             // screenCaptureToolStripMenuItem
             // 
             this.actionListProvider1.SetAction(this.screenCaptureToolStripMenuItem, null);
             this.screenCaptureToolStripMenuItem.Name = "screenCaptureToolStripMenuItem";
-            this.screenCaptureToolStripMenuItem.Size = new System.Drawing.Size(189, 22);
+            this.screenCaptureToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
             this.screenCaptureToolStripMenuItem.Text = "Screen Capture";
             this.screenCaptureToolStripMenuItem.Click += new System.EventHandler(this.screenCaptureToolStripMenuItem_Click);
             // 
@@ -1143,7 +1142,7 @@ namespace WinFormsDemo
             // 
             this.actionListProvider1.SetAction(this.resetToolbarsToolStripMenuItem, null);
             this.resetToolbarsToolStripMenuItem.Name = "resetToolbarsToolStripMenuItem";
-            this.resetToolbarsToolStripMenuItem.Size = new System.Drawing.Size(189, 22);
+            this.resetToolbarsToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
             this.resetToolbarsToolStripMenuItem.Text = "Reset Toolbars";
             this.resetToolbarsToolStripMenuItem.Click += new System.EventHandler(this.resetToolbarsToolStripMenuItem_Click);
             // 
@@ -1318,7 +1317,7 @@ namespace WinFormsDemo
             this.actionListProvider1.Actions.Add(this.actDeletePage);
             this.actionListProvider1.Actions.Add(this.actClonePage);
             this.actionListProvider1.Actions.Add(this.actClearPage);
-            this.actionListProvider1.Actions.Add(this.actFloatingTools);
+            this.actionListProvider1.Actions.Add(this.actAnnoTools);
             this.actionListProvider1.Actions.Add(this.actLink);
             this.actionListProvider1.Actions.Add(this.actUndo);
             this.actionListProvider1.Actions.Add(this.actRedo);
@@ -1470,11 +1469,11 @@ namespace WinFormsDemo
             this.actRedo.Text = "Redo";
             this.actRedo.Execute += new System.EventHandler(this.actRedo_Execute);
             // 
-            // actFloatingTools
+            // actAnnoTools
             // 
-            this.actFloatingTools.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.F)));
-            this.actFloatingTools.Text = "Floating Tools";
-            this.actFloatingTools.Execute += new System.EventHandler(this.actFloatingTools_Execute);
+            this.actAnnoTools.ShortcutKeys = System.Windows.Forms.Keys.None;
+            this.actAnnoTools.Text = "Screen Annotate";
+            this.actAnnoTools.Execute += new System.EventHandler(this.actAnnoTools_Execute);
             // 
             // MainForm
             // 
@@ -1617,10 +1616,10 @@ namespace WinFormsDemo
         private System.Windows.Forms.ToolStripMenuItem clearPageToolStripMenuItem2;
         private System.Windows.Forms.ToolStripMenuItem deletePageToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem toolsToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem floatingToolsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem AnnoToolsToolStripMenuItem;
         private FigureToolStrip tsEngineState;
         private FigurePropertiesToolStrip tsPropState;
-        private Burkovsky.Controls.Action actFloatingTools;
+        private Burkovsky.Controls.Action actAnnoTools;
         private Burkovsky.Controls.Action actLink;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator10;
         private System.Windows.Forms.ToolStripMenuItem linkToolStripMenuItem;

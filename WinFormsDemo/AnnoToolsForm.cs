@@ -15,35 +15,31 @@ namespace WinFormsDemo
     public delegate void ImportAnnotationsPageHandler(DEngine de);
     public delegate void ImportAnnotationsImageHandler(DBitmap bmp);
 
-    public partial class FloatingToolsForm : WorkBookForm
+    public partial class AnnoToolsForm : WorkBookForm
     {
-        Form mainForm;
+        Form prevOwner;
+        public Form MainForm;
 
         AnnotationForm annotationForm = null;
 
         bool haveImportedAnnotations = false;
-        public bool Alone
-        {
-            get { return TopMost; }
-            set { TopMost = value; }
-        }
 
         public event ImportAnnotationsPageHandler ImportAnnotationsPage;
         public event ImportAnnotationsImageHandler ImportAnnotationsArea;
 
         // singleton thingie
-        static FloatingToolsForm floatingTools = null;
-        public static FloatingToolsForm GlobalFT
+        static AnnoToolsForm annoTools = null;
+        public static AnnoToolsForm GlobalAtf
         {
             get
             {
-                if (floatingTools == null)
-                    floatingTools = new FloatingToolsForm();
-                return floatingTools;
+                if (annoTools == null)
+                    annoTools = new AnnoToolsForm();
+                return annoTools;
             }
         }
 
-        public FloatingToolsForm()
+        public AnnoToolsForm()
         {
             InitializeComponent();
             MouseMode();
@@ -53,17 +49,12 @@ namespace WinFormsDemo
         void  FloatingToolsForm_Disposed(object sender, EventArgs e)
         {
             // remove reference as the form is disposed
- 	        floatingTools = null;
+ 	        annoTools = null;
         }
 
         private void btnMouse_Click(object sender, EventArgs e)
         {
             MouseMode();
-        }
-
-        private void btnScreenAnnotate_Click(object sender, EventArgs e)
-        {
-            ScreenAnnotateMode();
         }
 
         bool MouseMode()
@@ -73,39 +64,33 @@ namespace WinFormsDemo
                 // ask if user wants to cancel
                 if (!haveImportedAnnotations && annotationForm.De.CanUndo)
                 {
-                    if (MessageBox.Show("You have not imported any annotations. Going into mouse mode will erase your annotations, do you want to cancel this action?",
-                        "Annotations Import Question", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
+                    if (MessageBox.Show("You have not imported any annotations. This action will erase your annotations, are you sure you want to continue?",
+                        "No Annotations Imported", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.No)
                         return false;
                 }
                 // set ownwer back to the mainform
-                Owner = mainForm;
+                Owner = prevOwner;
                 // close the annotation form
                 annotationForm.Close();
                 annotationForm = null;
                 // show the mainform
-                if (!Alone || haveImportedAnnotations)
+                if (haveImportedAnnotations)
                 {
-                    mainForm.Show();
+                    MainForm.Show();
                     haveImportedAnnotations = false;
                 }
             }
-            // check mouse button
-            btnMouse.Checked = true;
-            btnScreenAnnotate.Checked = false;
             // hide annotation tools
-            toolStripSeparator1.Visible = false;
-            btnUndo.Visible = false;
-            btnImportArea.Visible = false;
-            btnImportPage.Visible = false;
+            tsAnnotate.Visible = false;
             // hide state tools
-            tsEngineState.Visible = false;
+            tsEngineState.Mode = FigureToolStripMode.FigureClassSelect;
             tsPropState.Visible = false;
             // personal toolbar
             tsPersonal.Visible = false;
-            if (mainForm != null)
+            if (MainForm != null)
             {
-                System.Diagnostics.Debug.Assert(mainForm is MainForm, "ERROR: mainForm is not of type MainForm");
-                PtUtils.LoadPersonalToolsFromSource(((MainForm)mainForm).PersonalToolStrip,
+                System.Diagnostics.Debug.Assert(MainForm is MainForm, "ERROR: mainForm is not of type MainForm");
+                PtUtils.LoadPersonalToolsFromSource(((MainForm)MainForm).PersonalToolStrip,
                     PtUtils.CreatePersonalToolsSource(tsPersonal));
             }
             return true;
@@ -115,13 +100,12 @@ namespace WinFormsDemo
         {
             if (annotationForm == null)
             {
-                // save mainform/owner reference
-                mainForm = Owner;
+                // save owner reference
+                prevOwner = Owner;
                 // hide this toolbar and the mainform
                 Hide();
-                mainForm.Hide();
                 Application.DoEvents();
-                System.Threading.Thread.Sleep(500);
+                System.Threading.Thread.Sleep(250);
                 // create the annotation form (this takes a screen grab)
                 annotationForm = new AnnotationForm();
                 annotationForm.Show();
@@ -129,16 +113,10 @@ namespace WinFormsDemo
                 Owner = annotationForm;
                 // show this toolbar
                 Show();
-                // check the screen annotation button
-                btnMouse.Checked = false;
-                btnScreenAnnotate.Checked = true;
                 // show annotation tools
-                btnUndo.Visible = true;
-                toolStripSeparator1.Visible = true;
-                btnImportArea.Visible = true;
-                btnImportPage.Visible = true;
+                tsAnnotate.Visible = true;
                 // show DEngine state tools
-                tsEngineState.Visible = true;
+                tsEngineState.Mode = FigureToolStripMode.DEngineState;
                 tsEngineState.De = annotationForm.De;
                 tsPropState.Visible = true;
                 tsPropState.Dap = DAuthorProperties.GlobalAP;
@@ -146,9 +124,9 @@ namespace WinFormsDemo
                 tsPropState.Dv = annotationForm.Dv;
                 // personal toolbar
                 tsPersonal.Visible = true;
-                System.Diagnostics.Debug.Assert(mainForm is MainForm, "ERROR: mainForm is not of type MainForm");
+                System.Diagnostics.Debug.Assert(MainForm is MainForm, "ERROR: mainForm is not of type MainForm");
                 PtUtils.LoadPersonalToolsFromSource(tsPersonal,
-                    PtUtils.CreatePersonalToolsSource(((MainForm)mainForm).PersonalToolStrip));
+                    PtUtils.CreatePersonalToolsSource(((MainForm)MainForm).PersonalToolStrip));
                 tsPersonal.De = annotationForm.De;
                 tsPersonal.Dap = DAuthorProperties.GlobalAP;
             }
@@ -164,12 +142,8 @@ namespace WinFormsDemo
                     return;
                 }
             // if the main form is not visible then close it too
-            if (Owner != null && !Owner.Visible)
-            {
-                mainForm = Owner;
-                Owner = null; // watch out for recursion
-                mainForm.Close();
-            }
+            if (MainForm != null && !MainForm.Visible)
+                MainForm.Close();
         }
 
         private void btnUndo_Click(object sender, EventArgs e)
@@ -215,6 +189,15 @@ namespace WinFormsDemo
             {
                 haveImportedAnnotations = true;
                 ImportAnnotationsPage(annotationForm.De);
+            }
+        }
+
+        private void tsEngineState_FigureClassChanged(object sender, Type figureClass)
+        {
+            if (figureClass != null)
+            {
+                ScreenAnnotateMode();
+                annotationForm.De.HsmSetStateByFigureClass(figureClass);
             }
         }
     }

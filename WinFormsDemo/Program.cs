@@ -23,8 +23,8 @@ namespace WinFormsDemo
             else
             {
                 // send message to other program to show itself
-                if (WorkBookArguments.GlobalWbArgs.FloatingTools)
-                    Ipc.GlobalIpc.SendMessage(IpcMessage.FloatingTools);
+                if (WorkBookArguments.GlobalWbArgs.ScreenAnnotate)
+                    Ipc.GlobalIpc.SendMessage(IpcMessage.ScreenAnnotate);
                 else
                     Ipc.GlobalIpc.SendMessage(IpcMessage.Show);
             }

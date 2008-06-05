@@ -39,6 +39,7 @@ namespace WinFormsDemo
                 mode = value;
                 btnSelect.Visible = mode == FigureToolStripMode.DEngineState;
                 btnEraser.Visible = mode == FigureToolStripMode.DEngineState;
+                FigureClass = null;
             }
         }
 
@@ -176,6 +177,8 @@ namespace WinFormsDemo
                     figureClass = typeof(PentagonFigure);
                 else if (sender == btnLine)
                     figureClass = typeof(LineFigure);
+                else
+                    figureClass = null;
                 UpdateToFigureClass();
                 DoFigureClassChanged();
             }

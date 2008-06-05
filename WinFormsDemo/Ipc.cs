@@ -9,7 +9,7 @@ using System.Runtime.Remoting.Channels.Ipc;
 
 namespace WinFormsDemo
 {
-    public enum IpcMessage { Show, FloatingTools };
+    public enum IpcMessage { Show, ScreenAnnotate };
     public delegate void MessageReceivedHandler(IpcMessage msg);
 
     public class IpcMessager : MarshalByRefObject
