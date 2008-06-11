@@ -228,7 +228,7 @@ namespace WinFormsDemo
         void ActionCommandLine()
         {
             if (cmdArguments.ScreenAnnotate)
-                ShowAnnoTools();
+                ShowAnnoTools(true);
             else
             {
                 // if second unnamed cmd line argument is a file open it (first is this executable)
@@ -253,7 +253,7 @@ namespace WinFormsDemo
                         Activate();
                         break;
                     case IpcMessage.ScreenAnnotate:
-                        ShowAnnoTools();
+                        ShowAnnoTools(false);
                         break;
                 }
         }
@@ -1186,7 +1186,7 @@ namespace WinFormsDemo
 
         private void actAnnoTools_Execute(object sender, EventArgs e)
         {
-            ShowAnnoTools();
+            ShowAnnoTools(false);
         }
 
         private void actLink_Execute(object sender, EventArgs e)
@@ -1303,15 +1303,16 @@ namespace WinFormsDemo
                 de.SelectAll();
         }
 
-        void ShowAnnoTools()
+        void ShowAnnoTools(bool alone)
         {
+            CheckState();
             AnnoToolsForm atf = AnnoToolsForm.GlobalAtf;
             if (!atf.Visible)
             {
                 atf.ImportAnnotationsPage += new ImportAnnotationsPageHandler(AnnoTools_ImportAnnotationsPage);
                 atf.ImportAnnotationsArea += new ImportAnnotationsImageHandler(AnnoTools_ImportAnnotationsArea);
                 atf.MainForm = this;
-                atf.TopMost = true;
+                atf.Alone = alone;
                 atf.Show();
             }
             atf.Focus();

@@ -176,7 +176,9 @@ namespace WinFormsDemo
             this.Name = "AnnoToolsForm";
             this.ShowInTaskbar = false;
             this.Text = "Screen Annotate";
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FloatingToolsForm_FormClosing);
+            this.TopMost = true;
+            this.Shown += new System.EventHandler(this.AnnoToolsForm_Shown);
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.AnnoToolsForm_FormClosing);
             this.toolStripPanel1.ResumeLayout(false);
             this.toolStripPanel1.PerformLayout();
             this.tsAnnotate.ResumeLayout(false);

@@ -20,6 +20,8 @@ namespace WinFormsDemo
         Form prevOwner;
         public Form MainForm;
 
+        public bool Alone;
+
         AnnotationForm annotationForm = null;
 
         bool haveImportedAnnotations = false;
@@ -68,17 +70,12 @@ namespace WinFormsDemo
                         "No Annotations Imported", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.No)
                         return false;
                 }
+                haveImportedAnnotations = false;
                 // set ownwer back to the mainform
                 Owner = prevOwner;
                 // close the annotation form
                 annotationForm.Close();
                 annotationForm = null;
-                // show the mainform
-                if (haveImportedAnnotations)
-                {
-                    MainForm.Show();
-                    haveImportedAnnotations = false;
-                }
             }
             // hide annotation tools
             tsAnnotate.Visible = false;
@@ -132,7 +129,13 @@ namespace WinFormsDemo
             }
         }
 
-        private void FloatingToolsForm_FormClosing(object sender, FormClosingEventArgs e)
+        private void AnnoToolsForm_Shown(object sender, EventArgs e)
+        {
+            if (MainForm != null)
+                MainForm.Hide();
+        }
+
+        private void AnnoToolsForm_FormClosing(object sender, FormClosingEventArgs e)
         {
             // if the annotation form is shown then go back to mousing
             if (annotationForm != null)
@@ -141,9 +144,14 @@ namespace WinFormsDemo
                     e.Cancel = true;
                     return;
                 }
-            // if the main form is not visible then close it too
+            // if the main form is not visible then close it or show it
             if (MainForm != null && !MainForm.Visible)
-                MainForm.Close();
+            {
+                if (Alone)
+                    MainForm.Close();
+                else
+                    MainForm.Show();
+            }
         }
 
         private void btnUndo_Click(object sender, EventArgs e)
