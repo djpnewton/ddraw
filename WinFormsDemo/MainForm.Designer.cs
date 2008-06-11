@@ -37,6 +37,8 @@ namespace WinFormsDemo
             this.deleteToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.groupToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.flipXToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.flipYToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.sendToBackToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.bringToFrontToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -201,6 +203,8 @@ namespace WinFormsDemo
             this.deleteToolStripMenuItem1,
             this.toolStripSeparator1,
             this.groupToolStripMenuItem,
+            this.flipXToolStripMenuItem,
+            this.flipYToolStripMenuItem,
             this.toolStripSeparator2,
             this.sendToBackToolStripMenuItem,
             this.bringToFrontToolStripMenuItem,
@@ -209,7 +213,7 @@ namespace WinFormsDemo
             this.toolStripSeparator10,
             this.linkToolStripMenuItem});
             this.cmsFigure.Name = "cmsFigure";
-            this.cmsFigure.Size = new System.Drawing.Size(239, 242);
+            this.cmsFigure.Size = new System.Drawing.Size(239, 308);
             // 
             // cutToolStripMenuItem1
             // 
@@ -256,6 +260,22 @@ namespace WinFormsDemo
             this.groupToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.G)));
             this.groupToolStripMenuItem.Size = new System.Drawing.Size(238, 22);
             this.groupToolStripMenuItem.Text = "Group";
+            // 
+            // flipXToolStripMenuItem
+            // 
+            this.actionListProvider1.SetAction(this.flipXToolStripMenuItem, null);
+            this.flipXToolStripMenuItem.Name = "flipXToolStripMenuItem";
+            this.flipXToolStripMenuItem.Size = new System.Drawing.Size(238, 22);
+            this.flipXToolStripMenuItem.Text = "Flip Left/Right";
+            this.flipXToolStripMenuItem.Click += new System.EventHandler(this.flipXToolStripMenuItem_Click);
+            // 
+            // flipYToolStripMenuItem
+            // 
+            this.actionListProvider1.SetAction(this.flipYToolStripMenuItem, null);
+            this.flipYToolStripMenuItem.Name = "flipYToolStripMenuItem";
+            this.flipYToolStripMenuItem.Size = new System.Drawing.Size(238, 22);
+            this.flipYToolStripMenuItem.Text = "Flip Up/Down";
+            this.flipYToolStripMenuItem.Click += new System.EventHandler(this.flipYToolStripMenuItem_Click);
             // 
             // toolStripSeparator2
             // 
@@ -1664,6 +1684,8 @@ namespace WinFormsDemo
         private System.Windows.Forms.ToolStripMenuItem pageNavigationToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem screenCaptureToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem exportToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem flipXToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem flipYToolStripMenuItem;
     }
 }
 

@@ -26,7 +26,8 @@ namespace DDraw
     public class ClockFigure : RectbaseFigure, IEditable
     {
         bool editing = false;
-        double origRotation;
+        double origRotation, origAlpha;
+        bool origFlipX, origFlipY;
         
         UndoRedo<double> firstHandAngle = new UndoRedo<double>(0);
         bool editingFirstHand = false;
@@ -52,12 +53,21 @@ namespace DDraw
             editing = true;
             origRotation = Rotation;
             Rotation = 0;
+            origAlpha = Alpha;
+            Alpha = 1;
+            origFlipX = FlipX;
+            origFlipY = FlipY;
+            FlipX = false;
+            FlipY = false;
         }
         
         public void EndEdit ()
         {
             editing = false;
             Rotation = origRotation;
+            Alpha = origAlpha;
+            FlipX = origFlipX;
+            FlipY = origFlipY;
         }
 
         public event EditFinishedHandler EditFinished;
@@ -152,19 +162,15 @@ namespace DDraw
         protected override void PaintBody (DGraphics dg)
         {
             DRect r = GetClockRect();
-            double alpha = Alpha;
             if (editing)
-            {
                 dg.FillRect(r.X, r.Y, r.Width, r.Height, DColor.Black, 1, DFillStyle.ForwardDiagonalHatch);
-                alpha = 1;
-            }
-            dg.FillEllipse(r, DColor.White, alpha);
-            dg.DrawEllipse(r, DColor.Black, alpha);
+            dg.FillEllipse(r, DColor.White, Alpha);
+            dg.DrawEllipse(r, DColor.Black, Alpha);
             string text = "12"; string font = "Arial"; double fontSz = 8;
             DPoint textSz = dg.MeasureText(text, font, fontSz);
-            dg.DrawText(text, font, fontSz, new DPoint(r.Center.X - textSz.X / 2, r.Y), DColor.Black, alpha);
-            dg.DrawLine(r.Center, FirstHandPoint(r), DColor.Red, alpha);
-            dg.DrawLine(r.Center, SecondHandPoint(r), DColor.Blue, alpha);
+            dg.DrawText(text, font, fontSz, new DPoint(r.Center.X - textSz.X / 2, r.Y), DColor.Black, Alpha);
+            dg.DrawLine(r.Center, FirstHandPoint(r), DColor.Red, Alpha);
+            dg.DrawLine(r.Center, SecondHandPoint(r), DColor.Blue, Alpha);
         }
         
         void DoEditFinished()

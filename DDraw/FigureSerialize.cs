@@ -27,6 +27,8 @@ namespace DDraw
         public const string WIDTH_ATTR = "Width";
         public const string HEIGHT_ATTR = "Height";
         public const string ROTATION_ATTR = "Rotation";
+        public const string FLIPX_ATTR = "FlipX";
+        public const string FLIPY_ATTR = "FlipY";
         public const string LOCKASPECTRATIO_ATTR = "LockAspectRatio";
         public const string FILL_ELE = "Fill";
         public const string COLOR_ATTR = "Color";
@@ -86,6 +88,8 @@ namespace DDraw
                 wr.WriteAttributeString(WIDTH_ATTR, fd.Width.ToString());
                 wr.WriteAttributeString(HEIGHT_ATTR, fd.Height.ToString());
                 wr.WriteAttributeString(ROTATION_ATTR, fd.Rotation.ToString());
+                wr.WriteAttributeString(FLIPX_ATTR, fd.FlipX.ToString());
+                wr.WriteAttributeString(FLIPY_ATTR, fd.FlipY.ToString());
                 wr.WriteAttributeString(LOCKASPECTRATIO_ATTR, fd.LockAspectRatio.ToString());
                 wr.WriteEndElement();
             }
@@ -324,6 +328,7 @@ namespace DDraw
         static void ApplyDimensions(XmlReader re, IDimension d)
         {
             double x = 0, y = 0, width = 10, height = 10, rot = 0;
+            bool flipX = false, flipY = false;
             bool lar = false;
             re.MoveToContent();
             for (int i = 0; i < re.AttributeCount; i++)
@@ -339,6 +344,10 @@ namespace DDraw
                     double.TryParse(re.Value, out height);
                 else if (re.LocalName == ROTATION_ATTR)
                     double.TryParse(re.Value, out rot);
+                else if (re.LocalName == FLIPX_ATTR)
+                    bool.TryParse(re.Value, out flipX);
+                else if (re.LocalName == FLIPY_ATTR)
+                    bool.TryParse(re.Value, out flipY);
                 else if (re.LocalName == LOCKASPECTRATIO_ATTR)
                     bool.TryParse(re.Value, out lar);
             }
@@ -347,6 +356,8 @@ namespace DDraw
             d.Width = width;
             d.Height = height;
             d.Rotation = rot;
+            d.FlipX = flipX;
+            d.FlipY = flipY;
             d.LockAspectRatio = lar;
         }
 

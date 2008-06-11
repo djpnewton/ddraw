@@ -297,15 +297,34 @@ namespace DDraw
         public void UngroupFigure(GroupFigure gf)
         {
             // apply group properties (rotation etc) to child figures
-            DPoint gcpt = gf.Rect.Center;
+            DPoint grpCtr = gf.Rect.Center;
             foreach (Figure f in gf.ChildFigures)
             {
+                // flip
+                DPoint ctr = f.Rect.Center;
+                if (gf.FlipX)
+                {
+                    f.FlipX = !f.FlipX;
+                    f.X -= (ctr.X - grpCtr.X) * 2;
+                    // flip rotation
+                    if (f.Rotation != 0) f.Rotation = 2 * Math.PI - f.Rotation;
+                }
+                if (gf.FlipY)
+                {
+                    f.FlipY = !f.FlipY;
+                    f.Y -= (ctr.Y - grpCtr.Y) * 2;
+                    // flip rotation
+                    if (f.Rotation != 0) f.Rotation = 2 * Math.PI - f.Rotation;
+                }
                 // rotation
-                DPoint fcpt = f.Rect.Center;
-                DPoint rotpt = DGeom.RotatePoint(fcpt, gcpt, gf.Rotation);
-                f.X += rotpt.X - fcpt.X;
-                f.Y += rotpt.Y - fcpt.Y;
-                f.Rotation += gf.Rotation;
+                if (gf.Rotation != 0)
+                {
+                    ctr = f.Rect.Center;
+                    DPoint rotpt = DGeom.RotatePoint(ctr, grpCtr, gf.Rotation);
+                    f.X += rotpt.X - ctr.X;
+                    f.Y += rotpt.Y - ctr.Y;
+                    f.Rotation += gf.Rotation;
+                }
                 // alpha
                 if (gf.UseRealAlpha && f is IAlphaBlendable)
                     ((IAlphaBlendable)f).Alpha *= gf.Alpha;

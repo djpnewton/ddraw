@@ -1606,5 +1606,23 @@ namespace WinFormsDemo
             };
             pf.ShowDialog();
         }
+
+        private void flipXToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            de.UndoRedoStart("Flip X");
+            foreach (Figure fig in de.SelectedFigures)
+                fig.FlipX = !fig.FlipX;
+            de.UndoRedoCommit();
+            dvEditor.Update();
+        }
+
+        private void flipYToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            de.UndoRedoStart("Flip Y");
+            foreach (Figure fig in de.SelectedFigures)
+                fig.FlipY = !fig.FlipY;
+            de.UndoRedoCommit();
+            dvEditor.Update();
+        }
     }
 }

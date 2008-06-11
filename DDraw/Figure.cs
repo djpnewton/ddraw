@@ -35,6 +35,16 @@ namespace DDraw
             get;
             set;
         }
+        bool FlipX
+        {
+            get;
+            set;
+        }
+        bool FlipY
+        {
+            get;
+            set;
+        }
         bool LockAspectRatio
         {
             get;
@@ -330,6 +340,11 @@ namespace DDraw
             set;
         }
 
+        bool HasGlyphs
+        {
+            get;
+        }
+
         void PaintGlyphs(DGraphics dg);
 
         DHitTest GlyphHitTest(DPoint pt, out IGlyph glyph);
@@ -424,6 +439,19 @@ namespace DDraw
             set { if (value != _rotation.Value) _rotation.Value = value; }
         }
 
+        UndoRedo<bool> _flipX = new UndoRedo<bool>(false);
+        public virtual bool FlipX
+        {
+            get { return _flipX.Value; }
+            set { if (value != _flipX.Value) _flipX.Value = value; }
+        }
+        UndoRedo<bool> _flipY = new UndoRedo<bool>(false);
+        public virtual bool FlipY
+        {
+            get { return _flipY.Value; }
+            set { if (value != _flipY.Value) _flipY.Value = value; }
+        }
+
         bool lockAspectRatio = false;
         public virtual bool LockAspectRatio
         {
@@ -453,15 +481,25 @@ namespace DDraw
             Rotation = rotation;
         }
 
-        public DPoint RotatePointToFigure(DPoint pt)
+        public DPoint TransformPointToFigure(DPoint pt, bool doFlip)
         {
+            DPoint ctr = Rect.Center;
             // negative rotation to put point in figure coordinate space
-            return DGeom.RotatePoint(pt, Rect.Center, -Rotation);
+            DPoint res = DGeom.RotatePoint(pt, ctr, -Rotation);
+            // account for flip
+            if (doFlip)
+            {
+                if (FlipX)
+                    res.X -= (res.X - ctr.X) * 2;
+                if (FlipY)
+                    res.Y -= (res.Y - ctr.Y) * 2;
+            }
+            return res;
         }
 
         public virtual DHitTest HitTest(DPoint pt, List<Figure> children, out IGlyph glyph)
         {
-            pt = RotatePointToFigure(pt);
+            pt = TransformPointToFigure(pt, !selected);
             DHitTest res = GlyphHitTest(pt, out glyph);
             if (res == DHitTest.None)
             {
@@ -482,19 +520,51 @@ namespace DDraw
 
         protected abstract DHitTest BodyHitTest(DPoint pt, List<Figure> children);
 
-        protected void ApplyTransforms(DGraphics dg)
+        protected void ApplyTransforms(DGraphics dg, bool doFlips)
         {
-            dg.Rotate(Rotation, Rect.Center);
+            DPoint ctr = Rect.Center;
+            dg.Rotate(Rotation, ctr);
+            if (doFlips)
+            {
+                if (FlipX)
+                {
+                    dg.Translate(ctr.X * 2, 0);
+                    dg.Scale(-1, 1);
+                }
+                if (FlipY)
+                {
+                    dg.Translate(0, ctr.Y * 2);
+                    dg.Scale(1, -1);
+                }
+            }
+        }
+
+        void UnFlipTransform(DGraphics dg)
+        {
+            DPoint ctr = Rect.Center;
+            if (FlipX)
+            {
+                dg.Scale(-1, 1);
+                dg.Translate(-ctr.X * 2, 0);
+            }
+            if (FlipY)
+            {
+                dg.Scale(1, -1);
+                dg.Translate(0, -ctr.Y * 2);
+            }
         }
 
         public void Paint(DGraphics dg)
         {
-            DMatrix m = dg.SaveTransform();
-            ApplyTransforms(dg);
+            dg.Save();
+            ApplyTransforms(dg, true);
             PaintBody(dg);
-            if (glyphsVisible)
+            if (glyphsVisible && HasGlyphs)
+            {
+                UnFlipTransform(dg);
                 PaintGlyphs(dg);
-            dg.LoadTransform(m);
+            }
+            dg.Restore();
         }
 
         protected abstract void PaintBody(DGraphics dg);
@@ -537,7 +607,7 @@ namespace DDraw
                 // save current transform
                 DMatrix m = dg.SaveTransform();
                 // apply transform
-                ApplyTransforms(dg);
+                ApplyTransforms(dg, false);
                 // draw selection rectangle
                 DRect r = GetSelectRect();
                 double selectRectY = r.Y;
@@ -633,6 +703,11 @@ namespace DDraw
         {
             get { return glyphsVisible; }
             set { glyphsVisible = value; }
+        }
+
+        public bool HasGlyphs
+        {
+            get { return glyphs != null && glyphs.Count > 0; }
         }
 
         public virtual void PaintGlyphs(DGraphics dg)
@@ -1018,6 +1093,34 @@ namespace DDraw
             }
         }
 
+        public override bool FlipX
+        {
+            get { return false; }
+            set
+            {
+                if (value)
+                {
+                    DPoint tmp = Pt1;
+                    Pt1 = new DPoint(Pt2.X, Pt1.Y);
+                    Pt2 = new DPoint(tmp.X, Pt2.Y);
+                }
+            }
+        }
+
+        public override bool FlipY
+        {
+            get { return false; }
+            set
+            {
+                if (value)
+                {
+                    DPoint tmp = Pt1;
+                    Pt1 = new DPoint(Pt1.X, Pt2.Y);
+                    Pt2 = new DPoint(Pt2.X, tmp.Y);
+                }
+            }
+        }
+
         public DRect GetPt1HandleRect()
         {
             double hs = HandleSize * _controlScale;
@@ -1045,7 +1148,7 @@ namespace DDraw
                 // save current transform
                 DMatrix m = dg.SaveTransform();
                 // apply transform
-                ApplyTransforms(dg);
+                ApplyTransforms(dg, true);
                 // draw pt1 handle
                 double hb = _handleBorder * _controlScale;
                 double hb2 = hb + hb;
@@ -1072,7 +1175,7 @@ namespace DDraw
             if (Glyphs != null && Glyphs.Count > 0)
             {
                 DMatrix m = dg.SaveTransform();
-                ApplyTransforms(dg);
+                ApplyTransforms(dg, false);
                 int n = 0;
                 foreach (IGlyph g in Glyphs)
                 {
@@ -1829,7 +1932,12 @@ namespace DDraw
             tf.Alpha = 1;
             double rot = tf.Rotation;
             tf.Rotation = 0;
+            bool flipX = tf.FlipX, flipY = tf.FlipY;
+            tf.FlipX = false;
+            tf.FlipY = false;
             tf.Paint(dg);
+            tf.FlipX = flipX;
+            tf.FlipY = flipY;
             tf.Alpha = alpha;
             tf.Rotation = rot;
             // paint selection & cursor
@@ -2334,7 +2442,7 @@ namespace DDraw
 
         public override DHitTest HitTest(DPoint pt, List<Figure> children, out IGlyph glyph)
         {
-            pt = RotatePointToFigure(pt);
+            pt = TransformPointToFigure(pt, !Selected);
             DHitTest res = GlyphHitTest(pt, out glyph);
             if (res == DHitTest.None)
             {
@@ -2445,14 +2553,21 @@ namespace DDraw
         
         public override DRect GetSelectRect()
         {
+            DPoint ctr = Rect.Center;
             DRect r = DGeom.BoundingBoxOfRotatedRect(childFigs[0].Rect, childFigs[0].Rotation);
             foreach (Figure f in childFigs)
             {
-                DRect r2 = DGeom.BoundingBoxOfRotatedRect(f.GetSelectRect(), f.Rotation);               
+                DRect r2 = DGeom.BoundingBoxOfRotatedRect(f.GetSelectRect(), f.Rotation);
+                // flip
+                if (FlipX)
+                    r2.X -= (r2.Center.X - ctr.X) * 2;
+                if (FlipY)
+                    r2.Y -= (r2.Center.Y - ctr.Y) * 2;
+                // merge
                 r = r.Union(r2);
             }
             return r;
-        }
+       } 
         
         public override void BeforeResize()
         {
