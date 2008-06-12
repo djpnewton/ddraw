@@ -62,6 +62,54 @@ namespace WinFormsDemo.PersonalToolbar
             base.OnItemClicked(e);
         }
 
+        protected override void OnItemAdded(ToolStripItemEventArgs e)
+        {
+            base.OnItemAdded(e);
+            e.Item.MouseDown += new MouseEventHandler(Item_MouseDown);
+        }
+
+        void Item_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Right && sender != btnCustomize)
+            {
+                ToolStripItem tsItem = (ToolStripItem)sender;
+                if (tsItem.Owner != null)
+                {
+                    // make context menu
+                    ContextMenuStrip menu = new ContextMenuStrip();
+                    ToolStripItem item = menu.Items.Add("Properties");
+                    item.Click += delegate(object s, EventArgs e2)
+                    {
+                        PtButtonForm pf = new PtButtonForm();
+                        if (tsItem is CustomFigureToolButton)
+                            pf.ToolButtonData = ((CustomFigureToolButton)tsItem).CustomFigureT;
+                        else if (tsItem is RunCmdToolButton)
+                            pf.ToolButtonData = ((RunCmdToolButton)tsItem).RunCmdT;
+                        else if (tsItem is ShowDirToolButton)
+                            pf.ToolButtonData = ((ShowDirToolButton)tsItem).ShowDirT;
+                        if (pf.ShowDialog() == DialogResult.OK)
+                        {
+                            ToolStripItem newTsItem = null;
+                            if (pf.ToolButtonData is CustomFigureT)
+                                newTsItem = new CustomFigureToolButton((CustomFigureT)pf.ToolButtonData);
+                            else if (pf.ToolButtonData is RunCmdT)
+                                newTsItem = new RunCmdToolButton((RunCmdT)pf.ToolButtonData);
+                            else if (pf.ToolButtonData is ShowDirT)
+                                newTsItem = new ShowDirToolButton((ShowDirT)pf.ToolButtonData);
+                            Items.Insert(Items.IndexOf(tsItem), newTsItem);
+                            Items.Remove(tsItem);
+                        }
+                    };
+                    item = menu.Items.Add("Remove");
+                    item.Click += delegate(object s, EventArgs e2)
+                    {
+                        Items.Remove(tsItem);
+                    };
+                    menu.Show(tsItem.Owner, tsItem.Bounds.Left + e.X, tsItem.Bounds.Top + e.Y);
+                }
+            }
+        }
+
         public void Clear()
         {
             for (int i = Items.Count - 1; i > 0; i--)
