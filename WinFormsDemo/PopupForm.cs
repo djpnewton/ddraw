@@ -16,6 +16,13 @@ namespace WinFormsDemo
             MinimizeBox = MaximizeBox = ControlBox = false;
             ShowInTaskbar = false;
             CenterToScreen();
+
+            // make sure popup is within working area of screen
+            Rectangle workingArea = Screen.GetWorkingArea(new Point(x, y));
+            if (x + Width > workingArea.Width)
+                x = workingArea.Width - Width;
+            if (y + Height > workingArea.Height)
+                y = workingArea.Height - Height;
             Location = new Point(x, y);
 
             //"invisible" button to cancel at Escape
