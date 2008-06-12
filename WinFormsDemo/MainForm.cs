@@ -193,6 +193,7 @@ namespace WinFormsDemo
             modeSelectToolStripMenuItem.Checked = options.EngineStateToolbar;
             propertySelectToolStripMenuItem.Checked = options.PropertyStateToolbar;
             pageNavigationToolStripMenuItem.Checked = options.PageNavigationToolbar;
+            toolsToolStripMenuItem.Checked = options.ToolsToolbar;
             UpdateToolbars();
             // load personal toolbar
             PtUtils.LoadPersonalTools(tsPersonal);
@@ -219,6 +220,7 @@ namespace WinFormsDemo
             options.EngineStateToolbar = tsEngineState.Visible;
             options.PropertyStateToolbar = tsPropState.Visible;
             options.PageNavigationToolbar = tsPageManage.Visible;
+            options.ToolsToolbar = tsTools.Visible;
             // write to file
             options.WriteIni();
             // save personal toolbar
@@ -1189,6 +1191,33 @@ namespace WinFormsDemo
             ShowAnnoTools(false);
         }
 
+        private void actScreenCapture_Execute(object sender, EventArgs e)
+        {
+            ScreenCaptureForm screenCaptureForm = new ScreenCaptureForm();
+            screenCaptureForm.CaptureImage += new ImportAnnotationsImageHandler(screenCaptureForm_CaptureImage);
+            screenCaptureForm.Show();
+        }
+
+        void screenCaptureForm_CaptureImage(DBitmap bmp)
+        {
+            // progress form
+            ProgressForm pf = new ProgressForm();
+            pf.Text = "Importing Screen Capture";
+            pf.Shown += delegate(object s, EventArgs e)
+            {
+                Application.DoEvents();
+                // import annotations
+                de.UndoRedoStart("Import Screen Capture");
+                ImageFigure f = new ImageFigure(new DRect(10, 10, bmp.Width, bmp.Height), 0, WFHelper.ToImageData(bmp), "screencap.png");
+                de.AddFigure(f);
+                dvEditor.Update();
+                de.UndoRedoCommit();
+                // close dialog
+                pf.Close();
+            };
+            pf.ShowDialog();
+        }
+
         private void actLink_Execute(object sender, EventArgs e)
         {
             List<Figure> figs = de.SelectedFigures;
@@ -1579,33 +1608,7 @@ namespace WinFormsDemo
             tsEngineState.Visible = modeSelectToolStripMenuItem.Checked;
             tsPropState.Visible = propertySelectToolStripMenuItem.Checked;
             tsPageManage.Visible = pageNavigationToolStripMenuItem.Checked;
-        }
-
-        private void screenCaptureToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            ScreenCaptureForm screenCaptureForm = new ScreenCaptureForm();
-            screenCaptureForm.CaptureImage += new ImportAnnotationsImageHandler(screenCaptureForm_CaptureImage);
-            screenCaptureForm.Show();
-        }
-
-        void screenCaptureForm_CaptureImage(DBitmap bmp)
-        {
-            // progress form
-            ProgressForm pf = new ProgressForm();
-            pf.Text = "Importing Screen Capture";
-            pf.Shown += delegate(object s, EventArgs e)
-            {
-                Application.DoEvents();
-                // import annotations
-                de.UndoRedoStart("Import Screen Capture");
-                ImageFigure f = new ImageFigure(new DRect(10, 10, bmp.Width, bmp.Height), 0, WFHelper.ToImageData(bmp), "screencap.png");
-                de.AddFigure(f);
-                dvEditor.Update();
-                de.UndoRedoCommit();
-                // close dialog
-                pf.Close();
-            };
-            pf.ShowDialog();
+            tsTools.Visible = toolsToolStripMenuItem.Checked;
         }
 
         private void flipXToolStripMenuItem_Click(object sender, EventArgs e)

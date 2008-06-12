@@ -29,6 +29,7 @@ namespace WinFormsDemo
         const string ENGINESTATETOOLBAR_OPT = "EngineStateToolbar";
         const string PROPERTYSTATETOOLBAR_OPT = "PropertyStateToolbar";
         const string PAGENAVIGATIONTOOLBAR_OPT = "PageNavigationToolbar";
+        const string TOOLSTOOLBAR_OPT = "ToolsToolbar";
 
         public string IniFile
         {
@@ -46,11 +47,12 @@ namespace WinFormsDemo
         public Zoom Zoom;
         public double Scale;
         public bool AntiAlias;
-       public bool EditToolbar;
-         public bool PersonalToolbar;
-           public bool EngineStateToolbar;
-           public bool PropertyStateToolbar;
+        public bool EditToolbar;
+        public bool PersonalToolbar;
+        public bool EngineStateToolbar;
+        public bool PropertyStateToolbar;
         public bool PageNavigationToolbar;
+        public bool ToolsToolbar;
 
         public ProgramOptions()
         {
@@ -107,6 +109,7 @@ namespace WinFormsDemo
             EngineStateToolbar = config.GetBoolean(ENGINESTATETOOLBAR_OPT, true);
             PropertyStateToolbar = config.GetBoolean(PROPERTYSTATETOOLBAR_OPT, true);
             PageNavigationToolbar = config.GetBoolean(PAGENAVIGATIONTOOLBAR_OPT, true);
+            ToolsToolbar = config.GetBoolean(TOOLSTOOLBAR_OPT, true);
         }
 
         public void WriteIni()
@@ -130,6 +133,7 @@ namespace WinFormsDemo
             config.Set(ENGINESTATETOOLBAR_OPT, EngineStateToolbar);
             config.Set(PROPERTYSTATETOOLBAR_OPT, PropertyStateToolbar);
             config.Set(PAGENAVIGATIONTOOLBAR_OPT, PageNavigationToolbar);
+            config.Set(TOOLSTOOLBAR_OPT, ToolsToolbar);
 
             source.Save();
         }
