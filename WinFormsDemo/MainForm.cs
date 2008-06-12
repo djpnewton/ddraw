@@ -380,7 +380,13 @@ namespace WinFormsDemo
                 switch (linkType)
                 {
                     case LinkType.WebPage:
-                        System.Diagnostics.Process.Start(link);
+                        try
+                        {
+                            UriBuilder ub = new UriBuilder(link);
+                            System.Diagnostics.Process.Start(ub.Uri.AbsoluteUri);
+                        }
+                        catch (Exception e)
+                        { MessageBox.Show(e.Message, "Web link error", MessageBoxButtons.OK, MessageBoxIcon.Error); }
                         break;
                     case LinkType.File:
                         if (File.Exists(link))

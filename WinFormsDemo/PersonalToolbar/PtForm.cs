@@ -32,28 +32,25 @@ namespace WinFormsDemo.PersonalToolbar
             }
         }
 
-        const string ShowDirImage = "ShowDirImage";
         const string RunCmdImage = "RunCmdImage";
+        const string ShowDirImage = "ShowDirImage";
+        const string WebLinkImage = "WebLink";
 
         public PtForm()
         {
             InitializeComponent();
 
-            imageList1.Images.Add(ShowDirImage, Resource1.folder);
             imageList1.Images.Add(RunCmdImage, Resource1.cog);
+            imageList1.Images.Add(ShowDirImage, Resource1.folder);
+            imageList1.Images.Add(WebLinkImage, Resource1.world_link);
         }
 
         ListViewItem CreateListViewItem(object item)
         {
             ListViewItem li = new ListViewItem();
-            if (item is CustomFigureT)
-                li.Tag = item;
-            else if (item is RunCmdT)
-                li.Tag = item;
-            else if (item is ShowDirT)
-                li.Tag = item;
-            if (li.Tag != null)
+            if (item is CustomFigureT || item is RunCmdT || item is ShowDirT || item is WebLinkT)
             {
+                li.Tag = item;
                 li.Text = li.Tag.ToString();
                 li.ToolTipText = li.Tag.ToString();
             }
@@ -71,6 +68,8 @@ namespace WinFormsDemo.PersonalToolbar
                 li.ImageKey = RunCmdImage;
             else if (li.Tag is ShowDirT)
                 li.ImageKey = ShowDirImage;
+            else if (li.Tag is WebLinkT)
+                li.ImageKey = WebLinkImage;
         }
 
         void AddToListView(object item, int idx)

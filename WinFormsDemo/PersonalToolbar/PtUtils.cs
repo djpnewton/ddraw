@@ -4,6 +4,7 @@ using System.Text;
 using System.Windows.Forms;
 using System.IO;
 using System.Drawing;
+using System.Net;
 
 using Nini.Config;
 using DDraw;
@@ -11,7 +12,7 @@ using DDraw;
 namespace WinFormsDemo.PersonalToolbar
 {
 
-    public enum PersonalToolButtonType { CustomFigure, RunCmd, ShowDir };
+    public enum PersonalToolButtonType { CustomFigure, RunCmd, ShowDir, WebLink };
 
     public struct RunCmdT
     {
@@ -42,6 +43,21 @@ namespace WinFormsDemo.PersonalToolbar
         public override string ToString()
         {
             return string.Concat("Open Directory: \"", Dir, "\"");
+        }
+    }
+
+    public struct WebLinkT
+    {
+        public string Link;
+
+        public WebLinkT(string link)
+        {
+            Link = link;
+        }
+
+        public override string ToString()
+        {
+            return string.Concat("Open Link: \"", Link, "\"");
         }
     }
 
@@ -147,6 +163,48 @@ namespace WinFormsDemo.PersonalToolbar
         }
     }
 
+    public class WebLinkToolButton : ToolStripButton
+    {
+        string link;
+        public string Link
+        {
+            get { return link; }
+            set
+            {
+                link = value;
+                ToolTipText = value;
+            }
+        }
+
+        public WebLinkT WebLinkT
+        {
+            get { return new WebLinkT(link); }
+        }
+
+        public WebLinkToolButton()
+        {
+            Image = Resource1.world_link;
+        }
+
+        public WebLinkToolButton(WebLinkT t)
+            : this()
+        {
+            Link = t.Link;
+        }
+
+        protected override void OnClick(EventArgs e)
+        {
+            base.OnClick(e);
+            try
+            {
+                UriBuilder ub = new UriBuilder(link);
+                System.Diagnostics.Process.Start(ub.Uri.AbsoluteUri);
+            }
+            catch (Exception e2)
+            { MessageBox.Show(e2.Message, "Web link error", MessageBoxButtons.OK, MessageBoxIcon.Error); }
+        }
+    }
+
     public class CustomFigureToolButton : ToolStripButton
     {
         Type figureClass = null;
@@ -207,6 +265,7 @@ namespace WinFormsDemo.PersonalToolbar
         const string RUNCMD_OPT = "RunCmd";
         const string ARGS_OPT = "Args";
         const string DIR_OPT = "Dir";
+        const string WEBLINK_OPT = "WebLink";
 
         static string IniFile
         {
@@ -254,6 +313,9 @@ namespace WinFormsDemo.PersonalToolbar
                             break;
                         case PersonalToolButtonType.ShowDir:
                             ts.Items.Add(new ShowDirToolButton(new ShowDirT(config.Get(DIR_OPT))));
+                            break;
+                        case PersonalToolButtonType.WebLink:
+                            ts.Items.Add(new WebLinkToolButton(new WebLinkT(config.Get(WEBLINK_OPT))));
                             break;
                     }
                 }
@@ -312,6 +374,15 @@ namespace WinFormsDemo.PersonalToolbar
                     {
                         config.Set(TYPE_OPT, PersonalToolButtonType.ShowDir);
                         config.Set(DIR_OPT, (t.Dir));
+                    }
+                }
+                else if (b is WebLinkToolButton)
+                {
+                    WebLinkT t = ((WebLinkToolButton)b).WebLinkT;
+                    if (t.Link != null)
+                    {
+                        config.Set(TYPE_OPT, PersonalToolButtonType.WebLink);
+                        config.Set(WEBLINK_OPT, (t.Link));
                     }
                 }
             }

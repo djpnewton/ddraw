@@ -36,6 +36,11 @@ namespace WinFormsDemo.PersonalToolbar
                     tbDir.Text = ((ShowDirT)value).Dir;
                     cbType.SelectedIndex = (int)PersonalToolButtonType.ShowDir;
                 }
+                else if (value is WebLinkT)
+                {
+                    tbUrl.Text = ((WebLinkT)value).Link;
+                    cbType.SelectedIndex = (int)PersonalToolButtonType.WebLink;
+                }
             }
             get 
             {
@@ -48,8 +53,11 @@ namespace WinFormsDemo.PersonalToolbar
                 }
                 else if (cbType.SelectedIndex == (int)PersonalToolButtonType.RunCmd)
                     return new RunCmdT(tbRun.Text, tbArgs.Text);
-                else
+                else if (cbType.SelectedIndex == (int)PersonalToolButtonType.ShowDir)
                     return new ShowDirT(tbDir.Text);
+                else
+                    return new WebLinkT(tbUrl.Text);
+
             }
         }
 
@@ -80,6 +88,9 @@ namespace WinFormsDemo.PersonalToolbar
                     break;
                 case (int)PersonalToolButtonType.ShowDir:
                     pnlShowDir.BringToFront();
+                    break;
+                case (int)PersonalToolButtonType.WebLink:
+                    pnlWebLink.BringToFront();
                     break;
                 default:
                     if (tsCustomFigureProps.Dap == null)

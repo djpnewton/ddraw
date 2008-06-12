@@ -48,6 +48,8 @@ namespace WinFormsDemo.PersonalToolbar
                             Items.Add(new RunCmdToolButton((RunCmdT)o));
                         else if (o is ShowDirT)
                             Items.Add(new ShowDirToolButton((ShowDirT)o));
+                        else if (o is WebLinkT)
+                            Items.Add(new WebLinkToolButton((WebLinkT)o));
                     }
                 }
             }
@@ -87,6 +89,8 @@ namespace WinFormsDemo.PersonalToolbar
                             pf.ToolButtonData = ((RunCmdToolButton)tsItem).RunCmdT;
                         else if (tsItem is ShowDirToolButton)
                             pf.ToolButtonData = ((ShowDirToolButton)tsItem).ShowDirT;
+                        else if (tsItem is WebLinkToolButton)
+                            pf.ToolButtonData = ((WebLinkToolButton)tsItem).WebLinkT;
                         if (pf.ShowDialog() == DialogResult.OK)
                         {
                             ToolStripItem newTsItem = null;
@@ -96,11 +100,13 @@ namespace WinFormsDemo.PersonalToolbar
                                 newTsItem = new RunCmdToolButton((RunCmdT)pf.ToolButtonData);
                             else if (pf.ToolButtonData is ShowDirT)
                                 newTsItem = new ShowDirToolButton((ShowDirT)pf.ToolButtonData);
+                            else if (pf.ToolButtonData is WebLinkT)
+                                newTsItem = new WebLinkToolButton((WebLinkT)pf.ToolButtonData);
                             Items.Insert(Items.IndexOf(tsItem), newTsItem);
                             Items.Remove(tsItem);
                         }
                     };
-                    item = menu.Items.Add("Remove");
+                    item = menu.Items.Add("Delete");
                     item.Click += delegate(object s, EventArgs e2)
                     {
                         Items.Remove(tsItem);
