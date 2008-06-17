@@ -249,18 +249,6 @@ namespace WinFormsDemo.PersonalToolbar
         const string _INIFILE = "PersonalToolbar.ini";
         const string TYPE_OPT = "Type";
         const string FIGURECLASS_OPT = "FigureClass";
-        const string FILL_OPT = "Fill";
-        const string STROKE_OPT = "Stroke";
-        const string STROKEWIDTH_OPT = "StrokeWidth";
-        const string STROKESTYLE_OPT = "StrokeStyle";
-        const string ALPHA_OPT = "Alpha";
-        const string STARTMARKER_OPT = "StartMarker";
-        const string ENDMARKER_OPT = "EndMarker";
-        const string FONTNAME_OPT = "FontName";
-        const string BOLD_OPT = "Bold";
-        const string ITALICS_OPT = "Italics";
-        const string UNDERLINE_OPT = "Underline";
-        const string STRIKETHROUGH_OPT = "Strikethrough";
         const string BASE64ICON_OPT = "base64Icon";
         const string RUNCMD_OPT = "RunCmd";
         const string ARGS_OPT = "Args";
@@ -291,18 +279,7 @@ namespace WinFormsDemo.PersonalToolbar
                             if (figureClass != null)
                             {
                                 DAuthorProperties dap = new DAuthorProperties();
-                                dap.Fill = DColor.FromString(config.Get(FILL_OPT));
-                                dap.Stroke = DColor.FromString(config.Get(STROKE_OPT));
-                                dap.StrokeWidth = config.GetInt(STROKEWIDTH_OPT);
-                                dap.StrokeStyle = (DStrokeStyle)Enum.Parse(typeof(DStrokeStyle), config.Get(STROKESTYLE_OPT), true);
-                                dap.Alpha = config.GetDouble(ALPHA_OPT);
-                                dap.StartMarker = (DMarker)Enum.Parse(typeof(DMarker), config.Get(STARTMARKER_OPT), true);
-                                dap.EndMarker = (DMarker)Enum.Parse(typeof(DMarker), config.Get(ENDMARKER_OPT), true);
-                                dap.FontName = config.Get(FONTNAME_OPT);
-                                dap.Bold = config.GetBoolean(BOLD_OPT);
-                                dap.Italics = config.GetBoolean(ITALICS_OPT);
-                                dap.Underline = config.GetBoolean(UNDERLINE_OPT);
-                                dap.Strikethrough = config.GetBoolean(STRIKETHROUGH_OPT);
+                                WorkBookUtils.ReadConfigToDap(config, dap);
                                 string base64Icon = config.Get(BASE64ICON_OPT);
                                 ts.Items.Add(new CustomFigureToolButton(new CustomFigureT(figureClass, dap, base64Icon)));
                             }
@@ -343,18 +320,7 @@ namespace WinFormsDemo.PersonalToolbar
                     CustomFigureT t = ((CustomFigureToolButton)b).CustomFigureT;
                     config.Set(TYPE_OPT, PersonalToolButtonType.CustomFigure);
                     config.Set(FIGURECLASS_OPT, t.FigureClass.AssemblyQualifiedName);
-                    config.Set(FILL_OPT, DColor.FormatToString(t.Dap.Fill));
-                    config.Set(STROKE_OPT, DColor.FormatToString(t.Dap.Stroke));
-                    config.Set(STROKEWIDTH_OPT, t.Dap.StrokeWidth);
-                    config.Set(STROKESTYLE_OPT, t.Dap.StrokeStyle.ToString());
-                    config.Set(ALPHA_OPT, t.Dap.Alpha);
-                    config.Set(STARTMARKER_OPT, t.Dap.StartMarker);
-                    config.Set(ENDMARKER_OPT, t.Dap.EndMarker);
-                    config.Set(FONTNAME_OPT, t.Dap.FontName);
-                    config.Set(BOLD_OPT, t.Dap.Bold);
-                    config.Set(ITALICS_OPT, t.Dap.Italics);
-                    config.Set(UNDERLINE_OPT, t.Dap.Underline);
-                    config.Set(STRIKETHROUGH_OPT, t.Dap.Strikethrough);
+                    WorkBookUtils.WriteDapToConfig(t.Dap, config);
                     config.Set(BASE64ICON_OPT, t.Base64Icon);
                 }
                 else if (b is RunCmdToolButton)

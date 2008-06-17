@@ -191,6 +191,8 @@ namespace WinFormsDemo
             UpdateToolbars();
             // load personal toolbar
             PtUtils.LoadPersonalTools(tsPersonal);
+            // load figure toolbar
+            FigureToolStrip.LoadFigureTools();
         }
 
         void WriteOptions()
@@ -219,6 +221,8 @@ namespace WinFormsDemo
             options.WriteIni();
             // save personal toolbar
             PtUtils.SavePersonalTools(tsPersonal);
+            // save figure toolbar
+            FigureToolStrip.SaveFigureTools();
         }
 
         void ActionCommandLine()

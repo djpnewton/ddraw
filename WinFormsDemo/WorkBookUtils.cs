@@ -6,6 +6,7 @@ using System.Runtime.InteropServices;
 using System.Drawing;
 using System.IO;
 
+using Nini.Config;
 using DDraw;
 
 namespace WinFormsDemo
@@ -182,6 +183,51 @@ namespace WinFormsDemo
             fs.Read(bytes, 0, Convert.ToInt32(fs.Length));
             fs.Close();
             return bytes;
+        }
+
+        const string FILL_OPT = "Fill";
+        const string STROKE_OPT = "Stroke";
+        const string STROKEWIDTH_OPT = "StrokeWidth";
+        const string STROKESTYLE_OPT = "StrokeStyle";
+        const string ALPHA_OPT = "Alpha";
+        const string STARTMARKER_OPT = "StartMarker";
+        const string ENDMARKER_OPT = "EndMarker";
+        const string FONTNAME_OPT = "FontName";
+        const string BOLD_OPT = "Bold";
+        const string ITALICS_OPT = "Italics";
+        const string UNDERLINE_OPT = "Underline";
+        const string STRIKETHROUGH_OPT = "Strikethrough";
+
+        public static void WriteDapToConfig(DAuthorProperties dap, IConfig config)
+        {
+            config.Set(FILL_OPT, DColor.FormatToString(dap.Fill));
+            config.Set(STROKE_OPT, DColor.FormatToString(dap.Stroke));
+            config.Set(STROKEWIDTH_OPT, dap.StrokeWidth);
+            config.Set(STROKESTYLE_OPT, dap.StrokeStyle.ToString());
+            config.Set(ALPHA_OPT, dap.Alpha);
+            config.Set(STARTMARKER_OPT, dap.StartMarker);
+            config.Set(ENDMARKER_OPT, dap.EndMarker);
+            config.Set(FONTNAME_OPT, dap.FontName);
+            config.Set(BOLD_OPT, dap.Bold);
+            config.Set(ITALICS_OPT, dap.Italics);
+            config.Set(UNDERLINE_OPT, dap.Underline);
+            config.Set(STRIKETHROUGH_OPT, dap.Strikethrough);
+        }
+
+        public static void ReadConfigToDap(IConfig config, DAuthorProperties dap)
+        {
+            dap.Fill = DColor.FromString(config.Get(FILL_OPT));
+            dap.Stroke = DColor.FromString(config.Get(STROKE_OPT));
+            dap.StrokeWidth = config.GetInt(STROKEWIDTH_OPT);
+            dap.StrokeStyle = (DStrokeStyle)Enum.Parse(typeof(DStrokeStyle), config.Get(STROKESTYLE_OPT), true);
+            dap.Alpha = config.GetDouble(ALPHA_OPT);
+            dap.StartMarker = (DMarker)Enum.Parse(typeof(DMarker), config.Get(STARTMARKER_OPT), true);
+            dap.EndMarker = (DMarker)Enum.Parse(typeof(DMarker), config.Get(ENDMARKER_OPT), true);
+            dap.FontName = config.Get(FONTNAME_OPT);
+            dap.Bold = config.GetBoolean(BOLD_OPT);
+            dap.Italics = config.GetBoolean(ITALICS_OPT);
+            dap.Underline = config.GetBoolean(UNDERLINE_OPT);
+            dap.Strikethrough = config.GetBoolean(STRIKETHROUGH_OPT);
         }
     }
 

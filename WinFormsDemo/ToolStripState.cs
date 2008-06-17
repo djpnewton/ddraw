@@ -6,6 +6,7 @@ using System.Data;
 using System.Text;
 using System.Windows.Forms;
 
+using Nini.Config;
 using DDraw;
 using DDraw.WinForms;
 
@@ -82,6 +83,72 @@ namespace WinFormsDemo
         static DAuthorProperties dapDiamond = new DAuthorProperties();
         static DAuthorProperties dapPentagon = new DAuthorProperties();
         static DAuthorProperties dapLine = new DAuthorProperties();
+
+        const string _INIFILE = "FigureTools.ini";
+        const string POLYLINE_SECT = "Polyline";
+        const string RECT_SECT = "Rect";
+        const string ELLIPSE_SECT = "Ellipse";
+        const string TEXT_SECT = "Text";
+        const string CLOCK_SECT = "Clock";
+        const string TRIANGLE_SECT = "Triangle";
+        const string RIGHTANGLETRIANGLE_SECT = "RightAngleTriangle";
+        const string DIAMOND_SECT = "Diamond";
+        const string PENTAGON_SECT = "Pentagon";
+        const string LINE_SECT = "Line";
+
+        static string IniFile
+        {
+            get
+            {
+                return System.IO.Path.GetDirectoryName(Application.ExecutablePath) +
+                    System.IO.Path.DirectorySeparatorChar + _INIFILE;
+            }
+        }
+
+        public static void LoadFigureTools()
+        {
+            if (System.IO.File.Exists(IniFile))
+            {
+                IConfigSource source = new IniConfigSource(IniFile);
+                foreach (IConfig config in source.Configs)
+                {
+                    if (config.Name == POLYLINE_SECT)
+                        WorkBookUtils.ReadConfigToDap(config, dapPolyline);
+                    else if (config.Name == ELLIPSE_SECT)
+                        WorkBookUtils.ReadConfigToDap(config, dapEllipse);
+                    else if (config.Name == TEXT_SECT)
+                        WorkBookUtils.ReadConfigToDap(config, dapText);
+                    else if (config.Name == CLOCK_SECT)
+                        WorkBookUtils.ReadConfigToDap(config, dapClock);
+                    else if (config.Name == TRIANGLE_SECT)
+                        WorkBookUtils.ReadConfigToDap(config, dapTriangle);
+                    else if (config.Name == RIGHTANGLETRIANGLE_SECT)
+                        WorkBookUtils.ReadConfigToDap(config, dapRightAngleTriangle);
+                    else if (config.Name == DIAMOND_SECT)
+                        WorkBookUtils.ReadConfigToDap(config, dapDiamond);
+                    else if (config.Name == PENTAGON_SECT)
+                        WorkBookUtils.ReadConfigToDap(config, dapPentagon);
+                    else if (config.Name == LINE_SECT)
+                        WorkBookUtils.ReadConfigToDap(config, dapLine);
+                }
+            }
+        }
+
+        public static void SaveFigureTools()
+        {
+            IniConfigSource source = new IniConfigSource();
+            WorkBookUtils.WriteDapToConfig(dapPolyline, source.AddConfig(POLYLINE_SECT));
+            WorkBookUtils.WriteDapToConfig(dapRect, source.AddConfig(RECT_SECT));
+            WorkBookUtils.WriteDapToConfig(dapEllipse, source.AddConfig(ELLIPSE_SECT));
+            WorkBookUtils.WriteDapToConfig(dapText, source.AddConfig(TEXT_SECT));
+            WorkBookUtils.WriteDapToConfig(dapClock, source.AddConfig(CLOCK_SECT));
+            WorkBookUtils.WriteDapToConfig(dapTriangle, source.AddConfig(TRIANGLE_SECT));
+            WorkBookUtils.WriteDapToConfig(dapRightAngleTriangle, source.AddConfig(RIGHTANGLETRIANGLE_SECT));
+            WorkBookUtils.WriteDapToConfig(dapDiamond, source.AddConfig(DIAMOND_SECT));
+            WorkBookUtils.WriteDapToConfig(dapPentagon, source.AddConfig(PENTAGON_SECT));
+            WorkBookUtils.WriteDapToConfig(dapLine, source.AddConfig(LINE_SECT));
+            source.Save(IniFile);
+        }
 
         DAuthorProperties dap = null;
         public DAuthorProperties Dap
