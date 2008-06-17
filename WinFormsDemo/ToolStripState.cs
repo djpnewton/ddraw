@@ -802,6 +802,10 @@ namespace WinFormsDemo
                         btnStrikethrough.Checked = GetStrikethroughMatch(figs);
                     }
                     break;
+                case DHsmState.Eraser:
+                    break;
+                case DHsmState.SelectMeasure:
+                    break;
                 default:
                     System.Diagnostics.Debug.Assert(dap != null, "ERROR: \"dap\" is not assigned");
                     // enable relavant controls and update values to match dap
