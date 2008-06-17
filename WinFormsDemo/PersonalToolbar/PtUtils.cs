@@ -240,7 +240,26 @@ namespace WinFormsDemo.PersonalToolbar
             FigureClass = t.FigureClass;
             Dap = t.Dap;
             if (t.Base64Icon != null)
-                Image = WorkBookUtils.Base64ToBitmap(t.Base64Icon);
+            {
+                Bitmap bmp = WorkBookUtils.Base64ToBitmap(t.Base64Icon);
+                Bitmap bmp2;
+                Graphics g;
+                if (bmp.Width > Height)
+                {
+                    bmp2 = new Bitmap(bmp.Width, bmp.Width);
+                    g = Graphics.FromImage(bmp2);
+                    g.DrawImage(bmp, new PointF(0, bmp2.Height / 2 - bmp.Height / 2));
+                }
+                else
+                {
+                    bmp2 = new Bitmap(bmp.Height, bmp.Height);
+                    g = Graphics.FromImage(bmp2);
+                    g.DrawImage(bmp, new PointF(bmp2.Width / 2 - bmp.Width / 2, 0));
+                }
+                g.Dispose();
+                bmp.Dispose();
+                Image = bmp2;
+            }
         }
     }
 

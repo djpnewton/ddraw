@@ -161,7 +161,7 @@ namespace WinFormsDemo
                 }
             }
             else if (f is TextFigure)
-                ((TextFigure)f).Text = "AaBbCc";
+                ((TextFigure)f).Text = "Aa";
             f.Left = viewerSize.X / 4.0;
             f.Top = viewerSize.Y / 4.0;
             f.Width = viewerSize.X / 2.0;

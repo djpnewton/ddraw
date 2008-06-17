@@ -104,6 +104,9 @@ namespace WinFormsDemo.PersonalToolbar
                                 newTsItem = new WebLinkToolButton((WebLinkT)pf.ToolButtonData);
                             Items.Insert(Items.IndexOf(tsItem), newTsItem);
                             Items.Remove(tsItem);
+                            // click it
+                            if (newTsItem is CustomFigureToolButton)
+                                newTsItem.PerformClick();
                         }
                     };
                     item = menu.Items.Add("Delete");

@@ -204,19 +204,19 @@ namespace WinFormsDemo.PersonalToolbar
             // 
             // vcCustomFigure
             // 
-            this.vcCustomFigure.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.vcCustomFigure.Location = new System.Drawing.Point(372, 0);
+            this.vcCustomFigure.Dock = System.Windows.Forms.DockStyle.Right;
+            this.vcCustomFigure.Location = new System.Drawing.Point(408, 0);
             this.vcCustomFigure.Name = "vcCustomFigure";
-            this.vcCustomFigure.Size = new System.Drawing.Size(91, 55);
+            this.vcCustomFigure.Size = new System.Drawing.Size(55, 55);
             this.vcCustomFigure.TabIndex = 21;
             // 
             // panel2
             // 
             this.panel2.Controls.Add(this.toolStripPanel1);
-            this.panel2.Dock = System.Windows.Forms.DockStyle.Left;
+            this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel2.Location = new System.Drawing.Point(0, 0);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(372, 55);
+            this.panel2.Size = new System.Drawing.Size(463, 55);
             this.panel2.TabIndex = 20;
             // 
             // toolStripPanel1
@@ -228,7 +228,7 @@ namespace WinFormsDemo.PersonalToolbar
             this.toolStripPanel1.Name = "toolStripPanel1";
             this.toolStripPanel1.Orientation = System.Windows.Forms.Orientation.Horizontal;
             this.toolStripPanel1.RowMargin = new System.Windows.Forms.Padding(3, 0, 0, 0);
-            this.toolStripPanel1.Size = new System.Drawing.Size(372, 55);
+            this.toolStripPanel1.Size = new System.Drawing.Size(463, 55);
             // 
             // tsCustomFigureType
             // 
