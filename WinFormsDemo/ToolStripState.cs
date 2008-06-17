@@ -14,6 +14,7 @@ namespace WinFormsDemo
     public enum FigureToolStripMode { DEngineState, FigureClassSelect };
 
     public delegate void FigureClassChangedHandler(object sender, Type figureClass);
+    public delegate void DapChangedHandler(object sender, DAuthorProperties dap);
 
     public class FigureToolStrip : ToolStripEx
     {
@@ -71,7 +72,25 @@ namespace WinFormsDemo
             }
         }
 
+        static DAuthorProperties dapPolyline = new DAuthorProperties();
+        static DAuthorProperties dapRect = new DAuthorProperties();
+        static DAuthorProperties dapEllipse = new DAuthorProperties();
+        static DAuthorProperties dapText = new DAuthorProperties();
+        static DAuthorProperties dapClock = new DAuthorProperties();
+        static DAuthorProperties dapTriangle = new DAuthorProperties();
+        static DAuthorProperties dapRightAngleTriangle = new DAuthorProperties();
+        static DAuthorProperties dapDiamond = new DAuthorProperties();
+        static DAuthorProperties dapPentagon = new DAuthorProperties();
+        static DAuthorProperties dapLine = new DAuthorProperties();
+
+        DAuthorProperties dap = null;
+        public DAuthorProperties Dap
+        {
+            get { return dap; }
+        }
+
         public event FigureClassChangedHandler FigureClassChanged;
+        public event DapChangedHandler DapChanged;
 
         public FigureToolStrip()
         {
@@ -108,6 +127,7 @@ namespace WinFormsDemo
 
         void de_HsmStateChanged(DEngine de, DHsmState state)
         {
+            // set button checked
             btnSelect.Checked = state == DHsmState.Select;
             btnPen.Checked = de.HsmCurrentFigClassIs(typeof(PolylineFigure));
             btnRect.Checked = de.HsmCurrentFigClassIs(typeof(RectFigure));
@@ -120,6 +140,65 @@ namespace WinFormsDemo
             btnPentagon.Checked = de.HsmCurrentFigClassIs(typeof(PentagonFigure));
             btnLine.Checked = de.HsmCurrentFigClassIs(typeof(LineFigure));
             btnEraser.Checked = state == DHsmState.Eraser;
+            // update dap
+            foreach (ToolStripButton btn in Items)
+                if (btn.Checked)
+                {
+                    dap = DapFromButton(btn);
+                    if (DapChanged != null)
+                        DapChanged(this, dap);
+                    break;
+                }
+        }
+
+        DAuthorProperties DapFromButton(object btn)
+        {
+            if (btn == btnPen)
+                return dapPolyline;
+            else if (btn == btnRect)
+                return dapRect;
+            else if (btn == btnEllipse)
+                return dapEllipse;
+            else if (btn == btnText)
+                return dapText;
+            else if (btn == btnClock)
+                return dapClock;
+            else if (btn == btnTriangle)
+                return dapTriangle;
+            else if (btn == btnRATriangle)
+                return dapRightAngleTriangle;
+            else if (btn == btnDiamond)
+                return dapDiamond;
+            else if (btn == btnPentagon)
+                return dapPentagon;
+            else if (btn == btnLine)
+                return dapLine;
+            return null;
+        }
+
+        Type FigureClassFromButton(object btn)
+        {
+            if (btn == btnPen)
+                return typeof(PolylineFigure);
+            else if (btn == btnRect)
+                return typeof(RectFigure);
+            else if (btn == btnEllipse)
+                return typeof(EllipseFigure);
+            else if (btn == btnText)
+                return typeof(TextFigure);
+            else if (btn == btnClock)
+                return typeof(ClockFigure);
+            else if (btn == btnTriangle)
+                return typeof(TriangleFigure);
+            else if (btn == btnRATriangle)
+                return typeof(RightAngleTriangleFigure);
+            else if (btn == btnDiamond)
+                return typeof(DiamondFigure);
+            else if (btn == btnPentagon)
+                return typeof(PentagonFigure);
+            else if (btn == btnLine)
+                return typeof(LineFigure);
+            return null;
         }
 
         void btnClick(object sender, EventArgs e)
@@ -129,30 +208,19 @@ namespace WinFormsDemo
                 System.Diagnostics.Debug.Assert(de != null, "ERROR: \"de\" property needs to be set");
                 if (sender == btnSelect)
                     de.HsmState = DHsmState.Select;
-                else if (sender == btnPen)
-                    de.HsmSetStateByFigureClass(typeof(PolylineFigure));
-                else if (sender == btnRect)
-                    de.HsmSetStateByFigureClass(typeof(RectFigure));
-                else if (sender == btnEllipse)
-                    de.HsmSetStateByFigureClass(typeof(EllipseFigure));
-                else if (sender == btnText)
-                    de.HsmSetStateByFigureClass(typeof(TextFigure));
-                else if (sender == btnClock)
-                    de.HsmSetStateByFigureClass(typeof(ClockFigure));
-                else if (sender == btnTriangle)
-                    de.HsmSetStateByFigureClass(typeof(TriangleFigure));
-                else if (sender == btnRATriangle)
-                    de.HsmSetStateByFigureClass(typeof(RightAngleTriangleFigure));
-                else if (sender == btnDiamond)
-                    de.HsmSetStateByFigureClass(typeof(DiamondFigure));
-                else if (sender == btnPentagon)
-                    de.HsmSetStateByFigureClass(typeof(PentagonFigure));
-                else if (sender == btnLine)
-                    de.HsmSetStateByFigureClass(typeof(LineFigure));
                 else if (sender == btnEraser)
                 {
                     de.HsmState = DHsmState.Eraser;
                     de.SetEraserSize(25);
+                }
+                else
+                {
+                    Type figureClass = FigureClassFromButton(sender);
+                    if (figureClass != null)
+                    {
+                        de.HsmSetStateByFigureClass(figureClass);
+                        ShowFigureStylePopup((ToolStripButton)sender, figureClass, dap);
+                    }
                 }
             }
             else if (mode == FigureToolStripMode.FigureClassSelect)
@@ -182,6 +250,24 @@ namespace WinFormsDemo
                 UpdateToFigureClass();
                 DoFigureClassChanged();
             }
+        }
+
+        private void ShowFigureStylePopup(ToolStripItem item, Type figureClass, DAuthorProperties dap)
+        {
+            Point pt = new Point(item.Bounds.Left, item.Bounds.Bottom);
+            pt = item.Owner.PointToScreen(pt);
+            FigureStylePopup pf = new FigureStylePopup(pt.X, pt.Y, figureClass, dap, true);
+            pf.AutoHideTimeout = 2500;
+            pf.AddToPersonalTools += new FigureStyleEvent(pf_AddToPersonalTools);
+            pf.Show();
+        }
+
+        public event FigureStyleEvent AddToPersonalTools;
+
+        void pf_AddToPersonalTools(object sender, PersonalToolbar.CustomFigureT customFigure)
+        {
+            if (AddToPersonalTools != null)
+                AddToPersonalTools(sender, customFigure);
         }
 
         void UpdateToFigureClass()
@@ -333,7 +419,6 @@ namespace WinFormsDemo
         {
             InitPropertyControlsToDEngine(state);
         }
-
 
         void de_SelectedFiguresChanged()
         {
@@ -651,6 +736,7 @@ namespace WinFormsDemo
                     }
                     break;
                 default:
+                    System.Diagnostics.Debug.Assert(dap != null, "ERROR: \"dap\" is not assigned");
                     // enable relavant controls and update values to match dap
                     if (de.HsmCurrentFigClassImpls(typeof(IFillable)))
                     {

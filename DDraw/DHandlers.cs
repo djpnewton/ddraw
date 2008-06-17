@@ -69,15 +69,18 @@ namespace DDraw
         void figures_ItemAdded(Figure item)
         {
             if (AddedFigure != null)
-                AddedFigure(null, item);  
+                AddedFigure(null, item, addedFromHsm);
+            addedFromHsm = false;
         }
 
         // public methods //
 
         public event AddedFigureHandler AddedFigure;
+        bool addedFromHsm = false;
 
-        public void Add(Figure f)
+        public void Add(Figure f, bool fromHsm)
         {
+            addedFromHsm = fromHsm;
             figures.Add(f);
         }
 
@@ -232,7 +235,7 @@ namespace DDraw
             {
                 // make group
                 GroupFigure gf = new GroupFigure(figs);
-                Add(gf);
+                Add(gf, false);
                 // change selected figures to the group
                 ClearSelectedFiguresList();
                 AddToSelected(gf);
@@ -331,7 +334,7 @@ namespace DDraw
             }
             // add group figures to figure list
             foreach (Figure f in gf.ChildFigures)
-                Add(f);
+                Add(f, false);
             // remove group
             figures.Remove(gf);
         }

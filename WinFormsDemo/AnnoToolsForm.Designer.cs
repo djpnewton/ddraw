@@ -142,10 +142,12 @@ namespace WinFormsDemo
             this.tsEngineState.ManagedFocus = true;
             this.tsEngineState.Mode = WinFormsDemo.FigureToolStripMode.DEngineState;
             this.tsEngineState.Name = "tsEngineState";
-            this.tsEngineState.Size = new System.Drawing.Size(288, 25);
+            this.tsEngineState.Size = new System.Drawing.Size(314, 25);
             this.tsEngineState.TabIndex = 2;
             this.tsEngineState.Text = "tsEngineState";
+            this.tsEngineState.AddToPersonalTools += new WinFormsDemo.FigureStyleEvent(this.tsEngineState_AddToPersonalTools);
             this.tsEngineState.FigureClassChanged += new WinFormsDemo.FigureClassChangedHandler(this.tsEngineState_FigureClassChanged);
+            this.tsEngineState.DapChanged += new WinFormsDemo.DapChangedHandler(this.tsEngineState_DapChanged);
             // 
             // tsPropState
             // 

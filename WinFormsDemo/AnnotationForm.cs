@@ -19,6 +19,12 @@ namespace WinFormsDemo
             get { return de; }
         }
 
+        DAuthorProperties dap;
+        public DAuthorProperties Dap
+        {
+            set { dap = value; }
+        }
+
         DTkViewer dv;
         public DTkViewer Dv
         {
@@ -40,7 +46,8 @@ namespace WinFormsDemo
             dv.Preview = true;
             dv.EditFigures = true;
             dv.AntiAlias = true;
-            de = new DEngine(DAuthorProperties.GlobalAP, false);
+            de = new DEngine(false);
+            de.AddedFigure += new AddedFigureHandler(de_AddedFigure);
             de.AddViewer(dv);
             WorkBookUtils.SetupDEngine(de);
             // setup undo/redo sensitive stuff
@@ -56,6 +63,12 @@ namespace WinFormsDemo
             // set form to full screen
             Location = new Point(0, 0);
             Size = screenSize;
+        }
+
+        void de_AddedFigure(DEngine de, Figure fig, bool fromHsm)
+        {
+            if (fromHsm)
+                dap.ApplyPropertiesToFigure(fig);
         }
 
         private void wfViewerControl1_KeyDown(object sender, KeyEventArgs e)

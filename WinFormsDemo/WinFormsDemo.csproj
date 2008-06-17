@@ -90,6 +90,9 @@
     <Compile Include="ExportForm.Designer.cs">
       <DependentUpon>ExportForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="FigureStylePopup.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="FontPicker.cs">
       <SubType>Form</SubType>
     </Compile>

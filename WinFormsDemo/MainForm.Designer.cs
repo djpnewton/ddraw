@@ -117,6 +117,7 @@ namespace WinFormsDemo
             this.modeSelectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.propertySelectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.pageNavigationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolsToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.insertToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.imageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.newPageToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
@@ -139,6 +140,10 @@ namespace WinFormsDemo
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tsEngineState = new WinFormsDemo.FigureToolStrip();
             this.tsPropState = new WinFormsDemo.FigurePropertiesToolStrip();
+            this.tsPersonal = new WinFormsDemo.PersonalToolbar.PersonalToolStrip();
+            this.tsTools = new System.Windows.Forms.ToolStrip();
+            this.btnScreenCapture = new System.Windows.Forms.ToolStripButton();
+            this.btnScreenAnnotate = new System.Windows.Forms.ToolStripButton();
             this.tsEdit = new WinFormsDemo.ToolStripEx();
             this.btnUndo = new System.Windows.Forms.ToolStripButton();
             this.btnRedo = new System.Windows.Forms.ToolStripButton();
@@ -148,10 +153,6 @@ namespace WinFormsDemo
             this.btnPaste = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator12 = new System.Windows.Forms.ToolStripSeparator();
             this.btnDelete = new System.Windows.Forms.ToolStripButton();
-            this.tsPersonal = new WinFormsDemo.PersonalToolbar.PersonalToolStrip();
-            this.tsTools = new System.Windows.Forms.ToolStrip();
-            this.btnScreenCapture = new System.Windows.Forms.ToolStripButton();
-            this.btnScreenAnnotate = new System.Windows.Forms.ToolStripButton();
             this.actionListProvider1 = new Burkovsky.Controls.ActionListProvider(this.components);
             this.actCut = new Burkovsky.Controls.Action();
             this.actCopy = new Burkovsky.Controls.Action();
@@ -179,7 +180,6 @@ namespace WinFormsDemo
             this.actRedo = new Burkovsky.Controls.Action();
             this.actAnnoTools = new Burkovsky.Controls.Action();
             this.actScreenCapture = new Burkovsky.Controls.Action();
-            this.toolsToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.cmsFigure.SuspendLayout();
             this.cmsCanvas.SuspendLayout();
             this.cmsPreview.SuspendLayout();
@@ -195,8 +195,8 @@ namespace WinFormsDemo
             this.tsPageManage.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
-            this.tsEdit.SuspendLayout();
             this.tsTools.SuspendLayout();
+            this.tsEdit.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.actionListProvider1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -450,9 +450,9 @@ namespace WinFormsDemo
             // 
             this.toolStripContainer1.TopToolStripPanel.Controls.Add(this.menuStrip1);
             this.toolStripContainer1.TopToolStripPanel.Controls.Add(this.tsEngineState);
-            this.toolStripContainer1.TopToolStripPanel.Controls.Add(this.tsTools);
-            this.toolStripContainer1.TopToolStripPanel.Controls.Add(this.tsPersonal);
             this.toolStripContainer1.TopToolStripPanel.Controls.Add(this.tsPropState);
+            this.toolStripContainer1.TopToolStripPanel.Controls.Add(this.tsPersonal);
+            this.toolStripContainer1.TopToolStripPanel.Controls.Add(this.tsTools);
             this.toolStripContainer1.TopToolStripPanel.Controls.Add(this.tsEdit);
             // 
             // pnlMain
@@ -910,7 +910,7 @@ namespace WinFormsDemo
             this._100PcToolStripMenuItem,
             this._150PcToolStripMenuItem});
             this.zoomToolStripMenuItem.Name = "zoomToolStripMenuItem";
-            this.zoomToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.zoomToolStripMenuItem.Size = new System.Drawing.Size(126, 22);
             this.zoomToolStripMenuItem.Text = "Zoom";
             // 
             // fitToPageToolStripMenuItem
@@ -957,7 +957,7 @@ namespace WinFormsDemo
             // 
             this.actionListProvider1.SetAction(this.antialiasToolStripMenuItem, null);
             this.antialiasToolStripMenuItem.Name = "antialiasToolStripMenuItem";
-            this.antialiasToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.antialiasToolStripMenuItem.Size = new System.Drawing.Size(126, 22);
             this.antialiasToolStripMenuItem.Text = "Antialias";
             this.antialiasToolStripMenuItem.Click += new System.EventHandler(this.antialiasToolStripMenuItem_Click);
             // 
@@ -965,7 +965,7 @@ namespace WinFormsDemo
             // 
             this.actionListProvider1.SetAction(this.toolStripSeparator14, null);
             this.toolStripSeparator14.Name = "toolStripSeparator14";
-            this.toolStripSeparator14.Size = new System.Drawing.Size(149, 6);
+            this.toolStripSeparator14.Size = new System.Drawing.Size(123, 6);
             // 
             // toolbarsToolStripMenuItem
             // 
@@ -978,7 +978,7 @@ namespace WinFormsDemo
             this.pageNavigationToolStripMenuItem,
             this.toolsToolStripMenuItem1});
             this.toolbarsToolStripMenuItem.Name = "toolbarsToolStripMenuItem";
-            this.toolbarsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.toolbarsToolStripMenuItem.Size = new System.Drawing.Size(126, 22);
             this.toolbarsToolStripMenuItem.Text = "Toolbars";
             // 
             // editToolStripMenuItem1
@@ -1020,6 +1020,14 @@ namespace WinFormsDemo
             this.pageNavigationToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
             this.pageNavigationToolStripMenuItem.Text = "Page Navigation";
             this.pageNavigationToolStripMenuItem.Click += new System.EventHandler(this.Toolbars_MenuItem_Click);
+            // 
+            // toolsToolStripMenuItem1
+            // 
+            this.actionListProvider1.SetAction(this.toolsToolStripMenuItem1, null);
+            this.toolsToolStripMenuItem1.Name = "toolsToolStripMenuItem1";
+            this.toolsToolStripMenuItem1.Size = new System.Drawing.Size(163, 22);
+            this.toolsToolStripMenuItem1.Text = "Tools";
+            this.toolsToolStripMenuItem1.Click += new System.EventHandler(this.Toolbars_MenuItem_Click);
             // 
             // insertToolStripMenuItem
             // 
@@ -1203,6 +1211,8 @@ namespace WinFormsDemo
             this.tsEngineState.Name = "tsEngineState";
             this.tsEngineState.Size = new System.Drawing.Size(288, 25);
             this.tsEngineState.TabIndex = 2;
+            this.tsEngineState.AddToPersonalTools += new WinFormsDemo.FigureStyleEvent(this.tsEngineState_AddToPersonalTools);
+            this.tsEngineState.DapChanged += new WinFormsDemo.DapChangedHandler(this.tsEngineState_DapChanged);
             // 
             // tsPropState
             // 
@@ -1216,6 +1226,50 @@ namespace WinFormsDemo
             this.tsPropState.Name = "tsPropState";
             this.tsPropState.Size = new System.Drawing.Size(273, 25);
             this.tsPropState.TabIndex = 4;
+            // 
+            // tsPersonal
+            // 
+            this.tsPersonal.ClickThrough = true;
+            this.tsPersonal.Dap = null;
+            this.tsPersonal.De = null;
+            this.tsPersonal.Dock = System.Windows.Forms.DockStyle.None;
+            this.tsPersonal.FocusControl = null;
+            this.tsPersonal.Location = new System.Drawing.Point(3, 74);
+            this.tsPersonal.ManagedFocus = true;
+            this.tsPersonal.Name = "tsPersonal";
+            this.tsPersonal.Size = new System.Drawing.Size(35, 25);
+            this.tsPersonal.TabIndex = 7;
+            // 
+            // tsTools
+            // 
+            this.tsTools.Dock = System.Windows.Forms.DockStyle.None;
+            this.tsTools.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.btnScreenCapture,
+            this.btnScreenAnnotate});
+            this.tsTools.Location = new System.Drawing.Point(60, 74);
+            this.tsTools.Name = "tsTools";
+            this.tsTools.Size = new System.Drawing.Size(89, 25);
+            this.tsTools.TabIndex = 8;
+            // 
+            // btnScreenCapture
+            // 
+            this.actionListProvider1.SetAction(this.btnScreenCapture, this.actAnnoTools);
+            this.btnScreenCapture.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.btnScreenCapture.Image = ((System.Drawing.Image)(resources.GetObject("btnScreenCapture.Image")));
+            this.btnScreenCapture.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnScreenCapture.Name = "btnScreenCapture";
+            this.btnScreenCapture.Size = new System.Drawing.Size(23, 22);
+            this.btnScreenCapture.Text = "Screen Annotate";
+            // 
+            // btnScreenAnnotate
+            // 
+            this.actionListProvider1.SetAction(this.btnScreenAnnotate, this.actScreenCapture);
+            this.btnScreenAnnotate.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.btnScreenAnnotate.Image = ((System.Drawing.Image)(resources.GetObject("btnScreenAnnotate.Image")));
+            this.btnScreenAnnotate.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnScreenAnnotate.Name = "btnScreenAnnotate";
+            this.btnScreenAnnotate.Size = new System.Drawing.Size(23, 22);
+            this.btnScreenAnnotate.Text = "Screen Capture";
             // 
             // tsEdit
             // 
@@ -1308,50 +1362,6 @@ namespace WinFormsDemo
             this.btnDelete.Name = "btnDelete";
             this.btnDelete.Size = new System.Drawing.Size(23, 22);
             this.btnDelete.Text = "Delete";
-            // 
-            // tsPersonal
-            // 
-            this.tsPersonal.ClickThrough = true;
-            this.tsPersonal.Dap = null;
-            this.tsPersonal.De = null;
-            this.tsPersonal.Dock = System.Windows.Forms.DockStyle.None;
-            this.tsPersonal.FocusControl = null;
-            this.tsPersonal.Location = new System.Drawing.Point(115, 74);
-            this.tsPersonal.ManagedFocus = true;
-            this.tsPersonal.Name = "tsPersonal";
-            this.tsPersonal.Size = new System.Drawing.Size(35, 25);
-            this.tsPersonal.TabIndex = 7;
-            // 
-            // tsTools
-            // 
-            this.tsTools.Dock = System.Windows.Forms.DockStyle.None;
-            this.tsTools.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.btnScreenCapture,
-            this.btnScreenAnnotate});
-            this.tsTools.Location = new System.Drawing.Point(276, 49);
-            this.tsTools.Name = "tsTools";
-            this.tsTools.Size = new System.Drawing.Size(58, 25);
-            this.tsTools.TabIndex = 8;
-            // 
-            // btnScreenCapture
-            // 
-            this.actionListProvider1.SetAction(this.btnScreenCapture, this.actAnnoTools);
-            this.btnScreenCapture.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.btnScreenCapture.Image = ((System.Drawing.Image)(resources.GetObject("btnScreenCapture.Image")));
-            this.btnScreenCapture.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btnScreenCapture.Name = "btnScreenCapture";
-            this.btnScreenCapture.Size = new System.Drawing.Size(23, 22);
-            this.btnScreenCapture.Text = "Screen Annotate";
-            // 
-            // btnScreenAnnotate
-            // 
-            this.actionListProvider1.SetAction(this.btnScreenAnnotate, this.actScreenCapture);
-            this.btnScreenAnnotate.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.btnScreenAnnotate.Image = ((System.Drawing.Image)(resources.GetObject("btnScreenAnnotate.Image")));
-            this.btnScreenAnnotate.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btnScreenAnnotate.Name = "btnScreenAnnotate";
-            this.btnScreenAnnotate.Size = new System.Drawing.Size(23, 22);
-            this.btnScreenAnnotate.Text = "Screen Capture";
             // 
             // actionListProvider1
             // 
@@ -1540,14 +1550,6 @@ namespace WinFormsDemo
             this.actScreenCapture.Text = "Screen Capture";
             this.actScreenCapture.Execute += new System.EventHandler(this.actScreenCapture_Execute);
             // 
-            // toolsToolStripMenuItem1
-            // 
-            this.actionListProvider1.SetAction(this.toolsToolStripMenuItem1, null);
-            this.toolsToolStripMenuItem1.Name = "toolsToolStripMenuItem1";
-            this.toolsToolStripMenuItem1.Size = new System.Drawing.Size(163, 22);
-            this.toolsToolStripMenuItem1.Text = "Tools";
-            this.toolsToolStripMenuItem1.Click += new System.EventHandler(this.Toolbars_MenuItem_Click);
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1585,10 +1587,10 @@ namespace WinFormsDemo
             this.statusStrip1.PerformLayout();
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
-            this.tsEdit.ResumeLayout(false);
-            this.tsEdit.PerformLayout();
             this.tsTools.ResumeLayout(false);
             this.tsTools.PerformLayout();
+            this.tsEdit.ResumeLayout(false);
+            this.tsEdit.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.actionListProvider1)).EndInit();
             this.ResumeLayout(false);
 

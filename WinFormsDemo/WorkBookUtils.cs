@@ -128,6 +128,53 @@ namespace WinFormsDemo
                 f.Top = de.PageSize.Y - f.Height;
         }
 
+        public static void PreviewFigure(DEngine de, DTkViewer dv, Type figureClass, DAuthorProperties dap, DPoint viewerSize)
+        {
+            // add figure de so it shows on the viewer
+            de.ClearPage();
+            de.UndoRedoStart("blah");
+            Figure f = (Figure)Activator.CreateInstance(figureClass);
+            dap.ApplyPropertiesToFigure(f);
+            if (f is PolylineFigure || f is LineFigure)
+            {
+                DPoint pt1 = new DPoint(viewerSize.X / 4.0, viewerSize.Y / 4.0);
+                DPoint pt2 = new DPoint(viewerSize.X * 3 / 4.0, viewerSize.Y * 3 / 4.0);
+                if (f is PolylineFigure)
+                {
+                    DPoints pts = new DPoints();
+                    pts.Add(pt1);
+                    pts.Add(new DPoint(viewerSize.X * 1.25 / 4.0, viewerSize.Y * 1.10 / 4.0));
+                    pts.Add(new DPoint(viewerSize.X * 1.50 / 4.0, viewerSize.Y * 1.25 / 4.0));
+                    pts.Add(new DPoint(viewerSize.X * 1.75 / 4.0, viewerSize.Y * 1.50 / 4.0));
+                    pts.Add(new DPoint(viewerSize.X * 2.00 / 4.0, viewerSize.Y * 1.75 / 4.0));
+                    pts.Add(new DPoint(viewerSize.X * 2.25 / 4.0, viewerSize.Y * 2.00 / 4.0));
+                    pts.Add(new DPoint(viewerSize.X * 2.50 / 4.0, viewerSize.Y * 2.25 / 4.0));
+                    pts.Add(new DPoint(viewerSize.X * 2.75 / 4.0, viewerSize.Y * 2.50 / 4.0));
+                    pts.Add(pt2);
+                    ((PolylineFigure)f).Points = pts;
+                }
+                else if (f is LineFigure)
+                {
+                    ((LineFigure)f).Pt1 = pt1;
+                    ((LineFigure)f).Pt2 = pt2;
+                }
+            }
+            else if (f is TextFigure)
+                ((TextFigure)f).Text = "AaBbCc";
+            f.Left = viewerSize.X / 4.0;
+            f.Top = viewerSize.Y / 4.0;
+            f.Width = viewerSize.X / 2.0;
+            f.Height = viewerSize.Y / 2.0;
+            if (f is TextFigure)
+            {
+                f.Left = viewerSize.X / 8.0;
+                f.Width = viewerSize.X * 3 / 4.0;
+            }
+            de.AddFigure(f);
+            de.UndoRedoCommit();
+            dv.Update();
+        }
+
         public static byte[] GetBytesFromFile(string fileName)
         {
             FileStream fs = File.OpenRead(fileName);

@@ -19,7 +19,7 @@ namespace WinFormsDemo.Converters
             List<string> pageEntries = nbk.GetPageEntries(manifest);
             foreach (string entry in pageEntries)
             {
-                DEngine de = new DEngine(DAuthorProperties.GlobalAP, true);
+                DEngine de = new DEngine(true);
                 XmlDocument page = nbk.GetPage(entry);
                 if (page != null)
                 {

@@ -61,6 +61,32 @@ namespace WinFormsDemo.PersonalToolbar
             }
         }
 
+        public bool ToolEdit
+        {
+            set
+            {
+                if (value)
+                {
+                    Text = "Tool Edit";
+                    tsCustomFigureType.Visible = false;
+                    cbType.Visible = false;
+                    cbToolEditAddToPersonal.Visible = true;
+                }
+                else
+                {
+                    Text = "Personal Toolbutton";
+                    cbType.Visible = true;
+                    cbToolEditAddToPersonal.Visible = false;
+                    tsCustomFigureType.Visible = true;
+                }
+            }
+        }
+
+        public bool ToolEditAddToPersonal
+        {
+            get { return cbToolEditAddToPersonal.Checked; }
+        }
+
         DEngine de;
         DTkViewer dv;
 
@@ -71,12 +97,14 @@ namespace WinFormsDemo.PersonalToolbar
             dv.EditFigures = false;
             dv.AntiAlias = true;
             dv.Preview = true;
-            de = new DEngine(tsCustomFigureProps.Dap, false);
+            de = new DEngine(false);
             de.AddViewer(dv);
             // set page height to viewer size
             de.UndoRedoStart("blah");
             de.PageSize = new DPoint(vcCustomFigure.Width, vcCustomFigure.Height);
             de.UndoRedoCommit();
+            // default to non tooledit
+            ToolEdit = false;
         }
 
         private void cbType_SelectedIndexChanged(object sender, EventArgs e)
@@ -95,9 +123,9 @@ namespace WinFormsDemo.PersonalToolbar
                 default:
                     if (tsCustomFigureProps.Dap == null)
                     {
-                        tsCustomFigureProps.Dap = DAuthorProperties.GlobalAP.Clone();
-                        tsCustomFigureProps.FigureClass = typeof(PolylineFigure);
                         tsCustomFigureType.FigureClass = typeof(PolylineFigure);
+                        tsCustomFigureProps.Dap = tsCustomFigureType.Dap.Clone();
+                        tsCustomFigureProps.FigureClass = typeof(PolylineFigure);
                         tsCustomFigureProps.Dap.PropertyChanged += new AuthorPropertyChanged(Dap_PropertyChanged);
                     }
                     pnlCustomFigure.BringToFront();
@@ -124,65 +152,14 @@ namespace WinFormsDemo.PersonalToolbar
         {
             tsCustomFigureProps.FigureClass = figureClass;
             // add figure de so it shows on the viewer
-            de.ClearPage();
-            de.UndoRedoStart("blah");
-            Figure f = (Figure)Activator.CreateInstance(figureClass);
-            tsCustomFigureProps.Dap.ApplyPropertiesToFigure(f);
-            if (f is PolylineFigure || f is LineFigure)
-            {
-                DPoint pt1 = new DPoint(vcCustomFigure.Width / 4.0, vcCustomFigure.Height / 4.0);
-                DPoint pt2 = new DPoint(vcCustomFigure.Width * 3 / 4.0, vcCustomFigure.Height * 3 / 4.0);
-                if (f is PolylineFigure)
-                {
-                    DPoints pts = new DPoints();
-                    pts.Add(pt1);
-                    pts.Add(new DPoint(vcCustomFigure.Width * 1.25 / 4.0, vcCustomFigure.Height * 1.10 / 4.0));
-                    pts.Add(new DPoint(vcCustomFigure.Width * 1.50 / 4.0, vcCustomFigure.Height * 1.25 / 4.0));
-                    pts.Add(new DPoint(vcCustomFigure.Width * 1.75 / 4.0, vcCustomFigure.Height * 1.50 / 4.0));
-                    pts.Add(new DPoint(vcCustomFigure.Width * 2.00 / 4.0, vcCustomFigure.Height * 1.75 / 4.0)); 
-                    pts.Add(new DPoint(vcCustomFigure.Width * 2.25 / 4.0, vcCustomFigure.Height * 2.00 / 4.0));
-                    pts.Add(new DPoint(vcCustomFigure.Width * 2.50 / 4.0, vcCustomFigure.Height * 2.25 / 4.0));
-                    pts.Add(new DPoint(vcCustomFigure.Width * 2.75 / 4.0, vcCustomFigure.Height * 2.50 / 4.0));
-                    pts.Add(pt2);
-                    ((PolylineFigure)f).Points = pts;
-                }
-                else if (f is LineFigure)
-                {
-                    ((LineFigure)f).Pt1 = pt1;
-                    ((LineFigure)f).Pt2 = pt2;
-                }
-            }
-            else if (f is TextFigure)
-                ((TextFigure)f).Text = "AaBbCc";
-            f.Left = vcCustomFigure.Width / 4.0;
-            f.Top = vcCustomFigure.Height / 4.0;
-            f.Width = vcCustomFigure.Width / 2.0;
-            f.Height = vcCustomFigure.Height / 2.0;
-            SetTextSize(f);
-            de.AddFigure(f);
-            de.UndoRedoCommit();
-            dv.Update();
-        }
-
-        private void SetTextSize(Figure f)
-        {
-            if (f is TextFigure)
-            {
-                f.Left = vcCustomFigure.Width / 8.0;
-                f.Width = vcCustomFigure.Width * 3 / 4.0;
-            }
+            WorkBookUtils.PreviewFigure(de, dv, figureClass, tsCustomFigureProps.Dap, 
+                new DPoint(vcCustomFigure.Width, vcCustomFigure.Height));
         }
 
         void Dap_PropertyChanged(DAuthorProperties dap)
         {
-            de.UndoRedoStart("blah");
-            foreach (Figure f in de.Figures)
-            {
-                dap.ApplyPropertiesToFigure(f);
-                SetTextSize(f); // if the font has changed we need to update the text size
-            }
-            de.UndoRedoCommit();
-            dv.Update();
+            WorkBookUtils.PreviewFigure(de, dv, tsCustomFigureProps.FigureClass, dap,
+                new DPoint(vcCustomFigure.Width, vcCustomFigure.Height));
         }
     }
 }

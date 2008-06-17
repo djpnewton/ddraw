@@ -19,7 +19,6 @@ namespace WinFormsDemo
     public partial class MainForm : WorkBookForm
     {
         DEngineManager dem;
-        DAuthorProperties dap;
         DEngine de = null;
 
         DTkViewer dvEditor;
@@ -48,7 +47,7 @@ namespace WinFormsDemo
 
         void CreateDEngine(DEngine sibling)
         {
-            DEngine de = new DEngine(dap, true);
+            DEngine de = new DEngine(true);
             if (sibling != null)
             {
                 int idx = dem.IndexOfEngine(sibling);
@@ -112,7 +111,6 @@ namespace WinFormsDemo
             textInsertionPoint = null;
             // personal toolbar
             tsPersonal.De = de;
-            tsPersonal.Dap = dap;
         }
 
         public MainForm()
@@ -126,9 +124,6 @@ namespace WinFormsDemo
             dem = new DEngineManager();
             dem.UndoRedoChanged += new EventHandler(dem_UndoRedoChanged);
             attachmentView1.EngineManager = dem;
-            // create author properties
-            dap = DAuthorProperties.GlobalAP;
-            dap.SetProperties(DColor.Blue, DColor.Red, 3, DStrokeStyle.Solid, DMarker.None, DMarker.None, 1, "Arial", false, false, false, false);
             // edit viewer
             dvEditor = new WFViewer(wfvcEditor);
             dvEditor.EditFigures = true;
@@ -153,7 +148,6 @@ namespace WinFormsDemo
             UpdateUndoRedoActions();
             UpdateTitleBar();
             // set toolstrip properties
-            tsPropState.Dap = dap;
             tsPropState.Dv = dvEditor;
             // connect to ipc messages
             ipc.MessageReceived += new MessageReceivedHandler(ipc_MessageReceived);
@@ -496,8 +490,10 @@ namespace WinFormsDemo
             fig.ClickEvent = fig.UserAttrs.ContainsKey(Links.LinkBody);
         }
 
-        void de_AddedFigure(DEngine de, Figure fig)
+        void de_AddedFigure(DEngine de, Figure fig, bool fromHsm)
         {
+            if (fromHsm)
+                tsEngineState.Dap.ApplyPropertiesToFigure(fig);
             AddDefaultGlyphs(fig);
         }
 
@@ -665,7 +661,7 @@ namespace WinFormsDemo
             {
                 de.UndoRedoStart("Text Edit");
                 TextFigure tf = new TextFigure(textInsertionPoint, "", 0);
-                dap.ApplyPropertiesToFigure(tf);
+                tsEngineState.Dap.ApplyPropertiesToFigure(tf);
                 de.AddFigure(tf);
                 de.HsmTextEdit(tf);
                 dvEditor.Update();
@@ -790,7 +786,7 @@ namespace WinFormsDemo
             {
                 de.UndoRedoStart(string.Format("{0} Text", opPrefix));
                 TextFigure f = new TextFigure(new DPoint(objX, objY), (string)iData.GetData(DataFormats.Text), 0);
-                dap.ApplyPropertiesToFigure(f);
+                tsEngineState.Dap.ApplyPropertiesToFigure(f);
                 de.PasteAsSelectedFigures(new List<Figure>(new Figure[] { f }));
                 de.UndoRedoCommit();
             }
@@ -819,7 +815,7 @@ namespace WinFormsDemo
                     TextFigure f = new TextFigure(new DPoint(objX, objY), Path.GetFileName(path), 0);
                     f.UserAttrs[Links.Link] = attachmentView1.AddAttachment(path);
                     f.UserAttrs[Links.LinkType] = LinkType.Attachment.ToString();
-                    dap.ApplyPropertiesToFigure(f);
+                    tsEngineState.Dap.ApplyPropertiesToFigure(f);
                     de.PasteAsSelectedFigures(new List<Figure>(new Figure[] { f }));
                 }
                 de.UndoRedoCommit();
@@ -844,7 +840,7 @@ namespace WinFormsDemo
                         TextFigure f = new TextFigure(new DPoint(objX, objY), item.Text, 0);
                         f.UserAttrs[Links.Link] = item.Text;
                         f.UserAttrs[Links.LinkType] = LinkType.Attachment.ToString();
-                        dap.ApplyPropertiesToFigure(f);
+                        tsEngineState.Dap.ApplyPropertiesToFigure(f);
                         de.PasteAsSelectedFigures(new List<Figure>(new Figure[] { f }));
                     }
                 }
@@ -948,7 +944,7 @@ namespace WinFormsDemo
                     dem.Clear();
                     BackgroundFigure bf;
                     Dictionary<string, byte[]> extraEntries;
-                    List<DEngine> engines = FileHelper.Load(fileName, dap, true, out bf,
+                    List<DEngine> engines = FileHelper.Load(fileName, true, out bf,
                         new string[] { AttachmentView.ATTACHMENTS_DIR }, out extraEntries);
                     if (bf != null)
                         dem.BackgroundFigure = bf;
@@ -1633,6 +1629,17 @@ namespace WinFormsDemo
                 fig.FlipY = !fig.FlipY;
             de.UndoRedoCommit();
             dvEditor.Update();
+        }
+
+        private void tsEngineState_AddToPersonalTools(object sender, PersonalToolbar.CustomFigureT customFigure)
+        {
+            tsPersonal.AddCustomFigure(customFigure);
+        }
+
+        private void tsEngineState_DapChanged(object sender, DAuthorProperties dap)
+        {
+            tsPropState.Dap = dap;
+            tsPersonal.Dap = dap;
         }
     }
 }

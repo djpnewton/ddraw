@@ -11,6 +11,7 @@ namespace WinFormsDemo
 
         public PopupForm(int x, int y)
         {
+            TopMost = true;
             Size = new Size(158, 132);
             FormBorderStyle = FormBorderStyle.FixedDialog;
             MinimizeBox = MaximizeBox = ControlBox = false;

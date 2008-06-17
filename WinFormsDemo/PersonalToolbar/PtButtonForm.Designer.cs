@@ -51,6 +51,7 @@ namespace WinFormsDemo.PersonalToolbar
             this.pnlWebLink = new System.Windows.Forms.Panel();
             this.lbWebLink = new System.Windows.Forms.Label();
             this.tbUrl = new System.Windows.Forms.TextBox();
+            this.cbToolEditAddToPersonal = new System.Windows.Forms.CheckBox();
             this.pnlRunCmd.SuspendLayout();
             this.pnlShowDir.SuspendLayout();
             this.pnlCustomFigure.SuspendLayout();
@@ -283,6 +284,16 @@ namespace WinFormsDemo.PersonalToolbar
             this.tbUrl.Size = new System.Drawing.Size(421, 20);
             this.tbUrl.TabIndex = 13;
             // 
+            // cbToolEditAddToPersonal
+            // 
+            this.cbToolEditAddToPersonal.AutoSize = true;
+            this.cbToolEditAddToPersonal.Location = new System.Drawing.Point(12, 14);
+            this.cbToolEditAddToPersonal.Name = "cbToolEditAddToPersonal";
+            this.cbToolEditAddToPersonal.Size = new System.Drawing.Size(140, 17);
+            this.cbToolEditAddToPersonal.TabIndex = 21;
+            this.cbToolEditAddToPersonal.Text = "Add to Personal Toolbar";
+            this.cbToolEditAddToPersonal.UseVisualStyleBackColor = true;
+            // 
             // PtButtonForm
             // 
             this.AcceptButton = this.btnOk;
@@ -290,6 +301,7 @@ namespace WinFormsDemo.PersonalToolbar
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btnCancel;
             this.ClientSize = new System.Drawing.Size(487, 141);
+            this.Controls.Add(this.cbToolEditAddToPersonal);
             this.Controls.Add(this.pnlCustomFigure);
             this.Controls.Add(this.cbType);
             this.Controls.Add(this.panel1);
@@ -304,7 +316,7 @@ namespace WinFormsDemo.PersonalToolbar
             this.Name = "PtButtonForm";
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Personal Toolbutton";
+            this.Text = "PtButtonForm";
             this.pnlRunCmd.ResumeLayout(false);
             this.pnlRunCmd.PerformLayout();
             this.pnlShowDir.ResumeLayout(false);
@@ -317,6 +329,7 @@ namespace WinFormsDemo.PersonalToolbar
             this.pnlWebLink.ResumeLayout(false);
             this.pnlWebLink.PerformLayout();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -345,5 +358,6 @@ namespace WinFormsDemo.PersonalToolbar
         private System.Windows.Forms.Panel pnlWebLink;
         private System.Windows.Forms.Label lbWebLink;
         private System.Windows.Forms.TextBox tbUrl;
+        private System.Windows.Forms.CheckBox cbToolEditAddToPersonal;
     }
 }

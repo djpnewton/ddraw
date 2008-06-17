@@ -105,6 +105,7 @@ namespace WinFormsDemo
                 System.Threading.Thread.Sleep(250);
                 // create the annotation form (this takes a screen grab)
                 annotationForm = new AnnotationForm();
+                annotationForm.Dap = tsEngineState.Dap;
                 annotationForm.Show();
                 // set the owner to the annotation form
                 Owner = annotationForm;
@@ -116,7 +117,7 @@ namespace WinFormsDemo
                 tsEngineState.Mode = FigureToolStripMode.DEngineState;
                 tsEngineState.De = annotationForm.De;
                 tsPropState.Visible = true;
-                tsPropState.Dap = DAuthorProperties.GlobalAP;
+                tsPropState.Dap = tsEngineState.Dap;
                 tsPropState.De = annotationForm.De;
                 tsPropState.Dv = annotationForm.Dv;
                 // personal toolbar
@@ -125,7 +126,6 @@ namespace WinFormsDemo
                 PtUtils.LoadPersonalToolsFromSource(tsPersonal,
                     PtUtils.CreatePersonalToolsSource(((MainForm)MainForm).PersonalToolStrip));
                 tsPersonal.De = annotationForm.De;
-                tsPersonal.Dap = DAuthorProperties.GlobalAP;
             }
         }
 
@@ -207,6 +207,18 @@ namespace WinFormsDemo
                 ScreenAnnotateMode();
                 annotationForm.De.HsmSetStateByFigureClass(figureClass);
             }
+        }
+
+        private void tsEngineState_DapChanged(object sender, DAuthorProperties dap)
+        {
+            tsPropState.Dap = dap;
+            tsPersonal.Dap = dap;
+            annotationForm.Dap = dap;
+        }
+
+        private void tsEngineState_AddToPersonalTools(object sender, CustomFigureT customFigure)
+        {
+            tsPersonal.AddCustomFigure(customFigure);
         }
     }
 }

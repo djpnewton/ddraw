@@ -116,7 +116,6 @@ namespace DDraw
         UndoRedoArea undoRedoArea;
         DViewerHandler viewerHandler;
         DFigureHandler figureHandler;
-        DAuthorProperties authorProps;
 
         Type currentFigureClass = null;
         Figure currentFigure = null;
@@ -318,7 +317,7 @@ namespace DDraw
                 QState EraserDefault;
                 QState Erasing;
 
-        public DHsm(UndoRedoArea undoRedoArea, DViewerHandler viewerHandler, DFigureHandler figureHandler, DAuthorProperties authorProps) : base()
+        public DHsm(UndoRedoArea undoRedoArea, DViewerHandler viewerHandler, DFigureHandler figureHandler) : base()
         {
             // undo redo manager
             this.undoRedoArea = undoRedoArea;
@@ -334,8 +333,6 @@ namespace DDraw
             viewerHandler.KeyUp += new DKeyEventHandler(dv_KeyUp);
             // figure handler
             this.figureHandler = figureHandler;
-            // author properties
-            this.authorProps = authorProps;
             // QHsm Init
             Init();
         }
@@ -1232,9 +1229,8 @@ namespace DDraw
                         }
                     }
                 }
-                authorProps.ApplyPropertiesToFigure(currentFigure);
                 // add to list of figures
-                figureHandler.Add(currentFigure);
+                figureHandler.Add(currentFigure, true);
                 // transition
                 TransitionTo(DrawingLine);
             }
@@ -1332,7 +1328,7 @@ namespace DDraw
                                 figureHandler.Remove(autoGroupPolylineFigure);
                                 figureHandler.Remove(currentFigure);
                                 GroupFigure gf = new GroupFigure(new List<Figure>(new Figure[] { autoGroupPolylineFigure, currentFigure }));
-                                figureHandler.Add(gf);
+                                figureHandler.Add(gf, false);
                                 autoGroupPolylineFigure = gf;
                             }
                         }
@@ -1371,9 +1367,8 @@ namespace DDraw
                 BoundPtToPage(pt);
                 // create TextFigure
                 currentFigure = new TextFigure(pt, "", 0);
-                authorProps.ApplyPropertiesToFigure((TextFigure)currentFigure);
                 // add to list of figures
-                figureHandler.Add(currentFigure);
+                figureHandler.Add(currentFigure, true);
                 // update DViewer
                 dv.Update();
                 // transition
@@ -1639,9 +1634,8 @@ namespace DDraw
                 // create Figure
                 currentFigure = (Figure)Activator.CreateInstance(currentFigureClass);
                 currentFigure.TopLeft = pt;
-                authorProps.ApplyPropertiesToFigure(currentFigure);
                 // add to list of figures
-                figureHandler.Add(currentFigure);
+                figureHandler.Add(currentFigure, true);
                 // store drag pt for reference on mousemove event)
                 dragPt = pt;
                 // transition

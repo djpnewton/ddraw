@@ -12,7 +12,7 @@ namespace DDraw
     public delegate void ClickHandler(DEngine de, Figure clickedFigure, DPoint pt);
     public delegate void DragFigureHandler(DEngine de, Figure dragFigure, DPoint pt);
     public delegate void SelectMeasureHandler(DEngine de, DRect rect);
-    public delegate void AddedFigureHandler(DEngine de, Figure fig);
+    public delegate void AddedFigureHandler(DEngine de, Figure fig, bool fromHsm);
 
     public delegate void AuthorPropertyChanged(DAuthorProperties dap);
 
@@ -206,17 +206,6 @@ namespace DDraw
             }
         }
 
-        static DAuthorProperties ap = null;
-        public static DAuthorProperties GlobalAP
-        {
-            get
-            {
-                if (ap == null)
-                    ap = new DAuthorProperties();
-                return ap;
-            }
-        }
-
         public DAuthorProperties Clone()
         {
             DAuthorProperties dap = new DAuthorProperties();
@@ -407,7 +396,7 @@ namespace DDraw
 
         static int instanceNumber = 0;
 
-        public DEngine(DAuthorProperties authorProps, bool usingEngineManager)
+        public DEngine(bool usingEngineManager)
         {
             // create the undo/redo manager
             undoRedoArea = new UndoRedoArea(string.Format("area #{0}", instanceNumber));
@@ -422,10 +411,10 @@ namespace DDraw
                 undoRedoArea.Start("create figure handler");
             figureHandler = new DFigureHandler();
             figureHandler.SelectedFiguresChanged += new SelectedFiguresHandler(DoSelectedFiguresChanged);
-            figureHandler.AddedFigure += delegate(DEngine de, Figure fig)
+            figureHandler.AddedFigure += delegate(DEngine de, Figure fig, bool fromHsm)
             {
                 if (AddedFigure != null)
-                    AddedFigure(this, fig);
+                    AddedFigure(this, fig, fromHsm);
             };
             if (!usingEngineManager)
             {
@@ -433,7 +422,7 @@ namespace DDraw
                 undoRedoArea.ClearHistory();
             }
             // create state machine
-            hsm = new DHsm(undoRedoArea, viewerHandler, figureHandler, authorProps);
+            hsm = new DHsm(undoRedoArea, viewerHandler, figureHandler);
             hsm.DebugMessage += new DebugMessageHandler(hsm_DebugMessage);
             hsm.FigureClick += new ClickHandler(hsm_FigureClick);
             hsm.ContextClick += new ClickHandler(hsm_ContextClick);
@@ -531,7 +520,7 @@ namespace DDraw
 
         public void AddFigure(Figure f)
         {
-            figureHandler.Add(f);
+            figureHandler.Add(f, false);
         }
 
         public void RemoveFigure(Figure f)

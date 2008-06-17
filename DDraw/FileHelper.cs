@@ -94,7 +94,7 @@ namespace DDraw
                 return null;
         }
 
-        public static List<DEngine> Load(string fileName, DAuthorProperties dap, bool usingEngineManager, out BackgroundFigure bf, string[] extraEntryDirs, out Dictionary<string, byte[]> extraEntries)
+        public static List<DEngine> Load(string fileName, bool usingEngineManager, out BackgroundFigure bf, string[] extraEntryDirs, out Dictionary<string, byte[]> extraEntries)
         {
             System.Text.ASCIIEncoding encoding = new System.Text.ASCIIEncoding();
             bf = null;
@@ -112,7 +112,7 @@ namespace DDraw
                 foreach (IConfig config in source.Configs)
                 {
                     // create new DEngine for page
-                    DEngine de = new DEngine(dap, usingEngineManager);
+                    DEngine de = new DEngine(usingEngineManager);
                     if (!usingEngineManager)
                         // start recording undo history (it is a pain that we have to do this)
                         de.UndoRedoStart("loading file");

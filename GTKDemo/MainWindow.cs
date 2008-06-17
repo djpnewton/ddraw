@@ -49,7 +49,7 @@ namespace GTKDemo
 			dv = new GTKViewer(dvc);
 			dv.EditFigures = true;
 			dv.DebugMessage += new DebugMessageHandler(DebugMessage);
-			de = new DEngine(DAuthorProperties.GlobalAP, false);
+			de = new DEngine(false);
 			de.AddViewer(dv);
 			de.HsmState = DHsmState.Select;
 			de.DebugMessage += new DebugMessageHandler(DebugMessage);

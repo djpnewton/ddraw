@@ -101,7 +101,7 @@ namespace WinFormsDemo.PersonalToolbar
         private void btnAdd_Click(object sender, EventArgs e)
         {
             PtButtonForm pf = new PtButtonForm();
-            pf.ToolButtonData = new CustomFigureT(typeof(PolylineFigure), DAuthorProperties.GlobalAP.Clone(), null);
+            pf.ToolButtonData = new CustomFigureT(typeof(PolylineFigure), new DAuthorProperties(), null);
             if (pf.ShowDialog() == DialogResult.OK)
             {
                 AddToListView(pf.ToolButtonData);

@@ -55,10 +55,10 @@ namespace WinFormsDemo.PersonalToolbar
             }
             else if (e.ClickedItem is CustomFigureToolButton)
             {
-                System.Diagnostics.Debug.Assert(de != null, "ERROR: \"de\" is not assigned");
-                System.Diagnostics.Debug.Assert(dap != null, "ERROR: \"dap\" is not assigned");
                 CustomFigureToolButton b = (CustomFigureToolButton)e.ClickedItem;
+                System.Diagnostics.Debug.Assert(de != null, "ERROR: \"de\" is not assigned");
                 de.HsmSetStateByFigureClass(b.FigureClass);
+                System.Diagnostics.Debug.Assert(dap != null, "ERROR: \"dap\" is not assigned");
                 dap.SetProperties(b.FigureClass, b.Dap);
             }
             base.OnItemClicked(e);
@@ -120,6 +120,11 @@ namespace WinFormsDemo.PersonalToolbar
         {
             for (int i = Items.Count - 1; i > 0; i--)
                 Items.RemoveAt(i);
+        }
+
+        public void AddCustomFigure(CustomFigureT customFigure)
+        {
+            Items.Add(new CustomFigureToolButton(customFigure));
         }
     }
 }
