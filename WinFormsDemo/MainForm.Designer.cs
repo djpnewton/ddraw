@@ -165,6 +165,7 @@ namespace WinFormsDemo
             this.actSendBackward = new Burkovsky.Controls.Action();
             this.actBringForward = new Burkovsky.Controls.Action();
             this.actLink = new Burkovsky.Controls.Action();
+            this.actProperties = new Burkovsky.Controls.Action();
             this.actSelectAll = new Burkovsky.Controls.Action();
             this.actClearPage = new Burkovsky.Controls.Action();
             this.actPageSize = new Burkovsky.Controls.Action();
@@ -181,7 +182,6 @@ namespace WinFormsDemo
             this.actRedo = new Burkovsky.Controls.Action();
             this.actAnnoTools = new Burkovsky.Controls.Action();
             this.actScreenCapture = new Burkovsky.Controls.Action();
-            this.actProperties = new Burkovsky.Controls.Action();
             this.cmsFigure.SuspendLayout();
             this.cmsCanvas.SuspendLayout();
             this.cmsPreview.SuspendLayout();
@@ -222,7 +222,7 @@ namespace WinFormsDemo
             this.linkToolStripMenuItem,
             this.propertiesToolStripMenuItem});
             this.cmsFigure.Name = "cmsFigure";
-            this.cmsFigure.Size = new System.Drawing.Size(239, 330);
+            this.cmsFigure.Size = new System.Drawing.Size(239, 308);
             // 
             // cutToolStripMenuItem1
             // 
@@ -1237,8 +1237,9 @@ namespace WinFormsDemo
             this.tsPersonal.Dock = System.Windows.Forms.DockStyle.None;
             this.tsPersonal.Location = new System.Drawing.Point(3, 74);
             this.tsPersonal.Name = "tsPersonal";
-            this.tsPersonal.Size = new System.Drawing.Size(35, 25);
+            this.tsPersonal.Size = new System.Drawing.Size(66, 25);
             this.tsPersonal.TabIndex = 7;
+            this.tsPersonal.ItemContext += new System.EventHandler(this.tsPersonal_ItemContext);
             // 
             // tsTools
             // 
@@ -1247,7 +1248,7 @@ namespace WinFormsDemo
             this.tsTools.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.btnScreenCapture,
             this.btnScreenAnnotate});
-            this.tsTools.Location = new System.Drawing.Point(60, 74);
+            this.tsTools.Location = new System.Drawing.Point(91, 74);
             this.tsTools.Name = "tsTools";
             this.tsTools.Size = new System.Drawing.Size(58, 25);
             this.tsTools.TabIndex = 8;
@@ -1454,6 +1455,12 @@ namespace WinFormsDemo
             this.actLink.Text = "Link";
             this.actLink.Execute += new System.EventHandler(this.actLink_Execute);
             // 
+            // actProperties
+            // 
+            this.actProperties.ShortcutKeys = System.Windows.Forms.Keys.None;
+            this.actProperties.Text = "Properties";
+            this.actProperties.Execute += new System.EventHandler(this.actProperties_Execute);
+            // 
             // actSelectAll
             // 
             this.actSelectAll.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.A)));
@@ -1549,12 +1556,6 @@ namespace WinFormsDemo
             this.actScreenCapture.ShortcutKeys = System.Windows.Forms.Keys.None;
             this.actScreenCapture.Text = "Screen Capture";
             this.actScreenCapture.Execute += new System.EventHandler(this.actScreenCapture_Execute);
-            // 
-            // actProperties
-            // 
-            this.actProperties.ShortcutKeys = System.Windows.Forms.Keys.None;
-            this.actProperties.Text = "Properties";
-            this.actProperties.Execute += new System.EventHandler(this.actProperties_Execute);
             // 
             // MainForm
             // 

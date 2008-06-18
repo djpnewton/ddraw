@@ -220,5 +220,10 @@ namespace WinFormsDemo
         {
             tsPersonal.AddCustomFigure(customFigure);
         }
+
+        private void tsPersonal_ItemContext(object sender, EventArgs e)
+        {
+            annotationForm.De.CheckState();
+        }
     }
 }

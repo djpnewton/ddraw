@@ -70,10 +70,14 @@ namespace WinFormsDemo.PersonalToolbar
             e.Item.MouseDown += new MouseEventHandler(Item_MouseDown);
         }
 
+        public event EventHandler ItemContext;
+
         void Item_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Right && sender != btnCustomize)
             {
+                if (ItemContext != null)
+                    ItemContext(sender, new EventArgs());
                 ToolStripItem tsItem = (ToolStripItem)sender;
                 if (tsItem.Owner != null)
                 {

@@ -1670,5 +1670,10 @@ namespace WinFormsDemo
         {
             PopupForm.HidePopups();
         }
+
+        private void tsPersonal_ItemContext(object sender, EventArgs e)
+        {
+            de.CheckState();
+        }
     }
 }

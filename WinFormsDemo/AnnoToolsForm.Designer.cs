@@ -125,8 +125,9 @@ namespace WinFormsDemo
             this.tsPersonal.Dock = System.Windows.Forms.DockStyle.None;
             this.tsPersonal.Location = new System.Drawing.Point(113, 0);
             this.tsPersonal.Name = "tsPersonal";
-            this.tsPersonal.Size = new System.Drawing.Size(35, 25);
+            this.tsPersonal.Size = new System.Drawing.Size(66, 25);
             this.tsPersonal.TabIndex = 4;
+            this.tsPersonal.ItemContext += new System.EventHandler(this.tsPersonal_ItemContext);
             // 
             // tsEngineState
             // 
@@ -136,7 +137,7 @@ namespace WinFormsDemo
             this.tsEngineState.Location = new System.Drawing.Point(3, 25);
             this.tsEngineState.Mode = WinFormsDemo.FigureToolStripMode.DEngineState;
             this.tsEngineState.Name = "tsEngineState";
-            this.tsEngineState.Size = new System.Drawing.Size(314, 25);
+            this.tsEngineState.Size = new System.Drawing.Size(288, 25);
             this.tsEngineState.TabIndex = 2;
             this.tsEngineState.Text = "tsEngineState";
             this.tsEngineState.AddToPersonalTools += new WinFormsDemo.FigureStyleEvent(this.tsEngineState_AddToPersonalTools);
