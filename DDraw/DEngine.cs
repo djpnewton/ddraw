@@ -212,6 +212,35 @@ namespace DDraw
             dap.SetProperties(this);
             return dap;
         }
+
+        public static DAuthorProperties FromFigure(Figure f)
+        {
+            DAuthorProperties dap = new DAuthorProperties();
+            if (f is IFillable)
+                dap.Fill = ((IFillable)f).Fill;
+            if (f is IStrokeable)
+            {
+                dap.Stroke = ((IStrokeable)f).Stroke;
+                dap.StrokeWidth = ((IStrokeable)f).StrokeWidth;
+                dap.StrokeStyle = ((IStrokeable)f).StrokeStyle;
+            }
+            if (f is IMarkable)
+            {
+                dap.StartMarker = ((IMarkable)f).StartMarker;
+                dap.EndMarker = ((IMarkable)f).EndMarker;
+            }
+            if (f is IAlphaBlendable)
+                dap.Alpha = ((IAlphaBlendable)f).Alpha;
+            if (f is ITextable)
+            {
+                dap.FontName = ((ITextable)f).FontName;
+                dap.Bold = ((ITextable)f).Bold;
+                dap.Italics = ((ITextable)f).Italics;
+                dap.Underline = ((ITextable)f).Underline;
+                dap.Strikethrough = ((ITextable)f).Strikethrough;
+            }
+            return dap;
+        }
     }
 
     public class DEngine

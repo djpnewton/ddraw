@@ -460,6 +460,8 @@ namespace WinFormsDemo
             actDelete.Enabled = de.CanDelete(figs);
             // update link action
             actLink.Enabled = figs.Count == 1;
+            // update properties action
+            actProperties.Enabled = figs.Count == 1;
         }
 
         void AddDefaultGlyphs(Figure fig)
@@ -1336,6 +1338,24 @@ namespace WinFormsDemo
         {
             if (de.HsmState == DHsmState.Select)
                 de.SelectAll();
+        }
+
+        private void actProperties_Execute(object sender, EventArgs e)
+        {
+            if (de.SelectedFigures.Count == 1)
+            {
+                Figure fig = de.SelectedFigures[0];
+                PtButtonForm f = new PtButtonForm();
+                f.SetupFigureEdit();
+                f.ToolButtonData = new CustomFigureT(fig.GetType(), DAuthorProperties.FromFigure(fig), null);
+                if (f.ShowDialog() == DialogResult.OK)
+                {
+                    de.UndoRedoStart("Change Properties");
+                    ((CustomFigureT)f.ToolButtonData).Dap.ApplyPropertiesToFigure(fig);
+                    de.UndoRedoCommit();
+                    de.UpdateViewers();
+                }
+            }
         }
 
         void ShowAnnoTools(bool alone)

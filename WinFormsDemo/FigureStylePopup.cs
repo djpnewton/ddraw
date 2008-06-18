@@ -64,7 +64,7 @@ namespace WinFormsDemo
 
             PersonalToolbar.PtButtonForm f = new PersonalToolbar.PtButtonForm();
             f.ToolButtonData = new PersonalToolbar.CustomFigureT(figureClass, dap.Clone(), null);
-            f.ToolEdit = true;
+            f.SetupToolEdit();
             if (f.ShowDialog() == DialogResult.OK)
             {
                 dap.SetProperties(((PersonalToolbar.CustomFigureT)f.ToolButtonData).Dap);

@@ -61,25 +61,28 @@ namespace WinFormsDemo.PersonalToolbar
             }
         }
 
-        public bool ToolEdit
+        public void SetupToolEdit()
         {
-            set
-            {
-                if (value)
-                {
-                    Text = "Tool Edit";
-                    tsCustomFigureType.Visible = false;
-                    cbType.Visible = false;
-                    cbToolEditAddToPersonal.Visible = true;
-                }
-                else
-                {
-                    Text = "Personal Toolbutton";
-                    cbType.Visible = true;
-                    cbToolEditAddToPersonal.Visible = false;
-                    tsCustomFigureType.Visible = true;
-                }
-            }
+            Text = "Tool Edit";
+            tsCustomFigureType.Visible = false;
+            cbType.Visible = false;
+            cbToolEditAddToPersonal.Visible = true;
+        }
+
+        public void SetupFigureEdit()
+        {
+            Text = "Figure Edit";
+            tsCustomFigureType.Visible = false;
+            cbType.Visible = false;
+            cbToolEditAddToPersonal.Visible = false;
+        }
+
+        public void SetupToolButtonEdit()
+        {
+            Text = "Personal Toolbutton";
+            cbType.Visible = true;
+            cbToolEditAddToPersonal.Visible = false;
+            tsCustomFigureType.Visible = true;
         }
 
         public bool ToolEditAddToPersonal
@@ -103,8 +106,8 @@ namespace WinFormsDemo.PersonalToolbar
             de.UndoRedoStart("blah");
             de.PageSize = new DPoint(vcCustomFigure.Width, vcCustomFigure.Height);
             de.UndoRedoCommit();
-            // default to non tooledit
-            ToolEdit = false;
+            // default to toolbutton edit
+            SetupToolButtonEdit();
         }
 
         private void cbType_SelectedIndexChanged(object sender, EventArgs e)

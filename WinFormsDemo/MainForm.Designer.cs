@@ -46,6 +46,7 @@ namespace WinFormsDemo
             this.bringForwardToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator10 = new System.Windows.Forms.ToolStripSeparator();
             this.linkToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.propertiesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.cmsCanvas = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.pasteToolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
             this.selectAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -180,6 +181,7 @@ namespace WinFormsDemo
             this.actRedo = new Burkovsky.Controls.Action();
             this.actAnnoTools = new Burkovsky.Controls.Action();
             this.actScreenCapture = new Burkovsky.Controls.Action();
+            this.actProperties = new Burkovsky.Controls.Action();
             this.cmsFigure.SuspendLayout();
             this.cmsCanvas.SuspendLayout();
             this.cmsPreview.SuspendLayout();
@@ -217,9 +219,10 @@ namespace WinFormsDemo
             this.sendBackwardToolStripMenuItem,
             this.bringForwardToolStripMenuItem,
             this.toolStripSeparator10,
-            this.linkToolStripMenuItem});
+            this.linkToolStripMenuItem,
+            this.propertiesToolStripMenuItem});
             this.cmsFigure.Name = "cmsFigure";
-            this.cmsFigure.Size = new System.Drawing.Size(239, 286);
+            this.cmsFigure.Size = new System.Drawing.Size(239, 330);
             // 
             // cutToolStripMenuItem1
             // 
@@ -336,6 +339,13 @@ namespace WinFormsDemo
             this.linkToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.L)));
             this.linkToolStripMenuItem.Size = new System.Drawing.Size(238, 22);
             this.linkToolStripMenuItem.Text = "Link";
+            // 
+            // propertiesToolStripMenuItem
+            // 
+            this.actionListProvider1.SetAction(this.propertiesToolStripMenuItem, this.actProperties);
+            this.propertiesToolStripMenuItem.Name = "propertiesToolStripMenuItem";
+            this.propertiesToolStripMenuItem.Size = new System.Drawing.Size(238, 22);
+            this.propertiesToolStripMenuItem.Text = "Properties";
             // 
             // cmsCanvas
             // 
@@ -1380,6 +1390,7 @@ namespace WinFormsDemo
             this.actionListProvider1.Actions.Add(this.actRedo);
             this.actionListProvider1.Actions.Add(this.actSelectAll);
             this.actionListProvider1.Actions.Add(this.actScreenCapture);
+            this.actionListProvider1.Actions.Add(this.actProperties);
             // 
             // actCut
             // 
@@ -1538,6 +1549,12 @@ namespace WinFormsDemo
             this.actScreenCapture.ShortcutKeys = System.Windows.Forms.Keys.None;
             this.actScreenCapture.Text = "Screen Capture";
             this.actScreenCapture.Execute += new System.EventHandler(this.actScreenCapture_Execute);
+            // 
+            // actProperties
+            // 
+            this.actProperties.ShortcutKeys = System.Windows.Forms.Keys.None;
+            this.actProperties.Text = "Properties";
+            this.actProperties.Execute += new System.EventHandler(this.actProperties_Execute);
             // 
             // MainForm
             // 
@@ -1737,6 +1754,8 @@ namespace WinFormsDemo
         private System.Windows.Forms.ToolStripButton btnScreenAnnotate;
         private Burkovsky.Controls.Action actScreenCapture;
         private System.Windows.Forms.ToolStripMenuItem toolsToolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem propertiesToolStripMenuItem;
+        private Burkovsky.Controls.Action actProperties;
     }
 }
 
