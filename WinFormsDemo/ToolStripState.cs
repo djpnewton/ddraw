@@ -156,6 +156,11 @@ namespace WinFormsDemo
             get { return dap; }
         }
 
+        public DAuthorProperties DapText
+        {
+            get { return dapText; }
+        }
+
         public event FigureClassChangedHandler FigureClassChanged;
         public event DapChangedHandler DapChanged;
 
@@ -805,6 +810,10 @@ namespace WinFormsDemo
                 case DHsmState.Eraser:
                     break;
                 case DHsmState.SelectMeasure:
+                    break;
+                case DHsmState.TextEdit:
+                    break;
+                case DHsmState.FigureEdit:
                     break;
                 default:
                     System.Diagnostics.Debug.Assert(dap != null, "ERROR: \"dap\" is not assigned");

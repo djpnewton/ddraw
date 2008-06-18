@@ -665,7 +665,7 @@ namespace WinFormsDemo
             {
                 de.UndoRedoStart("Text Edit");
                 TextFigure tf = new TextFigure(textInsertionPoint, "", 0);
-                tsEngineState.Dap.ApplyPropertiesToFigure(tf);
+                tsEngineState.DapText.ApplyPropertiesToFigure(tf);
                 de.AddFigure(tf);
                 de.HsmTextEdit(tf);
                 dvEditor.Update();
@@ -790,7 +790,7 @@ namespace WinFormsDemo
             {
                 de.UndoRedoStart(string.Format("{0} Text", opPrefix));
                 TextFigure f = new TextFigure(new DPoint(objX, objY), (string)iData.GetData(DataFormats.Text), 0);
-                tsEngineState.Dap.ApplyPropertiesToFigure(f);
+                tsEngineState.DapText.ApplyPropertiesToFigure(f);
                 de.PasteAsSelectedFigures(new List<Figure>(new Figure[] { f }));
                 de.UndoRedoCommit();
             }
