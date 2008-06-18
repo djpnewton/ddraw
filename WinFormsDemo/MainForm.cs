@@ -1645,5 +1645,10 @@ namespace WinFormsDemo
             tsPropState.Dap = dap;
             tsPersonal.Dap = dap;
         }
+
+        private void wfvcEditor_MouseEnter(object sender, EventArgs e)
+        {
+            PopupForm.HidePopups();
+        }
     }
 }

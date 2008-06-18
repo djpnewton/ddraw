@@ -60,7 +60,6 @@ namespace WinFormsDemo
             // 
             this.tsAnnotate.ClickThrough = true;
             this.tsAnnotate.Dock = System.Windows.Forms.DockStyle.None;
-            this.tsAnnotate.FocusControl = null;
             this.tsAnnotate.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.btnMouse,
             this.toolStripSeparator1,
@@ -68,7 +67,6 @@ namespace WinFormsDemo
             this.btnImportArea,
             this.btnImportPage});
             this.tsAnnotate.Location = new System.Drawing.Point(3, 0);
-            this.tsAnnotate.ManagedFocus = true;
             this.tsAnnotate.Name = "tsAnnotate";
             this.tsAnnotate.Size = new System.Drawing.Size(110, 25);
             this.tsAnnotate.TabIndex = 0;
@@ -125,9 +123,7 @@ namespace WinFormsDemo
             this.tsPersonal.Dap = null;
             this.tsPersonal.De = null;
             this.tsPersonal.Dock = System.Windows.Forms.DockStyle.None;
-            this.tsPersonal.FocusControl = null;
             this.tsPersonal.Location = new System.Drawing.Point(113, 0);
-            this.tsPersonal.ManagedFocus = true;
             this.tsPersonal.Name = "tsPersonal";
             this.tsPersonal.Size = new System.Drawing.Size(35, 25);
             this.tsPersonal.TabIndex = 4;
@@ -137,9 +133,7 @@ namespace WinFormsDemo
             this.tsEngineState.ClickThrough = true;
             this.tsEngineState.Dock = System.Windows.Forms.DockStyle.None;
             this.tsEngineState.FigureClass = null;
-            this.tsEngineState.FocusControl = null;
             this.tsEngineState.Location = new System.Drawing.Point(3, 25);
-            this.tsEngineState.ManagedFocus = true;
             this.tsEngineState.Mode = WinFormsDemo.FigureToolStripMode.DEngineState;
             this.tsEngineState.Name = "tsEngineState";
             this.tsEngineState.Size = new System.Drawing.Size(314, 25);
@@ -155,10 +149,8 @@ namespace WinFormsDemo
             this.tsPropState.Dap = null;
             this.tsPropState.Dock = System.Windows.Forms.DockStyle.None;
             this.tsPropState.FigureClass = null;
-            this.tsPropState.FocusControl = null;
             this.tsPropState.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.HorizontalStackWithOverflow;
             this.tsPropState.Location = new System.Drawing.Point(3, 50);
-            this.tsPropState.ManagedFocus = true;
             this.tsPropState.Name = "tsPropState";
             this.tsPropState.Size = new System.Drawing.Size(273, 25);
             this.tsPropState.TabIndex = 3;

@@ -1,11 +1,21 @@
 using System;
 using System.Windows.Forms;
 using System.Drawing;
+using System.Collections.Generic;
 
 namespace WinFormsDemo
 {
     public class PopupForm : Form
     {
+        static List<PopupForm> poppedUpForms = new List<PopupForm>();
+
+        public static void HidePopups()
+        {
+            for (int i = poppedUpForms.Count - 1; i >= 0; i--)
+                poppedUpForms[i].Hide();
+        }
+
+
         Button cancelButton = new Button();
         public bool UseDeactivate = true;
 
@@ -34,6 +44,18 @@ namespace WinFormsDemo
             cancelButton.TabIndex = 0;
             cancelButton.DialogResult = DialogResult.Cancel;
             this.CancelButton = cancelButton;
+        }
+
+        protected override void OnShown(EventArgs e)
+        {
+            base.OnShown(e);
+            poppedUpForms.Add(this);
+        }
+
+        protected override void OnClosed(EventArgs e)
+        {
+            base.OnClosed(e);
+            poppedUpForms.Remove(this);
         }
 
         void cancelButton_Click(object sender, System.EventArgs e)

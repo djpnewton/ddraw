@@ -76,7 +76,7 @@ namespace WinFormsDemo
             this.btnNextPage = new System.Windows.Forms.ToolStripButton();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.lbInfo = new System.Windows.Forms.ToolStripStatusLabel();
-            this.menuStrip1 = new WinFormsDemo.MenuStripEx();
+            this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.newToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -141,7 +141,7 @@ namespace WinFormsDemo
             this.tsEngineState = new WinFormsDemo.FigureToolStrip();
             this.tsPropState = new WinFormsDemo.FigurePropertiesToolStrip();
             this.tsPersonal = new WinFormsDemo.PersonalToolbar.PersonalToolStrip();
-            this.tsTools = new System.Windows.Forms.ToolStrip();
+            this.tsTools = new WinFormsDemo.ToolStripEx();
             this.btnScreenCapture = new System.Windows.Forms.ToolStripButton();
             this.btnScreenAnnotate = new System.Windows.Forms.ToolStripButton();
             this.tsEdit = new WinFormsDemo.ToolStripEx();
@@ -498,6 +498,7 @@ namespace WinFormsDemo
             this.wfvcEditor.KeyUp += new System.Windows.Forms.KeyEventHandler(this.wfvcEditor_KeyUp);
             this.wfvcEditor.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.wfvcEditor_KeyPress);
             this.wfvcEditor.DragEnter += new System.Windows.Forms.DragEventHandler(this.wfvcEditor_DragEnter);
+            this.wfvcEditor.MouseEnter += new System.EventHandler(this.wfvcEditor_MouseEnter);
             this.wfvcEditor.KeyDown += new System.Windows.Forms.KeyEventHandler(this.wfvcEditor_KeyDown);
             // 
             // previewBar1
@@ -541,7 +542,6 @@ namespace WinFormsDemo
             // 
             this.tsSidebar.ClickThrough = true;
             this.tsSidebar.Dock = System.Windows.Forms.DockStyle.None;
-            this.tsSidebar.FocusControl = this;
             this.tsSidebar.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
             this.tsSidebar.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.btnSwitchSidebar,
@@ -549,7 +549,6 @@ namespace WinFormsDemo
             this.btnPages,
             this.btnAttachments});
             this.tsSidebar.Location = new System.Drawing.Point(3, 0);
-            this.tsSidebar.ManagedFocus = true;
             this.tsSidebar.Name = "tsSidebar";
             this.tsSidebar.Size = new System.Drawing.Size(78, 25);
             this.tsSidebar.TabIndex = 0;
@@ -599,13 +598,11 @@ namespace WinFormsDemo
             // 
             this.tsPageManage.ClickThrough = true;
             this.tsPageManage.Dock = System.Windows.Forms.DockStyle.None;
-            this.tsPageManage.FocusControl = this;
             this.tsPageManage.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.btnNewPage,
             this.btnPrevPage,
             this.btnNextPage});
             this.tsPageManage.Location = new System.Drawing.Point(3, 25);
-            this.tsPageManage.ManagedFocus = true;
             this.tsPageManage.Name = "tsPageManage";
             this.tsPageManage.Size = new System.Drawing.Size(81, 25);
             this.tsPageManage.TabIndex = 1;
@@ -660,7 +657,6 @@ namespace WinFormsDemo
             // 
             // menuStrip1
             // 
-            this.menuStrip1.ClickThrough = true;
             this.menuStrip1.Dock = System.Windows.Forms.DockStyle.None;
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fileToolStripMenuItem,
@@ -1204,9 +1200,7 @@ namespace WinFormsDemo
             this.tsEngineState.ClickThrough = true;
             this.tsEngineState.Dock = System.Windows.Forms.DockStyle.None;
             this.tsEngineState.FigureClass = null;
-            this.tsEngineState.FocusControl = this;
             this.tsEngineState.Location = new System.Drawing.Point(3, 24);
-            this.tsEngineState.ManagedFocus = true;
             this.tsEngineState.Mode = WinFormsDemo.FigureToolStripMode.DEngineState;
             this.tsEngineState.Name = "tsEngineState";
             this.tsEngineState.Size = new System.Drawing.Size(288, 25);
@@ -1220,9 +1214,7 @@ namespace WinFormsDemo
             this.tsPropState.Dap = null;
             this.tsPropState.Dock = System.Windows.Forms.DockStyle.None;
             this.tsPropState.FigureClass = null;
-            this.tsPropState.FocusControl = this;
             this.tsPropState.Location = new System.Drawing.Point(3, 49);
-            this.tsPropState.ManagedFocus = true;
             this.tsPropState.Name = "tsPropState";
             this.tsPropState.Size = new System.Drawing.Size(273, 25);
             this.tsPropState.TabIndex = 4;
@@ -1233,22 +1225,21 @@ namespace WinFormsDemo
             this.tsPersonal.Dap = null;
             this.tsPersonal.De = null;
             this.tsPersonal.Dock = System.Windows.Forms.DockStyle.None;
-            this.tsPersonal.FocusControl = null;
             this.tsPersonal.Location = new System.Drawing.Point(3, 74);
-            this.tsPersonal.ManagedFocus = true;
             this.tsPersonal.Name = "tsPersonal";
             this.tsPersonal.Size = new System.Drawing.Size(35, 25);
             this.tsPersonal.TabIndex = 7;
             // 
             // tsTools
             // 
+            this.tsTools.ClickThrough = true;
             this.tsTools.Dock = System.Windows.Forms.DockStyle.None;
             this.tsTools.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.btnScreenCapture,
             this.btnScreenAnnotate});
             this.tsTools.Location = new System.Drawing.Point(60, 74);
             this.tsTools.Name = "tsTools";
-            this.tsTools.Size = new System.Drawing.Size(89, 25);
+            this.tsTools.Size = new System.Drawing.Size(58, 25);
             this.tsTools.TabIndex = 8;
             // 
             // btnScreenCapture
@@ -1275,7 +1266,6 @@ namespace WinFormsDemo
             // 
             this.tsEdit.ClickThrough = true;
             this.tsEdit.Dock = System.Windows.Forms.DockStyle.None;
-            this.tsEdit.FocusControl = this;
             this.tsEdit.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.btnUndo,
             this.btnRedo,
@@ -1286,7 +1276,6 @@ namespace WinFormsDemo
             this.toolStripSeparator12,
             this.btnDelete});
             this.tsEdit.Location = new System.Drawing.Point(3, 99);
-            this.tsEdit.ManagedFocus = true;
             this.tsEdit.Name = "tsEdit";
             this.tsEdit.Size = new System.Drawing.Size(162, 25);
             this.tsEdit.TabIndex = 5;
@@ -1604,7 +1593,7 @@ namespace WinFormsDemo
         private System.Windows.Forms.Panel pnlMain;
         private System.Windows.Forms.ToolStripStatusLabel lbInfo;
         private PreviewBar previewBar1;
-        private MenuStripEx menuStrip1;
+        private System.Windows.Forms.MenuStrip menuStrip1;
         private System.Windows.Forms.ToolStripMenuItem insertToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem imageToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;
@@ -1743,7 +1732,7 @@ namespace WinFormsDemo
         private System.Windows.Forms.ToolStripMenuItem exportToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem flipXToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem flipYToolStripMenuItem;
-        private System.Windows.Forms.ToolStrip tsTools;
+        private ToolStripEx tsTools;
         private System.Windows.Forms.ToolStripButton btnScreenCapture;
         private System.Windows.Forms.ToolStripButton btnScreenAnnotate;
         private Burkovsky.Controls.Action actScreenCapture;

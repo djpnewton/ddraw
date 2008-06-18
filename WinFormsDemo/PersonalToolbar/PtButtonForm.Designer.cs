@@ -235,10 +235,8 @@ namespace WinFormsDemo.PersonalToolbar
             this.tsCustomFigureType.ClickThrough = false;
             this.tsCustomFigureType.Dock = System.Windows.Forms.DockStyle.None;
             this.tsCustomFigureType.FigureClass = null;
-            this.tsCustomFigureType.FocusControl = null;
             this.tsCustomFigureType.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
             this.tsCustomFigureType.Location = new System.Drawing.Point(3, 0);
-            this.tsCustomFigureType.ManagedFocus = false;
             this.tsCustomFigureType.Mode = WinFormsDemo.FigureToolStripMode.FigureClassSelect;
             this.tsCustomFigureType.Name = "tsCustomFigureType";
             this.tsCustomFigureType.Size = new System.Drawing.Size(233, 25);
@@ -251,10 +249,8 @@ namespace WinFormsDemo.PersonalToolbar
             this.tsCustomFigureProps.Dap = null;
             this.tsCustomFigureProps.Dock = System.Windows.Forms.DockStyle.None;
             this.tsCustomFigureProps.FigureClass = null;
-            this.tsCustomFigureProps.FocusControl = null;
             this.tsCustomFigureProps.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
             this.tsCustomFigureProps.Location = new System.Drawing.Point(3, 25);
-            this.tsCustomFigureProps.ManagedFocus = false;
             this.tsCustomFigureProps.Name = "tsCustomFigureProps";
             this.tsCustomFigureProps.Size = new System.Drawing.Size(264, 25);
             this.tsCustomFigureProps.TabIndex = 0;

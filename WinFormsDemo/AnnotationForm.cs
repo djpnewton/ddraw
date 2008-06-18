@@ -103,5 +103,10 @@ namespace WinFormsDemo
             initialBmp.Dispose();
             return croppedBmp;
         }
+
+        private void wfViewerControl1_MouseEnter(object sender, EventArgs e)
+        {
+            PopupForm.HidePopups();
+        }
     }
 }
