@@ -376,11 +376,16 @@ namespace WinFormsDemo
                             System.Diagnostics.Process.Start(ub.Uri.AbsoluteUri);
                         }
                         catch (Exception e)
-                        { MessageBox.Show(e.Message, "Web link error", MessageBoxButtons.OK, MessageBoxIcon.Error); }
+                        { MessageBox.Show(e.Message, "Web Link Error", MessageBoxButtons.OK, MessageBoxIcon.Error); }
                         break;
                     case LinkType.File:
                         if (File.Exists(link))
-                            System.Diagnostics.Process.Start(link);
+                            try
+                            {
+                                System.Diagnostics.Process.Start(link);
+                            }
+                            catch (Exception e)
+                            { MessageBox.Show(e.Message, "File Link Error", MessageBoxButtons.OK, MessageBoxIcon.Error); }
                         else
                             MessageBox.Show(string.Format("Could not find file \"{0}\"", link), "File link error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         break;
@@ -419,7 +424,12 @@ namespace WinFormsDemo
                         }
                         break;
                     case LinkType.Attachment:
-                        attachmentView1.ExecuteAttachment(link);
+                        try
+                        {
+                            attachmentView1.ExecuteAttachment(link);
+                        }
+                        catch (Exception e)
+                        { MessageBox.Show(e.Message, "Attachment Link Error", MessageBoxButtons.OK, MessageBoxIcon.Error); }
                         break;
                 }
             }
