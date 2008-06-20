@@ -270,10 +270,19 @@ namespace DDraw
         {
             glyph = null;
             hitTest = DHitTest.None;
+            // first hittest for selection chrome
             for (int i = figures.Count - 1; i >= 0; i--)
             {
                 Figure f = figures[i];
                 hitTest = f.HitTest(pt, children, out glyph);
+                if (hitTest != DHitTest.None && hitTest != DHitTest.Body /*&& hitTest != DHitTest.Glyph*/)
+                    return f;
+            }
+            // now hittest for any part of the figure
+            for (int i = figures.Count - 1; i >= 0; i--)
+            {
+                Figure f = figures[i];
+                hitTest = f.HitTest(pt, null /* only send children param once */, out glyph);
                 if (hitTest != DHitTest.None)
                     return f;
             }

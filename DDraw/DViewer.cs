@@ -235,15 +235,18 @@ namespace DDraw
                 figure._controlScale = invScale;
                 figure.GlyphsVisible = editFigures;
                 figure.Paint(dg);
-                if (editFigures)
-                    figure.PaintSelectionChrome(dg);
             }
-            if (editFigures && controlFigures != null)
-                foreach (Figure figure in controlFigures)
-                {
-                    figure._controlScale = invScale;
-                    figure.Paint(dg);
-                }
+            if (editFigures)
+            {
+                foreach (Figure figure in figures)
+                    figure.PaintSelectionChrome(dg);
+                if (controlFigures != null)
+                    foreach (Figure figure in controlFigures)
+                    {
+                        figure._controlScale = invScale;
+                        figure.Paint(dg);
+                    }
+            }
         }
 
         // Abstract Methods //

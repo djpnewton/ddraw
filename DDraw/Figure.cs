@@ -2519,8 +2519,9 @@ namespace DDraw
                         res = ContextHitTest(pt);
                         if (res == DHitTest.None)
                         {
-                            foreach (Figure f in childFigs)
+                            for (int i = childFigs.Count - 1; i >= 0; i--)
                             {
+                                Figure f = childFigs[i];
                                 res = f.HitTest(pt, children, out glyph);
                                 if (res != DHitTest.None)
                                 {
