@@ -23,7 +23,6 @@ namespace WinFormsDemo
 
         DTkViewer dvEditor;
 
-        BitmapGlyph contextGlyph;
         BitmapGlyph linkGlyph;
         DPoint textInsertionPoint;
         bool nonTextInsertionKey;
@@ -70,15 +69,16 @@ namespace WinFormsDemo
             de.DebugMessage += new DebugMessageHandler(DebugMessage);
             de.SelectedFiguresChanged += new SelectedFiguresHandler(de_SelectedFiguresChanged);
             de.FigureClick += new ClickHandler(de_FigureClick);
+            de.FigureContextClick += new ClickHandler(de_ContextClick);
             de.ContextClick += new ClickHandler(de_ContextClick);
             de.DragFigureStart += new DragFigureHandler(de_DragFigureStart);
             de.DragFigureEvt += new DragFigureHandler(de_DragFigureEvt);
             de.DragFigureEnd += new DragFigureHandler(de_DragFigureEnd);
             de.MouseDown += new DMouseButtonEventHandler(de_MouseDown);
             de.AddedFigure += new AddedFigureHandler(de_AddedFigure);
-            // add glyphs to figures
+            // add default properties to figures
             foreach (Figure f in de.Figures)
-                AddDefaultGlyphs(f);
+                AddDefaultProperties(f);
             // background figure
             if (dem.BackgroundFigure != null && !de.CustomBackgroundFigure)
                 de.SetBackgroundFigure(dem.BackgroundFigure, false);
@@ -129,9 +129,6 @@ namespace WinFormsDemo
             dvEditor.EditFigures = true;
             dvEditor.DebugMessage += new DebugMessageHandler(DebugMessage);
             // glyphs
-            contextGlyph = new BitmapGlyph(WFHelper.MakeBitmap(Resource1.arrow), DGlyphPosition.TopRight);
-            contextGlyph.Cursor = DCursor.Hand;
-            contextGlyph.Clicked += new GlyphClickedHandler(contextGlyph_Clicked);
             linkGlyph = new BitmapGlyph(WFHelper.MakeBitmap(Resource1.link), DGlyphPosition.BottomLeft);
             linkGlyph.Visiblility = DGlyphVisiblity.Always;
             linkGlyph.Cursor = DCursor.Hand;
@@ -364,11 +361,6 @@ namespace WinFormsDemo
             textInsertionPoint = pt;
         }
 
-        void contextGlyph_Clicked(IGlyph glyph, Figure figure, DPoint pt)
-        {
-            cmsFigure.Show(wfvcEditor, new Point((int)pt.X, (int)pt.Y));
-        }
-
         void ExecLink(Figure figure)
         {
             if (figure.UserAttrs.ContainsKey(Links.Link) && figure.UserAttrs.ContainsKey(Links.LinkType))
@@ -464,21 +456,19 @@ namespace WinFormsDemo
             actProperties.Enabled = figs.Count == 1;
         }
 
-        void AddDefaultGlyphs(Figure fig)
+        void AddDefaultProperties(Figure fig)
         {
+            // show context handle
+            fig.ContextHandle = true;
             // make sure fig.Glyphs is assigned
             if (fig.Glyphs == null)
                 fig.Glyphs = new List<IGlyph>();
-            // add context glyph if not already there
-            foreach (IGlyph g in fig.Glyphs)
-                if (g == contextGlyph)
-                    return;
-            fig.Glyphs.Add(contextGlyph);
+            // add link glyph if needed
             CheckLinkGlyph(fig);
             // recurse into child figures
             if (fig is GroupFigure)
                 foreach (Figure child in ((GroupFigure)fig).ChildFigures)
-                    AddDefaultGlyphs(child);
+                    AddDefaultProperties(child);
         }
 
         void CheckLinkGlyph(Figure fig)
@@ -500,7 +490,7 @@ namespace WinFormsDemo
         {
             if (fromHsm)
                 tsEngineState.Dap.ApplyPropertiesToFigure(fig);
-            AddDefaultGlyphs(fig);
+            AddDefaultProperties(fig);
         }
 
         private void previewBar1_Enter(object sender, EventArgs e)

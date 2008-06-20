@@ -316,14 +316,21 @@ namespace DDraw
             get;
             set;
         }
+        bool ContextHandle
+        {
+            get;
+            set;
+        }
         void PaintSelectionChrome(DGraphics dg);
         DRect GetSelectRect();
         DRect GetResizeHandleRect();
         DRect GetRotateHandleRect();
+        DRect GetContextHandleRect();
         DRect GetEncompassingRect();
         DHitTest SelectHitTest(DPoint pt);
         DHitTest ResizeHitTest(DPoint pt);
         DHitTest RotateHitTest(DPoint pt);
+        DHitTest ContextHitTest(DPoint pt);
     }
 
     public interface IGlyphable
@@ -358,6 +365,13 @@ namespace DDraw
             get { return 0.1; }
         }
         public bool ClickEvent = false;
+
+        bool contextHandle = false;
+        public bool ContextHandle
+        {
+            get { return contextHandle; }
+            set { contextHandle = value; }
+        }
 
         UndoRedo<double> _x = new UndoRedo<double>(0);
         public virtual double X
@@ -509,9 +523,13 @@ namespace DDraw
                     res = ResizeHitTest(pt);
                     if (res == DHitTest.None)
                     {
-                        res = SelectHitTest(pt);
+                        res = ContextHitTest(pt);
                         if (res == DHitTest.None)
-                            res = BodyHitTest(pt, children);
+                        {
+                            res = SelectHitTest(pt);
+                            if (res == DHitTest.None)
+                                res = BodyHitTest(pt, children);
+                        }
                     }
                 }
             }
@@ -600,6 +618,27 @@ namespace DDraw
             set { selected = value; }
         }
 
+        protected virtual void PaintContextHandle(DGraphics dg)
+        {
+            if (contextHandle)
+            {
+                double hb = _handleBorder * _controlScale;
+                double hb2 = hb + hb;
+                DRect r = GetContextHandleRect();
+                if (hb != 0)
+                    r = r.Resize(hb, hb, -hb2, -hb2);
+                dg.FillEllipse(r, DColor.White);
+                dg.DrawEllipse(r.X, r.Y, r.Width, r.Height, DColor.Black, 1, _controlScale, DStrokeStyle.Solid);
+                double qW = r.Width / 4;
+                double tH = r.Height / 3;
+                DPoints pts = new DPoints();
+                pts.Add(new DPoint(r.X + qW, r.Y + tH));
+                pts.Add(new DPoint(r.X + qW * 2, r.Y + tH * 2));
+                pts.Add(new DPoint(r.X + qW * 3, r.Y + tH));
+                dg.DrawPolyline(pts, DColor.Black);
+            }
+        }
+
         public virtual void PaintSelectionChrome(DGraphics dg)
         {
             if (Selected)
@@ -613,6 +652,8 @@ namespace DDraw
                 double selectRectY = r.Y;
                 dg.DrawRect(r.X, r.Y, r.Width, r.Height, DColor.White, 1, _controlScale);
                 dg.DrawRect(r.X, r.Y, r.Width, r.Height, DColor.Black, 1, _controlScale, DStrokeStyle.Dot, DStrokeJoin.Mitre);
+                // draw context handle
+                PaintContextHandle(dg);
                 // draw resize handle
                 double hb = _handleBorder *_controlScale;
                 double hb2 = hb + hb;
@@ -658,6 +699,13 @@ namespace DDraw
             return new DRect(selectRect.Center.X - hs, selectRect.Y - hs - hs - _rotateHandleStemLength, hs + hs, hs + hs);
         }
 
+        public virtual DRect GetContextHandleRect()
+        {
+            DRect selectRect = GetSelectRect();
+            double hs = HandleSize * _controlScale;
+            return new DRect(selectRect.Right - hs, selectRect.Y - hs, hs + hs, hs + hs);
+        }
+
         public virtual DRect GetEncompassingRect()
         {
             if (selected)
@@ -684,6 +732,13 @@ namespace DDraw
         {
             if (selected && DGeom.PointInRect(pt, GetRotateHandleRect()))
                 return DHitTest.Rotate;
+            return DHitTest.None;
+        }
+
+        public virtual DHitTest ContextHitTest(DPoint pt)
+        {
+            if (selected && contextHandle && DGeom.PointInRect(pt, GetContextHandleRect()))
+                return DHitTest.Context;
             return DHitTest.None;
         }
 
@@ -1132,6 +1187,13 @@ namespace DDraw
             double hs = HandleSize * _controlScale;
             return new DRect(Pt2.X - hs, Pt2.Y - hs, hs + hs, hs + hs);
         }
+
+        public override DRect GetContextHandleRect()
+        {
+            DPoint ctr = GetSelectRect().Center;
+            double hs = HandleSize * _controlScale;
+            return new DRect(ctr.X - hs, ctr.Y - hs, hs + hs, hs + hs);
+        }
         
         public override DRect GetEncompassingRect()
         {
@@ -1149,6 +1211,8 @@ namespace DDraw
                 DMatrix m = dg.SaveTransform();
                 // apply transform
                 ApplyTransforms(dg, true);
+                // draw context handle
+                PaintContextHandle(dg);
                 // draw pt1 handle
                 double hb = _handleBorder * _controlScale;
                 double hb2 = hb + hb;
@@ -2452,22 +2516,26 @@ namespace DDraw
                     res = ResizeHitTest(pt);
                     if (res == DHitTest.None)
                     {
-                        foreach (Figure f in childFigs)
-                        {
-                            res = f.HitTest(pt, children, out glyph);
-                            if (res != DHitTest.None)
-                            {
-                                if (children != null)
-                                    children.Add(f);
-                                if (res == DHitTest.Glyph)
-                                    return res;
-                                break;
-                            }
-                        }
-                        DHitTest temp = res;
-                        res = SelectHitTest(pt);
+                        res = ContextHitTest(pt);
                         if (res == DHitTest.None)
-                            res = temp;
+                        {
+                            foreach (Figure f in childFigs)
+                            {
+                                res = f.HitTest(pt, children, out glyph);
+                                if (res != DHitTest.None)
+                                {
+                                    if (children != null)
+                                        children.Add(f);
+                                    if (res == DHitTest.Glyph)
+                                        return res;
+                                    break;
+                                }
+                            }
+                            DHitTest temp = res;
+                            res = SelectHitTest(pt);
+                            if (res == DHitTest.None)
+                                res = temp;
+                        }
                     }
                 }
             }

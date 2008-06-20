@@ -289,6 +289,7 @@ namespace DDraw
 
         public event DebugMessageHandler DebugMessage;
         public event ClickHandler FigureClick;
+        public event ClickHandler FigureContextClick;
         public event ClickHandler ContextClick;
         public event DragFigureHandler DragFigureStart;
         public event DragFigureHandler DragFigureEvt;
@@ -624,6 +625,10 @@ namespace DDraw
                             if (dragRot > Math.PI)
                                 dragRot = dragRot - (Math.PI * 2);
                             break;
+                        case DHitTest.Context:
+                            if (FigureContextClick != null)
+                                FigureContextClick(null, f, dv.EngineToClient(pt));
+                            break;
                     }
                 }
                 else
@@ -674,6 +679,9 @@ namespace DDraw
                     goto case DHitTest.Resize;
                 case DHitTest.Rotate:
                     dv.SetCursor(DCursor.Rotate);
+                    break;
+                case DHitTest.Context:
+                    dv.SetCursor(DCursor.Hand);
                     break;
                 case DHitTest.Glyph:
                     dv.SetCursor(glyph.Cursor);
