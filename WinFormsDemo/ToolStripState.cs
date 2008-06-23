@@ -931,7 +931,7 @@ namespace WinFormsDemo
                 {
                     Point pt = new Point(btnFill.Bounds.Left, btnFill.Bounds.Bottom);
                     pt = btnFill.Owner.PointToScreen(pt);
-                    ColorPicker f = new ColorPicker(pt.X, pt.Y);
+                    ColorPicker f = new ColorPicker(pt.X, pt.Y, true);
                     f.ColorSelected += delegate(object sender2, EventArgs ea)
                     {
                         btnFill.Color = f.SelectedColor;
@@ -946,7 +946,7 @@ namespace WinFormsDemo
                 {
                     Point pt = new Point(btnStroke.Bounds.Left, btnStroke.Bounds.Bottom);
                     pt = btnStroke.Owner.PointToScreen(pt);
-                    ColorPicker f = new ColorPicker(pt.X, pt.Y);
+                    ColorPicker f = new ColorPicker(pt.X, pt.Y, false);
                     f.ColorSelected += delegate(object sender2, EventArgs ea)
                     {
                         btnStroke.Color = f.SelectedColor;

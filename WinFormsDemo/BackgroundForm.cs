@@ -76,7 +76,7 @@ namespace WinFormsDemo
         private void btnColor_Click(object sender, EventArgs e)
         {
             Point pt = PointToScreen(new Point(btnColor.Left, btnColor.Bottom));
-            ColorPicker f = new ColorPicker(pt.X, pt.Y);
+            ColorPicker f = new ColorPicker(pt.X, pt.Y, false);
             f.ColorSelected += delegate(object sender2, EventArgs ea)
             {
                 panel1.BackColor = ((ColorPicker)sender2).SelectedColor;

@@ -44,6 +44,7 @@ namespace WinFormsDemo
 		    "Rose", "Tan", "Light Yellow", "Light Green", "Light Turquoise", "Pale Blue", "Lavender", "White"
 	    };
 
+        Button noneButton = new Button();
         Button moreColorsButton = new Button();
 
         Color selectedColor;
@@ -62,13 +63,31 @@ namespace WinFormsDemo
 
         public event EventHandler ColorSelected;
 
-        public ColorPicker(int x, int y) : base(x, y)
+        public ColorPicker(int x, int y, bool canSelectNone) : base(x, y)
         {
             BuildPalette();
 
+            if (canSelectNone)
+            {
+                noneButton.Text = "None";
+                noneButton.Size = new Size(69, 22);
+                noneButton.Location = new Point(5, 99);
+                noneButton.Click += new EventHandler(noneButton_Click);
+                noneButton.FlatStyle = FlatStyle.Popup;
+                Controls.Add(noneButton);
+            }
+
             moreColorsButton.Text = "More colors ...";
-            moreColorsButton.Size = new Size(142, 22);
-            moreColorsButton.Location = new Point(5, 99);
+            if (canSelectNone)
+            {
+                moreColorsButton.Size = new Size(69, 22);
+                moreColorsButton.Location = new Point(80, 99);
+            }
+            else
+            {
+                moreColorsButton.Size = new Size(142, 22);
+                moreColorsButton.Location = new Point(5, 99);
+            }
             moreColorsButton.Click += new EventHandler(moreColorsButton_Click);
             moreColorsButton.FlatStyle = FlatStyle.Popup;
             Controls.Add(moreColorsButton);
@@ -108,6 +127,11 @@ namespace WinFormsDemo
                 panel[i].MouseUp += new MouseEventHandler(OnMouseUpPanel);
                 panel[i].Paint += new PaintEventHandler(OnPanelPaint);
             }
+        }
+
+        void noneButton_Click(object sender, System.EventArgs e)
+        {
+            SelectedColor = Color.Empty;
         }
 
         void moreColorsButton_Click(object sender, System.EventArgs e)

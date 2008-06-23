@@ -830,9 +830,31 @@ namespace DDraw
             return StrokeHelper.SelectRectIncludingStrokeWidth(base.GetSelectRect(), StrokeWidth);
         }
 
+        protected const int noFillThresh = 3;
+        protected const int noFillThresh2 = noFillThresh + noFillThresh;
+
+        protected void NoFillRects(out DRect r, out DRect r2)
+        {
+             r = new DRect(X - strokeWidthHalf - noFillThresh, 
+                 Y - strokeWidthHalf - noFillThresh, 
+                 Width + StrokeWidth + noFillThresh2, 
+                 Height + StrokeWidth + noFillThresh2);
+             r2 = new DRect(X + strokeWidthHalf + noFillThresh, 
+                 Y + strokeWidthHalf + noFillThresh, 
+                 Width - StrokeWidth - noFillThresh2, 
+                 Height - StrokeWidth - noFillThresh2);
+        }
+
         protected override DHitTest BodyHitTest(DPoint pt, List<Figure> children)
         {
-            if (DGeom.PointInRect(pt, RectInclStroke))
+            if (Fill.IsEmpty)
+            {
+                DRect r, r2;
+                NoFillRects(out r, out r2);
+                if (DGeom.PointInRect(pt, r) && !DGeom.PointInRect(pt, r2))
+                    return DHitTest.Body;
+            }
+            else if (DGeom.PointInRect(pt, RectInclStroke))
                 return DHitTest.Body;
             return DHitTest.None;
         }
@@ -922,7 +944,14 @@ namespace DDraw
 
         protected override DHitTest BodyHitTest(DPoint pt, List<Figure> children)
         {
-            if (DGeom.PointInEllipse(pt, RectInclStroke))
+            if (Fill.IsEmpty)
+            {
+                DRect r, r2;
+                NoFillRects(out r, out r2);
+                if (DGeom.PointInEllipse(pt, r) && !DGeom.PointInEllipse(pt, r2))
+                    return DHitTest.Body;
+            }
+            else if (DGeom.PointInEllipse(pt, RectInclStroke))
                 return DHitTest.Body;
             return DHitTest.None;
         }

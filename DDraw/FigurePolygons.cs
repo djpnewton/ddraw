@@ -28,10 +28,14 @@ namespace DDraw
         protected override DHitTest BodyHitTest(DPoint pt, List<Figure> children)
         {
             DPoints pts = DrawPoints();
-            if (DGeom.PointInPolygon(pt, pts) || DGeom.PointInPolyline(pt, pts, StrokeWidth / 2))
+            if (Fill.IsEmpty)
+            {
+                if (DGeom.PointInPolyline(pt, pts, SwHalf + noFillThresh))
+                    return DHitTest.Body;
+            }
+            else if (DGeom.PointInPolygon(pt, pts) || DGeom.PointInPolyline(pt, pts, SwHalf))
                 return DHitTest.Body;
-            else
-                return DHitTest.None;
+            return DHitTest.None;
         }
 
         DPoint Vertex(DPoint pt)

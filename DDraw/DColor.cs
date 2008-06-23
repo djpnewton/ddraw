@@ -6,10 +6,41 @@ namespace DDraw
 {
     public struct DColor
     {
-        public byte R;
-        public byte G;
-        public byte B;
-        public byte A;
+        byte r;
+        public byte R
+        {
+            get { return r; }
+            set { r = value; SetEmpty(); }
+        }
+        byte g;
+        public byte G
+        {
+            get { return g; }
+            set { g = value; SetEmpty(); }
+        }
+        byte b;
+        public byte B
+        {
+            get { return b; }
+            set { b = value; SetEmpty(); }
+        }
+        byte a;
+        public byte A
+        {
+            get { return a; }
+            set { a = value; SetEmpty(); }
+        }
+
+        bool isEmpty;
+        public bool IsEmpty
+        {
+            get { return isEmpty; }
+        }
+
+        void SetEmpty()
+        {
+            isEmpty = r == 0 && g == 0 && b == 0 && a == 0;
+        }
         
         public bool Equals(DColor color)
         {
@@ -18,18 +49,21 @@ namespace DDraw
 
         public DColor(byte red, byte green, byte blue, byte alpha)
         {
-            R = red;
-            G = green;
-            B = blue;
-            A = alpha;
+            r = red;
+            g = green;
+            b = blue;
+            a = alpha;
+            isEmpty = false;
+            SetEmpty();
         }
 
         public DColor(byte red, byte green, byte blue)
         {
-            R = red;
-            G = green;
-            B = blue;
-            A = 255;
+            r = red;
+            g = green;
+            b = blue;
+            a = 255;
+            isEmpty = false;
         }
 
         public static string FormatToString(DColor color)
@@ -70,7 +104,7 @@ namespace DDraw
 
         // Predefined colors
 
-        public static DColor Clear
+        public static DColor Empty
         {
             get { return new DColor(0, 0, 0, 0); }
         }
