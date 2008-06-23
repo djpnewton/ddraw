@@ -1,8 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 9.00
 # Visual C# Express 2005
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinFormsDemo", "WinFormsDemo\WinFormsDemo.csproj", "{DFD4410E-3802-4CE3-B8C8-4F200C39659D}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GTKDemo", "GTKDemo\GTKDemo.csproj", "{0BF38223-DDE3-4B99-8734-2C4A9D545B2D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DDraw", "DDraw\DDraw.csproj", "{483D8236-B660-429C-A441-19FF82EA3867}"
@@ -19,16 +17,14 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SvgNet", "libs\SvgNet\SvgNe
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DDrawCairo", "DDrawCairo\DDrawCairo.csproj", "{89A2EB1E-7605-4862-995F-76616B0F55E9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinFormsDemo", "Workbook\WinFormsDemo.csproj", "{DFD4410E-3802-4CE3-B8C8-4F200C39659D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{DFD4410E-3802-4CE3-B8C8-4F200C39659D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{DFD4410E-3802-4CE3-B8C8-4F200C39659D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{DFD4410E-3802-4CE3-B8C8-4F200C39659D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{DFD4410E-3802-4CE3-B8C8-4F200C39659D}.Release|Any CPU.Build.0 = Release|Any CPU
 		{0BF38223-DDE3-4B99-8734-2C4A9D545B2D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{0BF38223-DDE3-4B99-8734-2C4A9D545B2D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0BF38223-DDE3-4B99-8734-2C4A9D545B2D}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -61,6 +57,10 @@ Global
 		{89A2EB1E-7605-4862-995F-76616B0F55E9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{89A2EB1E-7605-4862-995F-76616B0F55E9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{89A2EB1E-7605-4862-995F-76616B0F55E9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DFD4410E-3802-4CE3-B8C8-4F200C39659D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DFD4410E-3802-4CE3-B8C8-4F200C39659D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DFD4410E-3802-4CE3-B8C8-4F200C39659D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DFD4410E-3802-4CE3-B8C8-4F200C39659D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
