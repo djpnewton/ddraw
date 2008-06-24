@@ -60,6 +60,20 @@ namespace Workbook {
             }
         }
         
+        internal static System.Drawing.Icon _2touch {
+            get {
+                object obj = ResourceManager.GetObject("_2touch", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Icon _2touch_doc {
+            get {
+                object obj = ResourceManager.GetObject("_2touch_doc", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
         internal static System.Drawing.Bitmap arrow {
             get {
                 object obj = ResourceManager.GetObject("arrow", resourceCulture);

@@ -116,6 +116,8 @@ namespace Workbook
         public MainForm()
         {
             InitializeComponent();
+            // set icon
+            Icon = Resource1._2touch;
             // Create Handle (so we can respond to ipc events from other threads without showing the form)
             IntPtr h = Handle;
             // Initialze DGraphics
