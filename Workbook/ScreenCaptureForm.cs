@@ -9,7 +9,7 @@ using System.Runtime.InteropServices;
 
 using DDraw;
 
-namespace WinFormsDemo
+namespace Workbook
 {
     public partial class ScreenCaptureForm : Form
     {

@@ -10,7 +10,7 @@ using Nini.Config;
 using DDraw;
 using DDraw.WinForms;
 
-namespace WinFormsDemo
+namespace Workbook
 {
     public enum FigureToolStripMode { DEngineState, FigureClassSelect };
 

@@ -9,7 +9,7 @@ using System.Net;
 using Nini.Config;
 using DDraw;
 
-namespace WinFormsDemo.PersonalToolbar
+namespace Workbook.PersonalToolbar
 {
 
     public enum PersonalToolButtonType { CustomFigure, RunCmd, ShowDir, WebLink };

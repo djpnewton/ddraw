@@ -8,9 +8,9 @@ using System.Windows.Forms;
 
 using DDraw;
 using DDraw.WinForms;
-using WinFormsDemo.PersonalToolbar;
+using Workbook.PersonalToolbar;
 
-namespace WinFormsDemo
+namespace Workbook
 {
     public delegate void ImportAnnotationsPageHandler(DEngine de);
     public delegate void ImportAnnotationsImageHandler(DBitmap bmp);

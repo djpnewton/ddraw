@@ -10,7 +10,7 @@ using SvgNet;
 using SvgNet.SvgElements;
 using SvgNet.SvgTypes;
 
-namespace WinFormsDemo.Converters
+namespace Workbook.Converters
 {
     public class Notebook
     {

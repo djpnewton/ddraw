@@ -9,7 +9,7 @@ using System.Windows.Forms;
 using DDraw;
 using DDraw.WinForms;
 
-namespace WinFormsDemo.PersonalToolbar
+namespace Workbook.PersonalToolbar
 {
     public partial class PtButtonForm : Form
     {

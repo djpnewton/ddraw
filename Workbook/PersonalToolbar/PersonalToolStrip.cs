@@ -5,7 +5,7 @@ using System.Windows.Forms;
 
 using DDraw;
 
-namespace WinFormsDemo.PersonalToolbar
+namespace Workbook.PersonalToolbar
 {
     public class PersonalToolStrip : ToolStripEx
     {

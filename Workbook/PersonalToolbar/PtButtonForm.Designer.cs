@@ -1,4 +1,4 @@
-namespace WinFormsDemo.PersonalToolbar
+namespace Workbook.PersonalToolbar
 {
     partial class PtButtonForm
     {
@@ -46,8 +46,8 @@ namespace WinFormsDemo.PersonalToolbar
             this.vcCustomFigure = new DDraw.WinForms.WFViewerControl();
             this.panel2 = new System.Windows.Forms.Panel();
             this.toolStripPanel1 = new System.Windows.Forms.ToolStripPanel();
-            this.tsCustomFigureType = new WinFormsDemo.FigureToolStrip();
-            this.tsCustomFigureProps = new WinFormsDemo.FigurePropertiesToolStrip();
+            this.tsCustomFigureType = new Workbook.FigureToolStrip();
+            this.tsCustomFigureProps = new Workbook.FigurePropertiesToolStrip();
             this.pnlWebLink = new System.Windows.Forms.Panel();
             this.lbWebLink = new System.Windows.Forms.Label();
             this.tbUrl = new System.Windows.Forms.TextBox();
@@ -237,11 +237,11 @@ namespace WinFormsDemo.PersonalToolbar
             this.tsCustomFigureType.FigureClass = null;
             this.tsCustomFigureType.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
             this.tsCustomFigureType.Location = new System.Drawing.Point(3, 0);
-            this.tsCustomFigureType.Mode = WinFormsDemo.FigureToolStripMode.FigureClassSelect;
+            this.tsCustomFigureType.Mode = Workbook.FigureToolStripMode.FigureClassSelect;
             this.tsCustomFigureType.Name = "tsCustomFigureType";
             this.tsCustomFigureType.Size = new System.Drawing.Size(233, 25);
             this.tsCustomFigureType.TabIndex = 1;
-            this.tsCustomFigureType.FigureClassChanged += new WinFormsDemo.FigureClassChangedHandler(this.tsCustomFigureType_FigureClassChanged);
+            this.tsCustomFigureType.FigureClassChanged += new Workbook.FigureClassChangedHandler(this.tsCustomFigureType_FigureClassChanged);
             // 
             // tsCustomFigureProps
             // 

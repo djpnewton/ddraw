@@ -5,7 +5,7 @@ using System.Xml;
 
 using DDraw;
 
-namespace WinFormsDemo.Converters
+namespace Workbook.Converters
 {
     public static class Converters
     {

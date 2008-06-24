@@ -1,4 +1,4 @@
-namespace WinFormsDemo
+namespace Workbook
 {
     partial class LinkForm
     {

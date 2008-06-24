@@ -12,9 +12,9 @@ using System.Drawing.Printing;
 
 using DDraw;
 using DDraw.WinForms;
-using WinFormsDemo.PersonalToolbar;
+using Workbook.PersonalToolbar;
 
-namespace WinFormsDemo
+namespace Workbook
 {
     public partial class MainForm : WorkBookForm
     {
@@ -35,7 +35,7 @@ namespace WinFormsDemo
         WorkBookArguments cmdArguments = WorkBookArguments.GlobalWbArgs;
         Ipc ipc = Ipc.GlobalIpc;
 
-        const string ProgramName = "WinFormsDemo";
+        const string ProgramName = "Workbook";
         const string FileExt = ".ddraw";
         const string FileTypeFilter = "DDraw files|*.ddraw";
 

@@ -1,4 +1,4 @@
-namespace WinFormsDemo.PersonalToolbar
+namespace Workbook.PersonalToolbar
 {
     partial class PtForm
     {

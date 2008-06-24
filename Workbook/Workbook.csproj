@@ -7,8 +7,8 @@
     <ProjectGuid>{DFD4410E-3802-4CE3-B8C8-4F200C39659D}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>WinFormsDemo</RootNamespace>
-    <AssemblyName>WinFormsDemo</AssemblyName>
+    <RootNamespace>Workbook</RootNamespace>
+    <AssemblyName>Workbook</AssemblyName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>

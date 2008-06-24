@@ -7,7 +7,7 @@ using System.Drawing;
 using DDraw;
 using DDraw.WinForms;
 
-namespace WinFormsDemo
+namespace Workbook
 {
     public delegate void FigureStyleEvent(object sender, PersonalToolbar.CustomFigureT customFigure);
 

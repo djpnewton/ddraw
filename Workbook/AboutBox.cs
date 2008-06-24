@@ -5,7 +5,7 @@ using System.Drawing;
 using System.Windows.Forms;
 using System.Reflection;
 
-namespace WinFormsDemo
+namespace Workbook
 {
     partial class AboutBox : Form
     {

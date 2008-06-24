@@ -9,7 +9,7 @@ using System.Windows.Forms;
 using DDraw;
 using DDraw.WinForms;
 
-namespace WinFormsDemo
+namespace Workbook
 {
     public partial class LinkForm : Form
     {

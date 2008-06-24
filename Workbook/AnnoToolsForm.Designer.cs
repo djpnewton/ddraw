@@ -1,4 +1,4 @@
-namespace WinFormsDemo
+namespace Workbook
 {
     partial class AnnoToolsForm
     {
@@ -30,15 +30,15 @@ namespace WinFormsDemo
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(AnnoToolsForm));
             this.toolStripPanel1 = new System.Windows.Forms.ToolStripPanel();
-            this.tsAnnotate = new WinFormsDemo.ToolStripEx();
+            this.tsAnnotate = new Workbook.ToolStripEx();
             this.btnMouse = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.btnUndo = new System.Windows.Forms.ToolStripButton();
             this.btnImportArea = new System.Windows.Forms.ToolStripButton();
             this.btnImportPage = new System.Windows.Forms.ToolStripButton();
-            this.tsPersonal = new WinFormsDemo.PersonalToolbar.PersonalToolStrip();
-            this.tsEngineState = new WinFormsDemo.FigureToolStrip();
-            this.tsPropState = new WinFormsDemo.FigurePropertiesToolStrip();
+            this.tsPersonal = new Workbook.PersonalToolbar.PersonalToolStrip();
+            this.tsEngineState = new Workbook.FigureToolStrip();
+            this.tsPropState = new Workbook.FigurePropertiesToolStrip();
             this.toolStripPanel1.SuspendLayout();
             this.tsAnnotate.SuspendLayout();
             this.SuspendLayout();
@@ -135,14 +135,14 @@ namespace WinFormsDemo
             this.tsEngineState.Dock = System.Windows.Forms.DockStyle.None;
             this.tsEngineState.FigureClass = null;
             this.tsEngineState.Location = new System.Drawing.Point(3, 25);
-            this.tsEngineState.Mode = WinFormsDemo.FigureToolStripMode.DEngineState;
+            this.tsEngineState.Mode = Workbook.FigureToolStripMode.DEngineState;
             this.tsEngineState.Name = "tsEngineState";
             this.tsEngineState.Size = new System.Drawing.Size(288, 25);
             this.tsEngineState.TabIndex = 2;
             this.tsEngineState.Text = "tsEngineState";
-            this.tsEngineState.AddToPersonalTools += new WinFormsDemo.FigureStyleEvent(this.tsEngineState_AddToPersonalTools);
-            this.tsEngineState.FigureClassChanged += new WinFormsDemo.FigureClassChangedHandler(this.tsEngineState_FigureClassChanged);
-            this.tsEngineState.DapChanged += new WinFormsDemo.DapChangedHandler(this.tsEngineState_DapChanged);
+            this.tsEngineState.AddToPersonalTools += new Workbook.FigureStyleEvent(this.tsEngineState_AddToPersonalTools);
+            this.tsEngineState.FigureClassChanged += new Workbook.FigureClassChangedHandler(this.tsEngineState_FigureClassChanged);
+            this.tsEngineState.DapChanged += new Workbook.DapChangedHandler(this.tsEngineState_DapChanged);
             // 
             // tsPropState
             // 
@@ -194,6 +194,6 @@ namespace WinFormsDemo
         private FigureToolStrip tsEngineState;
         private FigurePropertiesToolStrip tsPropState;
         private System.Windows.Forms.ToolStripPanel toolStripPanel1;
-        private WinFormsDemo.PersonalToolbar.PersonalToolStrip tsPersonal;
+        private Workbook.PersonalToolbar.PersonalToolStrip tsPersonal;
     }
 }

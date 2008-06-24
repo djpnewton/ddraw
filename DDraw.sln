@@ -17,7 +17,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SvgNet", "libs\SvgNet\SvgNe
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DDrawCairo", "DDrawCairo\DDrawCairo.csproj", "{89A2EB1E-7605-4862-995F-76616B0F55E9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinFormsDemo", "Workbook\WinFormsDemo.csproj", "{DFD4410E-3802-4CE3-B8C8-4F200C39659D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Workbook", "Workbook\Workbook.csproj", "{DFD4410E-3802-4CE3-B8C8-4F200C39659D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

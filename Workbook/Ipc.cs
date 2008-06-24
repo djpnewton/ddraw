@@ -7,7 +7,7 @@ using System.Runtime.Remoting;
 using System.Runtime.Remoting.Channels;
 using System.Runtime.Remoting.Channels.Ipc;
 
-namespace WinFormsDemo
+namespace Workbook
 {
     public enum IpcMessage { Show, ScreenAnnotate };
     public delegate void MessageReceivedHandler(IpcMessage msg);

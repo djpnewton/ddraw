@@ -9,7 +9,7 @@ using System.Windows.Forms;
 using DDraw;
 using DDraw.WinForms;
 
-namespace WinFormsDemo
+namespace Workbook
 {
     public delegate void PreviewContextHandler(Preview p, Point pt);
     public delegate void PreviewMoveHandler(Preview p, Preview to);
@@ -96,7 +96,7 @@ namespace WinFormsDemo
             // 
             pbContext = new PictureBox();
             pbContext.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            pbContext.Image = global::WinFormsDemo.Resource1.arrow;
+            pbContext.Image = global::Workbook.Resource1.arrow;
             pbContext.BackColor = Color.Transparent;
             pbContext.Size = new Size(pbContext.Image.Width, pbContext.Image.Height);
             pbContext.Location = new Point(Width - pbContext.Image.Width - 2, 0);
@@ -104,7 +104,7 @@ namespace WinFormsDemo
             viewerControl.Controls.Add(pbContext);
             // pbDirty
             pbDirty = new PictureBox();
-            pbDirty.Image = global::WinFormsDemo.Resource1.star;
+            pbDirty.Image = global::Workbook.Resource1.star;
             pbDirty.BackColor = Color.Transparent;
             pbDirty.Size = new Size(pbDirty.Image.Width, pbDirty.Image.Height);
             pbDirty.Location = new Point(1, 1);

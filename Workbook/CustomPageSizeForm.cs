@@ -8,7 +8,7 @@ using System.Windows.Forms;
 
 using DDraw;
 
-namespace WinFormsDemo
+namespace Workbook
 {
     public partial class CustomPageSizeForm : Form
     {

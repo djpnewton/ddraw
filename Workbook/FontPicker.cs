@@ -4,7 +4,7 @@ using System.Text;
 using System.Windows.Forms;
 using System.Drawing;
 
-namespace WinFormsDemo
+namespace Workbook
 {
     public class FontNamePicker : PopupForm
     {

@@ -7,15 +7,15 @@ using System.Windows.Forms;
 
 using DDraw;
 using Nini.Config;
-using WinFormsDemo.PersonalToolbar;
+using Workbook.PersonalToolbar;
 
-namespace WinFormsDemo
+namespace Workbook
 {
     public enum SidebarSide { Right, Left };
 
     public class ProgramOptions
     {
-        const string _INIFILE = "WinFormsDemo.ini";
+        const string _INIFILE = "Workbook.ini";
         const string MAIN_SECTION = "Main";
         const string FORMRECT_OPT = "FormRect";
         const string FORMWINDOWSTATE_OPT = "FormWindowState";

@@ -9,7 +9,7 @@ using System.IO;
 
 using DDraw;
 
-namespace WinFormsDemo.PersonalToolbar
+namespace Workbook.PersonalToolbar
 {
     public partial class PtForm : Form
     {

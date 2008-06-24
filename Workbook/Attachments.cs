@@ -10,7 +10,7 @@ using System.IO;
 using DejaVu.Collections.Generic;
 using DDraw;
 
-namespace WinFormsDemo
+namespace Workbook
 {
     public class AttachmentView : ListView
     {

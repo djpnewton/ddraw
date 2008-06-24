@@ -8,7 +8,7 @@ using System;
 using System.Collections.Specialized;
 using System.Text.RegularExpressions;
 
-namespace WinFormsDemo
+namespace Workbook
 {
     /// <summary>
     /// CommandLineArguments class

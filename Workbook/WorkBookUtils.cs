@@ -9,7 +9,7 @@ using System.IO;
 using Nini.Config;
 using DDraw;
 
-namespace WinFormsDemo
+namespace Workbook
 {
     public static class WorkBookUtils
     {

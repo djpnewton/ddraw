@@ -7,7 +7,7 @@ using System.Windows.Forms.Design;
 using System.IO;
 using DDraw;
 
-namespace WinFormsDemo
+namespace Workbook
 {
     public static class ToolStripHelper
     {

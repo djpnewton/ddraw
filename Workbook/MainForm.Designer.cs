@@ -1,4 +1,4 @@
-namespace WinFormsDemo
+namespace Workbook
 {
     partial class MainForm
     {
@@ -63,15 +63,15 @@ namespace WinFormsDemo
             this.pnlMain = new System.Windows.Forms.Panel();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.wfvcEditor = new DDraw.WinForms.WFViewerControl();
-            this.previewBar1 = new WinFormsDemo.PreviewBar();
-            this.attachmentView1 = new WinFormsDemo.AttachmentView();
+            this.previewBar1 = new Workbook.PreviewBar();
+            this.attachmentView1 = new Workbook.AttachmentView();
             this.tsSidebarPanel = new System.Windows.Forms.ToolStripPanel();
-            this.tsSidebar = new WinFormsDemo.ToolStripEx();
+            this.tsSidebar = new Workbook.ToolStripEx();
             this.btnSwitchSidebar = new System.Windows.Forms.ToolStripButton();
             this.tsSidebarSep = new System.Windows.Forms.ToolStripSeparator();
             this.btnPages = new System.Windows.Forms.ToolStripButton();
             this.btnAttachments = new System.Windows.Forms.ToolStripButton();
-            this.tsPageManage = new WinFormsDemo.ToolStripEx();
+            this.tsPageManage = new Workbook.ToolStripEx();
             this.btnNewPage = new System.Windows.Forms.ToolStripButton();
             this.btnPrevPage = new System.Windows.Forms.ToolStripButton();
             this.btnNextPage = new System.Windows.Forms.ToolStripButton();
@@ -139,13 +139,13 @@ namespace WinFormsDemo
             this.resetToolbarsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.tsEngineState = new WinFormsDemo.FigureToolStrip();
-            this.tsPropState = new WinFormsDemo.FigurePropertiesToolStrip();
-            this.tsPersonal = new WinFormsDemo.PersonalToolbar.PersonalToolStrip();
-            this.tsTools = new WinFormsDemo.ToolStripEx();
+            this.tsEngineState = new Workbook.FigureToolStrip();
+            this.tsPropState = new Workbook.FigurePropertiesToolStrip();
+            this.tsPersonal = new Workbook.PersonalToolbar.PersonalToolStrip();
+            this.tsTools = new Workbook.ToolStripEx();
             this.btnScreenCapture = new System.Windows.Forms.ToolStripButton();
             this.btnScreenAnnotate = new System.Windows.Forms.ToolStripButton();
-            this.tsEdit = new WinFormsDemo.ToolStripEx();
+            this.tsEdit = new Workbook.ToolStripEx();
             this.btnUndo = new System.Windows.Forms.ToolStripButton();
             this.btnRedo = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator = new System.Windows.Forms.ToolStripSeparator();
@@ -519,11 +519,11 @@ namespace WinFormsDemo
             this.previewBar1.Name = "previewBar1";
             this.previewBar1.Size = new System.Drawing.Size(120, 119);
             this.previewBar1.TabIndex = 0;
-            this.previewBar1.PreviewMove += new WinFormsDemo.PreviewMoveHandler(this.previewBar1_PreviewMove);
-            this.previewBar1.PreviewSelected += new WinFormsDemo.PreviewSelectedHandler(this.previewBar1_PreviewSelected);
-            this.previewBar1.PreviewFigureDrop += new WinFormsDemo.PreivewFigureDropHandler(this.previewBar1_PreviewFigureDrop);
+            this.previewBar1.PreviewMove += new Workbook.PreviewMoveHandler(this.previewBar1_PreviewMove);
+            this.previewBar1.PreviewSelected += new Workbook.PreviewSelectedHandler(this.previewBar1_PreviewSelected);
+            this.previewBar1.PreviewFigureDrop += new Workbook.PreivewFigureDropHandler(this.previewBar1_PreviewFigureDrop);
             this.previewBar1.Leave += new System.EventHandler(this.previewBar1_Leave);
-            this.previewBar1.PreviewContext += new WinFormsDemo.PreviewContextHandler(this.previewBar1_PreviewContext);
+            this.previewBar1.PreviewContext += new Workbook.PreviewContextHandler(this.previewBar1_PreviewContext);
             this.previewBar1.Enter += new System.EventHandler(this.previewBar1_Enter);
             // 
             // attachmentView1
@@ -567,7 +567,7 @@ namespace WinFormsDemo
             // 
             this.actionListProvider1.SetAction(this.btnSwitchSidebar, null);
             this.btnSwitchSidebar.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.btnSwitchSidebar.Image = global::WinFormsDemo.Resource1.arrow_left;
+            this.btnSwitchSidebar.Image = global::Workbook.Resource1.arrow_left;
             this.btnSwitchSidebar.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnSwitchSidebar.Name = "btnSwitchSidebar";
             this.btnSwitchSidebar.Size = new System.Drawing.Size(23, 22);
@@ -1211,12 +1211,12 @@ namespace WinFormsDemo
             this.tsEngineState.Dock = System.Windows.Forms.DockStyle.None;
             this.tsEngineState.FigureClass = null;
             this.tsEngineState.Location = new System.Drawing.Point(3, 24);
-            this.tsEngineState.Mode = WinFormsDemo.FigureToolStripMode.DEngineState;
+            this.tsEngineState.Mode = Workbook.FigureToolStripMode.DEngineState;
             this.tsEngineState.Name = "tsEngineState";
             this.tsEngineState.Size = new System.Drawing.Size(288, 25);
             this.tsEngineState.TabIndex = 2;
-            this.tsEngineState.AddToPersonalTools += new WinFormsDemo.FigureStyleEvent(this.tsEngineState_AddToPersonalTools);
-            this.tsEngineState.DapChanged += new WinFormsDemo.DapChangedHandler(this.tsEngineState_DapChanged);
+            this.tsEngineState.AddToPersonalTools += new Workbook.FigureStyleEvent(this.tsEngineState_AddToPersonalTools);
+            this.tsEngineState.DapChanged += new Workbook.DapChangedHandler(this.tsEngineState_DapChanged);
             // 
             // tsPropState
             // 
@@ -1237,7 +1237,7 @@ namespace WinFormsDemo
             this.tsPersonal.Dock = System.Windows.Forms.DockStyle.None;
             this.tsPersonal.Location = new System.Drawing.Point(3, 74);
             this.tsPersonal.Name = "tsPersonal";
-            this.tsPersonal.Size = new System.Drawing.Size(66, 25);
+            this.tsPersonal.Size = new System.Drawing.Size(35, 25);
             this.tsPersonal.TabIndex = 7;
             this.tsPersonal.ItemContext += new System.EventHandler(this.tsPersonal_ItemContext);
             // 
@@ -1248,7 +1248,7 @@ namespace WinFormsDemo
             this.tsTools.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.btnScreenCapture,
             this.btnScreenAnnotate});
-            this.tsTools.Location = new System.Drawing.Point(91, 74);
+            this.tsTools.Location = new System.Drawing.Point(55, 74);
             this.tsTools.Name = "tsTools";
             this.tsTools.Size = new System.Drawing.Size(58, 25);
             this.tsTools.TabIndex = 8;
@@ -1566,7 +1566,7 @@ namespace WinFormsDemo
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "MainForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
-            this.Text = "WinFormsDemo";
+            this.Text = "Workbook";
             this.Load += new System.EventHandler(this.MainForm_Load);
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.MainForm_FormClosed);
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
@@ -1738,7 +1738,7 @@ namespace WinFormsDemo
         private System.Windows.Forms.ToolStripMenuItem selectAllToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem selectAllToolStripMenuItem1;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator13;
-        private WinFormsDemo.PersonalToolbar.PersonalToolStrip tsPersonal;
+        private Workbook.PersonalToolbar.PersonalToolStrip tsPersonal;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator14;
         private System.Windows.Forms.ToolStripMenuItem toolbarsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem editToolStripMenuItem1;
