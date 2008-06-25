@@ -1242,6 +1242,8 @@ namespace DDraw
                 // transition
                 TransitionTo(DrawingLine);
             }
+            else if (btn == DMouseButton.Right)
+                TransitionTo(Select);
         }
 
         void DoDrawLineDefaultMouseMove(DTkViewer dv, DPoint pt)
@@ -1455,6 +1457,8 @@ namespace DDraw
                     currentFigure = f;
                 }
             }
+            else if (btn == DMouseButton.Right)
+                TransitionTo(Select);
         }
 
         void DoTextEditMouseMove(DTkViewer dv, DPoint pt)
@@ -1649,6 +1653,8 @@ namespace DDraw
                 // transition
                 TransitionTo(DrawingRect);
             }
+            else if (btn == DMouseButton.Right)
+                TransitionTo(Select);
         }
 
         void DoDrawRectDefaultMouseMove(DTkViewer dv, DPoint pt)
@@ -1763,9 +1769,14 @@ namespace DDraw
                     ((IEditable)currentFigure).EditFinished -= currentFigure_EditFinished;                
                     // record figure edit to undo manager
                     undoRedoArea.Commit();
+                    // clear current figure
+                    currentFigure = null;
                     return null;
                 case (int)DHsmSignals.MouseDown:
-                    ((IEditable)currentFigure).MouseDown(((QMouseEvent)qevent).Dv, ((QMouseEvent)qevent).Button, ((QMouseEvent)qevent).Pt);
+                    if (((QMouseEvent)qevent).Button == DMouseButton.Left)
+                        ((IEditable)currentFigure).MouseDown(((QMouseEvent)qevent).Dv, ((QMouseEvent)qevent).Button, ((QMouseEvent)qevent).Pt);
+                    else if (((QMouseEvent)qevent).Button == DMouseButton.Right)
+                        TransitionTo(Select);
                     return null;
                 case (int)DHsmSignals.MouseMove:
                     ((IEditable)currentFigure).MouseMove(((QMouseEvent)qevent).Dv, ((QMouseEvent)qevent).Pt);
@@ -1814,7 +1825,10 @@ namespace DDraw
             switch (qevent.QSignal)
             {
                 case (int)DHsmSignals.MouseDown:
-                    TransitionTo(Erasing);
+                    if (((QMouseEvent)qevent).Button == DMouseButton.Left)
+                        TransitionTo(Erasing);
+                    else if (((QMouseEvent)qevent).Button == DMouseButton.Right)
+                        TransitionTo(Select);
                     return null;
                 case (int)DHsmSignals.MouseMove:
                     ((QMouseEvent)qevent).Dv.SetCursor(DCursor.Crosshair);
