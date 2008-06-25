@@ -536,6 +536,7 @@ namespace Workbook
             this.attachmentView1.TabIndex = 0;
             this.attachmentView1.UseCompatibleStateImageBehavior = false;
             this.attachmentView1.View = System.Windows.Forms.View.Details;
+            this.attachmentView1.FileDrop += new Workbook.FileDropHandler(this.attachmentView1_FileDrop);
             // 
             // tsSidebarPanel
             // 

@@ -12,17 +12,15 @@ using DDraw;
 
 namespace Workbook
 {
+    public delegate void FileDropHandler(object sender, string[] filePaths);
+
     public class AttachmentView : ListView
     {
         public const string ATTACHMENTS_DIR = "attachments";
 
         UndoRedoDictionary<string, byte[]> attachmentDict = new UndoRedoDictionary<string, byte[]>();
 
-        DEngineManager dem = null;
-        public DEngineManager EngineManager
-        {
-            set { dem = value; }
-        }
+        public event FileDropHandler FileDrop;
 
         public AttachmentView()
         {
@@ -51,15 +49,8 @@ namespace Workbook
 
         void AttachmentView_DragDrop(object sender, DragEventArgs e)
         {
-            if (dem != null && e.Data.GetDataPresent(DataFormats.FileDrop))
-            {
-                dem.UndoRedoStart("Add Attachments");
-                string[] paths = ((string[])e.Data.GetData(DataFormats.FileDrop));
-                foreach (string path in paths)
-                    if (CheckAttachmentExists(path))
-                        AddAttachment(path);
-                dem.UndoRedoCommit();
-            }
+            if (FileDrop != null && e.Data.GetDataPresent(DataFormats.FileDrop))
+                FileDrop(this, ((string[])e.Data.GetData(DataFormats.FileDrop)));
         }
 
         void AttachmentView_ItemDrag(object sender, ItemDragEventArgs e)

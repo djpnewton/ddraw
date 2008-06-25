@@ -125,7 +125,6 @@ namespace Workbook
             // DEngine Manager
             dem = new DEngineManager();
             dem.UndoRedoChanged += new EventHandler(dem_UndoRedoChanged);
-            attachmentView1.EngineManager = dem;
             // edit viewer
             dvEditor = new WFViewer(wfvcEditor);
             dvEditor.EditFigures = true;
@@ -519,6 +518,7 @@ namespace Workbook
 
         private void previewBar1_PreviewSelected(Preview p)
         {
+            CheckState();
             SetCurrentDe(p.DEngine);
         }
 
@@ -529,6 +529,7 @@ namespace Workbook
 
         private void previewBar1_PreviewMove(Preview p, Preview to)
         {
+            CheckState();
             dem.UndoRedoStart("Move Page");
             dem.MoveEngine(p.DEngine, to.DEngine);
             dem.UndoRedoCommit();
@@ -538,6 +539,7 @@ namespace Workbook
         {
             if (!p.Selected)
             {
+                CheckState();
                 dem.UndoRedoStart("Drag to New Page");
                 foreach (Figure f in figs)
                 {
@@ -900,6 +902,7 @@ namespace Workbook
                         else
                             return;
                     }
+                CheckState();
                 dem.UndoRedoStart("Delete Attachments");
                 foreach (ListViewItem item in attachmentView1.SelectedItems)
                     attachmentView1.RemoveAttachment(item);
@@ -1539,6 +1542,16 @@ namespace Workbook
             attachmentView1.BringToFront();
             btnPages.Checked = false;
             btnAttachments.Checked = true;
+        }
+
+        private void attachmentView1_FileDrop(object sender, string[] filePaths)
+        {
+            CheckState();
+            dem.UndoRedoStart("Add Attachments");
+            foreach (string path in filePaths)
+                if (attachmentView1.CheckAttachmentExists(path))
+                    attachmentView1.AddAttachment(path);
+            dem.UndoRedoCommit();
         }
 
         // Page Management toolbar
