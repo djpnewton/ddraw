@@ -406,6 +406,17 @@ namespace DDraw
             }
         }
 
+        UndoRedo<string> _pageName = new UndoRedo<string>(null);
+        public string PageName
+        {
+            get { return _pageName.Value; }
+            set
+            {
+                if (!value.Equals(_pageName.Value))
+                    _pageName.Value = value;
+            }
+        }
+
         public event DebugMessageHandler DebugMessage;
         public event SelectedFiguresHandler SelectedFiguresChanged;
         public event ClickHandler FigureClick;

@@ -14,6 +14,7 @@ namespace DDraw
     {
         const string PAGES_INI = "pages.ini";
         const string PAGESIZE = "PageSize";
+        const string PAGENAME = "PageName";
         const string FIGURELIST = "figureList";
         const string BACKGROUNDFIGURE = "backgroundFigure";
         const string IMAGES_DIR = "images";
@@ -41,6 +42,8 @@ namespace DDraw
                 {
                     IConfig config = source.AddConfig(string.Format("page{0}", i));
                     config.Set(PAGESIZE, DPoint.FormatToString(de.PageSize));
+                    if (de.PageName != null)
+                        config.Set(PAGENAME, de.PageName);
                     string figureListName = string.Format("figureList{0}.xml", i);
                     byte[] data = encoding.GetBytes(FigureSerialize.FormatToXml(de.Figures, images));
                     config.Set(FIGURELIST, figureListName);
@@ -119,6 +122,8 @@ namespace DDraw
                     // set page size
                     if (config.Contains(PAGESIZE))
                         de.PageSize = DPoint.FromString(config.Get(PAGESIZE));
+                    if (config.Contains(PAGENAME))
+                        de.PageName = config.Get(PAGENAME);
                     // set the figures
                     if (config.Contains(FIGURELIST))
                     {

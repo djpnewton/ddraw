@@ -58,6 +58,7 @@ namespace Workbook
             else
                 dem.AddEngine(de);
             de.PageSize = new DPoint(500, 400);
+            de.PageName = dem.EngineCount.ToString();
             InitDEngine(de, true);
         }
 
@@ -316,9 +317,13 @@ namespace Workbook
                     de.UpdateViewers();
             }
             else
+            {
                 // check if UserAttrs have changed and update glyphs
                 foreach (Figure f in de.Figures)
                     CheckLinkGlyph(f);
+                // check if a page is renamed
+                previewBar1.UpdatePreviewNames();
+            }
             // check if attachments have changed
             attachmentView1.UpdateAttachmentView();
             // update previews dirty states
@@ -552,6 +557,14 @@ namespace Workbook
                 de.UpdateViewers();
                 p.DEngine.UpdateViewers();
             }
+        }
+
+        private void previewBar1_PreviewNameChanged(Preview p, string name)
+        {
+            CheckState();
+            de.UndoRedoStart("Change Page Name");
+            de.PageName = name;
+            de.UndoRedoCommit();
         }
 
         private void imageToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1197,6 +1210,11 @@ namespace Workbook
         {
             CheckState();
             de.ClearPage();
+        }
+
+        private void actRenamePage_Execute(object sender, EventArgs e)
+        {
+            previewBar1.RenameCurrentPreview();
         }
 
         private void actAnnoTools_Execute(object sender, EventArgs e)

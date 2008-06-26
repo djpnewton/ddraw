@@ -59,6 +59,7 @@ namespace Workbook
             this.deletePageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.clonePageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.clearPageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.renamePageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripContainer1 = new System.Windows.Forms.ToolStripContainer();
             this.pnlMain = new System.Windows.Forms.Panel();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
@@ -182,6 +183,7 @@ namespace Workbook
             this.actRedo = new Burkovsky.Controls.Action();
             this.actAnnoTools = new Burkovsky.Controls.Action();
             this.actScreenCapture = new Burkovsky.Controls.Action();
+            this.actRenamePage = new Burkovsky.Controls.Action();
             this.cmsFigure.SuspendLayout();
             this.cmsCanvas.SuspendLayout();
             this.cmsPreview.SuspendLayout();
@@ -408,9 +410,10 @@ namespace Workbook
             this.newPageToolStripMenuItem,
             this.deletePageToolStripMenuItem,
             this.clonePageToolStripMenuItem,
-            this.clearPageToolStripMenuItem});
+            this.clearPageToolStripMenuItem,
+            this.renamePageToolStripMenuItem});
             this.cmsPreview.Name = "cmsPreview";
-            this.cmsPreview.Size = new System.Drawing.Size(166, 92);
+            this.cmsPreview.Size = new System.Drawing.Size(166, 136);
             // 
             // newPageToolStripMenuItem
             // 
@@ -440,6 +443,13 @@ namespace Workbook
             this.clearPageToolStripMenuItem.Name = "clearPageToolStripMenuItem";
             this.clearPageToolStripMenuItem.Size = new System.Drawing.Size(165, 22);
             this.clearPageToolStripMenuItem.Text = "Clear Page";
+            // 
+            // renamePageToolStripMenuItem
+            // 
+            this.actionListProvider1.SetAction(this.renamePageToolStripMenuItem, this.actRenamePage);
+            this.renamePageToolStripMenuItem.Name = "renamePageToolStripMenuItem";
+            this.renamePageToolStripMenuItem.Size = new System.Drawing.Size(165, 22);
+            this.renamePageToolStripMenuItem.Text = "Rename Page";
             // 
             // toolStripContainer1
             // 
@@ -521,10 +531,11 @@ namespace Workbook
             this.previewBar1.TabIndex = 0;
             this.previewBar1.PreviewMove += new Workbook.PreviewMoveHandler(this.previewBar1_PreviewMove);
             this.previewBar1.PreviewSelected += new Workbook.PreviewSelectedHandler(this.previewBar1_PreviewSelected);
-            this.previewBar1.PreviewFigureDrop += new Workbook.PreivewFigureDropHandler(this.previewBar1_PreviewFigureDrop);
+            this.previewBar1.PreviewFigureDrop += new Workbook.PreviewFigureDropHandler(this.previewBar1_PreviewFigureDrop);
             this.previewBar1.Leave += new System.EventHandler(this.previewBar1_Leave);
             this.previewBar1.PreviewContext += new Workbook.PreviewContextHandler(this.previewBar1_PreviewContext);
             this.previewBar1.Enter += new System.EventHandler(this.previewBar1_Enter);
+            this.previewBar1.PreviewNameChanged += new Workbook.PreviewNameChangedHandler(this.previewBar1_PreviewNameChanged);
             // 
             // attachmentView1
             // 
@@ -1386,6 +1397,7 @@ namespace Workbook
             this.actionListProvider1.Actions.Add(this.actDeletePage);
             this.actionListProvider1.Actions.Add(this.actClonePage);
             this.actionListProvider1.Actions.Add(this.actClearPage);
+            this.actionListProvider1.Actions.Add(this.actRenamePage);
             this.actionListProvider1.Actions.Add(this.actAnnoTools);
             this.actionListProvider1.Actions.Add(this.actLink);
             this.actionListProvider1.Actions.Add(this.actUndo);
@@ -1557,6 +1569,12 @@ namespace Workbook
             this.actScreenCapture.ShortcutKeys = System.Windows.Forms.Keys.None;
             this.actScreenCapture.Text = "Screen Capture";
             this.actScreenCapture.Execute += new System.EventHandler(this.actScreenCapture_Execute);
+            // 
+            // actRenamePage
+            // 
+            this.actRenamePage.ShortcutKeys = System.Windows.Forms.Keys.None;
+            this.actRenamePage.Text = "Rename Page";
+            this.actRenamePage.Execute += new System.EventHandler(this.actRenamePage_Execute);
             // 
             // MainForm
             // 
@@ -1758,6 +1776,8 @@ namespace Workbook
         private System.Windows.Forms.ToolStripMenuItem toolsToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem propertiesToolStripMenuItem;
         private Burkovsky.Controls.Action actProperties;
+        private Burkovsky.Controls.Action actRenamePage;
+        private System.Windows.Forms.ToolStripMenuItem renamePageToolStripMenuItem;
     }
 }
 

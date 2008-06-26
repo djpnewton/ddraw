@@ -18,7 +18,8 @@ namespace Workbook
         public event PreviewSelectedHandler PreviewSelected;
         public event PreviewContextHandler PreviewContext;
         public event PreviewMoveHandler PreviewMove;
-        public event PreivewFigureDropHandler PreviewFigureDrop;
+        public event PreviewFigureDropHandler PreviewFigureDrop;
+        public event PreviewNameChangedHandler PreviewNameChanged;
 
         int IdealPreviewWidth
         {
@@ -63,13 +64,14 @@ namespace Workbook
             Controls.SetChildIndex(p, idx);
             // set preview properties
             p.Width = IdealPreviewWidth;
-            p.Height = 65;
+            p.Height = 75;
             p.Left = 0;
             SetPreviewTops(idx); 
             p.Click += new EventHandler(p_Click);
             p.PreviewContext += new PreviewContextHandler(p_PreviewContext);
             p.PreviewMove += new PreviewMoveHandler(p_PreviewMove);
-            p.PreviewFigureDrop += new PreivewFigureDropHandler(p_PreviewFigureDrop);
+            p.PreviewFigureDrop += new PreviewFigureDropHandler(p_PreviewFigureDrop);
+            p.PreviewNameChanged += new PreviewNameChangedHandler(p_PreviewNameChanged);
             // select it
             p.Selected = true;
             DoPreviewSelected(p);
@@ -149,6 +151,12 @@ namespace Workbook
         {
             if (PreviewFigureDrop != null)
                 PreviewFigureDrop(p, figs);
+        }
+
+        void p_PreviewNameChanged(Preview p, string name)
+        {
+            if (PreviewNameChanged != null)
+                PreviewNameChanged(p, name);
         }
 
         public void Previous()
@@ -241,6 +249,22 @@ namespace Workbook
                     foreach (Preview p in Controls)
                         p.Width = IdealPreviewWidth;
             }
+        }
+
+        public void RenameCurrentPreview()
+        {
+            foreach (Preview p in Controls)
+                if (p.Selected)
+                {
+                    p.Rename();
+                    break;
+                }
+        }
+
+        public void UpdatePreviewNames()
+        {
+            foreach (Preview p in Controls)
+                p.UpdateName();
         }
     }
 }

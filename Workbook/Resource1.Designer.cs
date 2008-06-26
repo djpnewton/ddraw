@@ -74,13 +74,6 @@ namespace Workbook {
             }
         }
         
-        internal static System.Drawing.Bitmap arrow {
-            get {
-                object obj = ResourceManager.GetObject("arrow", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
         internal static System.Drawing.Bitmap arrow_left {
             get {
                 object obj = ResourceManager.GetObject("arrow_left", resourceCulture);
@@ -105,6 +98,13 @@ namespace Workbook {
         internal static System.Drawing.Bitmap cog {
             get {
                 object obj = ResourceManager.GetObject("cog", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap context {
+            get {
+                object obj = ResourceManager.GetObject("context", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

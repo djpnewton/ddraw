@@ -80,7 +80,7 @@
     <Compile Include="BackgroundForm.Designer.cs">
       <DependentUpon>BackgroundForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="ColorPicker.cs">
+    <Compile Include="PopupForms\ColorPicker.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Converters\Converters.cs" />
@@ -91,10 +91,10 @@
     <Compile Include="ExportForm.Designer.cs">
       <DependentUpon>ExportForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="FigureStylePopup.cs">
+    <Compile Include="PopupForms\FigureStylePopup.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="FontPicker.cs">
+    <Compile Include="PopupForms\FontPicker.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Ipc.cs" />
@@ -122,7 +122,10 @@
     <Compile Include="PersonalToolbar\PtUtils.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="PopupForm.cs">
+    <Compile Include="PopupForms\PopupForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="PopupForms\TextPopup.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="ProgramOptions.cs" />
@@ -284,9 +287,6 @@
     <None Include="Resources\technocolor.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\arrow.png" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="Resources\star.png" />
   </ItemGroup>
   <ItemGroup>
@@ -364,6 +364,9 @@
   <ItemGroup>
     <None Include="Resources\2touch_doc.ico" />
     <None Include="Resources\2touch.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\context.png" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

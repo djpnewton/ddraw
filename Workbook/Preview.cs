@@ -13,16 +13,11 @@ namespace Workbook
 {
     public delegate void PreviewContextHandler(Preview p, Point pt);
     public delegate void PreviewMoveHandler(Preview p, Preview to);
-    public delegate void PreivewFigureDropHandler(Preview p, List<Figure> figs);
+    public delegate void PreviewFigureDropHandler(Preview p, List<Figure> figs);
+    public delegate void PreviewNameChangedHandler(Preview p, string name);
 
     public class Preview : UserControl
     {
-        bool radioSelect = true;
-        public bool RadioSelect
-        {
-            get { return radioSelect; }
-            set { radioSelect = value; }
-        }
         public bool Selected
         {
             get { return viewerHolder.BackColor == Color.Red; }
@@ -32,10 +27,9 @@ namespace Workbook
                 {
                     viewerHolder.BackColor = Color.Red;
                     // deselect other siblings
-                    if (radioSelect)
-                        foreach (Control c in Parent.Controls)
-                            if (c is Preview && c != this)
-                                ((Preview)c).Selected = false;
+                    foreach (Control c in Parent.Controls)
+                        if (c is Preview && c != this)
+                            ((Preview)c).Selected = false;
                     // scroll into view
                     if (Parent is ScrollableControl)
                         ((ScrollableControl)Parent).ScrollControlIntoView(this);
@@ -53,7 +47,8 @@ namespace Workbook
 
         public event PreviewContextHandler PreviewContext;
         public event PreviewMoveHandler PreviewMove;
-        public event PreivewFigureDropHandler PreviewFigureDrop;
+        public event PreviewFigureDropHandler PreviewFigureDrop;
+        public event PreviewNameChangedHandler PreviewNameChanged;
 
         WFViewerControl viewerControl;
         public WFViewerControl ViewerControl
@@ -74,6 +69,7 @@ namespace Workbook
         
         const int MARGIN = 1;
         Panel viewerHolder;
+        Label label;
         PictureBox pbContext;
         PictureBox pbDirty;
 
@@ -83,20 +79,26 @@ namespace Workbook
             viewerHolder.Location = new Point(0, 0);
             viewerHolder.Size = Size;
             Controls.Add(viewerHolder);
+            // label
+            label = new Label();
+            label.Text = de.PageName;
+            label.Font = new Font(Font.FontFamily, 7);
+            label.Anchor = AnchorStyles.Left | AnchorStyles.Bottom;
+            label.Location = new Point(MARGIN, Height - label.Font.Height - MARGIN * 2);
+            label.DoubleClick += new EventHandler(label_DoubleClick);
+            viewerHolder.Controls.Add(label);
             // viewerControl
             viewerControl = new WFViewerControl();
             viewerControl.Location = new Point(MARGIN, MARGIN);
-            viewerControl.Size = new Size(Width - MARGIN * 2, Height - MARGIN * 2);
+            viewerControl.Size = new Size(Width - MARGIN * 2, Height - MARGIN * 2 - label.Font.Height);
             viewerControl.Anchor = AnchorStyles.Left | AnchorStyles.Top | AnchorStyles.Right | AnchorStyles.Bottom;
             viewerControl.MouseDown += new MouseEventHandler(viewerControl_MouseDown);
             viewerControl.MouseUp += new MouseEventHandler(viewerControl_MouseUp);
             viewerHolder.Controls.Add(viewerControl);
-            // 
             // pbContext
-            // 
             pbContext = new PictureBox();
             pbContext.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            pbContext.Image = global::Workbook.Resource1.arrow;
+            pbContext.Image = global::Workbook.Resource1.context;
             pbContext.BackColor = Color.Transparent;
             pbContext.Size = new Size(pbContext.Image.Width, pbContext.Image.Height);
             pbContext.Location = new Point(Width - pbContext.Image.Width - 2, 0);
@@ -121,6 +123,11 @@ namespace Workbook
             de.PageSizeChanged += new PageSizeChangedHandler(de_PageSizeChanged);
             UpdateScale();
             de.AddViewer(dv);
+        }
+
+        void label_DoubleClick(object sender, EventArgs e)
+        {
+            Rename();
         }
 
         void viewerControl_MouseDown(object sender, MouseEventArgs e)
@@ -196,6 +203,27 @@ namespace Workbook
         private void de_PageSizeChanged(DEngine de, DPoint pageSize)
         {
             UpdateScale();
+        }
+
+        public void Rename()
+        {
+            Point p = label.PointToScreen(new Point(0, 0));
+            TextPopup f = new TextPopup(p.X, p.Y);
+            f.Text = label.Text;
+            f.FormClosed += new FormClosedEventHandler(textPopup_FormClosed);
+            f.Show();
+        }
+
+        void textPopup_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            label.Text = ((TextPopup)sender).Text;
+            if (PreviewNameChanged != null)
+                PreviewNameChanged(this, label.Text);
+        }
+
+        public void UpdateName()
+        {
+            label.Text = de.PageName;
         }
     }
 }
