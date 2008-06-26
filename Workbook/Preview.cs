@@ -190,19 +190,20 @@ namespace Workbook
 
         void UpdateScale()
         {
-            if (de.PageSize.X / Width > de.PageSize.Y / Height)
+            int h = Height - labelHeight;
+            if (de.PageSize.X / Width > de.PageSize.Y / h)
             {
                 viewerHolder.Left = 0;
                 viewerHolder.Width = Width;
-                viewerHolder.Height = (int)Math.Round(Height * ((Width / de.PageSize.X) / (Height / de.PageSize.Y)));
-                viewerHolder.Top = (Height - labelHeight) / 2 - viewerHolder.Height / 2;
+                viewerHolder.Height = (int)Math.Round(h * ((Width / de.PageSize.X) / (Height / de.PageSize.Y)));
+                viewerHolder.Top = h / 2 - viewerHolder.Height / 2;
             }
             else
             {
-                viewerHolder.Width = (int)Math.Round(Width * ((Height / de.PageSize.Y) / (Width / de.PageSize.X)));
+                viewerHolder.Width = (int)Math.Round(Width * ((h / de.PageSize.Y) / (Width / de.PageSize.X)));
                 viewerHolder.Left = Width / 2 - viewerHolder.Width / 2;
                 viewerHolder.Top = 0;
-                viewerHolder.Height = (Height - labelHeight);
+                viewerHolder.Height = h;
             }
             label.Top = viewerHolder.Bottom - 2;
         }
