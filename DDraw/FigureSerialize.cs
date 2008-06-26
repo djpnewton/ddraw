@@ -125,20 +125,14 @@ namespace DDraw
                 {
                     if (images != null && img.FileName != null)
                     {
-                        if (images.ContainsKey(img.FileName) && !BytesSame(images[img.FileName], img.ImageData))
-                        {
-                            string fileName = FindUniqueFileName(images, Path.GetFileName(img.FileName));
-                            images[fileName] = img.ImageData;
-                            wr.WriteAttributeString(FILENAME_ATTR, fileName);
-                        }
-                        else
-                        {
-                            images[img.FileName] = img.ImageData;
-                            wr.WriteAttributeString(FILENAME_ATTR, Path.GetFileName(img.FileName));
-                        }
+                        string fileName = FindUniqueFileName(images, Path.GetFileName(img.FileName), img.ImageData);
+                        images[fileName] = img.ImageData;
+                        wr.WriteAttributeString(FILENAME_ATTR, fileName);
                     }
                     else
                     {
+                        if (img.FileName != null)
+                            wr.WriteAttributeString(FILENAME_ATTR, Path.GetFileName(img.FileName));
                         wr.WriteAttributeString(TYPE_ATTR, BASE64_VAL);
                         wr.WriteString(Convert.ToBase64String(img.ImageData));
                     }
@@ -212,11 +206,13 @@ namespace DDraw
             return true;
         }
 
-        private static string FindUniqueFileName(Dictionary<string, byte[]> images, string baseName)
+        private static string FindUniqueFileName(Dictionary<string, byte[]> images, string baseName, byte[] imageData)
         {
+            // Find a unique filename for the image but if image data is stored in the dictionary
+            // with the same image data then use that filename
             string result = baseName;
             int i = 0;
-            while (images.ContainsKey(result))
+            while (images.ContainsKey(result) && !BytesSame(images[result], imageData))
             {
                 result = string.Concat(Path.GetFileNameWithoutExtension(baseName), i.ToString(), Path.GetExtension(baseName));
                 i += 1;
