@@ -2715,6 +2715,31 @@ namespace DDraw
 
     public class BackgroundFigure : ImageFigure, IFillable
     {
+        double x;
+        public override double X
+        {
+            get { return x; }
+            set { x = value; }
+        }
+        double y;
+        public override double Y
+        {
+            get { return y; }
+            set { y = value; }
+        }
+        double width;
+        public override double Width
+        {
+            get { return width; }
+            set { width = value; }
+        }
+        double height;
+        public override double Height
+        {
+            get { return height; }
+            set { height = value; }
+        }
+
         protected override void PaintBody(DGraphics dg)
         {
             dg.FillRect(X, Y, Width, Height, Fill, Alpha);

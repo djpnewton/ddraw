@@ -348,12 +348,6 @@ namespace DDraw
             figures.Remove(gf);
         }
 
-        public void SetBackgroundFigureSize(DPoint size)
-        {
-            BackgroundFigure.Width = size.X;
-            BackgroundFigure.Height = size.Y;
-        }
-
         public void SetEraserSize(double size)
         {
             eraserFigure.Size = size;

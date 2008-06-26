@@ -386,10 +386,7 @@ namespace DDraw
             set
             {
                 if (!value.Equals(_pageSize.Value))
-                {
                     _pageSize.Value = value;
-                    figureHandler.SetBackgroundFigureSize(value);
-                }
                 if (PageSizeChanged != null)
                     PageSizeChanged(this, value);
                 viewerHandler.SetPageSize(value);

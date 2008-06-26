@@ -57,7 +57,7 @@ namespace Workbook
             }
             else
                 dem.AddEngine(de);
-            de.PageSize = new DPoint(500, 400);
+            de.PageSize = new DPoint(PageTools.DefaultPageWidth, PageTools.DefaultPageHeight);
             de.PageName = dem.EngineCount.ToString();
             InitDEngine(de, true);
         }

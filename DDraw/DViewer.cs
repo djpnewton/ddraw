@@ -228,7 +228,11 @@ namespace DDraw
             }
             // paint figures
             if (backgroundFigure != null)
+            {
+                backgroundFigure.Width = PageSize.X;
+                backgroundFigure.Height = PageSize.Y;
                 backgroundFigure.Paint(dg);
+            }
             double invScale = 1 / scale;
             foreach (Figure figure in figures)
             {
