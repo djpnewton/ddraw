@@ -73,24 +73,28 @@ namespace Workbook
         PictureBox pbContext;
         PictureBox pbDirty;
 
+        const int labelFontSize = 7;
+        const int labelHeight = 13;
+
         public Preview(DEngine de)
         {
             viewerHolder = new Panel();
             viewerHolder.Location = new Point(0, 0);
-            viewerHolder.Size = Size;
+            viewerHolder.Size = new Size(Width, Height - labelHeight);
             Controls.Add(viewerHolder);
             // label
             label = new Label();
-            label.Text = de.PageName;
-            label.Font = new Font(Font.FontFamily, 7);
-            label.Anchor = AnchorStyles.Left | AnchorStyles.Bottom;
-            label.Location = new Point(MARGIN, Height - label.Font.Height - MARGIN * 2);
+            label.Font = new Font(Font.FontFamily, labelFontSize);
+            label.TextAlign = ContentAlignment.TopCenter;
+            label.Anchor = AnchorStyles.Left | AnchorStyles.Bottom | AnchorStyles.Right;
+            label.Location = new Point(MARGIN, Height - labelHeight - MARGIN * 2);
+            label.Size = new Size(Width - MARGIN * 2, labelHeight);
             label.DoubleClick += new EventHandler(label_DoubleClick);
-            viewerHolder.Controls.Add(label);
+            Controls.Add(label);
             // viewerControl
             viewerControl = new WFViewerControl();
             viewerControl.Location = new Point(MARGIN, MARGIN);
-            viewerControl.Size = new Size(Width - MARGIN * 2, Height - MARGIN * 2 - label.Font.Height);
+            viewerControl.Size = new Size(viewerHolder.Width - MARGIN * 2, viewerHolder.Height - MARGIN * 2);
             viewerControl.Anchor = AnchorStyles.Left | AnchorStyles.Top | AnchorStyles.Right | AnchorStyles.Bottom;
             viewerControl.MouseDown += new MouseEventHandler(viewerControl_MouseDown);
             viewerControl.MouseUp += new MouseEventHandler(viewerControl_MouseUp);
@@ -121,12 +125,14 @@ namespace Workbook
             dv = new WFViewer(viewerControl);
             dv.Preview = true;
             de.PageSizeChanged += new PageSizeChangedHandler(de_PageSizeChanged);
-            UpdateScale();
             de.AddViewer(dv);
+            UpdateScale();
+            UpdateName();
         }
 
         void label_DoubleClick(object sender, EventArgs e)
         {
+            InvokeOnClick(this, e);
             Rename();
         }
 
@@ -189,15 +195,16 @@ namespace Workbook
                 viewerHolder.Left = 0;
                 viewerHolder.Width = Width;
                 viewerHolder.Height = (int)Math.Round(Height * ((Width / de.PageSize.X) / (Height / de.PageSize.Y)));
-                viewerHolder.Top = Height / 2 - viewerHolder.Height / 2;
+                viewerHolder.Top = (Height - labelHeight) / 2 - viewerHolder.Height / 2;
             }
             else
             {
                 viewerHolder.Width = (int)Math.Round(Width * ((Height / de.PageSize.Y) / (Width / de.PageSize.X)));
                 viewerHolder.Left = Width / 2 - viewerHolder.Width / 2;
                 viewerHolder.Top = 0;
-                viewerHolder.Height = Height;
+                viewerHolder.Height = (Height - labelHeight);
             }
+            label.Top = viewerHolder.Bottom - 2;
         }
 
         private void de_PageSizeChanged(DEngine de, DPoint pageSize)
@@ -207,7 +214,7 @@ namespace Workbook
 
         public void Rename()
         {
-            Point p = label.PointToScreen(new Point(0, 0));
+            Point p = viewerControl.PointToScreen(new Point(0, 0));
             TextPopup f = new TextPopup(p.X, p.Y);
             f.Text = label.Text;
             f.FormClosed += new FormClosedEventHandler(textPopup_FormClosed);
