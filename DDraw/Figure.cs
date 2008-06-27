@@ -440,10 +440,10 @@ namespace DDraw
             get { return new DRect(X, Y, Width, Height); }
             set
             {
-                if (value.X != _x.Value) _x.Value = value.X;
-                if (value.Y != _y.Value) _y.Value = value.Y;
-                if (value.Width != _width.Value) _width.Value = value.Width;
-                if (value.Height != _height.Value) _height.Value = value.Height;
+                X = value.X;
+                Y = value.Y;
+                Width = value.Width;
+                Height = value.Height;
             }
         }
         UndoRedo<double> _rotation = new UndoRedo<double>(0);
@@ -2715,6 +2715,7 @@ namespace DDraw
 
     public class BackgroundFigure : ImageFigure, IFillable
     {
+        // reimplement x,y,width & height to escape the UndoRedo properties
         double x;
         public override double X
         {
