@@ -186,7 +186,7 @@ namespace Workbook
             modeSelectToolStripMenuItem.Checked = options.EngineStateToolbar;
             propertySelectToolStripMenuItem.Checked = options.PropertyStateToolbar;
             pageNavigationToolStripMenuItem.Checked = options.PageNavigationToolbar;
-            toolsToolStripMenuItem.Checked = options.ToolsToolbar;
+            toolsToolStripMenuItem1.Checked = options.ToolsToolbar;
             UpdateToolbars();
             // load personal toolbar
             PtUtils.LoadPersonalTools(tsPersonal);
@@ -1667,7 +1667,7 @@ namespace Workbook
             tsEngineState.Visible = modeSelectToolStripMenuItem.Checked;
             tsPropState.Visible = propertySelectToolStripMenuItem.Checked;
             tsPageManage.Visible = pageNavigationToolStripMenuItem.Checked;
-            tsTools.Visible = toolsToolStripMenuItem.Checked;
+            tsTools.Visible = toolsToolStripMenuItem1.Checked;
         }
 
         private void flipXToolStripMenuItem_Click(object sender, EventArgs e)
