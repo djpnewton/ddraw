@@ -482,7 +482,7 @@ namespace DDraw
 
         DPoint CalcSizeDelta(DPoint pt, Figure f, bool lockAspectRatio)
         {
-            if (lockAspectRatio)
+            if (lockAspectRatio && f.Width > 0)
             {
                 pt = pt.Offset(-dragPt.X, -dragPt.Y);
                 double m = f.Height / f.Width;

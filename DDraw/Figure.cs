@@ -1423,7 +1423,11 @@ namespace DDraw
                 _points.Value = new DPoints();
                 foreach (DPoint pt in value)
                     _points.Value.Add(new DPoint(pt.X, pt.Y));
-                Rect = _points.Value.Bounds();
+                DRect r = _points.Value.Bounds();
+                x = r.X;
+                y = r.Y;
+                width = r.Width;
+                height = r.Height;
             }
         }
 
@@ -1436,8 +1440,10 @@ namespace DDraw
             Points = pts; // to set the bounds (maybe should fix this)
         }
 
+        double x;
         public override double X
         {
+            get { return x; }
             set
             {
                 if (Points != null)
@@ -1450,8 +1456,10 @@ namespace DDraw
             }
         }
 
+        double y;
         public override double Y
         {
+            get { return y; }
             set
             {
                 if (Points != null)
@@ -1464,8 +1472,10 @@ namespace DDraw
             }
         }
 
+        double width;
         public override double Width
         {
+            get { return width; }
             set
             {
                 if (Points != null && Points.Count > 1)
@@ -1492,8 +1502,10 @@ namespace DDraw
             }
         }
 
+        double height;
         public override double Height
         {
+            get { return height; }
             set
             {
                 if (Points != null && Points.Count > 1)
