@@ -1435,7 +1435,6 @@ namespace DDraw
                         tef.SetCursorPoint(pt, false);
                         dv.Update(currentFigure.Rect);
                     }
-
                 }
                 else
                 {
@@ -1500,10 +1499,15 @@ namespace DDraw
             }
         }
 
-
-        void DoTextEditMouseUp(DTkViewer dTkViewer, DMouseButton dMouseButton, DPoint dPoint)
+        void DoTextEditMouseUp(DTkViewer dv, DMouseButton b, DPoint pt)
         {
             textEditMouseDown = false;
+        }
+
+        void DoTextEditDoubleClick(DTkViewer dv, DMouseButton b, DPoint pt)
+        {
+            ((TextEditFigure)currentFigure).DoubleClick(pt);
+            dv.Update(currentFigure.Rect);
         }
 
         void DoTextEditKeyDown(DTkViewer dv, DKey k)
@@ -1596,6 +1600,9 @@ namespace DDraw
                     return null;
                 case (int)DHsmSignals.MouseUp:
                     DoTextEditMouseUp(((QMouseEvent)qevent).Dv, ((QMouseEvent)qevent).Button, ((QMouseEvent)qevent).Pt);
+                    return null;
+                case (int)DHsmSignals.DoubleClick:
+                    DoTextEditDoubleClick(((QMouseEvent)qevent).Dv, ((QMouseEvent)qevent).Button, ((QMouseEvent)qevent).Pt);
                     return null;
                 case (int)DHsmSignals.KeyDown:
                     DoTextEditKeyDown(((QKeyEvent)qevent).Dv, ((QKeyEvent)qevent).Key);

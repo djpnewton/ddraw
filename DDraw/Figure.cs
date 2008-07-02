@@ -2403,6 +2403,47 @@ namespace DDraw
             }
             return false;
         }
+
+        delegate int FindCharDelegate(bool findWhiteSpace, bool iterForward, int offset);
+        public void DoubleClick(DPoint pt)
+        {
+            FindCharDelegate findChar = delegate(bool findWhiteSpace, bool iterForward, int offset)
+            {
+                if (iterForward)
+                    while (cursorPosition + offset < Text.Length - 1 && Char.IsWhiteSpace(Text[cursorPosition + offset + 1]) == findWhiteSpace)
+                        offset++;
+                else
+                    while (cursorPosition + offset > 0 && Char.IsWhiteSpace(Text[cursorPosition + offset - 1]) == findWhiteSpace)
+                        offset--;
+                return offset;
+            };
+            // set initial cursor point
+            SetCursorPoint(pt, false);
+            // check if any text
+            if (Text.Length > 0)
+            {
+                // make sure cursor not at end
+                if (cursorPosition == Text.Length)
+                    SetCursorPos(cursorPosition - 1, false);
+                // find word & whitespace pair
+                int end = 0, start = 0;
+                if (Char.IsWhiteSpace(Text[cursorPosition]))
+                {
+                    end = findChar(true, true, 0) + 1;
+                    start = findChar(true, false, 0);
+                    start = findChar(false, false, start);
+                }
+                else
+                {
+                    end = findChar(false, true, 0);
+                    end = findChar(true, true, end) + 1;
+                    start = findChar(false, false, 0);
+                }
+                // select chars
+                SetCursorPos(cursorPosition + start, false);
+                SetCursorPos(cursorPosition - start + end, true);
+            }
+        }
     }
 
     public class GroupFigure : RectbaseFigure, IChildFigureable
