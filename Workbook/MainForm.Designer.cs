@@ -174,6 +174,7 @@ namespace Workbook
             this.actNewPage = new Burkovsky.Controls.Action();
             this.actDeletePage = new Burkovsky.Controls.Action();
             this.actClonePage = new Burkovsky.Controls.Action();
+            this.actRenamePage = new Burkovsky.Controls.Action();
             this.actNew = new Burkovsky.Controls.Action();
             this.actOpen = new Burkovsky.Controls.Action();
             this.actSave = new Burkovsky.Controls.Action();
@@ -183,7 +184,9 @@ namespace Workbook
             this.actRedo = new Burkovsky.Controls.Action();
             this.actAnnoTools = new Burkovsky.Controls.Action();
             this.actScreenCapture = new Burkovsky.Controls.Action();
-            this.actRenamePage = new Burkovsky.Controls.Action();
+            this.toolStripSeparator15 = new System.Windows.Forms.ToolStripSeparator();
+            this.pageSizeToolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
+            this.backgroundToolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
             this.cmsFigure.SuspendLayout();
             this.cmsCanvas.SuspendLayout();
             this.cmsPreview.SuspendLayout();
@@ -411,9 +414,12 @@ namespace Workbook
             this.deletePageToolStripMenuItem,
             this.clonePageToolStripMenuItem,
             this.clearPageToolStripMenuItem,
-            this.renamePageToolStripMenuItem});
+            this.renamePageToolStripMenuItem,
+            this.toolStripSeparator15,
+            this.pageSizeToolStripMenuItem2,
+            this.backgroundToolStripMenuItem2});
             this.cmsPreview.Name = "cmsPreview";
-            this.cmsPreview.Size = new System.Drawing.Size(166, 136);
+            this.cmsPreview.Size = new System.Drawing.Size(166, 186);
             // 
             // newPageToolStripMenuItem
             // 
@@ -532,10 +538,10 @@ namespace Workbook
             this.previewBar1.PreviewMove += new Workbook.PreviewMoveHandler(this.previewBar1_PreviewMove);
             this.previewBar1.PreviewSelected += new Workbook.PreviewSelectedHandler(this.previewBar1_PreviewSelected);
             this.previewBar1.PreviewFigureDrop += new Workbook.PreviewFigureDropHandler(this.previewBar1_PreviewFigureDrop);
+            this.previewBar1.PreviewNameChanged += new Workbook.PreviewNameChangedHandler(this.previewBar1_PreviewNameChanged);
             this.previewBar1.Leave += new System.EventHandler(this.previewBar1_Leave);
             this.previewBar1.PreviewContext += new Workbook.PreviewContextHandler(this.previewBar1_PreviewContext);
             this.previewBar1.Enter += new System.EventHandler(this.previewBar1_Enter);
-            this.previewBar1.PreviewNameChanged += new Workbook.PreviewNameChangedHandler(this.previewBar1_PreviewNameChanged);
             // 
             // attachmentView1
             // 
@@ -1516,6 +1522,12 @@ namespace Workbook
             this.actClonePage.Text = "Clone Page";
             this.actClonePage.Execute += new System.EventHandler(this.actClonePage_Execute);
             // 
+            // actRenamePage
+            // 
+            this.actRenamePage.ShortcutKeys = System.Windows.Forms.Keys.None;
+            this.actRenamePage.Text = "Rename Page";
+            this.actRenamePage.Execute += new System.EventHandler(this.actRenamePage_Execute);
+            // 
             // actNew
             // 
             this.actNew.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.N)));
@@ -1570,11 +1582,25 @@ namespace Workbook
             this.actScreenCapture.Text = "Screen Capture";
             this.actScreenCapture.Execute += new System.EventHandler(this.actScreenCapture_Execute);
             // 
-            // actRenamePage
+            // toolStripSeparator15
             // 
-            this.actRenamePage.ShortcutKeys = System.Windows.Forms.Keys.None;
-            this.actRenamePage.Text = "Rename Page";
-            this.actRenamePage.Execute += new System.EventHandler(this.actRenamePage_Execute);
+            this.actionListProvider1.SetAction(this.toolStripSeparator15, null);
+            this.toolStripSeparator15.Name = "toolStripSeparator15";
+            this.toolStripSeparator15.Size = new System.Drawing.Size(162, 6);
+            // 
+            // pageSizeToolStripMenuItem2
+            // 
+            this.actionListProvider1.SetAction(this.pageSizeToolStripMenuItem2, this.actPageSize);
+            this.pageSizeToolStripMenuItem2.Name = "pageSizeToolStripMenuItem2";
+            this.pageSizeToolStripMenuItem2.Size = new System.Drawing.Size(165, 22);
+            this.pageSizeToolStripMenuItem2.Text = "Page Size";
+            // 
+            // backgroundToolStripMenuItem2
+            // 
+            this.actionListProvider1.SetAction(this.backgroundToolStripMenuItem2, this.actBackground);
+            this.backgroundToolStripMenuItem2.Name = "backgroundToolStripMenuItem2";
+            this.backgroundToolStripMenuItem2.Size = new System.Drawing.Size(165, 22);
+            this.backgroundToolStripMenuItem2.Text = "Background";
             // 
             // MainForm
             // 
@@ -1778,6 +1804,9 @@ namespace Workbook
         private Burkovsky.Controls.Action actProperties;
         private Burkovsky.Controls.Action actRenamePage;
         private System.Windows.Forms.ToolStripMenuItem renamePageToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator15;
+        private System.Windows.Forms.ToolStripMenuItem pageSizeToolStripMenuItem2;
+        private System.Windows.Forms.ToolStripMenuItem backgroundToolStripMenuItem2;
     }
 }
 
