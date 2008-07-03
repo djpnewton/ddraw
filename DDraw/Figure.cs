@@ -507,33 +507,41 @@ namespace DDraw
             Rotation = rotation;
         }
 
-        public DPoint TransformPointToFigure(DPoint pt, bool doFlip)
+        public DPoint RotatePointToFigure(DPoint pt)
         {
-            DPoint ctr = Rect.Center;
             // negative rotation to put point in figure coordinate space
-            DPoint res = DGeom.RotatePoint(pt, ctr, -Rotation);
+            return DGeom.RotatePoint(pt, Rect.Center, -Rotation);
+        }
+
+        public DPoint FlipPointToFigure(DPoint pt)
+        {
             // account for flip
-            if (doFlip)
-            {
-                if (FlipX)
-                    res.X -= (res.X - ctr.X) * 2;
-                if (FlipY)
-                    res.Y -= (res.Y - ctr.Y) * 2;
-            }
+            DPoint ctr = Rect.Center;
+            DPoint res = new DPoint(pt.X, pt.Y);
+            if (FlipX)
+                res.X -= (res.X - ctr.X) * 2;
+            if (FlipY)
+                res.Y -= (res.Y - ctr.Y) * 2;
             return res;
+        }
+
+        public DPoint TransformPointToFigure(DPoint pt)
+        {
+            DPoint res = RotatePointToFigure(pt);
+            return FlipPointToFigure(res);
         }
 
         protected DHitTest SelectAndBodyHitTest(DPoint pt, List<Figure> children)
         {
             DHitTest res = SelectHitTest(pt);
             if (res == DHitTest.None)
-                res = BodyHitTest(pt, children);
+                res = BodyHitTest(FlipPointToFigure(pt), children);
             return res;
         }
 
         public virtual DHitTest HitTest(DPoint pt, List<Figure> children, out IGlyph glyph)
         {
-            pt = TransformPointToFigure(pt, !selected);
+            pt = RotatePointToFigure(pt);
             DHitTest res = GlyphHitTest(pt, out glyph);
             if (res == DHitTest.None)
             {
@@ -2672,7 +2680,7 @@ namespace DDraw
 
         public override DHitTest HitTest(DPoint pt, List<Figure> children, out IGlyph glyph)
         {
-            pt = TransformPointToFigure(pt, !Selected);
+            pt = RotatePointToFigure(pt);
             DHitTest res = GlyphHitTest(pt, out glyph);
             if (res == DHitTest.None)
             {
@@ -2680,7 +2688,7 @@ namespace DDraw
                 {
                     res = LockHitTest(pt);
                     if (res == DHitTest.None)
-                        res = SelectAndBodyHitTest(pt, children, out glyph);
+                        res = SelectAndBodyHitTest(FlipPointToFigure(pt), children, out glyph);
                 }
                 else
                 {
@@ -2692,7 +2700,7 @@ namespace DDraw
                         {
                             res = ContextHitTest(pt);
                             if (res == DHitTest.None)
-                                res = SelectAndBodyHitTest(pt, children, out glyph);
+                                res = SelectAndBodyHitTest(FlipPointToFigure(pt), children, out glyph);
                         }
                     }
                 }

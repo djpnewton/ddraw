@@ -617,7 +617,7 @@ namespace DDraw
                             goto case DHitTest.Body;
                         case DHitTest.Resize:
                             dragPt = new DPoint(0, 0);
-                            dragPt = CalcSizeDelta(f.TransformPointToFigure(pt, false), f, LockingAspectRatio || f.LockAspectRatio);
+                            dragPt = CalcSizeDelta(f.RotatePointToFigure(pt), f, LockingAspectRatio || f.LockAspectRatio);
                             lockInitialAspectRatio = true;
                             break;
                         case DHitTest.ReposLinePt1:
@@ -874,7 +874,7 @@ namespace DDraw
                     // inital update rect
                     updateRect = GetBoundingBox(currentFigure);
                     // translate point onto the same rotated plane as the figure
-                    pt = currentFigure.TransformPointToFigure(pt, false);
+                    pt = currentFigure.RotatePointToFigure(pt);
                     // apply width/height delta to figure
                     DPoint dSize = CalcSizeDelta(pt, currentFigure, LockingAspectRatio || currentFigure.LockAspectRatio);
                     if (lockInitialAspectRatio && !(figureLockAspectRatio || currentFigure.LockAspectRatio))
@@ -1957,7 +1957,7 @@ namespace DDraw
                 if (figures[i] is PolylinebaseFigure)
                 {
                     PolylinebaseFigure f = (PolylinebaseFigure)figures[i];
-                    DPoint rotPt = f.TransformPointToFigure(eraserPt, true);
+                    DPoint rotPt = f.TransformPointToFigure(eraserPt);
                     DPoints ptsToRemove = new DPoints();
                     if (f.Points != null)
                         foreach (DPoint pt in f.Points)
@@ -1984,7 +1984,7 @@ namespace DDraw
                     GroupFigure f = (GroupFigure)figures[i];
                     // recurse into group figure and also update rotation position
                     DRect oldR = f.Rect;
-                    ErasePolylines(f.TransformPointToFigure(eraserPt, true), f.ChildFigures, ref updateRect, f);
+                    ErasePolylines(f.TransformPointToFigure(eraserPt), f.ChildFigures, ref updateRect, f);
                     DRect newR = f.Rect;
                     DGeom.UpdateRotationPosition(f, oldR, newR);
                     // clean up group figure if no longer needed
