@@ -16,7 +16,7 @@ namespace DDraw
 
     public enum DCursor { Default, MoveAll, MoveNS, MoveWE, MoveNESW, MoveNWSE, Rotate, Crosshair, IBeam, Hand };
 
-    public enum DHitTest { None, Body, SelectRect, Resize, Rotate, Context, ReposLinePt1, ReposLinePt2, Glyph };
+    public enum DHitTest { None, Body, SelectRect, Resize, Rotate, Context, ReposLinePt1, ReposLinePt2, Glyph, Lock };
 
     public enum DMouseButton { Left, Right, Middle, NotApplicable };
 

@@ -30,6 +30,7 @@ namespace DDraw
         public const string FLIPX_ATTR = "FlipX";
         public const string FLIPY_ATTR = "FlipY";
         public const string LOCKASPECTRATIO_ATTR = "LockAspectRatio";
+        public const string LOCKED_ATTR = "Locked";
         public const string FILL_ELE = "Fill";
         public const string COLOR_ATTR = "Color";
         public const string STROKE_ELE = "Stroke";
@@ -91,6 +92,7 @@ namespace DDraw
                 wr.WriteAttributeString(FLIPX_ATTR, fd.FlipX.ToString());
                 wr.WriteAttributeString(FLIPY_ATTR, fd.FlipY.ToString());
                 wr.WriteAttributeString(LOCKASPECTRATIO_ATTR, fd.LockAspectRatio.ToString());
+                wr.WriteAttributeString(LOCKED_ATTR, fd.Locked.ToString());
                 wr.WriteEndElement();
             }
             if (f is IFillable)
@@ -324,8 +326,7 @@ namespace DDraw
         static void ApplyDimensions(XmlReader re, IDimension d)
         {
             double x = 0, y = 0, width = 10, height = 10, rot = 0;
-            bool flipX = false, flipY = false;
-            bool lar = false;
+            bool flipX = false, flipY = false, lar = false, locked = false;
             re.MoveToContent();
             for (int i = 0; i < re.AttributeCount; i++)
             {
@@ -346,6 +347,8 @@ namespace DDraw
                     bool.TryParse(re.Value, out flipY);
                 else if (re.LocalName == LOCKASPECTRATIO_ATTR)
                     bool.TryParse(re.Value, out lar);
+                else if (re.LocalName == LOCKED_ATTR)
+                    bool.TryParse(re.Value, out locked);
             }
             d.X = x;
             d.Y = y;
@@ -355,6 +358,7 @@ namespace DDraw
             d.FlipX = flipX;
             d.FlipY = flipY;
             d.LockAspectRatio = lar;
+            d.Locked = locked;
         }
 
         static void ApplyFill(XmlReader re, IFillable f)

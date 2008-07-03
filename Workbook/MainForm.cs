@@ -71,6 +71,7 @@ namespace Workbook
             de.SelectedFiguresChanged += new SelectedFiguresHandler(de_SelectedFiguresChanged);
             de.FigureClick += new ClickHandler(de_FigureClick);
             de.FigureContextClick += new ClickHandler(de_ContextClick);
+            de.FigureLockClick += new ClickHandler(de_FigureLockClick);
             de.ContextClick += new ClickHandler(de_ContextClick);
             de.DragFigureStart += new DragFigureHandler(de_DragFigureStart);
             de.DragFigureEvt += new DragFigureHandler(de_DragFigureEvt);
@@ -336,10 +337,21 @@ namespace Workbook
                 ExecLink(clickedFigure);
         }
 
+        void de_FigureLockClick(DEngine de, Figure clickedFigure, DPoint pt)
+        {
+            de.UndoRedoStart("Unlock Figure");
+            clickedFigure.Locked = false;
+            de.UndoRedoCommit();
+            dvEditor.Update();
+        }
+
         void de_ContextClick(DEngine de, Figure clickedFigure, DPoint pt)
         {
             if (clickedFigure != null)
-                cmsFigure.Show(wfvcEditor, new Point((int)pt.X, (int)pt.Y));
+            {
+                if (!clickedFigure.Locked)
+                    cmsFigure.Show(wfvcEditor, new Point((int)pt.X, (int)pt.Y));
+            }
             else
                 cmsCanvas.Show(wfvcEditor, new Point((int)pt.X, (int)pt.Y));
         }
@@ -466,9 +478,9 @@ namespace Workbook
             actCut.Enabled = de.CanCopy(figs);
             actCopy.Enabled = de.CanCopy(figs);
             actDelete.Enabled = de.CanDelete(figs);
-            // update link action
+            // update link, lock & properties action
             actLink.Enabled = figs.Count == 1;
-            // update properties action
+            actLockFigure.Enabled = figs.Count > 0;
             actProperties.Enabled = figs.Count == 1;
         }
 
@@ -570,7 +582,7 @@ namespace Workbook
         private void imageToolStripMenuItem_Click(object sender, EventArgs e)
         {
             OpenFileDialog ofd = new OpenFileDialog();
-            ofd.Filter = "Image Files(*.BMP;*.JPG;*.GIF,*.PNG)|*.BMP;*.JPG;*.GIF;*.PNG";
+            ofd.Filter = "Image Files|*.BMP;*.JPG;*.GIF;*.PNG";
             if (ofd.ShowDialog() == DialogResult.OK)
             {
                 CheckState();
@@ -1341,6 +1353,18 @@ namespace Workbook
                         break;
                 }
                 // update editor view
+                dvEditor.Update();
+            }
+        }
+
+        private void actLockFigure_Execute(object sender, EventArgs e)
+        {
+            if (de.SelectedFigures.Count > 0)
+            {
+                de.UndoRedoStart("Change Figure Lock");
+                foreach (Figure f in de.SelectedFigures)
+                    f.Locked = !f.Locked;
+                de.UndoRedoCommit();
                 dvEditor.Update();
             }
         }

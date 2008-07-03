@@ -46,6 +46,7 @@ namespace Workbook
             this.bringForwardToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator10 = new System.Windows.Forms.ToolStripSeparator();
             this.linkToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.lockToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.propertiesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.cmsCanvas = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.pasteToolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
@@ -60,6 +61,9 @@ namespace Workbook
             this.clonePageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.clearPageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.renamePageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator15 = new System.Windows.Forms.ToolStripSeparator();
+            this.pageSizeToolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
+            this.backgroundToolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripContainer1 = new System.Windows.Forms.ToolStripContainer();
             this.pnlMain = new System.Windows.Forms.Panel();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
@@ -166,6 +170,7 @@ namespace Workbook
             this.actSendBackward = new Burkovsky.Controls.Action();
             this.actBringForward = new Burkovsky.Controls.Action();
             this.actLink = new Burkovsky.Controls.Action();
+            this.actLockFigure = new Burkovsky.Controls.Action();
             this.actProperties = new Burkovsky.Controls.Action();
             this.actSelectAll = new Burkovsky.Controls.Action();
             this.actClearPage = new Burkovsky.Controls.Action();
@@ -184,9 +189,10 @@ namespace Workbook
             this.actRedo = new Burkovsky.Controls.Action();
             this.actAnnoTools = new Burkovsky.Controls.Action();
             this.actScreenCapture = new Burkovsky.Controls.Action();
-            this.toolStripSeparator15 = new System.Windows.Forms.ToolStripSeparator();
-            this.pageSizeToolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
-            this.backgroundToolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator16 = new System.Windows.Forms.ToolStripSeparator();
+            this.linkToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.lockToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.propertiesToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.cmsFigure.SuspendLayout();
             this.cmsCanvas.SuspendLayout();
             this.cmsPreview.SuspendLayout();
@@ -225,9 +231,10 @@ namespace Workbook
             this.bringForwardToolStripMenuItem,
             this.toolStripSeparator10,
             this.linkToolStripMenuItem,
+            this.lockToolStripMenuItem,
             this.propertiesToolStripMenuItem});
             this.cmsFigure.Name = "cmsFigure";
-            this.cmsFigure.Size = new System.Drawing.Size(239, 308);
+            this.cmsFigure.Size = new System.Drawing.Size(239, 330);
             // 
             // cutToolStripMenuItem1
             // 
@@ -345,6 +352,14 @@ namespace Workbook
             this.linkToolStripMenuItem.Size = new System.Drawing.Size(238, 22);
             this.linkToolStripMenuItem.Text = "Link";
             // 
+            // lockToolStripMenuItem
+            // 
+            this.actionListProvider1.SetAction(this.lockToolStripMenuItem, this.actLockFigure);
+            this.lockToolStripMenuItem.Name = "lockToolStripMenuItem";
+            this.lockToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.K)));
+            this.lockToolStripMenuItem.Size = new System.Drawing.Size(238, 22);
+            this.lockToolStripMenuItem.Text = "Lock";
+            // 
             // propertiesToolStripMenuItem
             // 
             this.actionListProvider1.SetAction(this.propertiesToolStripMenuItem, this.actProperties);
@@ -419,7 +434,7 @@ namespace Workbook
             this.pageSizeToolStripMenuItem2,
             this.backgroundToolStripMenuItem2});
             this.cmsPreview.Name = "cmsPreview";
-            this.cmsPreview.Size = new System.Drawing.Size(166, 186);
+            this.cmsPreview.Size = new System.Drawing.Size(166, 164);
             // 
             // newPageToolStripMenuItem
             // 
@@ -456,6 +471,26 @@ namespace Workbook
             this.renamePageToolStripMenuItem.Name = "renamePageToolStripMenuItem";
             this.renamePageToolStripMenuItem.Size = new System.Drawing.Size(165, 22);
             this.renamePageToolStripMenuItem.Text = "Rename Page";
+            // 
+            // toolStripSeparator15
+            // 
+            this.actionListProvider1.SetAction(this.toolStripSeparator15, null);
+            this.toolStripSeparator15.Name = "toolStripSeparator15";
+            this.toolStripSeparator15.Size = new System.Drawing.Size(162, 6);
+            // 
+            // pageSizeToolStripMenuItem2
+            // 
+            this.actionListProvider1.SetAction(this.pageSizeToolStripMenuItem2, this.actPageSize);
+            this.pageSizeToolStripMenuItem2.Name = "pageSizeToolStripMenuItem2";
+            this.pageSizeToolStripMenuItem2.Size = new System.Drawing.Size(165, 22);
+            this.pageSizeToolStripMenuItem2.Text = "Page Size";
+            // 
+            // backgroundToolStripMenuItem2
+            // 
+            this.actionListProvider1.SetAction(this.backgroundToolStripMenuItem2, this.actBackground);
+            this.backgroundToolStripMenuItem2.Name = "backgroundToolStripMenuItem2";
+            this.backgroundToolStripMenuItem2.Size = new System.Drawing.Size(165, 22);
+            this.backgroundToolStripMenuItem2.Text = "Background";
             // 
             // toolStripContainer1
             // 
@@ -1068,7 +1103,7 @@ namespace Workbook
             // 
             this.actionListProvider1.SetAction(this.imageToolStripMenuItem, null);
             this.imageToolStripMenuItem.Name = "imageToolStripMenuItem";
-            this.imageToolStripMenuItem.Size = new System.Drawing.Size(141, 22);
+            this.imageToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.imageToolStripMenuItem.Text = "Image";
             this.imageToolStripMenuItem.Click += new System.EventHandler(this.imageToolStripMenuItem_Click);
             // 
@@ -1076,14 +1111,14 @@ namespace Workbook
             // 
             this.actionListProvider1.SetAction(this.newPageToolStripMenuItem1, this.actNewPage);
             this.newPageToolStripMenuItem1.Name = "newPageToolStripMenuItem1";
-            this.newPageToolStripMenuItem1.Size = new System.Drawing.Size(141, 22);
+            this.newPageToolStripMenuItem1.Size = new System.Drawing.Size(152, 22);
             this.newPageToolStripMenuItem1.Text = "New Page";
             // 
             // attachmentToolStripMenuItem
             // 
             this.actionListProvider1.SetAction(this.attachmentToolStripMenuItem, null);
             this.attachmentToolStripMenuItem.Name = "attachmentToolStripMenuItem";
-            this.attachmentToolStripMenuItem.Size = new System.Drawing.Size(141, 22);
+            this.attachmentToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.attachmentToolStripMenuItem.Text = "Attachment";
             this.attachmentToolStripMenuItem.Click += new System.EventHandler(this.attachmentToolStripMenuItem_Click);
             // 
@@ -1099,7 +1134,11 @@ namespace Workbook
             this.sendToBackToolStripMenuItem1,
             this.bringToFrontToolStripMenuItem1,
             this.sendBackwardToolStripMenuItem1,
-            this.bringForwardToolStripMenuItem1});
+            this.bringForwardToolStripMenuItem1,
+            this.toolStripSeparator16,
+            this.linkToolStripMenuItem1,
+            this.lockToolStripMenuItem1,
+            this.propertiesToolStripMenuItem1});
             this.formatToolStripMenuItem.Name = "formatToolStripMenuItem";
             this.formatToolStripMenuItem.Size = new System.Drawing.Size(53, 20);
             this.formatToolStripMenuItem.Text = "Format";
@@ -1411,6 +1450,7 @@ namespace Workbook
             this.actionListProvider1.Actions.Add(this.actSelectAll);
             this.actionListProvider1.Actions.Add(this.actScreenCapture);
             this.actionListProvider1.Actions.Add(this.actProperties);
+            this.actionListProvider1.Actions.Add(this.actLockFigure);
             // 
             // actCut
             // 
@@ -1473,6 +1513,12 @@ namespace Workbook
             this.actLink.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.L)));
             this.actLink.Text = "Link";
             this.actLink.Execute += new System.EventHandler(this.actLink_Execute);
+            // 
+            // actLockFigure
+            // 
+            this.actLockFigure.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.K)));
+            this.actLockFigure.Text = "Lock";
+            this.actLockFigure.Execute += new System.EventHandler(this.actLockFigure_Execute);
             // 
             // actProperties
             // 
@@ -1582,25 +1628,32 @@ namespace Workbook
             this.actScreenCapture.Text = "Screen Capture";
             this.actScreenCapture.Execute += new System.EventHandler(this.actScreenCapture_Execute);
             // 
-            // toolStripSeparator15
+            // toolStripSeparator16
             // 
-            this.actionListProvider1.SetAction(this.toolStripSeparator15, null);
-            this.toolStripSeparator15.Name = "toolStripSeparator15";
-            this.toolStripSeparator15.Size = new System.Drawing.Size(162, 6);
+            this.actionListProvider1.SetAction(this.toolStripSeparator16, null);
+            this.toolStripSeparator16.Name = "toolStripSeparator16";
+            this.toolStripSeparator16.Size = new System.Drawing.Size(235, 6);
             // 
-            // pageSizeToolStripMenuItem2
+            // linkToolStripMenuItem1
             // 
-            this.actionListProvider1.SetAction(this.pageSizeToolStripMenuItem2, this.actPageSize);
-            this.pageSizeToolStripMenuItem2.Name = "pageSizeToolStripMenuItem2";
-            this.pageSizeToolStripMenuItem2.Size = new System.Drawing.Size(165, 22);
-            this.pageSizeToolStripMenuItem2.Text = "Page Size";
+            this.actionListProvider1.SetAction(this.linkToolStripMenuItem1, this.actLink);
+            this.linkToolStripMenuItem1.Name = "linkToolStripMenuItem1";
+            this.linkToolStripMenuItem1.Size = new System.Drawing.Size(238, 22);
+            this.linkToolStripMenuItem1.Text = "Link";
             // 
-            // backgroundToolStripMenuItem2
+            // lockToolStripMenuItem1
             // 
-            this.actionListProvider1.SetAction(this.backgroundToolStripMenuItem2, this.actBackground);
-            this.backgroundToolStripMenuItem2.Name = "backgroundToolStripMenuItem2";
-            this.backgroundToolStripMenuItem2.Size = new System.Drawing.Size(165, 22);
-            this.backgroundToolStripMenuItem2.Text = "Background";
+            this.actionListProvider1.SetAction(this.lockToolStripMenuItem1, this.actLockFigure);
+            this.lockToolStripMenuItem1.Name = "lockToolStripMenuItem1";
+            this.lockToolStripMenuItem1.Size = new System.Drawing.Size(238, 22);
+            this.lockToolStripMenuItem1.Text = "Lock";
+            // 
+            // propertiesToolStripMenuItem1
+            // 
+            this.actionListProvider1.SetAction(this.propertiesToolStripMenuItem1, this.actProperties);
+            this.propertiesToolStripMenuItem1.Name = "propertiesToolStripMenuItem1";
+            this.propertiesToolStripMenuItem1.Size = new System.Drawing.Size(238, 22);
+            this.propertiesToolStripMenuItem1.Text = "Properties";
             // 
             // MainForm
             // 
@@ -1807,6 +1860,12 @@ namespace Workbook
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator15;
         private System.Windows.Forms.ToolStripMenuItem pageSizeToolStripMenuItem2;
         private System.Windows.Forms.ToolStripMenuItem backgroundToolStripMenuItem2;
+        private Burkovsky.Controls.Action actLockFigure;
+        private System.Windows.Forms.ToolStripMenuItem lockToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator16;
+        private System.Windows.Forms.ToolStripMenuItem linkToolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem lockToolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem propertiesToolStripMenuItem1;
     }
 }
 

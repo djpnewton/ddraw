@@ -290,6 +290,7 @@ namespace DDraw
         public event DebugMessageHandler DebugMessage;
         public event ClickHandler FigureClick;
         public event ClickHandler FigureContextClick;
+        public event ClickHandler FigureLockClick;
         public event ClickHandler ContextClick;
         public event DragFigureHandler DragFigureStart;
         public event DragFigureHandler DragFigureEvt;
@@ -603,11 +604,14 @@ namespace DDraw
                     switch (mouseHitTest)
                     {
                         case DHitTest.Body:
-                            // store drag point
-                            dragPt = pt;
-                            // drag figure start event
-                            if (DragFigureStart != null)
-                                DragFigureStart(null, f, dv.EngineToClient(pt));
+                            if (!f.Locked)
+                            {
+                                // store drag point
+                                dragPt = pt;
+                                // drag figure start event
+                                if (DragFigureStart != null)
+                                    DragFigureStart(null, f, dv.EngineToClient(pt));
+                            }
                             break;
                         case DHitTest.SelectRect:
                             goto case DHitTest.Body;
@@ -628,6 +632,10 @@ namespace DDraw
                         case DHitTest.Context:
                             if (FigureContextClick != null)
                                 FigureContextClick(null, f, dv.EngineToClient(pt));
+                            break;
+                        case DHitTest.Lock:
+                            if (FigureLockClick != null)
+                                FigureLockClick(null, f, dv.EngineToClient(pt));
                             break;
                     }
                 }
@@ -657,7 +665,10 @@ namespace DDraw
                     dv.SetCursor(DCursor.Default);
                     break;
                 case DHitTest.Body:
-                    dv.SetCursor(DCursor.MoveAll);
+                    if (f.Locked)
+                        dv.SetCursor(DCursor.Default);
+                    else
+                        dv.SetCursor(DCursor.MoveAll);
                     if (f.ClickEvent)
                         dv.SetCursor(DCursor.Hand);
                     else
@@ -683,6 +694,8 @@ namespace DDraw
                 case DHitTest.Context:
                     dv.SetCursor(DCursor.Hand);
                     break;
+                case DHitTest.Lock:
+                    goto case DHitTest.Context;
                 case DHitTest.Glyph:
                     dv.SetCursor(glyph.Cursor);
                     break;
@@ -787,7 +800,8 @@ namespace DDraw
                     DoSelectDefaultMouseDown(((QMouseEvent)qevent).Dv, ((QMouseEvent)qevent).Button, ((QMouseEvent)qevent).Pt);
                     return null;
                 case (int)DHsmSignals.MouseMove:
-                    if (currentFigure != null && (((QMouseEvent)qevent).Pt.X != dragPt.X || ((QMouseEvent)qevent).Pt.Y != dragPt.Y))
+                    if (currentFigure != null && !currentFigure.Locked &&
+                        (((QMouseEvent)qevent).Pt.X != dragPt.X || ((QMouseEvent)qevent).Pt.Y != dragPt.Y))
                     {
                         TransitionTo(DragFigure);
                         DoDragFigureMouseMove(((QMouseEvent)qevent).Dv, ((QMouseEvent)qevent).Pt);
@@ -838,10 +852,11 @@ namespace DDraw
                     DPoint dPos = CalcDragDelta(pt);
                     if (dPos.X != 0 || dPos.Y != 0)
                         foreach (Figure f in figureHandler.SelectedFigures)
-                        {
-                            f.X += dPos.X;
-                            f.Y += dPos.Y;
-                        }
+                            if (!f.Locked)
+                            {
+                                f.X += dPos.X;
+                                f.Y += dPos.Y;
+                            }
                     // store drag pt for reference later (eg. next mousemove event)
                     dragPt = pt;
                     // final update rect
@@ -1014,7 +1029,8 @@ namespace DDraw
             if (btn == DMouseButton.Left)
             {
                 // drag figure end event
-                if ((mouseHitTest == DHitTest.Body || mouseHitTest == DHitTest.SelectRect) && DragFigureEnd != null)
+                if ((mouseHitTest == DHitTest.Body || mouseHitTest == DHitTest.SelectRect) && 
+                    !currentFigure.Locked && DragFigureEnd != null)
                     DragFigureEnd(null, currentFigure, dv.EngineToClient(pt));
                 // nullify currentFigure
                 currentFigure = null;

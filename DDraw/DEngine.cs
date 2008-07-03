@@ -418,6 +418,7 @@ namespace DDraw
         public event SelectedFiguresHandler SelectedFiguresChanged;
         public event ClickHandler FigureClick;
         public event ClickHandler FigureContextClick;
+        public event ClickHandler FigureLockClick;
         public event ClickHandler ContextClick;
         public event DragFigureHandler DragFigureStart;
         public event DragFigureHandler DragFigureEvt;
@@ -464,6 +465,7 @@ namespace DDraw
             hsm.DebugMessage += new DebugMessageHandler(hsm_DebugMessage);
             hsm.FigureClick += new ClickHandler(hsm_FigureClick);
             hsm.FigureContextClick += new ClickHandler(hsm_FigureContextClick);
+            hsm.FigureLockClick += new ClickHandler(hsm_FigureLockClick);
             hsm.ContextClick += new ClickHandler(hsm_ContextClick);
             hsm.DragFigureStart += new DragFigureHandler(hsm_DragFigureStart);
             hsm.DragFigureEvt += new DragFigureHandler(hsm_DragFigureEvt);
@@ -523,6 +525,12 @@ namespace DDraw
         {
             if (FigureContextClick != null)
                 FigureContextClick(this, clickedFigure, pt);
+        }
+
+        void hsm_FigureLockClick(DEngine de, Figure clickedFigure, DPoint pt)
+        {
+            if (FigureLockClick != null)
+                FigureLockClick(this, clickedFigure, pt);
         }
 
         void hsm_ContextClick(DEngine de, Figure clickedFigure, DPoint pt)

@@ -50,6 +50,11 @@ namespace DDraw
             get;
             set;
         }
+        bool Locked
+        {
+            get;
+            set;
+        }
     }
 
     public interface IFillable
@@ -373,6 +378,13 @@ namespace DDraw
             set { contextHandle = value; }
         }
 
+        UndoRedo<bool> _locked = new UndoRedo<bool>(false);
+        public bool Locked
+        {
+            get { return _locked.Value; }
+            set { _locked.Value = value; }
+        }
+
         UndoRedo<double> _x = new UndoRedo<double>(0);
         public virtual double X
         {
@@ -511,24 +523,37 @@ namespace DDraw
             return res;
         }
 
+        protected DHitTest SelectAndBodyHitTest(DPoint pt, List<Figure> children)
+        {
+            DHitTest res = SelectHitTest(pt);
+            if (res == DHitTest.None)
+                res = BodyHitTest(pt, children);
+            return res;
+        }
+
         public virtual DHitTest HitTest(DPoint pt, List<Figure> children, out IGlyph glyph)
         {
             pt = TransformPointToFigure(pt, !selected);
             DHitTest res = GlyphHitTest(pt, out glyph);
             if (res == DHitTest.None)
             {
-                res = RotateHitTest(pt);
-                if (res == DHitTest.None)
+                if (Locked)
                 {
-                    res = ResizeHitTest(pt);
+                    res = LockHitTest(pt);
+                    if (res == DHitTest.None)
+                        res = SelectAndBodyHitTest(pt, children);
+                }
+                else
+                {
+                    res = RotateHitTest(pt);
                     if (res == DHitTest.None)
                     {
-                        res = ContextHitTest(pt);
+                        res = ResizeHitTest(pt);
                         if (res == DHitTest.None)
                         {
-                            res = SelectHitTest(pt);
+                            res = ContextHitTest(pt);
                             if (res == DHitTest.None)
-                                res = BodyHitTest(pt, children);
+                                res = SelectAndBodyHitTest(pt, children);
                         }
                     }
                 }
@@ -639,6 +664,24 @@ namespace DDraw
             }
         }
 
+        protected virtual void PaintLockHandle(DGraphics dg)
+        {
+            if (contextHandle)
+            {
+                double hb = _handleBorder * _controlScale;
+                double hb2 = hb + hb;
+                DRect r = GetContextHandleRect();
+                if (hb != 0)
+                    r = r.Resize(hb, hb, -hb2, -hb2);
+                dg.FillEllipse(r, DColor.White);
+                dg.DrawEllipse(r.X, r.Y, r.Width, r.Height, DColor.Black, 1, _controlScale, DStrokeStyle.Solid);
+                double qW = r.Width / 4;
+                double qH = r.Height / 4;
+                dg.DrawLine(new DPoint(r.X + qW, r.Y + qW), new DPoint(r.X + qW * 3, r.Y + qW * 3), DColor.Red);
+                dg.DrawLine(new DPoint(r.X + qW, r.Y + qW * 3), new DPoint(r.X + qW * 3, r.Y + qW), DColor.Red);
+            }
+        }
+
         public virtual void PaintSelectionChrome(DGraphics dg)
         {
             if (Selected)
@@ -652,26 +695,31 @@ namespace DDraw
                 double selectRectY = r.Y;
                 dg.DrawRect(r.X, r.Y, r.Width, r.Height, DColor.White, 1, _controlScale);
                 dg.DrawRect(r.X, r.Y, r.Width, r.Height, DColor.Black, 1, _controlScale, DStrokeStyle.Dot, DStrokeJoin.Mitre);
-                // draw context handle
-                PaintContextHandle(dg);
-                // draw resize handle
-                double hb = _handleBorder *_controlScale;
-                double hb2 = hb + hb;
-                r = GetResizeHandleRect();
-                if (hb != 0)
-                    r = r.Resize(hb, hb, -hb2, -hb2);
-                dg.FillEllipse(r, DColor.Red);
-                dg.DrawEllipse(r.X, r.Y, r.Width, r.Height, DColor.Black, 1, _controlScale, DStrokeStyle.Solid);
-                // draw rotate handle
-                r = GetRotateHandleRect();
-                if (hb != 0)
-                    r = r.Resize(hb, hb, -hb2, -hb2);
-                DPoint p1 = r.Center;
-                DPoint p2 = new DPoint(p1.X, selectRectY);
-                dg.DrawLine(p1, p2, DColor.White, 1, DStrokeStyle.Solid, _controlScale, DStrokeCap.Butt);
-                dg.DrawLine(p1, p2, DColor.Black, 1, DStrokeStyle.Dot, _controlScale, DStrokeCap.Butt);
-                dg.FillEllipse(r, DColor.Blue);
-                dg.DrawEllipse(r.X, r.Y, r.Width, r.Height, DColor.Black, 1, _controlScale, DStrokeStyle.Solid);
+                if (Locked)
+                    PaintLockHandle(dg);
+                else
+                {
+                    // draw context handle
+                    PaintContextHandle(dg);
+                    // draw resize handle
+                    double hb = _handleBorder * _controlScale;
+                    double hb2 = hb + hb;
+                    r = GetResizeHandleRect();
+                    if (hb != 0)
+                        r = r.Resize(hb, hb, -hb2, -hb2);
+                    dg.FillEllipse(r, DColor.Red);
+                    dg.DrawEllipse(r.X, r.Y, r.Width, r.Height, DColor.Black, 1, _controlScale, DStrokeStyle.Solid);
+                    // draw rotate handle
+                    r = GetRotateHandleRect();
+                    if (hb != 0)
+                        r = r.Resize(hb, hb, -hb2, -hb2);
+                    DPoint p1 = r.Center;
+                    DPoint p2 = new DPoint(p1.X, selectRectY);
+                    dg.DrawLine(p1, p2, DColor.White, 1, DStrokeStyle.Solid, _controlScale, DStrokeCap.Butt);
+                    dg.DrawLine(p1, p2, DColor.Black, 1, DStrokeStyle.Dot, _controlScale, DStrokeCap.Butt);
+                    dg.FillEllipse(r, DColor.Blue);
+                    dg.DrawEllipse(r.X, r.Y, r.Width, r.Height, DColor.Black, 1, _controlScale, DStrokeStyle.Solid);
+                }
                 //r = GetEncompassingRect();
                 //dg.DrawRect(r.X, r.Y, r.Width, r.Height, DColor.Black, 1, Scale);
                 // load previous transform
@@ -739,6 +787,13 @@ namespace DDraw
         {
             if (selected && contextHandle && DGeom.PointInRect(pt, GetContextHandleRect()))
                 return DHitTest.Context;
+            return DHitTest.None;
+        }
+
+        public virtual DHitTest LockHitTest(DPoint pt)
+        {
+            if (selected && DGeom.PointInRect(pt, GetContextHandleRect()))
+                return DHitTest.Lock;
             return DHitTest.None;
         }
 
@@ -1240,26 +1295,31 @@ namespace DDraw
                 DMatrix m = dg.SaveTransform();
                 // apply transform
                 ApplyTransforms(dg, true);
-                // draw context handle
-                PaintContextHandle(dg);
-                // draw pt1 handle
-                double hb = _handleBorder * _controlScale;
-                double hb2 = hb + hb;
-                DRect r = GetPt1HandleRect();
-                if (hb != 0)
-                    r = r.Resize(hb, hb, -hb2, -hb2);
-                dg.FillEllipse(r.X, r.Y, r.Width, r.Height, DColor.Red, 1);
-                dg.DrawEllipse(r.X, r.Y, r.Width, r.Height, DColor.Black, 1, _controlScale, DStrokeStyle.Solid);
-                // draw pt2 handle
-                r = GetPt2HandleRect();
-                if (hb != 0)
-                    r = r.Resize(hb, hb, -hb2, -hb2);
-                dg.FillEllipse(r.X, r.Y, r.Width, r.Height, DColor.Red, 1);
-                dg.DrawEllipse(r.X, r.Y, r.Width, r.Height, DColor.Black, 1, _controlScale, DStrokeStyle.Solid);
-                // view outline
-                //dg.DrawRect(GetEncompassingRect(), DColor.Black);
-                // load previous transform
-                dg.LoadTransform(m);
+                if (Locked)
+                    PaintLockHandle(dg);
+                else
+                {
+                    // draw context handle
+                    PaintContextHandle(dg);
+                    // draw pt1 handle
+                    double hb = _handleBorder * _controlScale;
+                    double hb2 = hb + hb;
+                    DRect r = GetPt1HandleRect();
+                    if (hb != 0)
+                        r = r.Resize(hb, hb, -hb2, -hb2);
+                    dg.FillEllipse(r.X, r.Y, r.Width, r.Height, DColor.Red, 1);
+                    dg.DrawEllipse(r.X, r.Y, r.Width, r.Height, DColor.Black, 1, _controlScale, DStrokeStyle.Solid);
+                    // draw pt2 handle
+                    r = GetPt2HandleRect();
+                    if (hb != 0)
+                        r = r.Resize(hb, hb, -hb2, -hb2);
+                    dg.FillEllipse(r.X, r.Y, r.Width, r.Height, DColor.Red, 1);
+                    dg.DrawEllipse(r.X, r.Y, r.Width, r.Height, DColor.Black, 1, _controlScale, DStrokeStyle.Solid);
+                    // view outline
+                    //dg.DrawRect(GetEncompassingRect(), DColor.Black);
+                    // load previous transform
+                    dg.LoadTransform(m);
+                }
             }
         }
 
@@ -2586,38 +2646,53 @@ namespace DDraw
             originalRect = new UndoRect(boundingBox.Rect);
         }
 
+        protected DHitTest SelectAndBodyHitTest(DPoint pt, List<Figure> children, out IGlyph glyph)
+        {
+            DHitTest res = DHitTest.None;
+            glyph = null;
+            for (int i = childFigs.Count - 1; i >= 0; i--)
+            {
+                Figure f = childFigs[i];
+                res = f.HitTest(pt, children, out glyph);
+                if (res != DHitTest.None)
+                {
+                    if (children != null)
+                        children.Add(f);
+                    if (res == DHitTest.Glyph)
+                        return res;
+                    break;
+                }
+            }
+            DHitTest temp = res;
+            res = SelectHitTest(pt);
+            if (res == DHitTest.None)
+                res = temp;
+            return res;
+        }
+
         public override DHitTest HitTest(DPoint pt, List<Figure> children, out IGlyph glyph)
         {
             pt = TransformPointToFigure(pt, !Selected);
             DHitTest res = GlyphHitTest(pt, out glyph);
             if (res == DHitTest.None)
             {
-                res = RotateHitTest(pt);
-                if (res == DHitTest.None)
+                if (Locked)
                 {
-                    res = ResizeHitTest(pt);
+                    res = LockHitTest(pt);
+                    if (res == DHitTest.None)
+                        res = SelectAndBodyHitTest(pt, children, out glyph);
+                }
+                else
+                {
+                    res = RotateHitTest(pt);
                     if (res == DHitTest.None)
                     {
-                        res = ContextHitTest(pt);
+                        res = ResizeHitTest(pt);
                         if (res == DHitTest.None)
                         {
-                            for (int i = childFigs.Count - 1; i >= 0; i--)
-                            {
-                                Figure f = childFigs[i];
-                                res = f.HitTest(pt, children, out glyph);
-                                if (res != DHitTest.None)
-                                {
-                                    if (children != null)
-                                        children.Add(f);
-                                    if (res == DHitTest.Glyph)
-                                        return res;
-                                    break;
-                                }
-                            }
-                            DHitTest temp = res;
-                            res = SelectHitTest(pt);
+                            res = ContextHitTest(pt);
                             if (res == DHitTest.None)
-                                res = temp;
+                                res = SelectAndBodyHitTest(pt, children, out glyph);
                         }
                     }
                 }
