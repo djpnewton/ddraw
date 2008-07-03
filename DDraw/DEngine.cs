@@ -323,10 +323,10 @@ namespace DDraw
             get { return hsm.FigureAlwaysSnapAngle; }
             set { hsm.FigureAlwaysSnapAngle = value; }
         }
-        public bool FigureSelectAddToSelection
+        public bool FigureSelectToggleToSelection
         {
-            get { return hsm.FigureSelectAddToSelection; }
-            set { hsm.FigureSelectAddToSelection = value; }
+            get { return hsm.FigureSelectToggleToSelection; }
+            set { hsm.FigureSelectToggleToSelection = value; }
         }
         public bool FiguresDeselectOnSingleClick
         {

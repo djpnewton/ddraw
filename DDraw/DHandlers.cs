@@ -289,7 +289,7 @@ namespace DDraw
             return null;
         }
 
-        public Figure HitTestSelect(DPoint pt, out DHitTest hitTest, List<Figure> children, out IGlyph glyph, bool add)
+        public Figure HitTestSelect(DPoint pt, out DHitTest hitTest, List<Figure> children, out IGlyph glyph, bool addToggle)
         {
             Figure f = HitTestFigures(pt, out hitTest, children, out glyph);
             // update selected figures
@@ -297,9 +297,14 @@ namespace DDraw
             {
                 if (!f.Selected)
                 {
-                    if (!add)
+                    if (!addToggle)
                         ClearSelectedFiguresList();
                     AddToSelected(f);
+                    DoSelectedFiguresChanged();
+                }
+                else if (addToggle)
+                {
+                    RemoveFromSelected(f);
                     DoSelectedFiguresChanged();
                 }
             }
@@ -377,6 +382,13 @@ namespace DDraw
             f.Selected = true;
             if (!selectedFigures.Contains(f))
                 selectedFigures.Add(f);
+        }
+
+        void RemoveFromSelected(Figure f)
+        {
+            f.Selected = false;
+            if (selectedFigures.Contains(f))
+                selectedFigures.Remove(f);
         }
 
         void DoSelectedFiguresChanged()

@@ -31,7 +31,7 @@ namespace Workbook
         {
             de.FigureLockAspectRatio = e.Shift;
             de.FigureAlwaysSnapAngle = e.Shift;
-            de.FigureSelectAddToSelection = e.Shift;
+            de.FigureSelectToggleToSelection = e.Shift;
             SetKeyMovementRate(de, e);
         }
 
@@ -39,7 +39,7 @@ namespace Workbook
         {
             de.FigureLockAspectRatio = e.Shift;
             de.FigureAlwaysSnapAngle = e.Shift;
-            de.FigureSelectAddToSelection = e.Shift;
+            de.FigureSelectToggleToSelection = e.Shift;
             SetKeyMovementRate(de, e);
         }
 

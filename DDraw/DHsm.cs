@@ -162,11 +162,11 @@ namespace DDraw
             set { figureAlwaysSnapAngle = value; }
         }
 
-        bool figureSelectAddToSelection = false;
-        public bool FigureSelectAddToSelection
+        bool figureSelectToggleToSelection = false;
+        public bool FigureSelectToggleToSelection
         {
-            get { return figureSelectAddToSelection; }
-            set { figureSelectAddToSelection = value; }
+            get { return figureSelectToggleToSelection; }
+            set { figureSelectToggleToSelection = value; }
         }
 
         bool figuresDeselectOnSingleClick = true;
@@ -591,7 +591,7 @@ namespace DDraw
                 // find and select clicked figure
                 List<Figure> children = new List<Figure>();
                 IGlyph glyph;
-                Figure f = figureHandler.HitTestSelect(pt, out mouseHitTest, children, out glyph, figureSelectAddToSelection);
+                Figure f = figureHandler.HitTestSelect(pt, out mouseHitTest, children, out glyph, figureSelectToggleToSelection);
                 // update selected figures
                 if (glyph != null)
                 {
@@ -641,7 +641,7 @@ namespace DDraw
                 }
                 else
                 {
-                    if (!figureSelectAddToSelection)
+                    if (!figureSelectToggleToSelection)
                         figureHandler.ClearSelected();
                     dragPt = pt; // mouseHitTest = DHitTest.None
                     // transition
@@ -725,7 +725,7 @@ namespace DDraw
                             FigureClick(null, child, dv.EngineToClient(pt));
                     if (f.ClickEvent)
                         FigureClick(null, f, dv.EngineToClient(pt));
-                    if (FiguresDeselectOnSingleClick && !FigureSelectAddToSelection)
+                    if (FiguresDeselectOnSingleClick && !FigureSelectToggleToSelection)
                     {
                         figureHandler.SelectFigures(new List<Figure>(new Figure[] { f }), false);
                         dv.Update();
@@ -734,7 +734,7 @@ namespace DDraw
             }
             else if (btn == DMouseButton.Right)
             {
-                Figure f = figureHandler.HitTestSelect(pt, out hitTest, null, out glyph, figureSelectAddToSelection);
+                Figure f = figureHandler.HitTestSelect(pt, out hitTest, null, out glyph, figureSelectToggleToSelection);
                 dv.SetCursor(DCursor.Default);
                 dv.Update();
                 if (ContextClick != null)
@@ -1120,7 +1120,7 @@ namespace DDraw
                     foreach (Figure f in figureHandler.Figures)
                         if (DGeom.PointInRect(f.Rect.Center, figureHandler.SelectionFigure.Rect))
                             selectFigs.Add(f);
-                    figureHandler.SelectFigures(selectFigs, figureSelectAddToSelection);
+                    figureHandler.SelectFigures(selectFigs, figureSelectToggleToSelection);
                     foreach (Figure f in selectFigs)
                         updateRect2 = updateRect2.Union(GetBoundingBox(f));
                     // update drawing
