@@ -1482,7 +1482,9 @@ namespace DDraw
 
     public abstract class PolylinebaseFigure : LinebaseFigure, IPolyline
     {
-        UndoRedo<DPoints> _points = new UndoRedo<DPoints>();
+        UndoRect boundingBox = new UndoRect(new DRect());
+
+        UndoRedo<DPoints> _points = new UndoRedo<DPoints>(new DPoints());
         public DPoints Points
         {
             get { return _points.Value; }
@@ -1492,10 +1494,10 @@ namespace DDraw
                 foreach (DPoint pt in value)
                     _points.Value.Add(new DPoint(pt.X, pt.Y));
                 DRect r = _points.Value.Bounds();
-                x = r.X;
-                y = r.Y;
-                width = r.Width;
-                height = r.Height;
+                boundingBox.X = r.X;
+                boundingBox.Y = r.Y;
+                boundingBox.Width = r.Width;
+                boundingBox.Height = r.Height;
             }
         }
 
@@ -1508,13 +1510,12 @@ namespace DDraw
             Points = pts; // to set the bounds (maybe should fix this)
         }
 
-        double x;
         public override double X
         {
-            get { return x; }
+            get { return boundingBox.X; }
             set
             {
-                if (Points != null)
+                if (value != X)
                 {
                     double dX = value - X;
                     foreach (DPoint pt in Points)
@@ -1524,13 +1525,12 @@ namespace DDraw
             }
         }
 
-        double y;
         public override double Y
         {
-            get { return y; }
+            get { return boundingBox.Y; }
             set
             {
-                if (Points != null)
+                if (value != Y)
                 {
                     double dY = value - Y;
                     foreach (DPoint pt in Points)
@@ -1540,13 +1540,12 @@ namespace DDraw
             }
         }
 
-        double width;
         public override double Width
         {
-            get { return width; }
+            get { return boundingBox.Width; }
             set
             {
-                if (Points != null && Points.Count > 1)
+                if (value != Width && Points.Count > 1)
                 {
                     bool flat = true;
                     DPoint lastPt = Points[0];
@@ -1570,13 +1569,12 @@ namespace DDraw
             }
         }
 
-        double height;
         public override double Height
         {
-            get { return height; }
+            get { return boundingBox.Height; }
             set
             {
-                if (Points != null && Points.Count > 1)
+                if (value != Height && Points.Count > 1)
                 {
                     bool flat = true;
                     DPoint lastPt = Points[0];
@@ -2526,16 +2524,19 @@ namespace DDraw
             get { return boundingBox.X; }
             set
             {
-                double dX = value - X;
-                originalRect.X += dX;
-                int i = 0;
-                foreach (Figure f in childFigs)
+                if (value != X)
                 {
-                    originalChildRects[i].X += dX;
-                    f.X += dX;
-                    i += 1;
+                    double dX = value - X;
+                    originalRect.X += dX;
+                    int i = 0;
+                    foreach (Figure f in childFigs)
+                    {
+                        originalChildRects[i].X += dX;
+                        f.X += dX;
+                        i += 1;
+                    }
+                    CreateBoundingBox();
                 }
-                CreateBoundingBox();
             }
         }
 
@@ -2544,16 +2545,19 @@ namespace DDraw
             get { return boundingBox.Y; }
             set
             {
-                double dY = value - Y;
-                originalRect.Y += dY;
-                int i = 0;
-                foreach (Figure f in childFigs)
+                if (value != Y)
                 {
-                    originalChildRects[i].Y += dY;
-                    f.Y += dY;
-                    i += 1;
+                    double dY = value - Y;
+                    originalRect.Y += dY;
+                    int i = 0;
+                    foreach (Figure f in childFigs)
+                    {
+                        originalChildRects[i].Y += dY;
+                        f.Y += dY;
+                        i += 1;
+                    }
+                    CreateBoundingBox();
                 }
-                CreateBoundingBox();
             }
         }
 
@@ -2562,16 +2566,19 @@ namespace DDraw
             get { return Right - X; }
             set
             {
-                double sx = value / originalRect.Width;
-                int i = 0;
-                foreach (Figure f in childFigs)
+                if (value != Width)
                 {
-                    UndoRect ocr = originalChildRects[i];
-                    f.X = originalRect.X + (sx * (ocr.X - originalRect.X));
-                    f.Width = sx * ocr.Width;
-                    i++;
+                    double sx = value / originalRect.Width;
+                    int i = 0;
+                    foreach (Figure f in childFigs)
+                    {
+                        UndoRect ocr = originalChildRects[i];
+                        f.X = originalRect.X + (sx * (ocr.X - originalRect.X));
+                        f.Width = sx * ocr.Width;
+                        i++;
+                    }
+                    CreateBoundingBox();
                 }
-                CreateBoundingBox(); 
             }
         }
 
@@ -2580,16 +2587,19 @@ namespace DDraw
             get { return Bottom - Y; }
             set
             {
-                double sy = value / originalRect.Height;
-                int i = 0;
-                foreach (Figure f in childFigs)
+                if (value != Height)
                 {
-                    UndoRect ocr = originalChildRects[i];
-                    f.Y = originalRect.Y + (sy * (ocr.Y - originalRect.Y));
-                    f.Height = sy * ocr.Height;
-                    i++;
+                    double sy = value / originalRect.Height;
+                    int i = 0;
+                    foreach (Figure f in childFigs)
+                    {
+                        UndoRect ocr = originalChildRects[i];
+                        f.Y = originalRect.Y + (sy * (ocr.Y - originalRect.Y));
+                        f.Height = sy * ocr.Height;
+                        i++;
+                    }
+                    CreateBoundingBox();
                 }
-                CreateBoundingBox(); 
             }
         }
 
