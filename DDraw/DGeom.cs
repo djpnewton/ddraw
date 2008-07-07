@@ -4,7 +4,7 @@ using System.Text;
 
 namespace DDraw
 {
-    static class DGeom
+    public static class DGeom
     {
         public const double HalfPi = Math.PI / 2;
         public const double QuartPi = Math.PI / 4;

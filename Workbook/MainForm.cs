@@ -481,6 +481,7 @@ namespace Workbook
             // update link, lock & properties action
             actLink.Enabled = figs.Count == 1;
             actLockFigure.Enabled = figs.Count > 0;
+            actDimensions.Enabled = figs.Count > 0;
             actProperties.Enabled = figs.Count == 1;
         }
 
@@ -1385,6 +1386,42 @@ namespace Workbook
         {
             if (de.HsmState == DHsmState.Select)
                 de.SelectAll();
+        }
+
+        private void actDimensions_Execute(object sender, EventArgs e)
+        {
+            DimensionsForm df = new DimensionsForm();
+            df.Figures = de.SelectedFigures;
+            if (df.ShowDialog() == DialogResult.OK)
+            {
+                de.UndoRedoStart("Change Figure Dimensions");
+                DRect origRect = df.BoundingRect(df.Figures);
+                foreach (Figure f in df.Figures)
+                {
+                    if (df.GroupX)
+                        f.X = df.FigX;
+                    else
+                        f.X += df.FigX - origRect.X;
+                    if (df.GroupY)
+                        f.Y = df.FigY;
+                    else
+                        f.Y += df.FigY - origRect.Y;
+                    if (df.GroupWidth)
+                        f.Width = df.FigWidth;
+                    if (df.GroupHeight)
+                        f.Height = df.FigHeight;
+                    if (df.GroupRotation)
+                        f.Rotation = df.FigRotation;
+                }
+                if (df.Figures.Count == 1)
+                {
+                    df.Figures[0].Width = df.FigWidth;
+                    df.Figures[0].Height = df.FigHeight;
+                    df.Figures[0].Rotation = df.FigRotation;
+                }
+                de.UndoRedoCommit();
+                de.UpdateViewers();
+            }
         }
 
         private void actProperties_Execute(object sender, EventArgs e)
