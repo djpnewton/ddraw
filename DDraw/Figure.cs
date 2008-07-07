@@ -1490,9 +1490,7 @@ namespace DDraw
             get { return _points.Value; }
             set
             {
-                _points.Value = new DPoints();
-                foreach (DPoint pt in value)
-                    _points.Value.Add(new DPoint(pt.X, pt.Y));
+                _points.Value = value;
                 DRect r = _points.Value.Bounds();
                 boundingBox.X = r.X;
                 boundingBox.Y = r.Y;
@@ -1507,7 +1505,15 @@ namespace DDraw
             if (pts == null)
                 pts = new DPoints();
             pts.Add(pt);
-            Points = pts; // to set the bounds (maybe should fix this)
+            Points = pts;
+        }
+
+        void MovePoints(double dX, double dY)
+        {
+            DPoints newPts = new DPoints();
+            foreach (DPoint pt in Points)
+                newPts.Add(new DPoint(pt.X + dX, pt.Y + dY));
+            Points = newPts;
         }
 
         public override double X
@@ -1516,12 +1522,7 @@ namespace DDraw
             set
             {
                 if (value != X)
-                {
-                    double dX = value - X;
-                    foreach (DPoint pt in Points)
-                        pt.X += dX;
-                    Points = Points;
-                }
+                    MovePoints(value - X, 0);
             }
         }
 
@@ -1531,13 +1532,27 @@ namespace DDraw
             set
             {
                 if (value != Y)
-                {
-                    double dY = value - Y;
-                    foreach (DPoint pt in Points)
-                        pt.Y += dY;
-                    Points = Points;
-                }
+                    MovePoints(0, value - Y);
             }
+        }
+
+        void ResizePoints(double sX, double sY)
+        {
+            DPoints newPts = new DPoints();
+            foreach (DPoint pt in Points)
+            {
+                DPoint newPt = new DPoint(0, 0);
+                if (sX == 1)
+                    newPt.X = pt.X;
+                else
+                    newPt.X = pt.X + (pt.X - X) * (sX - 1);
+                if (sY == 1)
+                    newPt.Y = pt.Y;
+                else
+                    newPt.Y = pt.Y + (pt.Y - Y) * (sY - 1);
+                newPts.Add(newPt);
+            }
+            Points = newPts;
         }
 
         public override double Width
@@ -1559,12 +1574,7 @@ namespace DDraw
                         lastPt = pt;
                     }
                     if (!flat)
-                    {
-                        double scale = value / Width;
-                        foreach (DPoint pt in Points)
-                            pt.X += (pt.X - X) * (scale - 1);
-                        Points = Points;
-                    }
+                        ResizePoints(value / Width, 1);
                 }
             }
         }
@@ -1588,12 +1598,7 @@ namespace DDraw
                         lastPt = pt;
                     }
                     if (!flat)
-                    {
-                        double scale = value / Height;
-                        foreach (DPoint pt in Points)
-                            pt.Y += (pt.Y - Y) * (scale - 1);
-                        Points = Points;
-                    }
+                        ResizePoints(1, value / Height);
                 }
             }
         }
