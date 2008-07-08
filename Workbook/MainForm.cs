@@ -36,8 +36,9 @@ namespace Workbook
         Ipc ipc = Ipc.GlobalIpc;
 
         const string ProgramName = "Workbook";
-        const string FileExt = ".ddraw";
-        const string FileTypeFilter = "DDraw files|*.ddraw";
+        const string FileExt = ".wbook";
+        const string OpenFileTypeFilter = "Workbook files|*.ddraw;*.wbook";
+        const string SaveFileTypeFilter = "Workbook files|*.wbook";
 
         public PersonalToolStrip PersonalToolStrip
         {
@@ -1024,7 +1025,7 @@ namespace Workbook
         {
             OpenFileDialog ofd = new OpenFileDialog();
             ofd.DefaultExt = FileExt;
-            ofd.Filter = FileTypeFilter;
+            ofd.Filter = OpenFileTypeFilter;
             if (ofd.ShowDialog() == DialogResult.OK)
                 OpenFile(ofd.FileName);
         }
@@ -1064,7 +1065,7 @@ namespace Workbook
         {
             SaveFileDialog sfd = new SaveFileDialog();
             sfd.DefaultExt = FileExt;
-            sfd.Filter = FileTypeFilter;
+            sfd.Filter = SaveFileTypeFilter;
             sfd.FileName = fileName;
             if (sfd.ShowDialog() == DialogResult.OK)
             {
