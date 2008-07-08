@@ -113,11 +113,11 @@ namespace Workbook.PersonalToolbar
         }
         public bool ShowLabel
         {
-            get { return DisplayStyle == ToolStripItemDisplayStyle.Text; }
+            get { return DisplayStyle == ToolStripItemDisplayStyle.ImageAndText; }
             set
             {
                 if (value)
-                    DisplayStyle = ToolStripItemDisplayStyle.Text;
+                    DisplayStyle = ToolStripItemDisplayStyle.ImageAndText;
                 else
                     DisplayStyle = ToolStripItemDisplayStyle.Image;
             }

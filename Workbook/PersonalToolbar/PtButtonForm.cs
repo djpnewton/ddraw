@@ -131,8 +131,8 @@ namespace Workbook.PersonalToolbar
                 default:
                     if (tsCustomFigureProps.Dap == null)
                     {
+                        tsCustomFigureProps.Dap = new DAuthorProperties();
                         tsCustomFigureType.FigureClass = typeof(PolylineFigure);
-                        tsCustomFigureProps.Dap = tsCustomFigureType.Dap.Clone();
                         tsCustomFigureProps.FigureClass = typeof(PolylineFigure);
                         tsCustomFigureProps.Dap.PropertyChanged += new AuthorPropertyChanged(Dap_PropertyChanged);
                     }

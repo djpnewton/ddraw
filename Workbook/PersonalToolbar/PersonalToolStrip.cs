@@ -87,6 +87,7 @@ namespace Workbook.PersonalToolbar
                     item.Click += delegate(object s, EventArgs e2)
                     {
                         PtButtonForm pf = new PtButtonForm();
+                        pf.SetupToolButtonEdit();
                         if (tsItem is CustomFigureToolButton)
                             pf.PersonalTool = ((CustomFigureToolButton)tsItem).CustomFigure;
                         else if (tsItem is RunCmdToolButton)
