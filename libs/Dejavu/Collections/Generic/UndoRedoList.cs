@@ -280,7 +280,14 @@ namespace DejaVu.Collections.Generic
         // Removes all elements from the System.Collections.Generic.List<T>.
         public void Clear()
         {
-            Enlist(false);
+            UndoRedoArea.AssertCommand();
+            Command command = UndoRedoArea.CurrentArea.CurrentCommand;
+            if (!command.IsEnlisted(this))
+            {
+                Enlist(false);
+            }
+            else
+                list.Clear();
         }
         //
         ///<summary>

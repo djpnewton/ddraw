@@ -2536,7 +2536,9 @@ namespace DDraw
                     int i = 0;
                     foreach (Figure f in childFigs)
                     {
-                        originalChildRects[i].X += dX;
+                        DRect r = originalChildRects[i];
+                        r.X += dX;
+                        originalChildRects[i] = r;
                         f.X += dX;
                         i += 1;
                     }
@@ -2557,7 +2559,9 @@ namespace DDraw
                     int i = 0;
                     foreach (Figure f in childFigs)
                     {
-                        originalChildRects[i].Y += dY;
+                        DRect r = originalChildRects[i];
+                        r.Y += dY;
+                        originalChildRects[i] = r;
                         f.Y += dY;
                         i += 1;
                     }
@@ -2568,7 +2572,7 @@ namespace DDraw
 
         public override double Width
         {
-            get { return Right - X; }
+            get { return boundingBox.Width; }
             set
             {
                 if (value != Width)
@@ -2577,7 +2581,7 @@ namespace DDraw
                     int i = 0;
                     foreach (Figure f in childFigs)
                     {
-                        UndoRect ocr = originalChildRects[i];
+                        DRect ocr = originalChildRects[i];
                         f.X = originalRect.X + (sx * (ocr.X - originalRect.X));
                         f.Width = sx * ocr.Width;
                         i++;
@@ -2589,7 +2593,7 @@ namespace DDraw
 
         public override double Height
         {
-            get { return Bottom - Y; }
+            get { return boundingBox.Height; }
             set
             {
                 if (value != Height)
@@ -2598,7 +2602,7 @@ namespace DDraw
                     int i = 0;
                     foreach (Figure f in childFigs)
                     {
-                        UndoRect ocr = originalChildRects[i];
+                        DRect ocr = originalChildRects[i];
                         f.Y = originalRect.Y + (sy * (ocr.Y - originalRect.Y));
                         f.Height = sy * ocr.Height;
                         i++;
@@ -2636,8 +2640,8 @@ namespace DDraw
             }
         }
 
-        UndoRect[] originalChildRects;
-        UndoRect originalRect;
+        UndoRedoList<DRect> originalChildRects = new UndoRedoList<DRect>();
+        UndoRect originalRect = new UndoRect(new DRect());
         UndoRect boundingBox = new UndoRect(new DRect());
 
         public GroupFigure() : this(new List<Figure>())
@@ -2658,15 +2662,11 @@ namespace DDraw
 
         void CreateOriginalRects()
         {
-            originalChildRects = new UndoRect[childFigs.Count];
-            int i = 0;
+            originalChildRects.Clear();
             foreach (Figure f in childFigs)
-            {
-                originalChildRects[i] = new UndoRect(f.Rect);
-                i++;
-            }
+                originalChildRects.Add(f.Rect);
             CreateBoundingBox();
-            originalRect = new UndoRect(boundingBox.Rect);
+            originalRect.Rect = boundingBox.Rect;
         }
 
         protected DHitTest SelectAndBodyHitTest(DPoint pt, List<Figure> children, out IGlyph glyph)
