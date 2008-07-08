@@ -134,9 +134,8 @@ namespace Workbook.PersonalToolbar
                 listView1.SelectedIndices.Clear();
                 if (idx < listView1.Items.Count)
                     listView1.SelectedIndices.Add(idx);
-                else
+                else if (listView1.Items.Count > 0)
                     listView1.SelectedIndices.Add(listView1.Items.Count - 1);
-
             }
         }
 
