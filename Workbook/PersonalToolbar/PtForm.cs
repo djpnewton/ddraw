@@ -23,12 +23,12 @@ namespace Workbook.PersonalToolbar
             }
         }
 
-        public IEnumerable<object> ToolItems
+        public IEnumerable<PersonalTool> ToolItems
         {
             get
             {
                 foreach (ListViewItem o in listView1.Items)
-                    yield return o.Tag;
+                    yield return (PersonalTool)o.Tag;
             }
         }
 
@@ -45,10 +45,10 @@ namespace Workbook.PersonalToolbar
             imageList1.Images.Add(WebLinkImage, Resource1.world_link);
         }
 
-        ListViewItem CreateListViewItem(object item)
+        ListViewItem CreateListViewItem(PersonalTool item)
         {
             ListViewItem li = new ListViewItem();
-            if (item is CustomFigureT || item is RunCmdT || item is ShowDirT || item is WebLinkT)
+            if (item is CustomFigureTool || item is RunCmdTool || item is ShowDirTool || item is WebLinkTool)
             {
                 li.Tag = item;
                 li.Text = li.Tag.ToString();
@@ -59,27 +59,27 @@ namespace Workbook.PersonalToolbar
 
         void SetImage(ListViewItem li)
         {
-            if (li.Tag is CustomFigureT)
+            if (li.Tag is CustomFigureTool)
             {
-                imageList1.Images.Add(WorkBookUtils.Base64ToBitmap(((CustomFigureT)li.Tag).Base64Icon));
+                imageList1.Images.Add(WorkBookUtils.Base64ToBitmap(((CustomFigureTool)li.Tag).Base64Icon));
                 li.ImageIndex = imageList1.Images.Count - 1;
             }
-            else if (li.Tag is RunCmdT)
+            else if (li.Tag is RunCmdTool)
                 li.ImageKey = RunCmdImage;
-            else if (li.Tag is ShowDirT)
+            else if (li.Tag is ShowDirTool)
                 li.ImageKey = ShowDirImage;
-            else if (li.Tag is WebLinkT)
+            else if (li.Tag is WebLinkTool)
                 li.ImageKey = WebLinkImage;
         }
 
-        void AddToListView(object item, int idx)
+        void AddToListView(PersonalTool item, int idx)
         {
             ListViewItem li = CreateListViewItem(item);
             SetImage(li);
             listView1.Items.Insert(idx, li);
         }
 
-        void AddToListView(object item)
+        void AddToListView(PersonalTool item)
         {
             AddToListView(item, listView1.Items.Count);
         }
@@ -90,21 +90,23 @@ namespace Workbook.PersonalToolbar
             for (int i = 1; i < personalToolStrip.Items.Count; i++)
             {
                 if (personalToolStrip.Items[i] is CustomFigureToolButton)
-                    AddToListView(((CustomFigureToolButton)personalToolStrip.Items[i]).CustomFigureT);
+                    AddToListView(((CustomFigureToolButton)personalToolStrip.Items[i]).CustomFigure);
                 else if (personalToolStrip.Items[i] is RunCmdToolButton)
-                    AddToListView(((RunCmdToolButton)personalToolStrip.Items[i]).RunCmdT);
+                    AddToListView(((RunCmdToolButton)personalToolStrip.Items[i]).RunCmd);
                 else if (personalToolStrip.Items[i] is ShowDirToolButton)
-                    AddToListView(((ShowDirToolButton)personalToolStrip.Items[i]).ShowDirT);
+                    AddToListView(((ShowDirToolButton)personalToolStrip.Items[i]).ShowDir);
+                else if (personalToolStrip.Items[i] is WebLinkToolButton)
+                    AddToListView(((WebLinkToolButton)personalToolStrip.Items[i]).WebLink);
             }
         }
 
         private void btnAdd_Click(object sender, EventArgs e)
         {
             PtButtonForm pf = new PtButtonForm();
-            pf.ToolButtonData = new CustomFigureT(typeof(PolylineFigure), new DAuthorProperties(), null);
+            pf.PersonalTool = new CustomFigureTool(null, false, typeof(PolylineFigure), new DAuthorProperties(), null);
             if (pf.ShowDialog() == DialogResult.OK)
             {
-                AddToListView(pf.ToolButtonData);
+                AddToListView(pf.PersonalTool);
                 listView1.SelectedIndices.Clear();
                 listView1.SelectedIndices.Add(listView1.Items.Count - 1);
             }
@@ -115,10 +117,10 @@ namespace Workbook.PersonalToolbar
             if (listView1.SelectedItems.Count == 1)
             {
                 PtButtonForm pf = new PtButtonForm();
-                pf.ToolButtonData = listView1.SelectedItems[0].Tag;
+                pf.PersonalTool = (PersonalTool)listView1.SelectedItems[0].Tag;
                 if (pf.ShowDialog() == DialogResult.OK)
                 {
-                    ListViewItem li = CreateListViewItem(pf.ToolButtonData);
+                    ListViewItem li = CreateListViewItem(pf.PersonalTool);
                     SetImage(li);
                     listView1.Items[listView1.SelectedIndices[0]] = li;
                 }

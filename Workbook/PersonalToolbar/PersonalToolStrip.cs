@@ -40,16 +40,16 @@ namespace Workbook.PersonalToolbar
                 if (pf.ShowDialog() == DialogResult.OK)
                 {
                     Clear();
-                    foreach (object o in pf.ToolItems)
+                    foreach (PersonalTool pt in pf.ToolItems)
                     {
-                        if (o is CustomFigureT)
-                            Items.Add(new CustomFigureToolButton((CustomFigureT)o));
-                        else if (o is RunCmdT)
-                            Items.Add(new RunCmdToolButton((RunCmdT)o));
-                        else if (o is ShowDirT)
-                            Items.Add(new ShowDirToolButton((ShowDirT)o));
-                        else if (o is WebLinkT)
-                            Items.Add(new WebLinkToolButton((WebLinkT)o));
+                        if (pt is CustomFigureTool)
+                            Items.Add(new CustomFigureToolButton((CustomFigureTool)pt));
+                        else if (pt is RunCmdTool)
+                            Items.Add(new RunCmdToolButton((RunCmdTool)pt));
+                        else if (pt is ShowDirTool)
+                            Items.Add(new ShowDirToolButton((ShowDirTool)pt));
+                        else if (pt is WebLinkTool)
+                            Items.Add(new WebLinkToolButton((WebLinkTool)pt));
                     }
                 }
             }
@@ -88,24 +88,24 @@ namespace Workbook.PersonalToolbar
                     {
                         PtButtonForm pf = new PtButtonForm();
                         if (tsItem is CustomFigureToolButton)
-                            pf.ToolButtonData = ((CustomFigureToolButton)tsItem).CustomFigureT;
+                            pf.PersonalTool = ((CustomFigureToolButton)tsItem).CustomFigure;
                         else if (tsItem is RunCmdToolButton)
-                            pf.ToolButtonData = ((RunCmdToolButton)tsItem).RunCmdT;
+                            pf.PersonalTool = ((RunCmdToolButton)tsItem).RunCmd;
                         else if (tsItem is ShowDirToolButton)
-                            pf.ToolButtonData = ((ShowDirToolButton)tsItem).ShowDirT;
+                            pf.PersonalTool = ((ShowDirToolButton)tsItem).ShowDir;
                         else if (tsItem is WebLinkToolButton)
-                            pf.ToolButtonData = ((WebLinkToolButton)tsItem).WebLinkT;
+                            pf.PersonalTool = ((WebLinkToolButton)tsItem).WebLink;
                         if (pf.ShowDialog() == DialogResult.OK)
                         {
                             ToolStripItem newTsItem = null;
-                            if (pf.ToolButtonData is CustomFigureT)
-                                newTsItem = new CustomFigureToolButton((CustomFigureT)pf.ToolButtonData);
-                            else if (pf.ToolButtonData is RunCmdT)
-                                newTsItem = new RunCmdToolButton((RunCmdT)pf.ToolButtonData);
-                            else if (pf.ToolButtonData is ShowDirT)
-                                newTsItem = new ShowDirToolButton((ShowDirT)pf.ToolButtonData);
-                            else if (pf.ToolButtonData is WebLinkT)
-                                newTsItem = new WebLinkToolButton((WebLinkT)pf.ToolButtonData);
+                            if (pf.PersonalTool is CustomFigureTool)
+                                newTsItem = new CustomFigureToolButton((CustomFigureTool)pf.PersonalTool);
+                            else if (pf.PersonalTool is RunCmdTool)
+                                newTsItem = new RunCmdToolButton((RunCmdTool)pf.PersonalTool);
+                            else if (pf.PersonalTool is ShowDirTool)
+                                newTsItem = new ShowDirToolButton((ShowDirTool)pf.PersonalTool);
+                            else if (pf.PersonalTool is WebLinkTool)
+                                newTsItem = new WebLinkToolButton((WebLinkTool)pf.PersonalTool);
                             Items.Insert(Items.IndexOf(tsItem), newTsItem);
                             Items.Remove(tsItem);
                             // click it
@@ -129,7 +129,7 @@ namespace Workbook.PersonalToolbar
                 Items.RemoveAt(i);
         }
 
-        public void AddCustomFigure(CustomFigureT customFigure)
+        public void AddCustomFigure(CustomFigureTool customFigure)
         {
             Items.Add(new CustomFigureToolButton(customFigure));
         }

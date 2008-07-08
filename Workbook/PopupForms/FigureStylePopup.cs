@@ -9,7 +9,7 @@ using DDraw.WinForms;
 
 namespace Workbook
 {
-    public delegate void FigureStyleEvent(object sender, PersonalToolbar.CustomFigureT customFigure);
+    public delegate void FigureStyleEvent(object sender, PersonalToolbar.CustomFigureTool customFigure);
 
     public class FigureStylePopup : PopupForm
     {
@@ -63,13 +63,13 @@ namespace Workbook
             tmrShown.Stop();
 
             PersonalToolbar.PtButtonForm f = new PersonalToolbar.PtButtonForm();
-            f.ToolButtonData = new PersonalToolbar.CustomFigureT(figureClass, dap.Clone(), null);
+            f.PersonalTool = new PersonalToolbar.CustomFigureTool(null, false, figureClass, dap.Clone(), null);
             f.SetupToolEdit();
             if (f.ShowDialog() == DialogResult.OK)
             {
-                dap.SetProperties(((PersonalToolbar.CustomFigureT)f.ToolButtonData).Dap);
+                dap.SetProperties(((PersonalToolbar.CustomFigureTool)f.PersonalTool).Dap);
                 if (f.ToolEditAddToPersonal && AddToPersonalTools != null)
-                    AddToPersonalTools(this, (PersonalToolbar.CustomFigureT)f.ToolButtonData);
+                    AddToPersonalTools(this, (PersonalToolbar.CustomFigureTool)f.PersonalTool);
             }
 
             Close();

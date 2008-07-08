@@ -14,12 +14,24 @@ namespace Workbook.PersonalToolbar
 
     public enum PersonalToolButtonType { CustomFigure, RunCmd, ShowDir, WebLink };
 
-    public struct RunCmdT
+    public abstract class PersonalTool
+    {
+        public string Label;
+        public bool ShowLabel;
+
+        public PersonalTool(string label, bool showLabel)
+        {
+            Label = label;
+            ShowLabel = showLabel;
+        }
+    }
+
+    public class RunCmdTool : PersonalTool
     {
         public string Command;
         public string Arguments;
 
-        public RunCmdT(string cmd, string args)
+        public RunCmdTool(string label, bool showLabel, string cmd, string args) : base(label, showLabel)
         {
             Command = cmd;
             Arguments = args;
@@ -27,47 +39,56 @@ namespace Workbook.PersonalToolbar
 
         public override string ToString()
         {
-            return string.Concat("Run Command: \"", Path.GetFileName(Command), "\"");
+            if (ShowLabel)
+                return Label;
+            else
+                return string.Concat("Run Command: \"", Path.GetFileName(Command), "\"");
         }
     }
 
-    public struct ShowDirT
+    public class ShowDirTool : PersonalTool
     {
         public string Dir;
 
-        public ShowDirT(string dir)
+        public ShowDirTool(string label, bool showLabel, string dir) : base(label, showLabel)
         {
             Dir = dir;
         }
 
         public override string ToString()
         {
-            return string.Concat("Open Directory: \"", Dir, "\"");
+            if (ShowLabel)
+                return Label;
+            else
+                return string.Concat("Open Directory: \"", Dir, "\"");
         }
     }
 
-    public struct WebLinkT
+    public class WebLinkTool : PersonalTool
     {
         public string Link;
 
-        public WebLinkT(string link)
+        public WebLinkTool(string label, bool showLabel, string link) : base(label, showLabel)
         {
             Link = link;
         }
 
         public override string ToString()
         {
-            return string.Concat("Open Link: \"", Link, "\"");
+            if (ShowLabel)
+                return Label;
+            else
+                return string.Concat("Open Link: \"", Link, "\"");
         }
     }
 
-    public struct CustomFigureT
+    public class CustomFigureTool : PersonalTool
     {
         public Type FigureClass;
         public DAuthorProperties Dap;
         public string Base64Icon;
 
-        public CustomFigureT(Type figureClass, DAuthorProperties dap, string base64Icon)
+        public CustomFigureTool(string label, bool showLabel, Type figureClass, DAuthorProperties dap, string base64Icon) : base(label, showLabel)
         {
             FigureClass = figureClass;
             Dap = dap;
@@ -83,7 +104,33 @@ namespace Workbook.PersonalToolbar
         }
     }
 
-    public class RunCmdToolButton : ToolStripButton
+    public abstract class PersonalToolButton : ToolStripButton
+    {
+        public string Label
+        {
+            get { return Text; }
+            set { Text = value; }
+        }
+        public bool ShowLabel
+        {
+            get { return DisplayStyle == ToolStripItemDisplayStyle.Text; }
+            set
+            {
+                if (value)
+                    DisplayStyle = ToolStripItemDisplayStyle.Text;
+                else
+                    DisplayStyle = ToolStripItemDisplayStyle.Image;
+            }
+        }
+
+        public PersonalToolButton(PersonalTool t)
+        {
+            Label = t.Label;
+            ShowLabel = t.ShowLabel;
+        }
+    }
+
+    public class RunCmdToolButton : PersonalToolButton
     {
         string cmd;
         public string Cmd
@@ -103,18 +150,14 @@ namespace Workbook.PersonalToolbar
             set { args = value; }
         }
 
-        public RunCmdT RunCmdT
+        public RunCmdTool RunCmd
         {
-            get { return new RunCmdT(cmd, args); }
+            get { return new RunCmdTool(Label, ShowLabel, cmd, args); }
         }
 
-        public RunCmdToolButton()
+        public RunCmdToolButton(RunCmdTool t) : base(t)
         {
             Image = Resource1.cog;
-        }
-
-        public RunCmdToolButton(RunCmdT t) : this()
-        {
             Cmd = t.Command;
             Arguments = t.Arguments;
         }
@@ -127,7 +170,7 @@ namespace Workbook.PersonalToolbar
         }
     }
 
-    public class ShowDirToolButton : ToolStripButton
+    public class ShowDirToolButton : PersonalToolButton
     {
         string dir;
         public string Dir
@@ -140,18 +183,14 @@ namespace Workbook.PersonalToolbar
             }
         }
 
-        public ShowDirT ShowDirT
+        public ShowDirTool ShowDir
         {
-            get { return new ShowDirT(dir); }
+            get { return new ShowDirTool(Label, ShowLabel, dir); }
         }
 
-        public ShowDirToolButton()
+        public ShowDirToolButton(ShowDirTool t) : base(t)
         {
             Image = Resource1.folder;
-        }
-
-        public ShowDirToolButton(ShowDirT t) : this()
-        {
             Dir = t.Dir;
         }
 
@@ -163,7 +202,7 @@ namespace Workbook.PersonalToolbar
         }
     }
 
-    public class WebLinkToolButton : ToolStripButton
+    public class WebLinkToolButton : PersonalToolButton
     {
         string link;
         public string Link
@@ -176,19 +215,14 @@ namespace Workbook.PersonalToolbar
             }
         }
 
-        public WebLinkT WebLinkT
+        public WebLinkTool WebLink
         {
-            get { return new WebLinkT(link); }
+            get { return new WebLinkTool(Label, ShowLabel, link); }
         }
 
-        public WebLinkToolButton()
+        public WebLinkToolButton(WebLinkTool t) : base(t)
         {
             Image = Resource1.world_link;
-        }
-
-        public WebLinkToolButton(WebLinkT t)
-            : this()
-        {
             Link = t.Link;
         }
 
@@ -205,7 +239,7 @@ namespace Workbook.PersonalToolbar
         }
     }
 
-    public class CustomFigureToolButton : ToolStripButton
+    public class CustomFigureToolButton : PersonalToolButton
     {
         Type figureClass = null;
         public Type FigureClass
@@ -214,7 +248,7 @@ namespace Workbook.PersonalToolbar
             set
             {
                 figureClass = value;
-                ToolTipText = CustomFigureT.ToString();
+                ToolTipText = CustomFigure.ToString();
             }
         }
 
@@ -225,18 +259,14 @@ namespace Workbook.PersonalToolbar
             set { dap = value; }
         }
 
-        public CustomFigureT CustomFigureT
+        public CustomFigureTool CustomFigure
         {
-            get { return new CustomFigureT(figureClass, dap, WorkBookUtils.BitmapToBase64((Bitmap)Image)); }
+            get { return new CustomFigureTool(Label, ShowLabel, figureClass, dap, WorkBookUtils.BitmapToBase64((Bitmap)Image)); }
         }
 
-        public CustomFigureToolButton()
+        public CustomFigureToolButton(CustomFigureTool t) : base(t)
         {
             Image = Resource1.technocolor;
-        }
-
-        public CustomFigureToolButton(CustomFigureT t) : this()
-        {
             FigureClass = t.FigureClass;
             Dap = t.Dap;
             if (t.Base64Icon != null)
@@ -267,6 +297,8 @@ namespace Workbook.PersonalToolbar
     {
         const string _INIFILE = "PersonalToolbar.ini";
         const string TYPE_OPT = "Type";
+        const string LABEL_OPT = "Label";
+        const string SHOWLABEL_OPT = "ShowLabel";
         const string FIGURECLASS_OPT = "FigureClass";
         const string BASE64ICON_OPT = "base64Icon";
         const string RUNCMD_OPT = "RunCmd";
@@ -291,6 +323,8 @@ namespace Workbook.PersonalToolbar
                 {
                     PersonalToolButtonType type = (PersonalToolButtonType)Enum.Parse(
                         typeof(PersonalToolButtonType), config.Get(TYPE_OPT), true);
+                    string label = config.Get(LABEL_OPT, "");
+                    bool showLabel = config.GetBoolean(SHOWLABEL_OPT, false);
                     switch (type)
                     {
                         case PersonalToolButtonType.CustomFigure:
@@ -300,18 +334,18 @@ namespace Workbook.PersonalToolbar
                                 DAuthorProperties dap = new DAuthorProperties();
                                 WorkBookUtils.ReadConfigToDap(config, dap);
                                 string base64Icon = config.Get(BASE64ICON_OPT);
-                                ts.Items.Add(new CustomFigureToolButton(new CustomFigureT(figureClass, dap, base64Icon)));
+                                ts.Items.Add(new CustomFigureToolButton(new CustomFigureTool(label, showLabel, figureClass, dap, base64Icon)));
                             }
                             break;
                         case PersonalToolButtonType.RunCmd:
-                            ts.Items.Add(new RunCmdToolButton(new RunCmdT(config.Get(RUNCMD_OPT),
+                            ts.Items.Add(new RunCmdToolButton(new RunCmdTool(label, showLabel, config.Get(RUNCMD_OPT),
                                 config.Get(ARGS_OPT))));
                             break;
                         case PersonalToolButtonType.ShowDir:
-                            ts.Items.Add(new ShowDirToolButton(new ShowDirT(config.Get(DIR_OPT))));
+                            ts.Items.Add(new ShowDirToolButton(new ShowDirTool(label, showLabel, config.Get(DIR_OPT))));
                             break;
                         case PersonalToolButtonType.WebLink:
-                            ts.Items.Add(new WebLinkToolButton(new WebLinkT(config.Get(WEBLINK_OPT))));
+                            ts.Items.Add(new WebLinkToolButton(new WebLinkTool(label, showLabel, config.Get(WEBLINK_OPT))));
                             break;
                     }
                 }
@@ -334,40 +368,45 @@ namespace Workbook.PersonalToolbar
             {
                 IConfig config = source.AddConfig(i.ToString());
                 ToolStripItem b = ts.Items[i];
-                if (b is CustomFigureToolButton)
+                if (b is PersonalToolButton)
                 {
-                    CustomFigureT t = ((CustomFigureToolButton)b).CustomFigureT;
-                    config.Set(TYPE_OPT, PersonalToolButtonType.CustomFigure);
-                    config.Set(FIGURECLASS_OPT, t.FigureClass.AssemblyQualifiedName);
-                    WorkBookUtils.WriteDapToConfig(t.Dap, config);
-                    config.Set(BASE64ICON_OPT, t.Base64Icon);
-                }
-                else if (b is RunCmdToolButton)
-                {
-                    RunCmdT t = ((RunCmdToolButton)b).RunCmdT;
-                    if (t.Command != null && t.Arguments != null)
+                    config.Set(LABEL_OPT, ((PersonalToolButton)b).Label);
+                    config.Set(SHOWLABEL_OPT, ((PersonalToolButton)b).ShowLabel);
+                    if (b is CustomFigureToolButton)
                     {
-                        config.Set(TYPE_OPT, PersonalToolButtonType.RunCmd);
-                        config.Set(RUNCMD_OPT, ((RunCmdToolButton)b).RunCmdT.Command);
-                        config.Set(ARGS_OPT, ((RunCmdToolButton)b).RunCmdT.Arguments);
+                        CustomFigureTool t = ((CustomFigureToolButton)b).CustomFigure;
+                        config.Set(TYPE_OPT, PersonalToolButtonType.CustomFigure);
+                        config.Set(FIGURECLASS_OPT, t.FigureClass.AssemblyQualifiedName);
+                        WorkBookUtils.WriteDapToConfig(t.Dap, config);
+                        config.Set(BASE64ICON_OPT, t.Base64Icon);
                     }
-                }
-                else if (b is ShowDirToolButton)
-                {
-                    ShowDirT t = ((ShowDirToolButton)b).ShowDirT;
-                    if (t.Dir != null)
+                    else if (b is RunCmdToolButton)
                     {
-                        config.Set(TYPE_OPT, PersonalToolButtonType.ShowDir);
-                        config.Set(DIR_OPT, (t.Dir));
+                        RunCmdTool t = ((RunCmdToolButton)b).RunCmd;
+                        if (t.Command != null && t.Arguments != null)
+                        {
+                            config.Set(TYPE_OPT, PersonalToolButtonType.RunCmd);
+                            config.Set(RUNCMD_OPT, t.Command);
+                            config.Set(ARGS_OPT, t.Arguments);
+                        }
                     }
-                }
-                else if (b is WebLinkToolButton)
-                {
-                    WebLinkT t = ((WebLinkToolButton)b).WebLinkT;
-                    if (t.Link != null)
+                    else if (b is ShowDirToolButton)
                     {
-                        config.Set(TYPE_OPT, PersonalToolButtonType.WebLink);
-                        config.Set(WEBLINK_OPT, (t.Link));
+                        ShowDirTool t = ((ShowDirToolButton)b).ShowDir;
+                        if (t.Dir != null)
+                        {
+                            config.Set(TYPE_OPT, PersonalToolButtonType.ShowDir);
+                            config.Set(DIR_OPT, t.Dir);
+                        }
+                    }
+                    else if (b is WebLinkToolButton)
+                    {
+                        WebLinkTool t = ((WebLinkToolButton)b).WebLink;
+                        if (t.Link != null)
+                        {
+                            config.Set(TYPE_OPT, PersonalToolButtonType.WebLink);
+                            config.Set(WEBLINK_OPT, t.Link);
+                        }
                     }
                 }
             }

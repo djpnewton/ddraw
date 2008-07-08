@@ -1432,11 +1432,11 @@ namespace Workbook
                 Figure fig = de.SelectedFigures[0];
                 PtButtonForm f = new PtButtonForm();
                 f.SetupFigureEdit();
-                f.ToolButtonData = new CustomFigureT(fig.GetType(), DAuthorProperties.FromFigure(fig), null);
+                f.PersonalTool = new CustomFigureTool(null, false, fig.GetType(), DAuthorProperties.FromFigure(fig), null);
                 if (f.ShowDialog() == DialogResult.OK)
                 {
                     de.UndoRedoStart("Change Properties");
-                    ((CustomFigureT)f.ToolButtonData).Dap.ApplyPropertiesToFigure(fig);
+                    ((CustomFigureTool)f.PersonalTool).Dap.ApplyPropertiesToFigure(fig);
                     de.UndoRedoCommit();
                     de.UpdateViewers();
                 }
@@ -1750,7 +1750,7 @@ namespace Workbook
             dvEditor.Update();
         }
 
-        private void tsEngineState_AddToPersonalTools(object sender, PersonalToolbar.CustomFigureT customFigure)
+        private void tsEngineState_AddToPersonalTools(object sender, PersonalToolbar.CustomFigureTool customFigure)
         {
             tsPersonal.AddCustomFigure(customFigure);
         }

@@ -52,18 +52,23 @@ namespace Workbook.PersonalToolbar
             this.lbWebLink = new System.Windows.Forms.Label();
             this.tbUrl = new System.Windows.Forms.TextBox();
             this.cbToolEditAddToPersonal = new System.Windows.Forms.CheckBox();
+            this.pnlLabel = new System.Windows.Forms.Panel();
+            this.cbLabel = new System.Windows.Forms.CheckBox();
+            this.tbLabel = new System.Windows.Forms.TextBox();
+            this.lbLabel = new System.Windows.Forms.Label();
             this.pnlRunCmd.SuspendLayout();
             this.pnlShowDir.SuspendLayout();
             this.pnlCustomFigure.SuspendLayout();
             this.panel2.SuspendLayout();
             this.toolStripPanel1.SuspendLayout();
             this.pnlWebLink.SuspendLayout();
+            this.pnlLabel.SuspendLayout();
             this.SuspendLayout();
             // 
             // panel1
             // 
             this.panel1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.panel1.Location = new System.Drawing.Point(12, 100);
+            this.panel1.Location = new System.Drawing.Point(11, 126);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(464, 4);
             this.panel1.TabIndex = 9;
@@ -71,7 +76,7 @@ namespace Workbook.PersonalToolbar
             // btnCancel
             // 
             this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.btnCancel.Location = new System.Drawing.Point(401, 110);
+            this.btnCancel.Location = new System.Drawing.Point(400, 136);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(75, 23);
             this.btnCancel.TabIndex = 8;
@@ -81,7 +86,7 @@ namespace Workbook.PersonalToolbar
             // btnOk
             // 
             this.btnOk.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.btnOk.Location = new System.Drawing.Point(320, 110);
+            this.btnOk.Location = new System.Drawing.Point(319, 136);
             this.btnOk.Name = "btnOk";
             this.btnOk.Size = new System.Drawing.Size(75, 23);
             this.btnOk.TabIndex = 7;
@@ -178,9 +183,9 @@ namespace Workbook.PersonalToolbar
             // 
             // tbDir
             // 
-            this.tbDir.Location = new System.Drawing.Point(61, 5);
+            this.tbDir.Location = new System.Drawing.Point(89, 5);
             this.tbDir.Name = "tbDir";
-            this.tbDir.Size = new System.Drawing.Size(322, 20);
+            this.tbDir.Size = new System.Drawing.Size(294, 20);
             this.tbDir.TabIndex = 13;
             // 
             // btnDirBrowse
@@ -275,9 +280,9 @@ namespace Workbook.PersonalToolbar
             // 
             // tbUrl
             // 
-            this.tbUrl.Location = new System.Drawing.Point(39, 5);
+            this.tbUrl.Location = new System.Drawing.Point(89, 5);
             this.tbUrl.Name = "tbUrl";
-            this.tbUrl.Size = new System.Drawing.Size(421, 20);
+            this.tbUrl.Size = new System.Drawing.Size(371, 20);
             this.tbUrl.TabIndex = 13;
             // 
             // cbToolEditAddToPersonal
@@ -290,19 +295,56 @@ namespace Workbook.PersonalToolbar
             this.cbToolEditAddToPersonal.Text = "Add to Personal Toolbar";
             this.cbToolEditAddToPersonal.UseVisualStyleBackColor = true;
             // 
+            // pnlLabel
+            // 
+            this.pnlLabel.Controls.Add(this.cbLabel);
+            this.pnlLabel.Controls.Add(this.tbLabel);
+            this.pnlLabel.Controls.Add(this.lbLabel);
+            this.pnlLabel.Location = new System.Drawing.Point(12, 94);
+            this.pnlLabel.Name = "pnlLabel";
+            this.pnlLabel.Size = new System.Drawing.Size(463, 31);
+            this.pnlLabel.TabIndex = 22;
+            // 
+            // cbLabel
+            // 
+            this.cbLabel.AutoSize = true;
+            this.cbLabel.Location = new System.Drawing.Point(275, 8);
+            this.cbLabel.Name = "cbLabel";
+            this.cbLabel.Size = new System.Drawing.Size(82, 17);
+            this.cbLabel.TabIndex = 25;
+            this.cbLabel.Text = "Show Label";
+            this.cbLabel.UseVisualStyleBackColor = true;
+            // 
+            // tbLabel
+            // 
+            this.tbLabel.Location = new System.Drawing.Point(89, 6);
+            this.tbLabel.Name = "tbLabel";
+            this.tbLabel.Size = new System.Drawing.Size(180, 20);
+            this.tbLabel.TabIndex = 24;
+            // 
+            // lbLabel
+            // 
+            this.lbLabel.AutoSize = true;
+            this.lbLabel.Location = new System.Drawing.Point(3, 9);
+            this.lbLabel.Name = "lbLabel";
+            this.lbLabel.Size = new System.Drawing.Size(36, 13);
+            this.lbLabel.TabIndex = 23;
+            this.lbLabel.Text = "Label:";
+            // 
             // PtButtonForm
             // 
             this.AcceptButton = this.btnOk;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btnCancel;
-            this.ClientSize = new System.Drawing.Size(487, 141);
+            this.ClientSize = new System.Drawing.Size(487, 171);
+            this.Controls.Add(this.pnlLabel);
             this.Controls.Add(this.cbToolEditAddToPersonal);
-            this.Controls.Add(this.pnlCustomFigure);
             this.Controls.Add(this.cbType);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.btnOk);
+            this.Controls.Add(this.pnlCustomFigure);
             this.Controls.Add(this.pnlRunCmd);
             this.Controls.Add(this.pnlShowDir);
             this.Controls.Add(this.pnlWebLink);
@@ -324,6 +366,8 @@ namespace Workbook.PersonalToolbar
             this.toolStripPanel1.PerformLayout();
             this.pnlWebLink.ResumeLayout(false);
             this.pnlWebLink.PerformLayout();
+            this.pnlLabel.ResumeLayout(false);
+            this.pnlLabel.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -355,5 +399,9 @@ namespace Workbook.PersonalToolbar
         private System.Windows.Forms.Label lbWebLink;
         private System.Windows.Forms.TextBox tbUrl;
         private System.Windows.Forms.CheckBox cbToolEditAddToPersonal;
+        private System.Windows.Forms.Panel pnlLabel;
+        private System.Windows.Forms.CheckBox cbLabel;
+        private System.Windows.Forms.TextBox tbLabel;
+        private System.Windows.Forms.Label lbLabel;
     }
 }

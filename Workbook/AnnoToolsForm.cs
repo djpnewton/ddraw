@@ -216,7 +216,7 @@ namespace Workbook
             annotationForm.Dap = dap;
         }
 
-        private void tsEngineState_AddToPersonalTools(object sender, CustomFigureT customFigure)
+        private void tsEngineState_AddToPersonalTools(object sender, CustomFigureTool customFigure)
         {
             tsPersonal.AddCustomFigure(customFigure);
         }

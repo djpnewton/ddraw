@@ -336,7 +336,7 @@ namespace Workbook
 
         public event FigureStyleEvent AddToPersonalTools;
 
-        void pf_AddToPersonalTools(object sender, PersonalToolbar.CustomFigureT customFigure)
+        void pf_AddToPersonalTools(object sender, PersonalToolbar.CustomFigureTool customFigure)
         {
             if (AddToPersonalTools != null)
                 AddToPersonalTools(sender, customFigure);

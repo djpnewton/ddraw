@@ -13,32 +13,34 @@ namespace Workbook.PersonalToolbar
 {
     public partial class PtButtonForm : Form
     {
-        public object ToolButtonData
+        public PersonalTool PersonalTool
         {
             set
             {
-                if (value is CustomFigureT)
+                tbLabel.Text = value.Label;
+                cbLabel.Checked = value.ShowLabel;
+                if (value is CustomFigureTool)
                 {
-                    tsCustomFigureProps.Dap = ((CustomFigureT)value).Dap;
-                    tsCustomFigureType.FigureClass = ((CustomFigureT)value).FigureClass;
-                    tsCustomFigureProps.FigureClass = ((CustomFigureT)value).FigureClass;
-                    ((CustomFigureT)value).Dap.PropertyChanged += new AuthorPropertyChanged(Dap_PropertyChanged);
+                    tsCustomFigureProps.Dap = ((CustomFigureTool)value).Dap;
+                    tsCustomFigureType.FigureClass = ((CustomFigureTool)value).FigureClass;
+                    tsCustomFigureProps.FigureClass = ((CustomFigureTool)value).FigureClass;
+                    ((CustomFigureTool)value).Dap.PropertyChanged += new AuthorPropertyChanged(Dap_PropertyChanged);
                     cbType.SelectedIndex = (int)PersonalToolButtonType.CustomFigure;
                 }
-                else if (value is RunCmdT)
+                else if (value is RunCmdTool)
                 {
-                    tbRun.Text = ((RunCmdT)value).Command;
-                    tbArgs.Text = ((RunCmdT)value).Arguments;
+                    tbRun.Text = ((RunCmdTool)value).Command;
+                    tbArgs.Text = ((RunCmdTool)value).Arguments;
                     cbType.SelectedIndex = (int)PersonalToolButtonType.RunCmd;
                 }
-                else if (value is ShowDirT)
+                else if (value is ShowDirTool)
                 {
-                    tbDir.Text = ((ShowDirT)value).Dir;
+                    tbDir.Text = ((ShowDirTool)value).Dir;
                     cbType.SelectedIndex = (int)PersonalToolButtonType.ShowDir;
                 }
-                else if (value is WebLinkT)
+                else if (value is WebLinkTool)
                 {
-                    tbUrl.Text = ((WebLinkT)value).Link;
+                    tbUrl.Text = ((WebLinkTool)value).Link;
                     cbType.SelectedIndex = (int)PersonalToolButtonType.WebLink;
                 }
             }
@@ -48,16 +50,16 @@ namespace Workbook.PersonalToolbar
                 {
                     DBitmap bmp = WFHelper.MakeBitmap(vcCustomFigure.Width, vcCustomFigure.Height);
                     de.Copy(de.Figures, out bmp, true, DColor.Empty);
-                    return new CustomFigureT(tsCustomFigureProps.FigureClass, tsCustomFigureProps.Dap,
+                    return new CustomFigureTool(tbLabel.Text, cbLabel.Checked, 
+                        tsCustomFigureProps.FigureClass, tsCustomFigureProps.Dap,
                         Convert.ToBase64String(WFHelper.ToImageData(bmp)));
                 }
                 else if (cbType.SelectedIndex == (int)PersonalToolButtonType.RunCmd)
-                    return new RunCmdT(tbRun.Text, tbArgs.Text);
+                    return new RunCmdTool(tbLabel.Text, cbLabel.Checked, tbRun.Text, tbArgs.Text);
                 else if (cbType.SelectedIndex == (int)PersonalToolButtonType.ShowDir)
-                    return new ShowDirT(tbDir.Text);
+                    return new ShowDirTool(tbLabel.Text, cbLabel.Checked, tbDir.Text);
                 else
-                    return new WebLinkT(tbUrl.Text);
-
+                    return new WebLinkTool(tbLabel.Text, cbLabel.Checked, tbUrl.Text);
             }
         }
 
@@ -67,6 +69,7 @@ namespace Workbook.PersonalToolbar
             tsCustomFigureType.Visible = false;
             cbType.Visible = false;
             cbToolEditAddToPersonal.Visible = true;
+            pnlLabel.Visible = false;
         }
 
         public void SetupFigureEdit()
@@ -75,6 +78,7 @@ namespace Workbook.PersonalToolbar
             tsCustomFigureType.Visible = false;
             cbType.Visible = false;
             cbToolEditAddToPersonal.Visible = false;
+            pnlLabel.Visible = false;
         }
 
         public void SetupToolButtonEdit()
@@ -83,6 +87,7 @@ namespace Workbook.PersonalToolbar
             cbType.Visible = true;
             cbToolEditAddToPersonal.Visible = false;
             tsCustomFigureType.Visible = true;
+            pnlLabel.Visible = true;
         }
 
         public bool ToolEditAddToPersonal
