@@ -39,6 +39,7 @@ namespace Workbook
         const string FileExt = ".wbook";
         const string OpenFileTypeFilter = "Workbook files|*.ddraw;*.wbook";
         const string SaveFileTypeFilter = "Workbook files|*.wbook";
+        string TempDir = Path.Combine(Path.GetTempPath(), "2Touch Workbook");
 
         public PersonalToolStrip PersonalToolStrip
         {
@@ -119,6 +120,14 @@ namespace Workbook
         public MainForm()
         {
             InitializeComponent();
+            // create temp path
+            if (!Directory.Exists(TempDir))
+                try
+                {
+                    Directory.CreateDirectory(TempDir);
+                }
+                catch { }
+            attachmentView1.TempDir = TempDir;
             // set icon
             Icon = Resource1._2touch;
             // Create Handle (so we can respond to ipc events from other threads without showing the form)
@@ -269,6 +278,13 @@ namespace Workbook
                 WriteOptions();
                 // write toolstrip settings
                 ToolStripManager.SaveSettings(this);
+                // remove temp dir
+                if (Directory.Exists(TempDir))
+                    try
+                    {
+                        Directory.Delete(TempDir, true);
+                    }
+                    catch { }
             }
         }
 

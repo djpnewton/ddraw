@@ -22,6 +22,8 @@ namespace Workbook
 
         public event FileDropHandler FileDrop;
 
+        public string TempDir = null;
+
         public AttachmentView()
         {
             // columns
@@ -169,14 +171,17 @@ namespace Workbook
             if (attachmentDict.ContainsKey(name))
             {
                 // find unique temp file name
-                string tempDir = Path.GetTempPath();
+                string tempDir = TempDir;
+                if (tempDir == null || tempDir.Length == 0)
+                    tempDir = Path.GetTempPath();
                 string ext = Path.GetExtension(name);
                 string namePart = Path.GetFileNameWithoutExtension(name);
                 int n = 0;
                 string fileName;
                 do
                 {
-                    fileName = string.Format("{0}{1}[{2}]{3}", tempDir, namePart, n, ext);
+                    fileName = string.Format("{0}[{1}]{2}", namePart, n, ext);
+                    fileName = Path.Combine(tempDir, fileName);
                     n++;
                 }
                 while (File.Exists(fileName));
