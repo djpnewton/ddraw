@@ -719,17 +719,14 @@ namespace Workbook
         public string Value
         {
             get { return fontName; }
-            set 
-            { 
-                fontName = value;
-                ToolTipText = value;
-            }
+            set  { fontName = value; }
         }
 
         public ToolStripFontNameButton() : base()
         {
             DisplayStyle = ToolStripItemDisplayStyle.Image;
             Image = Resource1.font;
+            ToolTipText = "Font";
         }
     }
 
@@ -764,6 +761,74 @@ namespace Workbook
         {
             base.OnMouseEnter(e);
             PopupForm.HidePopups();
+        }
+
+        /// <summary>
+        /// To fix up the gastly default tooltips on ToolStripItems.
+        /// Otherwise they blink in and out of focus if the ToolStripItem is close to the bottom of the screens working area.
+        /// </summary>
+        public bool UseDecentToolTips
+        {
+            get { return !ShowItemToolTips; }
+            set { ShowItemToolTips = !value; }
+        }
+
+        ToolTip ToolTip = new ToolTip();
+        ToolStripItem itemEntered = null;
+
+        protected override void OnMouseMove(MouseEventArgs mea)
+        {
+            base.OnMouseMove(mea);
+            if (UseDecentToolTips)
+            {
+                // find new item entered
+                ToolStripItem newItemEntered = null;
+                foreach (ToolStripItem item in Items)
+                    if (mea.X >= item.Bounds.X && mea.X <= item.Bounds.Right &&
+                        mea.Y >= item.Bounds.Y && mea.Y <= item.Bounds.Bottom)
+                    {
+                        newItemEntered = item;
+                        break;
+                    }
+                // hide tooltip if different item to last time
+                if (newItemEntered != itemEntered)
+                    ToolTip.Hide(this);
+                // set tooltip based on item entered
+                itemEntered = newItemEntered;
+                if (itemEntered != null)
+                {
+                    string toolTipText = itemEntered.ToolTipText;
+                    if (toolTipText == null || toolTipText.Length == 0)
+                        toolTipText = itemEntered.Text;
+                    if (toolTipText != null && toolTipText.Length != 0)
+                    {
+                        if (ToolTip.GetToolTip(this) != toolTipText)
+                            ToolTip.SetToolTip(this, toolTipText);
+                    }
+                    else
+                        ToolTip.SetToolTip(this, null);
+                }
+                else
+                    ToolTip.SetToolTip(this, null);
+
+                if (itemEntered != null)
+                {
+                    if (ToolTip.GetToolTip(this) != itemEntered.Text && ToolTip.GetToolTip(this) != itemEntered.ToolTipText)
+                    {
+                        ToolTip.SetToolTip(this, null);
+                    }
+                }
+            }
+        }
+
+        protected override void OnMouseLeave(EventArgs e)
+        {
+            base.OnMouseLeave(e);
+            if (UseDecentToolTips)
+            {
+                ToolTip.Hide(this);
+                ToolTip.SetToolTip(this, null);
+            }
         }
     }
 }

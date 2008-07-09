@@ -582,8 +582,10 @@ namespace Workbook
             this.btnAttachments});
             this.tsSidebar.Location = new System.Drawing.Point(3, 0);
             this.tsSidebar.Name = "tsSidebar";
+            this.tsSidebar.ShowItemToolTips = false;
             this.tsSidebar.Size = new System.Drawing.Size(78, 25);
             this.tsSidebar.TabIndex = 0;
+            this.tsSidebar.UseDecentToolTips = true;
             // 
             // btnSwitchSidebar
             // 
@@ -636,8 +638,10 @@ namespace Workbook
             this.btnNextPage});
             this.tsPageManage.Location = new System.Drawing.Point(3, 25);
             this.tsPageManage.Name = "tsPageManage";
+            this.tsPageManage.ShowItemToolTips = false;
             this.tsPageManage.Size = new System.Drawing.Size(81, 25);
             this.tsPageManage.TabIndex = 1;
+            this.tsPageManage.UseDecentToolTips = true;
             // 
             // btnNewPage
             // 
@@ -1232,8 +1236,10 @@ namespace Workbook
             this.tsEngineState.Location = new System.Drawing.Point(3, 24);
             this.tsEngineState.Mode = Workbook.FigureToolStripMode.DEngineState;
             this.tsEngineState.Name = "tsEngineState";
+            this.tsEngineState.ShowItemToolTips = false;
             this.tsEngineState.Size = new System.Drawing.Size(288, 25);
             this.tsEngineState.TabIndex = 2;
+            this.tsEngineState.UseDecentToolTips = true;
             this.tsEngineState.AddToPersonalTools += new Workbook.FigureStyleEvent(this.tsEngineState_AddToPersonalTools);
             this.tsEngineState.DapChanged += new Workbook.DapChangedHandler(this.tsEngineState_DapChanged);
             // 
@@ -1245,8 +1251,10 @@ namespace Workbook
             this.tsPropState.FigureClass = null;
             this.tsPropState.Location = new System.Drawing.Point(3, 49);
             this.tsPropState.Name = "tsPropState";
+            this.tsPropState.ShowItemToolTips = false;
             this.tsPropState.Size = new System.Drawing.Size(273, 25);
             this.tsPropState.TabIndex = 4;
+            this.tsPropState.UseDecentToolTips = true;
             // 
             // tsPersonal
             // 
@@ -1256,8 +1264,10 @@ namespace Workbook
             this.tsPersonal.Dock = System.Windows.Forms.DockStyle.None;
             this.tsPersonal.Location = new System.Drawing.Point(3, 74);
             this.tsPersonal.Name = "tsPersonal";
+            this.tsPersonal.ShowItemToolTips = false;
             this.tsPersonal.Size = new System.Drawing.Size(35, 25);
             this.tsPersonal.TabIndex = 7;
+            this.tsPersonal.UseDecentToolTips = true;
             this.tsPersonal.ItemContext += new System.EventHandler(this.tsPersonal_ItemContext);
             // 
             // tsTools
@@ -1269,8 +1279,10 @@ namespace Workbook
             this.btnScreenAnnotate});
             this.tsTools.Location = new System.Drawing.Point(55, 74);
             this.tsTools.Name = "tsTools";
+            this.tsTools.ShowItemToolTips = false;
             this.tsTools.Size = new System.Drawing.Size(58, 25);
             this.tsTools.TabIndex = 8;
+            this.tsTools.UseDecentToolTips = true;
             // 
             // btnScreenCapture
             // 
@@ -1307,8 +1319,10 @@ namespace Workbook
             this.btnDelete});
             this.tsEdit.Location = new System.Drawing.Point(3, 99);
             this.tsEdit.Name = "tsEdit";
+            this.tsEdit.ShowItemToolTips = false;
             this.tsEdit.Size = new System.Drawing.Size(162, 25);
             this.tsEdit.TabIndex = 5;
+            this.tsEdit.UseDecentToolTips = true;
             // 
             // btnUndo
             // 

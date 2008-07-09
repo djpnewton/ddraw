@@ -466,6 +466,7 @@ namespace Workbook
             btnAlpha.AlphaChanged += new AlphaChangedHandler(btnAlpha_AlphaChanged);
             Items.Add(btnAlpha);
             btnFontName = new ToolStripFontNameButton();
+            btnFontName.Text = "Font";
             Items.Add(btnFontName);
             btnBold = new ToolStripButton("Bold", Resource1.text_bold);
             btnBold.CheckOnClick = true;
