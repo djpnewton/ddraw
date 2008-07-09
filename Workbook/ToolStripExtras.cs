@@ -810,14 +810,6 @@ namespace Workbook
                 }
                 else
                     ToolTip.SetToolTip(this, null);
-
-                if (itemEntered != null)
-                {
-                    if (ToolTip.GetToolTip(this) != itemEntered.Text && ToolTip.GetToolTip(this) != itemEntered.ToolTipText)
-                    {
-                        ToolTip.SetToolTip(this, null);
-                    }
-                }
             }
         }
 
