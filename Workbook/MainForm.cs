@@ -852,7 +852,7 @@ namespace Workbook
                     TextFigure f = new TextFigure(new DPoint(objX, objY), Path.GetFileName(path), 0);
                     f.UserAttrs[Links.Link] = attachmentView1.AddAttachment(path);
                     f.UserAttrs[Links.LinkType] = LinkType.Attachment.ToString();
-                    tsEngineState.Dap.ApplyPropertiesToFigure(f);
+                    tsEngineState.DapText.ApplyPropertiesToFigure(f);
                     de.PasteAsSelectedFigures(new List<Figure>(new Figure[] { f }));
                 }
                 de.UndoRedoCommit();
@@ -877,7 +877,7 @@ namespace Workbook
                         TextFigure f = new TextFigure(new DPoint(objX, objY), item.Text, 0);
                         f.UserAttrs[Links.Link] = item.Text;
                         f.UserAttrs[Links.LinkType] = LinkType.Attachment.ToString();
-                        tsEngineState.Dap.ApplyPropertiesToFigure(f);
+                        tsEngineState.DapText.ApplyPropertiesToFigure(f);
                         de.PasteAsSelectedFigures(new List<Figure>(new Figure[] { f }));
                     }
                 }
