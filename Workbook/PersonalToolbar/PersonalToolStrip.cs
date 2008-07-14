@@ -50,6 +50,8 @@ namespace Workbook.PersonalToolbar
                             Items.Add(new ShowDirToolButton((ShowDirTool)pt));
                         else if (pt is WebLinkTool)
                             Items.Add(new WebLinkToolButton((WebLinkTool)pt));
+                        else if (pt is ModeSelectTool)
+                            Items.Add(new ModeSelectToolButton((ModeSelectTool)pt));
                     }
                 }
             }
@@ -60,6 +62,15 @@ namespace Workbook.PersonalToolbar
                 de.HsmSetStateByFigureClass(b.FigureClass);
                 System.Diagnostics.Debug.Assert(dap != null, "ERROR: \"dap\" is not assigned");
                 dap.SetProperties(b.FigureClass, b.Dap);
+            }
+            else if (e.ClickedItem is ModeSelectToolButton)
+            {
+                ModeSelectToolButton b = (ModeSelectToolButton)e.ClickedItem;
+                System.Diagnostics.Debug.Assert(de != null, "ERROR: \"de\" is not assigned");
+                if (b.ModeSelectType == ModeSelectType.Select)
+                    de.HsmState = DHsmState.Select;
+                else if (b.ModeSelectType == ModeSelectType.Eraser)
+                    de.HsmState = DHsmState.Eraser;
             }
             base.OnItemClicked(e);
         }
@@ -96,6 +107,8 @@ namespace Workbook.PersonalToolbar
                             pf.PersonalTool = ((ShowDirToolButton)tsItem).ShowDir;
                         else if (tsItem is WebLinkToolButton)
                             pf.PersonalTool = ((WebLinkToolButton)tsItem).WebLink;
+                        else if (tsItem is ModeSelectToolButton)
+                            pf.PersonalTool = ((ModeSelectToolButton)tsItem).ModeSelect;
                         if (pf.ShowDialog() == DialogResult.OK)
                         {
                             ToolStripItem newTsItem = null;
@@ -107,6 +120,8 @@ namespace Workbook.PersonalToolbar
                                 newTsItem = new ShowDirToolButton((ShowDirTool)pf.PersonalTool);
                             else if (pf.PersonalTool is WebLinkTool)
                                 newTsItem = new WebLinkToolButton((WebLinkTool)pf.PersonalTool);
+                            else if (pf.PersonalTool is ModeSelectTool)
+                                newTsItem = new ModeSelectToolButton((ModeSelectTool)pf.PersonalTool);
                             Items.Insert(Items.IndexOf(tsItem), newTsItem);
                             Items.Remove(tsItem);
                             // click it

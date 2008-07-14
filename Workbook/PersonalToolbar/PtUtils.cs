@@ -12,7 +12,8 @@ using DDraw;
 namespace Workbook.PersonalToolbar
 {
 
-    public enum PersonalToolButtonType { CustomFigure, RunCmd, ShowDir, WebLink };
+    public enum PersonalToolButtonType { CustomFigure, RunCmd, ShowDir, WebLink, ModeSelect };
+    public enum ModeSelectType { Select, Eraser };
 
     public abstract class PersonalTool
     {
@@ -101,6 +102,21 @@ namespace Workbook.PersonalToolbar
                 return string.Concat("Custom ", FigureClass.ToString());
             else 
                 return base.ToString();
+        }
+    }
+
+    public class ModeSelectTool : PersonalTool
+    {
+        public ModeSelectType ModeSelectType;
+
+        public ModeSelectTool(string label, bool showLabel, ModeSelectType modeSelectType) : base(label, showLabel)
+        {
+            ModeSelectType = modeSelectType;
+        }
+
+        public override string ToString()
+        {
+            return ModeSelectType.ToString();
         }
     }
 
@@ -293,6 +309,33 @@ namespace Workbook.PersonalToolbar
         }
     }
 
+    public class ModeSelectToolButton : PersonalToolButton
+    {
+        ModeSelectType ms;
+        public ModeSelectType ModeSelectType
+        {
+            get { return ms; }
+            set
+            {
+                ms = value;
+                if (ms == ModeSelectType.Select)
+                    Image = Resource1.cursor;
+                else
+                    Image = Resource1.eraser;
+            }
+        }
+
+        public ModeSelectTool ModeSelect
+        {
+            get { return new ModeSelectTool(Label, ShowLabel, ModeSelectType); }
+        }
+
+        public ModeSelectToolButton(ModeSelectTool t) : base(t)
+        {
+            ModeSelectType = t.ModeSelectType;
+        }
+    }
+
     public static class PtUtils
     {
         const string _INIFILE = "PersonalToolbar.ini";
@@ -305,6 +348,7 @@ namespace Workbook.PersonalToolbar
         const string ARGS_OPT = "Args";
         const string DIR_OPT = "Dir";
         const string WEBLINK_OPT = "WebLink";
+        const string MODESELECT_OPT = "ModeSelect";
 
         static string IniFile
         {
@@ -346,6 +390,10 @@ namespace Workbook.PersonalToolbar
                             break;
                         case PersonalToolButtonType.WebLink:
                             ts.Items.Add(new WebLinkToolButton(new WebLinkTool(label, showLabel, config.Get(WEBLINK_OPT))));
+                            break;
+                        case PersonalToolButtonType.ModeSelect:
+                            ts.Items.Add(new ModeSelectToolButton(new ModeSelectTool(label, showLabel, 
+                                (ModeSelectType)Enum.Parse(typeof(ModeSelectType), config.Get(MODESELECT_OPT), true))));
                             break;
                     }
                 }
@@ -407,6 +455,12 @@ namespace Workbook.PersonalToolbar
                             config.Set(TYPE_OPT, PersonalToolButtonType.WebLink);
                             config.Set(WEBLINK_OPT, t.Link);
                         }
+                    }
+                    else if (b is ModeSelectToolButton)
+                    {
+                        config.Set(TYPE_OPT, PersonalToolButtonType.ModeSelect);
+                        ModeSelectTool t = ((ModeSelectToolButton)b).ModeSelect;
+                        config.Set(MODESELECT_OPT, ((ModeSelectToolButton)b).ModeSelectType);
                     }
                 }
             }

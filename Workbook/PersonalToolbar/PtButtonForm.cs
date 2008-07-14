@@ -43,6 +43,14 @@ namespace Workbook.PersonalToolbar
                     tbUrl.Text = ((WebLinkTool)value).Link;
                     cbType.SelectedIndex = (int)PersonalToolButtonType.WebLink;
                 }
+                else if (value is ModeSelectTool)
+                {
+                    if (((ModeSelectTool)value).ModeSelectType == ModeSelectType.Select)
+                        rbSelect.Checked = true;
+                    else
+                        rbEraser.Checked = true;
+                    cbType.SelectedIndex = (int)PersonalToolButtonType.ModeSelect;
+                }
             }
             get 
             {
@@ -50,7 +58,7 @@ namespace Workbook.PersonalToolbar
                 {
                     DBitmap bmp = WFHelper.MakeBitmap(vcCustomFigure.Width, vcCustomFigure.Height);
                     de.Copy(de.Figures, out bmp, true, DColor.Empty);
-                    return new CustomFigureTool(tbLabel.Text, cbLabel.Checked, 
+                    return new CustomFigureTool(tbLabel.Text, cbLabel.Checked,
                         tsCustomFigureProps.FigureClass, tsCustomFigureProps.Dap,
                         Convert.ToBase64String(WFHelper.ToImageData(bmp)));
                 }
@@ -58,8 +66,10 @@ namespace Workbook.PersonalToolbar
                     return new RunCmdTool(tbLabel.Text, cbLabel.Checked, tbRun.Text, tbArgs.Text);
                 else if (cbType.SelectedIndex == (int)PersonalToolButtonType.ShowDir)
                     return new ShowDirTool(tbLabel.Text, cbLabel.Checked, tbDir.Text);
-                else
+                else if (cbType.SelectedIndex == (int)PersonalToolButtonType.WebLink)
                     return new WebLinkTool(tbLabel.Text, cbLabel.Checked, tbUrl.Text);
+                else
+                    return new ModeSelectTool(tbLabel.Text, cbLabel.Checked, ModeSelect);
             }
         }
 
@@ -95,6 +105,16 @@ namespace Workbook.PersonalToolbar
             get { return cbToolEditAddToPersonal.Checked; }
         }
 
+        public ModeSelectType ModeSelect
+        {
+            get
+            {
+                if (rbSelect.Checked)
+                    return ModeSelectType.Select;
+                return ModeSelectType.Eraser;
+            }
+        }
+
         DEngine de;
         DTkViewer dv;
 
@@ -127,6 +147,9 @@ namespace Workbook.PersonalToolbar
                     break;
                 case (int)PersonalToolButtonType.WebLink:
                     pnlWebLink.BringToFront();
+                    break;
+                case (int)PersonalToolButtonType.ModeSelect:
+                    pnlModeSelect.BringToFront();
                     break;
                 default:
                     if (tsCustomFigureProps.Dap == null)

@@ -35,6 +35,8 @@ namespace Workbook.PersonalToolbar
         const string RunCmdImage = "RunCmdImage";
         const string ShowDirImage = "ShowDirImage";
         const string WebLinkImage = "WebLink";
+        const string SelectModeImage = "SelectModeImage";
+        const string EraserModeImage = "EraserModeImage";          
 
         public PtForm()
         {
@@ -43,12 +45,14 @@ namespace Workbook.PersonalToolbar
             imageList1.Images.Add(RunCmdImage, Resource1.cog);
             imageList1.Images.Add(ShowDirImage, Resource1.folder);
             imageList1.Images.Add(WebLinkImage, Resource1.world_link);
+            imageList1.Images.Add(SelectModeImage, Resource1.cursor);
+            imageList1.Images.Add(EraserModeImage, Resource1.eraser);
         }
 
         ListViewItem CreateListViewItem(PersonalTool item)
         {
             ListViewItem li = new ListViewItem();
-            if (item is CustomFigureTool || item is RunCmdTool || item is ShowDirTool || item is WebLinkTool)
+            if (item is PersonalTool)
             {
                 li.Tag = item;
                 li.Text = li.Tag.ToString();
@@ -70,6 +74,13 @@ namespace Workbook.PersonalToolbar
                 li.ImageKey = ShowDirImage;
             else if (li.Tag is WebLinkTool)
                 li.ImageKey = WebLinkImage;
+            else if (li.Tag is ModeSelectTool)
+            {
+                if (((ModeSelectTool)li.Tag).ModeSelectType == ModeSelectType.Select)
+                    li.ImageKey = SelectModeImage;
+                else
+                    li.ImageKey = EraserModeImage;
+            }
         }
 
         void AddToListView(PersonalTool item, int idx)
@@ -97,6 +108,8 @@ namespace Workbook.PersonalToolbar
                     AddToListView(((ShowDirToolButton)personalToolStrip.Items[i]).ShowDir);
                 else if (personalToolStrip.Items[i] is WebLinkToolButton)
                     AddToListView(((WebLinkToolButton)personalToolStrip.Items[i]).WebLink);
+                else if (personalToolStrip.Items[i] is ModeSelectToolButton)
+                    AddToListView(((ModeSelectToolButton)personalToolStrip.Items[i]).ModeSelect);
             }
         }
 

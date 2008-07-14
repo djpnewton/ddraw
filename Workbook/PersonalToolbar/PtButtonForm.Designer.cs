@@ -43,11 +43,8 @@ namespace Workbook.PersonalToolbar
             this.tbDir = new System.Windows.Forms.TextBox();
             this.btnDirBrowse = new System.Windows.Forms.Button();
             this.pnlCustomFigure = new System.Windows.Forms.Panel();
-            this.vcCustomFigure = new DDraw.WinForms.WFViewerControl();
             this.panel2 = new System.Windows.Forms.Panel();
             this.toolStripPanel1 = new System.Windows.Forms.ToolStripPanel();
-            this.tsCustomFigureType = new Workbook.FigureToolStrip();
-            this.tsCustomFigureProps = new Workbook.FigurePropertiesToolStrip();
             this.pnlWebLink = new System.Windows.Forms.Panel();
             this.lbWebLink = new System.Windows.Forms.Label();
             this.tbUrl = new System.Windows.Forms.TextBox();
@@ -56,6 +53,12 @@ namespace Workbook.PersonalToolbar
             this.cbLabel = new System.Windows.Forms.CheckBox();
             this.tbLabel = new System.Windows.Forms.TextBox();
             this.lbLabel = new System.Windows.Forms.Label();
+            this.pnlModeSelect = new System.Windows.Forms.Panel();
+            this.rbEraser = new System.Windows.Forms.RadioButton();
+            this.rbSelect = new System.Windows.Forms.RadioButton();
+            this.vcCustomFigure = new DDraw.WinForms.WFViewerControl();
+            this.tsCustomFigureType = new Workbook.FigureToolStrip();
+            this.tsCustomFigureProps = new Workbook.FigurePropertiesToolStrip();
             this.pnlRunCmd.SuspendLayout();
             this.pnlShowDir.SuspendLayout();
             this.pnlCustomFigure.SuspendLayout();
@@ -63,6 +66,7 @@ namespace Workbook.PersonalToolbar
             this.toolStripPanel1.SuspendLayout();
             this.pnlWebLink.SuspendLayout();
             this.pnlLabel.SuspendLayout();
+            this.pnlModeSelect.SuspendLayout();
             this.SuspendLayout();
             // 
             // panel1
@@ -101,7 +105,8 @@ namespace Workbook.PersonalToolbar
             "Custom Figure",
             "Run Command",
             "Show Directory",
-            "Web Link"});
+            "Web Link",
+            "Mode Select"});
             this.cbType.Location = new System.Drawing.Point(12, 12);
             this.cbType.Name = "cbType";
             this.cbType.Size = new System.Drawing.Size(121, 21);
@@ -207,14 +212,6 @@ namespace Workbook.PersonalToolbar
             this.pnlCustomFigure.Size = new System.Drawing.Size(463, 55);
             this.pnlCustomFigure.TabIndex = 20;
             // 
-            // vcCustomFigure
-            // 
-            this.vcCustomFigure.Dock = System.Windows.Forms.DockStyle.Right;
-            this.vcCustomFigure.Location = new System.Drawing.Point(408, 0);
-            this.vcCustomFigure.Name = "vcCustomFigure";
-            this.vcCustomFigure.Size = new System.Drawing.Size(55, 55);
-            this.vcCustomFigure.TabIndex = 21;
-            // 
             // panel2
             // 
             this.panel2.Controls.Add(this.toolStripPanel1);
@@ -234,31 +231,6 @@ namespace Workbook.PersonalToolbar
             this.toolStripPanel1.Orientation = System.Windows.Forms.Orientation.Horizontal;
             this.toolStripPanel1.RowMargin = new System.Windows.Forms.Padding(3, 0, 0, 0);
             this.toolStripPanel1.Size = new System.Drawing.Size(463, 55);
-            // 
-            // tsCustomFigureType
-            // 
-            this.tsCustomFigureType.ClickThrough = false;
-            this.tsCustomFigureType.Dock = System.Windows.Forms.DockStyle.None;
-            this.tsCustomFigureType.FigureClass = null;
-            this.tsCustomFigureType.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
-            this.tsCustomFigureType.Location = new System.Drawing.Point(3, 0);
-            this.tsCustomFigureType.Mode = Workbook.FigureToolStripMode.FigureClassSelect;
-            this.tsCustomFigureType.Name = "tsCustomFigureType";
-            this.tsCustomFigureType.Size = new System.Drawing.Size(233, 25);
-            this.tsCustomFigureType.TabIndex = 1;
-            this.tsCustomFigureType.FigureClassChanged += new Workbook.FigureClassChangedHandler(this.tsCustomFigureType_FigureClassChanged);
-            // 
-            // tsCustomFigureProps
-            // 
-            this.tsCustomFigureProps.ClickThrough = false;
-            this.tsCustomFigureProps.Dap = null;
-            this.tsCustomFigureProps.Dock = System.Windows.Forms.DockStyle.None;
-            this.tsCustomFigureProps.FigureClass = null;
-            this.tsCustomFigureProps.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
-            this.tsCustomFigureProps.Location = new System.Drawing.Point(3, 25);
-            this.tsCustomFigureProps.Name = "tsCustomFigureProps";
-            this.tsCustomFigureProps.Size = new System.Drawing.Size(264, 25);
-            this.tsCustomFigureProps.TabIndex = 0;
             // 
             // pnlWebLink
             // 
@@ -331,6 +303,70 @@ namespace Workbook.PersonalToolbar
             this.lbLabel.TabIndex = 23;
             this.lbLabel.Text = "Label:";
             // 
+            // pnlModeSelect
+            // 
+            this.pnlModeSelect.Controls.Add(this.rbEraser);
+            this.pnlModeSelect.Controls.Add(this.rbSelect);
+            this.pnlModeSelect.Location = new System.Drawing.Point(11, 39);
+            this.pnlModeSelect.Name = "pnlModeSelect";
+            this.pnlModeSelect.Size = new System.Drawing.Size(463, 55);
+            this.pnlModeSelect.TabIndex = 20;
+            // 
+            // rbEraser
+            // 
+            this.rbEraser.Image = global::Workbook.Resource1.eraser;
+            this.rbEraser.Location = new System.Drawing.Point(69, 3);
+            this.rbEraser.Name = "rbEraser";
+            this.rbEraser.Size = new System.Drawing.Size(60, 41);
+            this.rbEraser.TabIndex = 1;
+            this.rbEraser.UseVisualStyleBackColor = true;
+            // 
+            // rbSelect
+            // 
+            this.rbSelect.Checked = true;
+            this.rbSelect.Image = global::Workbook.Resource1.cursor;
+            this.rbSelect.Location = new System.Drawing.Point(3, 3);
+            this.rbSelect.Name = "rbSelect";
+            this.rbSelect.Size = new System.Drawing.Size(60, 41);
+            this.rbSelect.TabIndex = 0;
+            this.rbSelect.TabStop = true;
+            this.rbSelect.UseVisualStyleBackColor = true;
+            // 
+            // vcCustomFigure
+            // 
+            this.vcCustomFigure.Dock = System.Windows.Forms.DockStyle.Right;
+            this.vcCustomFigure.Location = new System.Drawing.Point(408, 0);
+            this.vcCustomFigure.Name = "vcCustomFigure";
+            this.vcCustomFigure.Size = new System.Drawing.Size(55, 55);
+            this.vcCustomFigure.TabIndex = 21;
+            // 
+            // tsCustomFigureType
+            // 
+            this.tsCustomFigureType.ClickThrough = false;
+            this.tsCustomFigureType.Dock = System.Windows.Forms.DockStyle.None;
+            this.tsCustomFigureType.FigureClass = null;
+            this.tsCustomFigureType.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
+            this.tsCustomFigureType.Location = new System.Drawing.Point(3, 0);
+            this.tsCustomFigureType.Mode = Workbook.FigureToolStripMode.FigureClassSelect;
+            this.tsCustomFigureType.Name = "tsCustomFigureType";
+            this.tsCustomFigureType.Size = new System.Drawing.Size(233, 25);
+            this.tsCustomFigureType.TabIndex = 1;
+            this.tsCustomFigureType.UseDecentToolTips = false;
+            this.tsCustomFigureType.FigureClassChanged += new Workbook.FigureClassChangedHandler(this.tsCustomFigureType_FigureClassChanged);
+            // 
+            // tsCustomFigureProps
+            // 
+            this.tsCustomFigureProps.ClickThrough = false;
+            this.tsCustomFigureProps.Dap = null;
+            this.tsCustomFigureProps.Dock = System.Windows.Forms.DockStyle.None;
+            this.tsCustomFigureProps.FigureClass = null;
+            this.tsCustomFigureProps.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
+            this.tsCustomFigureProps.Location = new System.Drawing.Point(3, 25);
+            this.tsCustomFigureProps.Name = "tsCustomFigureProps";
+            this.tsCustomFigureProps.Size = new System.Drawing.Size(264, 25);
+            this.tsCustomFigureProps.TabIndex = 0;
+            this.tsCustomFigureProps.UseDecentToolTips = false;
+            // 
             // PtButtonForm
             // 
             this.AcceptButton = this.btnOk;
@@ -338,6 +374,7 @@ namespace Workbook.PersonalToolbar
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btnCancel;
             this.ClientSize = new System.Drawing.Size(487, 171);
+            this.Controls.Add(this.pnlModeSelect);
             this.Controls.Add(this.pnlLabel);
             this.Controls.Add(this.cbToolEditAddToPersonal);
             this.Controls.Add(this.cbType);
@@ -368,6 +405,7 @@ namespace Workbook.PersonalToolbar
             this.pnlWebLink.PerformLayout();
             this.pnlLabel.ResumeLayout(false);
             this.pnlLabel.PerformLayout();
+            this.pnlModeSelect.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -403,5 +441,8 @@ namespace Workbook.PersonalToolbar
         private System.Windows.Forms.CheckBox cbLabel;
         private System.Windows.Forms.TextBox tbLabel;
         private System.Windows.Forms.Label lbLabel;
+        private System.Windows.Forms.Panel pnlModeSelect;
+        private System.Windows.Forms.RadioButton rbEraser;
+        private System.Windows.Forms.RadioButton rbSelect;
     }
 }
