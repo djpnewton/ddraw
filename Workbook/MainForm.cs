@@ -174,6 +174,8 @@ namespace Workbook
             ToolStripManager.LoadSettings(this);
             // ensure menustrip is visible
             menuStrip1.Visible = true;
+            // make sure previews line up properly
+            previewBar1.ResetPreviewPositions();
         }
 
         void ReadOptions()
@@ -1484,12 +1486,14 @@ namespace Workbook
                 Application.DoEvents();
                 // import annotations
                 dem.UndoRedoStart("Import Annotations");
-                CreateDEngine(null);
+                CreateDEngine(this.de);
                 this.de.PageSize = de.PageSize;
                 this.de.SetBackgroundFigure(de.BackgroundFigure, true);
                 foreach (Figure f in de.Figures)
                     this.de.AddFigure(f);
                 dem.UndoRedoCommit();
+                // make sure previews line up properly
+                previewBar1.ResetPreviewPositions();
                 // close dialog
                 pf.Close();
             };

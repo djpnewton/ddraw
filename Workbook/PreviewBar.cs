@@ -118,6 +118,22 @@ namespace Workbook
             }
         }
 
+        /// <summary>
+        /// Makes sure all the previews are lined up and spaced (top to bottom) correctly.
+        /// This procedure is required because sometimes when adding a new preview it does not
+        /// get placed in the right position is the form is not visible at the time.
+        /// </summary>
+        public void ResetPreviewPositions()
+        {
+            SetPreviewTops(0);
+            foreach (Preview p in Controls)
+                if (p.Selected)
+                {
+                    ScrollControlIntoView(p);
+                    break;
+                }
+        }
+
         public void Clear()
         {
             Controls.Clear();
