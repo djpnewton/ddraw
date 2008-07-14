@@ -41,6 +41,9 @@ namespace Workbook
             DragEnter += new DragEventHandler(AttachmentView_DragEnter);
             DragDrop += new DragEventHandler(AttachmentView_DragDrop);
             ItemDrag += new ItemDragEventHandler(AttachmentView_ItemDrag);
+            // item activate
+            Activation = ItemActivation.Standard;
+            ItemActivate += new EventHandler(AttachmentView_ItemActivate);
         }
 
         void AttachmentView_DragEnter(object sender, DragEventArgs e)
@@ -58,6 +61,15 @@ namespace Workbook
         void AttachmentView_ItemDrag(object sender, ItemDragEventArgs e)
         {
             DoDragDrop(this, DragDropEffects.Copy);
+        }
+
+        void AttachmentView_ItemActivate(object sender, EventArgs e)
+        {
+            if (SelectedItems.Count == 1)
+                try
+                { ExecuteAttachment(SelectedItems[0].Text); }
+                catch (Exception ex)
+                { MessageBox.Show(ex.Message, "Attachment Execute Error"); }
         }
 
         byte[] ReadFileData(string path)
