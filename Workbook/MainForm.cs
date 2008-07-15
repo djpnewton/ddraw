@@ -264,8 +264,8 @@ namespace Workbook
         void LoadRecentDocuments(ProgramOptions options)
         {
             recentDocumentsToolStripMenuItem.DropDown.Items.Clear();
-            string[] recentDocs = options.GetRecentDocuments();
-            if (recentDocs.Length > 0)
+            List<string> recentDocs = options.GetRecentDocuments();
+            if (recentDocs.Count > 0)
             {
                 recentDocumentsToolStripMenuItem.Enabled = true;
                 int n = 1;

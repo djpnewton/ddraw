@@ -146,27 +146,26 @@ namespace Workbook
 
         const int MaxRecentDocs = 10;
 
-        public string[] GetRecentDocuments()
+        public List<string> GetRecentDocuments()
         {
             IConfig config = ConfigSource.Configs[RECENTDOCS_SECTION];
             if (config == null)
                 config = ConfigSource.AddConfig(RECENTDOCS_SECTION);
             string[] values = config.GetValues();
-            if (values.Length > MaxRecentDocs)
-            {
-                string[] valuesMax = new string[MaxRecentDocs];
-                for (int i = 0; i < MaxRecentDocs; i++)
-                    valuesMax[i] = values[i];
-                return valuesMax;
-            }
-            return values;
+            List<string> retValues = new List<string>();
+            foreach (string value in values)
+                if (File.Exists(value))
+                    retValues.Add(value);
+            if (retValues.Count > MaxRecentDocs)
+                retValues.RemoveRange(10, retValues.Count - MaxRecentDocs);
+            return retValues;
         }
 
         public void AddRecentDocument(string fileName)
         {
-            string[] values = GetRecentDocuments();
+            List<string> values = GetRecentDocuments();
             IConfig config = ConfigSource.Configs[RECENTDOCS_SECTION];
-            if (values.Length > 0 && !values[0].Equals(fileName))
+            if (values.Count > 0 && !values[0].Equals(fileName))
             {
                 int n = 1;
                 config.Set(n.ToString(), fileName);
