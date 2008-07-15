@@ -133,6 +133,13 @@ namespace Workbook.Converters
                 de.PageSize = new DPoint(width, height);
             // node list
             XmlNodeList nl;
+            // find page name
+            if (hasSvgNs)
+                nl = page.SelectNodes("/svg:svg/svg:title", nsmgr);
+            else
+                nl = page.SelectNodes("/svg/title");
+            if (nl.Count == 1 && nl[0].InnerText != null)
+                de.PageName = nl[0].InnerText;
             // find background
             if (hasSvgNs)
                 nl = page.SelectNodes("/svg:svg/svg:rect", nsmgr);
@@ -357,6 +364,7 @@ namespace Workbook.Converters
                     ((IAlphaBlendable)f).Alpha = double.Parse((string)e.Attributes["opacity"]);
 
                 applyLink(f, e);
+                applyLock(f, e);
             }
 
             return f;
@@ -473,9 +481,9 @@ namespace Workbook.Converters
 
         void applyLink(Figure f, SvgElement e)
         {
-            if (e.Attributes.ContainsKey(NBLinkShortCutAttr))
+            if (e.Attributes.ContainsKey(NBLockedAttr))
             {
-                string shortcut = (string)e.Attributes[NBLinkShortCutAttr];
+                string shortcut = (string)e.Attributes[NBLockedAttr];
                 if (shortcut.StartsWith(NBLinkHttpPrefix))
                 {
                     f.UserAttrs[Links.LinkType] = LinkType.WebPage.ToString();
@@ -520,6 +528,13 @@ namespace Workbook.Converters
                 if (e.Attributes.ContainsKey(NBLinkShortCutAreaAttr) && (string)e.Attributes[NBLinkShortCutAreaAttr] == "1")
                     f.UserAttrs[Links.LinkBody] = "";
             }
+        }
+
+        const string NBLockedAttr = "locked";
+
+        void applyLock(Figure f, SvgElement e)
+        {
+            f.Locked = e.Attributes.ContainsKey(NBLockedAttr);
         }
 
         int GetPageNumberFromPageName(string pageName)
