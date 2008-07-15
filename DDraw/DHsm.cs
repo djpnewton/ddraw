@@ -604,10 +604,10 @@ namespace DDraw
                     switch (mouseHitTest)
                     {
                         case DHitTest.Body:
+                            // store drag point
+                            dragPt = pt;
                             if (!f.Locked)
                             {
-                                // store drag point
-                                dragPt = pt;
                                 // drag figure start event
                                 if (DragFigureStart != null)
                                     DragFigureStart(null, f, dv.EngineToClient(pt));
