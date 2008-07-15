@@ -88,6 +88,7 @@ namespace Workbook
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.newToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.recentDocumentsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator11 = new System.Windows.Forms.ToolStripSeparator();
@@ -202,7 +203,8 @@ namespace Workbook
             this.actRedo = new Burkovsky.Controls.Action();
             this.actAnnoTools = new Burkovsky.Controls.Action();
             this.actScreenCapture = new Burkovsky.Controls.Action();
-            this.recentDocumentsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.sendToToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.mailRecipientToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.cmsFigure.SuspendLayout();
             this.cmsCanvas.SuspendLayout();
             this.cmsPreview.SuspendLayout();
@@ -781,6 +783,7 @@ namespace Workbook
             this.exportToolStripMenuItem,
             this.toolStripSeparator7,
             this.printToolStripMenuItem,
+            this.sendToToolStripMenuItem,
             this.toolStripSeparator3,
             this.exitToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
@@ -802,6 +805,13 @@ namespace Workbook
             this.openToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
             this.openToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
             this.openToolStripMenuItem.Text = "Open";
+            // 
+            // recentDocumentsToolStripMenuItem
+            // 
+            this.actionListProvider1.SetAction(this.recentDocumentsToolStripMenuItem, null);
+            this.recentDocumentsToolStripMenuItem.Name = "recentDocumentsToolStripMenuItem";
+            this.recentDocumentsToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
+            this.recentDocumentsToolStripMenuItem.Text = "Recent Documents";
             // 
             // saveToolStripMenuItem
             // 
@@ -1765,12 +1775,22 @@ namespace Workbook
             this.actScreenCapture.Text = "Screen Capture";
             this.actScreenCapture.Execute += new System.EventHandler(this.actScreenCapture_Execute);
             // 
-            // recentDocumentsToolStripMenuItem
+            // sendToToolStripMenuItem
             // 
-            this.actionListProvider1.SetAction(this.recentDocumentsToolStripMenuItem, null);
-            this.recentDocumentsToolStripMenuItem.Name = "recentDocumentsToolStripMenuItem";
-            this.recentDocumentsToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
-            this.recentDocumentsToolStripMenuItem.Text = "Recent Documents";
+            this.actionListProvider1.SetAction(this.sendToToolStripMenuItem, null);
+            this.sendToToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.mailRecipientToolStripMenuItem});
+            this.sendToToolStripMenuItem.Name = "sendToToolStripMenuItem";
+            this.sendToToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
+            this.sendToToolStripMenuItem.Text = "Send To";
+            // 
+            // mailRecipientToolStripMenuItem
+            // 
+            this.actionListProvider1.SetAction(this.mailRecipientToolStripMenuItem, null);
+            this.mailRecipientToolStripMenuItem.Name = "mailRecipientToolStripMenuItem";
+            this.mailRecipientToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.mailRecipientToolStripMenuItem.Text = "Mail Recipient";
+            this.mailRecipientToolStripMenuItem.Click += new System.EventHandler(this.mailRecipientToolStripMenuItem_Click);
             // 
             // MainForm
             // 
@@ -1993,6 +2013,8 @@ namespace Workbook
         private System.Windows.Forms.ToolStripButton openToolStripButton;
         private System.Windows.Forms.ToolStripButton saveToolStripButton;
         private System.Windows.Forms.ToolStripMenuItem recentDocumentsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem sendToToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem mailRecipientToolStripMenuItem;
     }
 }
 

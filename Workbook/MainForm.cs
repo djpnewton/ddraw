@@ -1107,37 +1107,49 @@ namespace Workbook
                 OpenFile(ofd.FileName);
         }
 
-        bool Save()
+        bool _Save(string backupFile)
         {
-            bool retval = false;
             CheckState();
-            // progress form
-            ProgressForm pf = new ProgressForm();
-            pf.Text = "Saving File";
-            pf.Shown += delegate(object s, EventArgs e)
+            bool retval = false;
+            try
             {
-                Application.DoEvents();
-                try
+                // make extra enties dict (from attachments)
+                Dictionary<string, byte[]> extraEntries = new Dictionary<string, byte[]>();
+                foreach (string name in attachmentView1.GetAttachmentNames())
+                    extraEntries.Add(AttachmentView.ATTACHMENTS_DIR + Path.DirectorySeparatorChar + name,
+                        attachmentView1.GetAttachment(name));
+                // save
+                if (backupFile != null)
+                    FileHelper.Save(backupFile, dem.GetEngines(), dem.PageSize, dem.BackgroundFigure, extraEntries);
+                else
                 {
-                    // make extra enties dict (from attachments)
-                    Dictionary<string, byte[]> extraEntries = new Dictionary<string, byte[]>();
-                    foreach (string name in attachmentView1.GetAttachmentNames())
-                        extraEntries.Add(AttachmentView.ATTACHMENTS_DIR + Path.DirectorySeparatorChar + name,
-                            attachmentView1.GetAttachment(name));
-                    // save
                     FileHelper.Save(fileName, dem.GetEngines(), dem.PageSize, dem.BackgroundFigure, extraEntries);
                     dem.Dirty = false;
                     beenSaved = true;
                     UpdateTitleBar();
                     // add to recent documents
                     AddRecentDocument(fileName);
-                    // set retval to true
-                    retval = true;
                 }
-                catch (Exception e2)
-                {
-                    MessageBox.Show(e2.Message, "Error Writing File", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
+                // set retval to true
+                retval = true;
+            }
+            catch (Exception e2)
+            {
+                MessageBox.Show(e2.Message, "Error Writing File", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            return retval;
+        }
+
+        bool Save()
+        {
+            bool retval = false;
+            // progress form
+            ProgressForm pf = new ProgressForm();
+            pf.Text = "Saving File";
+            pf.Shown += delegate(object s, EventArgs e)
+            {
+                Application.DoEvents();
+                retval = _Save(null);
                 pf.Close();
             };
             pf.ShowDialog();
@@ -1852,6 +1864,28 @@ namespace Workbook
         private void tsPersonal_ItemContext(object sender, EventArgs e)
         {
             de.CheckState();
+        }
+
+        private void mailRecipientToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            // find filename
+            string leaf = Path.GetFileNameWithoutExtension(fileName);
+            string tempFileName;
+            int n = 1;
+            do
+            {
+                tempFileName = string.Format("{0}[{1}]{2}", Path.Combine(TempDir, leaf), n, FileExt);
+                n++;
+            }
+            while (File.Exists(tempFileName));
+            // save file
+            if (_Save(tempFileName))
+            {
+                // load mail client
+                MAPI mapi = new MAPI();
+                mapi.AddAttachment(tempFileName);
+                mapi.SendMailPopup(string.Format("Emailing: {0}", leaf), "");
+            }
         }
     }
 }

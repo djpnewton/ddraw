@@ -86,6 +86,7 @@
     <Compile Include="DimensionsForm.Designer.cs">
       <DependentUpon>DimensionsForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Mapi.cs" />
     <Compile Include="PopupForms\ColorPicker.cs">
       <SubType>Form</SubType>
     </Compile>
