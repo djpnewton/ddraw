@@ -30,6 +30,7 @@ namespace Workbook
         const string PROPERTYSTATETOOLBAR_OPT = "PropertyStateToolbar";
         const string PAGENAVIGATIONTOOLBAR_OPT = "PageNavigationToolbar";
         const string TOOLSTOOLBAR_OPT = "ToolsToolbar";
+        const string RECENTDOCS_SECTION = "RecentDocuments";
 
         public string IniFile
         {
@@ -83,17 +84,26 @@ namespace Workbook
             return string.Format("{0},{1},{2},{3}", r.X, r.Y, r.Width, r.Height);
         }
 
+        IConfigSource _source = null;
+        IConfigSource ConfigSource
+        {
+            get
+            {
+                if (_source == null)
+                {
+                    if (!File.Exists(IniFile))
+                        File.Create(IniFile).Close();
+                    _source = new IniConfigSource(IniFile);
+                }
+                return _source;
+            }
+        }
+
         public void ReadIni()
         {
-            IConfigSource source;
-            if (File.Exists(IniFile))
-                source = new IniConfigSource(IniFile);
-            else
-                source = new IniConfigSource();
-
-            IConfig config = source.Configs[MAIN_SECTION];
+            IConfig config = ConfigSource.Configs[MAIN_SECTION];
             if (config == null)
-                config = source.AddConfig(MAIN_SECTION);
+                config = ConfigSource.AddConfig(MAIN_SECTION);
             FormRect = StrToRect(config.Get(FORMRECT_OPT, "50,50,750,550"));
             string formWindowStateStr = config.Get(FORMWINDOWSTATE_OPT, FormWindowState.Normal.ToString());
             FormWindowState = (FormWindowState)Enum.Parse(typeof(FormWindowState), formWindowStateStr, true);
@@ -114,13 +124,9 @@ namespace Workbook
 
         public void WriteIni()
         {
-            if (!File.Exists(IniFile))
-                File.Create(IniFile).Close();
-            IConfigSource source = new IniConfigSource(IniFile);
-
-            IConfig config = source.Configs[MAIN_SECTION];
+            IConfig config = ConfigSource.Configs[MAIN_SECTION];
             if (config == null)
-                config = source.AddConfig(MAIN_SECTION);
+                config = ConfigSource.AddConfig(MAIN_SECTION);
             config.Set(FORMRECT_OPT, RectToStr(FormRect));
             config.Set(FORMWINDOWSTATE_OPT, FormWindowState);
             config.Set(SIDEBARSIDE_OPT, SidebarSide);
@@ -135,7 +141,45 @@ namespace Workbook
             config.Set(PAGENAVIGATIONTOOLBAR_OPT, PageNavigationToolbar);
             config.Set(TOOLSTOOLBAR_OPT, ToolsToolbar);
 
-            source.Save();
+            ConfigSource.Save();
+        }
+
+        const int MaxRecentDocs = 10;
+
+        public string[] GetRecentDocuments()
+        {
+            IConfig config = ConfigSource.Configs[RECENTDOCS_SECTION];
+            if (config == null)
+                config = ConfigSource.AddConfig(RECENTDOCS_SECTION);
+            string[] values = config.GetValues();
+            if (values.Length > MaxRecentDocs)
+            {
+                string[] valuesMax = new string[MaxRecentDocs];
+                for (int i = 0; i < MaxRecentDocs; i++)
+                    valuesMax[i] = values[i];
+                return valuesMax;
+            }
+            return values;
+        }
+
+        public void AddRecentDocument(string fileName)
+        {
+            string[] values = GetRecentDocuments();
+            IConfig config = ConfigSource.Configs[RECENTDOCS_SECTION];
+            if (values.Length > 0 && !values[0].Equals(fileName))
+            {
+                int n = 1;
+                config.Set(n.ToString(), fileName);
+                foreach (string value in values)
+                    if (!value.Equals(fileName))
+                    {
+                        n++;
+                        config.Set(n.ToString(), value);
+                    }
+            }
+            else
+                config.Set(1.ToString(), fileName);
+            ConfigSource.Save();
         }
     }
 }

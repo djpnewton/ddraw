@@ -203,6 +203,8 @@ namespace Workbook
             pageNavigationToolStripMenuItem.Checked = options.PageNavigationToolbar;
             toolsToolStripMenuItem1.Checked = options.ToolsToolbar;
             UpdateToolbars();
+            // load recent docs
+            LoadRecentDocuments(options);
             // load personal toolbar
             PtUtils.LoadPersonalTools(tsPersonal);
             // load figure toolbar
@@ -251,6 +253,42 @@ namespace Workbook
                 // show form
                 Show();
             }
+        }
+
+        void AddRecentDocument(string fileName)
+        {
+            new ProgramOptions().AddRecentDocument(fileName);
+            LoadRecentDocuments(new ProgramOptions());
+        }
+
+        void LoadRecentDocuments(ProgramOptions options)
+        {
+            recentDocumentsToolStripMenuItem.DropDown.Items.Clear();
+            string[] recentDocs = options.GetRecentDocuments();
+            if (recentDocs.Length > 0)
+            {
+                recentDocumentsToolStripMenuItem.Enabled = true;
+                int n = 1;
+                foreach (string doc in recentDocs)
+                {
+                    ToolStripItem t = recentDocumentsToolStripMenuItem.DropDown.Items.Add(
+                        string.Format("{0}: {1}", n, Path.GetFileNameWithoutExtension(doc)));
+                    n++;
+                    t.Tag = doc;
+                    t.Click += new EventHandler(recentDoc_Click);
+                }
+            }
+            else
+                recentDocumentsToolStripMenuItem.Enabled = false;
+
+        }
+
+
+        void recentDoc_Click(object sender, EventArgs e)
+        {
+            if (sender is ToolStripItem && ((ToolStripItem)sender).Tag is string &&
+                File.Exists((string)((ToolStripItem)sender).Tag) && CheckDirty())
+                OpenFile((string)((ToolStripItem)sender).Tag);
         }
 
         void ipc_MessageReceived(IpcMessage msg)
@@ -1047,6 +1085,8 @@ namespace Workbook
                     UpdateTitleBar();
                     // show first page
                     ShowFirstPage();
+                    // add to recent documents
+                    AddRecentDocument(fileName);
                 }
                 catch (Exception e2)
                 {
@@ -1067,8 +1107,9 @@ namespace Workbook
                 OpenFile(ofd.FileName);
         }
 
-        void Save()
+        bool Save()
         {
+            bool retval = false;
             CheckState();
             // progress form
             ProgressForm pf = new ProgressForm();
@@ -1088,6 +1129,10 @@ namespace Workbook
                     dem.Dirty = false;
                     beenSaved = true;
                     UpdateTitleBar();
+                    // add to recent documents
+                    AddRecentDocument(fileName);
+                    // set retval to true
+                    retval = true;
                 }
                 catch (Exception e2)
                 {
@@ -1096,6 +1141,7 @@ namespace Workbook
                 pf.Close();
             };
             pf.ShowDialog();
+            return retval;
         }
 
         bool SaveAs()
@@ -1107,8 +1153,7 @@ namespace Workbook
             if (sfd.ShowDialog() == DialogResult.OK)
             {
                 fileName = sfd.FileName;
-                Save();
-                return true;
+                return Save();
             }
             else
                 return false;
@@ -1125,8 +1170,7 @@ namespace Workbook
                         if (!beenSaved)
                             return SaveAs();
                         else
-                            Save();
-                        return true;
+                            return Save();
                     case DialogResult.No:
                         return true;
                     default:
