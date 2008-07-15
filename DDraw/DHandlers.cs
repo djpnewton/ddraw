@@ -62,8 +62,9 @@ namespace DDraw
 
             BackgroundFigure = new BackgroundFigure();
             BackgroundFigure.Fill = DColor.White;
-            BackgroundFigure.Width = PageTools.DefaultPageWidth;
-            BackgroundFigure.Height = PageTools.DefaultPageHeight;
+            DPoint sz = PageTools.FormatToSize(PageFormat.Default);
+            BackgroundFigure.Width = sz.X;
+            BackgroundFigure.Height = sz.Y;
         }
 
         void figures_ItemAdded(Figure item)

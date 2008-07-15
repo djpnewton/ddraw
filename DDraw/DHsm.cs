@@ -228,7 +228,7 @@ namespace DDraw
             set { keyMovementRate = value; }
         }
 
-        DPoint pageSize = new DPoint(PageTools.DefaultPageWidth, PageTools.DefaultPageHeight);
+        DPoint pageSize = PageTools.FormatToSize(PageFormat.Default);
         public void SetPageSize(DPoint pageSize)
         {
             this.pageSize = pageSize;

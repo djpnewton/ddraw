@@ -379,7 +379,7 @@ namespace DDraw
             set { hsm.KeyMovementRate = value; }
         }
 
-        UndoRedo<DPoint> _pageSize = new UndoRedo<DPoint>(new DPoint(PageTools.DefaultPageWidth, PageTools.DefaultPageHeight));
+        UndoRedo<DPoint> _pageSize = new UndoRedo<DPoint>(PageTools.FormatToSize(PageFormat.Default));
         public DPoint PageSize
         {
             get { return _pageSize.Value; }
@@ -393,15 +393,6 @@ namespace DDraw
                 hsm.SetPageSize(value);
             }
         }       
-        public PageFormat PageFormat
-        {
-            get { return PageTools.SizeToFormat(PageSize); }
-            set 
-            {
-                if (value != PageFormat.Custom)
-                    PageSize = PageTools.FormatToSize(value); 
-            }
-        }
 
         UndoRedo<string> _pageName = new UndoRedo<string>(null);
         public string PageName
@@ -500,8 +491,6 @@ namespace DDraw
             {
                 ClearSelected();
                 UpdateViewers();
-                // in case the page size was undooed
-                PageSize = PageSize;
             }
             if (UndoRedoCommandDone != null)
                 UndoRedoCommandDone(this, e);

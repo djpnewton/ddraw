@@ -305,19 +305,17 @@ namespace DDraw
         }
     }
 
-    public enum PageFormat { A4, A5, Letter, Custom };
+    public enum PageFormat { Default, A4, A5, Letter, Custom };
 
     public enum Zoom { FitToPage, FitToWidth, Custom };
 
     public static class PageTools
     {
-        public const int DefaultPageWidth = 500;
-        public const int DefaultPageHeight = 400;
-
         // TODO: find these out cross platform
         public const int DpiX = 96;
         public const int DpiY = 96;
 
+        const int DW = 132,  DH  = 106;
         const int A4W = 210, A4H = 297;
         const int A5W = 148, A5H = 210;
         const int LtW = 216, LtH = 279;
@@ -328,6 +326,8 @@ namespace DDraw
         {
             switch (pf)
             {
+                case PageFormat.Default:
+                    return new DPoint(DW, DH);
                 case PageFormat.A4:
                     return new DPoint(A4W, A4H);
                 case PageFormat.A5:
@@ -348,11 +348,13 @@ namespace DDraw
 
         public static PageFormat SizeMMToFormat(DPoint pgSzMM)
         {
-            if ((int)pgSzMM.X == A4W && (int)pgSzMM.Y == A4H)
+            if ((int)Math.Round(pgSzMM.X) == DW && (int)Math.Round(pgSzMM.Y) == DH)
+                return PageFormat.Default;
+            else if ((int)Math.Round(pgSzMM.X) == A4W && (int)Math.Round(pgSzMM.Y) == A4H)
                 return PageFormat.A4;
-            else if ((int)pgSzMM.X == A5W && (int)pgSzMM.Y == A5H)
+            else if ((int)Math.Round(pgSzMM.X) == A5W && (int)Math.Round(pgSzMM.Y) == A5H)
                 return PageFormat.A5;
-            else if ((int)pgSzMM.X == LtW && (int)pgSzMM.Y == LtH)
+            else if ((int)Math.Round(pgSzMM.X) == LtW && (int)Math.Round(pgSzMM.Y) == LtH)
                 return PageFormat.Letter;
             else
                 return PageFormat.Custom;

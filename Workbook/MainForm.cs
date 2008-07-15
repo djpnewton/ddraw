@@ -59,8 +59,13 @@ namespace Workbook
             }
             else
                 dem.AddEngine(de);
-            de.PageSize = new DPoint(PageTools.DefaultPageWidth, PageTools.DefaultPageHeight);
+            // page size and name
+            de.PageSize = dem.PageSize;
             de.PageName = dem.EngineCount.ToString();
+            // background figure
+            if (dem.BackgroundFigure != null && !de.CustomBackgroundFigure)
+                de.SetBackgroundFigure(dem.BackgroundFigure, false);
+            // 
             InitDEngine(de, true);
         }
 
@@ -83,9 +88,6 @@ namespace Workbook
             // add default properties to figures
             foreach (Figure f in de.Figures)
                 AddDefaultProperties(f);
-            // background figure
-            if (dem.BackgroundFigure != null && !de.CustomBackgroundFigure)
-                de.SetBackgroundFigure(dem.BackgroundFigure, false);
             // show it
             if (showIt)
                 SetCurrentDe(de);
@@ -763,18 +765,30 @@ namespace Workbook
         {
             CustomPageSizeForm f = new CustomPageSizeForm();
             f.PageSize = de.PageSize;
-            f.PageFormat = de.PageFormat;
             if (f.ShowDialog() == DialogResult.OK)
             {
-                de.UndoRedoStart("Change Page Size");
-                if (f.PageFormat == PageFormat.Custom)
-                    de.PageSize = f.PageSize;
+                if (f.ApplyAll)
+                {
+                    dem.UndoRedoStart("Set Global Page Size");
+                    dem.PageSize = f.PageSize;
+                    foreach (DEngine en in dem.GetEngines())
+                        SetEnginePageSize(en, f.PageSize);
+                    dem.UndoRedoCommit();
+                }
                 else
-                    de.PageFormat = f.PageFormat;
-                foreach (Figure fig in de.Figures)
-                    WorkBookUtils.PutInBounds(de, fig);
-                de.UndoRedoCommit();
+                {
+                    de.UndoRedoStart("Change Page Size");
+                    SetEnginePageSize(de, f.PageSize);
+                    de.UndoRedoCommit();
+                }
             }
+        }
+
+        private void SetEnginePageSize(DEngine de, DPoint pageSize)
+        {
+            de.PageSize = pageSize;
+            foreach (Figure fig in de.Figures)
+                WorkBookUtils.PutInBounds(de, fig);
         }
 
         private void actBackground_Execute(object sender, EventArgs e)
@@ -998,10 +1012,15 @@ namespace Workbook
                 {
                     // load new engines
                     dem.Clear();
+                    DPoint pageSize;
                     BackgroundFigure bf;
                     Dictionary<string, byte[]> extraEntries;
-                    List<DEngine> engines = FileHelper.Load(fileName, true, out bf,
+                    List<DEngine> engines = FileHelper.Load(fileName, true, out pageSize, out bf,
                         new string[] { AttachmentView.ATTACHMENTS_DIR }, out extraEntries);
+                    if (pageSize != null)
+                        dem.PageSize = pageSize;
+                    else
+                        dem.PageSize = PageTools.FormatToSize(PageFormat.Default);
                     if (bf != null)
                         dem.BackgroundFigure = bf;
                     else
@@ -1065,7 +1084,7 @@ namespace Workbook
                         extraEntries.Add(AttachmentView.ATTACHMENTS_DIR + Path.DirectorySeparatorChar + name,
                             attachmentView1.GetAttachment(name));
                     // save
-                    FileHelper.Save(fileName, dem.GetEngines(), dem.BackgroundFigure, extraEntries);
+                    FileHelper.Save(fileName, dem.GetEngines(), dem.PageSize, dem.BackgroundFigure, extraEntries);
                     dem.Dirty = false;
                     beenSaved = true;
                     UpdateTitleBar();

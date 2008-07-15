@@ -14,12 +14,20 @@ namespace Workbook
     {
         public DPoint PageSize
         {
-            get { return PageTools.SizeMMtoSize(new DPoint((double)nudWidthMM.Value, (double)nudHeightMM.Value)); }
+            get 
+            {
+                if (PageFormat == PageFormat.Default || PageFormat == PageFormat.A4 ||
+                    PageFormat == PageFormat.A5 || PageFormat == PageFormat.Letter)
+                    return PageTools.FormatToSize(PageFormat);
+                else
+                    return PageTools.SizeMMtoSize(new DPoint((double)nudWidthMM.Value, (double)nudHeightMM.Value)); 
+            }
             set
             {
                 DPoint pgSzMM = PageTools.SizetoSizeMM(value);
                 nudWidthMM.Value = (decimal)pgSzMM.X;
                 nudHeightMM.Value = (decimal)pgSzMM.Y;
+                PageFormat = PageTools.SizeMMToFormat(pgSzMM);
             }
         }
 
@@ -27,7 +35,9 @@ namespace Workbook
         {
             get
             {
-                if (rbA4.Checked)
+                if (rbDefault.Checked)
+                    return PageFormat.Default;
+                else if (rbA4.Checked)
                     return PageFormat.A4;
                 else if (rbA5.Checked)
                     return PageFormat.A5;
@@ -37,6 +47,11 @@ namespace Workbook
                     PageFormat.Custom;
             }
             set { UpdatePageFormat(value); }
+        }
+
+        public bool ApplyAll
+        {
+            get { return cbApplyAll.Checked; }
         }
 
         public CustomPageSizeForm()

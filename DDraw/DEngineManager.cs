@@ -42,6 +42,17 @@ namespace DDraw
             }
         }
 
+        UndoRedo<DPoint> _pageSize = new UndoRedo<DPoint>(PageTools.FormatToSize(PageFormat.Default));
+        public DPoint PageSize
+        {
+            get { return _pageSize.Value; }
+            set
+            {
+                if (!value.Equals(_pageSize.Value))
+                    _pageSize.Value = value;
+            }
+        }
+
         UndoRedo<BackgroundFigure> _backgroundFigure = new UndoRedo<BackgroundFigure>();
         public BackgroundFigure BackgroundFigure
         {
@@ -61,9 +72,15 @@ namespace DDraw
         void undoRedoArea_CommandDone(object sender, CommandDoneEventArgs e)
         {
             if (e.CommandDoneType == CommandDoneType.Commit)
+            {
                 // clear all redos for engines
                 foreach (DEngine de in engines)
                     de.UndoRedoClearRedos();
+            }
+            else
+                // in case the page size was undooed
+                foreach (DEngine en in engines)
+                    en.PageSize = en.PageSize;
             DoUndoRedoChanged(this, e);
         }
 
@@ -72,6 +89,9 @@ namespace DDraw
             if (e.CommandDoneType == CommandDoneType.Commit)
                 // clear all redos for undoRedoArea
                 undoRedoArea.ClearRedos();
+            else
+                // in case the page size was undooed
+                ((DEngine)sender).PageSize = ((DEngine)sender).PageSize;
             DoUndoRedoChanged(sender, e);
         }
 

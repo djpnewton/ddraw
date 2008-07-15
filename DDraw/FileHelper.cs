@@ -29,7 +29,7 @@ namespace DDraw
             zipOut.Write(data, 0, data.Length);
         }
 
-        public static void Save(string fileName, List<DEngine> engines, BackgroundFigure bf, Dictionary<string, byte[]> extraEntries)
+        public static void Save(string fileName, List<DEngine> engines, DPoint pageSize, BackgroundFigure bf, Dictionary<string, byte[]> extraEntries)
         {
             System.Text.ASCIIEncoding encoding = new System.Text.ASCIIEncoding();
             using (ZipOutputStream zipOut = new ZipOutputStream(File.Create(fileName)))
@@ -60,6 +60,18 @@ namespace DDraw
                 // write background figure
                 if (bf != null)
                 {
+                    // store page size to background figure
+                    if (pageSize != null)
+                    {
+                        bf.Width = pageSize.X;
+                        bf.Height = pageSize.Y;
+                    }
+                    else
+                    {
+                        DPoint sz = PageTools.FormatToSize(PageFormat.Default);
+                        bf.Width = sz.X;
+                        bf.Height = sz.Y;
+                    }
                     byte[] data = encoding.GetBytes(FigureSerialize.FormatToXml(bf, images));
                     Write(zipOut, GENBKGNDFIGURE, data);
                 }
@@ -97,9 +109,10 @@ namespace DDraw
                 return null;
         }
 
-        public static List<DEngine> Load(string fileName, bool usingEngineManager, out BackgroundFigure bf, string[] extraEntryDirs, out Dictionary<string, byte[]> extraEntries)
+        public static List<DEngine> Load(string fileName, bool usingEngineManager, out DPoint pageSize, out BackgroundFigure bf, string[] extraEntryDirs, out Dictionary<string, byte[]> extraEntries)
         {
             System.Text.ASCIIEncoding encoding = new System.Text.ASCIIEncoding();
+            pageSize = null;
             bf = null;
             extraEntries = null;
             List<DEngine> res = new List<DEngine>();
@@ -172,6 +185,9 @@ namespace DDraw
                     {
                         LoadImage(zf, figs[0]);
                         bf = (BackgroundFigure)figs[0];
+                        // read page size from background figure
+                        if (bf.Width > 0 && bf.Height > 0)
+                            pageSize = new DPoint(bf.Width, bf.Height);
                     }
                 }
                 // read extra entries
