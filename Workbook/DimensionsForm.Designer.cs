@@ -46,6 +46,7 @@ namespace Workbook
             this.cbGroupY = new System.Windows.Forms.CheckBox();
             this.cbGroupX = new System.Windows.Forms.CheckBox();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.cbLockAspect = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.numX)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numY)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numWidth)).BeginInit();
@@ -75,6 +76,7 @@ namespace Workbook
             // 
             // numX
             // 
+            this.numX.DecimalPlaces = 4;
             this.numX.Location = new System.Drawing.Point(60, 12);
             this.numX.Maximum = new decimal(new int[] {
             1000000,
@@ -92,6 +94,7 @@ namespace Workbook
             // 
             // numY
             // 
+            this.numY.DecimalPlaces = 4;
             this.numY.Location = new System.Drawing.Point(60, 38);
             this.numY.Maximum = new decimal(new int[] {
             1000000,
@@ -109,6 +112,7 @@ namespace Workbook
             // 
             // numWidth
             // 
+            this.numWidth.DecimalPlaces = 4;
             this.numWidth.Location = new System.Drawing.Point(60, 64);
             this.numWidth.Maximum = new decimal(new int[] {
             1000000,
@@ -123,9 +127,11 @@ namespace Workbook
             this.numWidth.Name = "numWidth";
             this.numWidth.Size = new System.Drawing.Size(72, 20);
             this.numWidth.TabIndex = 4;
+            this.numWidth.Validating += new System.ComponentModel.CancelEventHandler(this.numWidth_Validating);
             // 
             // numHeight
             // 
+            this.numHeight.DecimalPlaces = 4;
             this.numHeight.Location = new System.Drawing.Point(60, 90);
             this.numHeight.Maximum = new decimal(new int[] {
             1000000,
@@ -140,6 +146,7 @@ namespace Workbook
             this.numHeight.Name = "numHeight";
             this.numHeight.Size = new System.Drawing.Size(72, 20);
             this.numHeight.TabIndex = 5;
+            this.numHeight.Validating += new System.ComponentModel.CancelEventHandler(this.numHeight_Validating);
             // 
             // lbX
             // 
@@ -179,6 +186,7 @@ namespace Workbook
             // 
             // numRotation
             // 
+            this.numRotation.DecimalPlaces = 4;
             this.numRotation.Location = new System.Drawing.Point(60, 116);
             this.numRotation.Maximum = new decimal(new int[] {
             1000000,
@@ -264,6 +272,17 @@ namespace Workbook
             this.panel1.Size = new System.Drawing.Size(207, 4);
             this.panel1.TabIndex = 21;
             // 
+            // cbLockAspect
+            // 
+            this.cbLockAspect.AutoSize = true;
+            this.cbLockAspect.Location = new System.Drawing.Point(138, 78);
+            this.cbLockAspect.Name = "cbLockAspect";
+            this.cbLockAspect.Size = new System.Drawing.Size(86, 17);
+            this.cbLockAspect.TabIndex = 22;
+            this.cbLockAspect.Text = "Lock Aspect";
+            this.cbLockAspect.UseVisualStyleBackColor = true;
+            this.cbLockAspect.CheckedChanged += new System.EventHandler(this.cbLockAspect_CheckedChanged);
+            // 
             // DimensionsForm
             // 
             this.AcceptButton = this.btnOk;
@@ -271,6 +290,7 @@ namespace Workbook
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btnCancel;
             this.ClientSize = new System.Drawing.Size(230, 184);
+            this.Controls.Add(this.cbLockAspect);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.cbGroupX);
             this.Controls.Add(this.cbGroupY);
@@ -325,5 +345,6 @@ namespace Workbook
         private System.Windows.Forms.CheckBox cbGroupY;
         private System.Windows.Forms.CheckBox cbGroupX;
         private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.CheckBox cbLockAspect;
     }
 }

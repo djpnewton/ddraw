@@ -1508,17 +1508,21 @@ namespace Workbook
                         f.Y = df.FigY;
                     else
                         f.Y += df.FigY - origRect.Y;
+                    f.BeforeResize();
                     if (df.GroupWidth)
                         f.Width = df.FigWidth;
                     if (df.GroupHeight)
                         f.Height = df.FigHeight;
+                    f.AfterResize();
                     if (df.GroupRotation)
                         f.Rotation = df.FigRotation;
                 }
                 if (df.Figures.Count == 1)
                 {
+                    df.Figures[0].BeforeResize();
                     df.Figures[0].Width = df.FigWidth;
                     df.Figures[0].Height = df.FigHeight;
+                    df.Figures[0].AfterResize();
                     df.Figures[0].Rotation = df.FigRotation;
                 }
                 de.UndoRedoCommit();

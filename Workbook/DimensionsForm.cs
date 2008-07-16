@@ -59,6 +59,7 @@ namespace Workbook
                     {
                         numWidth.Minimum = Convert.ToDecimal(figs[0].MinSize);
                         numHeight.Minimum = Convert.ToDecimal(figs[0].MinSize);
+                        cbLockAspect.Checked = figs[0].LockAspectRatio;
                     }
                     else
                     {
@@ -66,6 +67,7 @@ namespace Workbook
                         numHeight.Enabled = false;
                         numRotation.Enabled = false;
                     }
+                    cbLockAspect.Visible = figs.Count == 1;
                 }
                 else
                 {
@@ -145,6 +147,44 @@ namespace Workbook
         private void cbGroupRot_CheckedChanged(object sender, EventArgs e)
         {
             numRotation.Enabled = cbGroupRot.Checked;
+        }
+
+        decimal aspectRatio;
+
+        private void cbLockAspect_CheckedChanged(object sender, EventArgs e)
+        {
+            if (cbLockAspect.Checked)
+                aspectRatio = numWidth.Value / numHeight.Value;
+        }
+
+        private void numWidth_Validating(object sender, CancelEventArgs e)
+        {
+            if (cbLockAspect.Checked)
+            {
+                decimal v = numWidth.Value / aspectRatio;
+                if (v < numHeight.Minimum)
+                {
+                    numWidth.Value = numHeight.Value * aspectRatio;
+                    e.Cancel = true;
+                }
+                else
+                    numHeight.Value = v;
+            }
+        }
+
+        private void numHeight_Validating(object sender, CancelEventArgs e)
+        {
+            if (cbLockAspect.Checked)
+            {
+                decimal v = numHeight.Value * aspectRatio;
+                if (v < numWidth.Minimum)
+                {
+                    numHeight.Value = numWidth.Value / aspectRatio;
+                    e.Cancel = true;
+                }
+                else
+                    numWidth.Value = v;
+            }
         }
     }
 }
