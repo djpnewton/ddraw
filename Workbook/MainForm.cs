@@ -658,6 +658,11 @@ namespace Workbook
 
         private void attachmentToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            InsertAttachment();
+        }
+
+        private void InsertAttachment()
+        {
             OpenFileDialog ofd = new OpenFileDialog();
             ofd.Filter = "All Files|*.*";
             if (ofd.ShowDialog() == DialogResult.OK)
@@ -989,22 +994,25 @@ namespace Workbook
                 dem.UndoRedoCommit();
             }
             else if (attachmentView1.Focused)
-            {
-                foreach (ListViewItem item in attachmentView1.SelectedItems)
-                    if (AttachmentLinked(item.Text))
-                    {
-                        if (MessageBox.Show("One of the attachments is linked by a figure. Are you sure you want to delete it?",
-                            "Attachment is Linked", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
-                            break;
-                        else
-                            return;
-                    }
-                CheckState();
-                dem.UndoRedoStart("Delete Attachments");
-                foreach (ListViewItem item in attachmentView1.SelectedItems)
-                    attachmentView1.RemoveAttachment(item);
-                dem.UndoRedoCommit();
-            }
+                DeleteAttachment();
+        }
+
+        private void DeleteAttachment()
+        {
+            foreach (ListViewItem item in attachmentView1.SelectedItems)
+                if (AttachmentLinked(item.Text))
+                {
+                    if (MessageBox.Show("One of the attachments is linked by a figure. Are you sure you want to delete it?",
+                        "Attachment is Linked", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
+                        break;
+                    else
+                        return;
+                }
+            CheckState();
+            dem.UndoRedoStart("Delete Attachments");
+            foreach (ListViewItem item in attachmentView1.SelectedItems)
+                attachmentView1.RemoveAttachment(item);
+            dem.UndoRedoCommit();
         }
 
         private void actDelete_Execute(object sender, EventArgs e)
@@ -1727,6 +1735,16 @@ namespace Workbook
                 if (attachmentView1.CheckAttachmentExists(path))
                     attachmentView1.AddAttachment(path);
             dem.UndoRedoCommit();
+        }
+
+        private void attachmentView1_Insert(object sender, EventArgs e)
+        {
+            InsertAttachment();
+        }
+
+        private void attachmentView1_Delete(object sender, EventArgs e)
+        {
+            DeleteAttachment();
         }
 
         // Page Management toolbar

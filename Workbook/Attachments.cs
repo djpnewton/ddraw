@@ -21,8 +21,12 @@ namespace Workbook
         UndoRedoDictionary<string, byte[]> attachmentDict = new UndoRedoDictionary<string, byte[]>();
 
         public event FileDropHandler FileDrop;
+        public event EventHandler Insert;
+        public event EventHandler Delete;
 
         public string TempDir = null;
+
+        MenuItem deleteMenuItem;
 
         public AttachmentView()
         {
@@ -44,6 +48,13 @@ namespace Workbook
             // item activate
             Activation = ItemActivation.Standard;
             ItemActivate += new EventHandler(AttachmentView_ItemActivate);
+            // context menu
+            MenuItem ins = new MenuItem("Insert");
+            ins.Click += new EventHandler(insert_Click);
+            deleteMenuItem = new MenuItem("Delete");
+            deleteMenuItem.Click += new EventHandler(delete_Click);
+            ContextMenu = new ContextMenu(new MenuItem[] { ins, deleteMenuItem });
+            ContextMenu.Popup += new EventHandler(ContextMenu_Popup);
         }
 
         void AttachmentView_DragEnter(object sender, DragEventArgs e)
@@ -70,6 +81,23 @@ namespace Workbook
                 { ExecuteAttachment(SelectedItems[0].Text); }
                 catch (Exception ex)
                 { MessageBox.Show(ex.Message, "Attachment Execute Error"); }
+        }
+
+        void insert_Click(object sender, EventArgs e)
+        {
+            if (Insert != null)
+                Insert(this, new EventArgs());
+        }
+
+        void delete_Click(object sender, EventArgs e)
+        {
+            if (Delete != null)
+                Delete(this, new EventArgs());
+        }
+
+        void ContextMenu_Popup(object sender, EventArgs e)
+        {
+            deleteMenuItem.Enabled = SelectedItems.Count > 0;
         }
 
         byte[] ReadFileData(string path)
