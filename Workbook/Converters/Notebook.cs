@@ -481,9 +481,9 @@ namespace Workbook.Converters
 
         void applyLink(Figure f, SvgElement e)
         {
-            if (e.Attributes.ContainsKey(NBLockedAttr))
+            if (e.Attributes.ContainsKey(NBLinkShortCutAttr))
             {
-                string shortcut = (string)e.Attributes[NBLockedAttr];
+                string shortcut = (string)e.Attributes[NBLinkShortCutAttr];
                 if (shortcut.StartsWith(NBLinkHttpPrefix))
                 {
                     f.UserAttrs[Links.LinkType] = LinkType.WebPage.ToString();
