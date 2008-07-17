@@ -82,15 +82,6 @@ namespace Workbook.PersonalToolbar
             pnlLabel.Visible = false;
         }
 
-        public void SetupFigureEdit()
-        {
-            Text = "Figure Edit";
-            tsCustomFigureType.Visible = false;
-            cbType.Visible = false;
-            cbToolEditAddToPersonal.Visible = false;
-            pnlLabel.Visible = false;
-        }
-
         public void SetupToolButtonEdit()
         {
             Text = "Personal Toolbutton";

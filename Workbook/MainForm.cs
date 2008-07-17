@@ -541,7 +541,7 @@ namespace Workbook
             actLink.Enabled = figs.Count == 1;
             actLockFigure.Enabled = figs.Count > 0;
             actDimensions.Enabled = figs.Count > 0;
-            actProperties.Enabled = figs.Count == 1;
+            actProperties.Enabled = figs.Count > 0;
         }
 
         void AddDefaultProperties(Figure fig)
@@ -1532,18 +1532,20 @@ namespace Workbook
 
         private void actProperties_Execute(object sender, EventArgs e)
         {
-            if (de.SelectedFigures.Count == 1)
+            if (de.SelectedFigures.Count > 0)
             {
-                Figure fig = de.SelectedFigures[0];
-                PtButtonForm f = new PtButtonForm();
-                f.SetupFigureEdit();
-                f.PersonalTool = new CustomFigureTool(null, false, fig.GetType(), DAuthorProperties.FromFigure(fig), null);
+                PropertiesForm f = new PropertiesForm();
+                f.Figures = de.SelectedFigures;
                 if (f.ShowDialog() == DialogResult.OK)
                 {
+                    // update all selected figures to have the same properties as the PropertiesForm figures
                     de.UndoRedoStart("Change Properties");
-                    ((CustomFigureTool)f.PersonalTool).Dap.ApplyPropertiesToFigure(fig);
+                    for (int i = 0; i < f.Figures.Count; i++)
+                        DAuthorProperties.FromFigure(f.Figures[i]).ApplyPropertiesToFigure(de.SelectedFigures[i]);                  
                     de.UndoRedoCommit();
                     de.UpdateViewers();
+                    // update property state toolstrip
+                    tsPropState.De = de;
                 }
             }
         }
