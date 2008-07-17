@@ -1052,7 +1052,7 @@ namespace Workbook
         {
             if (de != null && dv != null)
             {
-                de.UndoRedoStart("Change Property");
+                de.UndoRedo.Start("Change Property");
                 foreach (Figure f in de.SelectedFigures)
                 {
                     if (sender == btnFill && f is IFillable)
@@ -1091,7 +1091,7 @@ namespace Workbook
                             ((ITextable)f).Strikethrough = btnStrikethrough.Checked;
                     }
                 }
-                de.UndoRedoCommit();
+                de.UndoRedo.Commit();
                 dv.Update();
             }
         }

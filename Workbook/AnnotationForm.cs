@@ -51,15 +51,15 @@ namespace Workbook
             de.AddViewer(dv);
             WorkBookUtils.SetupDEngine(de);
             // setup undo/redo sensitive stuff
-            de.UndoRedoStart("initial setup");
+            de.UndoRedo.Start("initial setup");
             de.PageSize = new DPoint(screenSize.Width, screenSize.Height);
             BackgroundFigure bf = new BackgroundFigure(); // background figure
             bf.ImageData = WFHelper.ToImageData(bmp);
             bf.FileName = "screen_capture.png";
             bf.Position = DImagePosition.Normal;
             de.SetBackgroundFigure(bf, true);
-            de.UndoRedoCommit();
-            de.UndoRedoClearHistory();
+            de.UndoRedo.Commit();
+            de.UndoRedo.ClearHistory();
             // set form to full screen
             Location = new Point(0, 0);
             Size = screenSize;

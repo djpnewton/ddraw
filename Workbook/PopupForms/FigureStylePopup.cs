@@ -39,9 +39,9 @@ namespace Workbook
             de = new DEngine(null);
             de.AddViewer(dv);
             // set page height to viewer size
-            de.UndoRedoStart("blah");
+            de.UndoRedo.Start("blah");
             de.PageSize = new DPoint(vc.Width, vc.Height);
-            de.UndoRedoCommit();
+            de.UndoRedo.Commit();
             // add the figure
             WorkBookUtils.PreviewFigure(de, dv, figureClass, dap, new DPoint(vc.Width, vc.Height));
             // buttons

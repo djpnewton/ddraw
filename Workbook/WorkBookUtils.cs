@@ -133,7 +133,7 @@ namespace Workbook
         {
             // add figure de so it shows on the viewer
             de.ClearPage();
-            de.UndoRedoStart("blah");
+            de.UndoRedo.Start("blah");
             Figure f = (Figure)Activator.CreateInstance(figureClass);
             dap.ApplyPropertiesToFigure(f);
             if (f is PolylineFigure || f is LineFigure)
@@ -172,7 +172,7 @@ namespace Workbook
                 f.Width = viewerSize.X * 3 / 4.0;
             }
             de.AddFigure(f);
-            de.UndoRedoCommit();
+            de.UndoRedo.Commit();
             dv.Update();
         }
 

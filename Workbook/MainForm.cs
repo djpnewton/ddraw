@@ -443,9 +443,9 @@ namespace Workbook
 
         void de_FigureLockClick(DEngine de, Figure clickedFigure, DPoint pt)
         {
-            de.UndoRedoStart("Unlock Figure");
+            undoRedoArea.Start("Unlock Figure");
             clickedFigure.Locked = false;
-            de.UndoRedoCommit();
+            undoRedoArea.Commit();
             dvEditor.Update();
         }
 
@@ -681,9 +681,9 @@ namespace Workbook
         private void previewBar1_PreviewNameChanged(Preview p, string name)
         {
             CheckState();
-            de.UndoRedoStart("Change Page Name");
+            undoRedoArea.Start("Change Page Name");
             de.PageName = name;
-            de.UndoRedoCommit();
+            undoRedoArea.Commit();
         }
 
         private void imageToolStripMenuItem_Click(object sender, EventArgs e)
@@ -696,9 +696,9 @@ namespace Workbook
                 de.ClearSelected();
                 DBitmap bmp =  WFHelper.MakeBitmap(ofd.FileName);
                 byte[] imageData = WorkBookUtils.GetBytesFromFile(ofd.FileName);
-                de.UndoRedoStart("Add Image");
+                undoRedoArea.Start("Add Image");
                 de.AddFigure(new ImageFigure(new DRect(10, 10, bmp.Width, bmp.Height), 0, imageData, ofd.FileName));
-                de.UndoRedoCommit();
+                undoRedoArea.Commit();
                 de.UpdateViewers();
             }
         }
@@ -806,7 +806,7 @@ namespace Workbook
         {
             if (!nonTextInsertionKey && textInsertionPoint != null && de.HsmState != DHsmState.TextEdit)
             {
-                de.UndoRedoStart("Text Edit");
+                de.UndoRedo.Start("Text Edit");
                 TextFigure tf = new TextFigure(textInsertionPoint, "", 0);
                 tsEngineState.DapText.ApplyPropertiesToFigure(tf);
                 de.AddFigure(tf);
@@ -867,9 +867,9 @@ namespace Workbook
                 }
                 else
                 {
-                    de.UndoRedoStart("Change Page Size");
+                    undoRedoArea.Start("Change Page Size");
                     SetEnginePageSize(de, f.PageSize);
-                    de.UndoRedoCommit();
+                    undoRedoArea.Commit();
                 }
             }
         }
@@ -897,9 +897,9 @@ namespace Workbook
                 }
                 else
                 {
-                    de.UndoRedoStart("Set Background");
+                    undoRedoArea.Start("Set Background");
                     de.SetBackgroundFigure(bf.BackgroundFigure, true);
-                    de.UndoRedoCommit();
+                    undoRedoArea.Commit();
                 }
             }
         }
@@ -934,33 +934,33 @@ namespace Workbook
         {
             if (iData.GetDataPresent(FigureSerialize.DDRAW_FIGURE_XML))
             {
-                de.UndoRedoStart(string.Format("{0} Figures", opPrefix));
+                undoRedoArea.Start(string.Format("{0} Figures", opPrefix));
                 List<Figure> figs = FigureSerialize.FromXml((string)iData.GetData(FigureSerialize.DDRAW_FIGURE_XML));
                 foreach (Figure f in figs)
                     WorkBookUtils.PutInBounds(de, f);
                 de.PasteAsSelectedFigures(figs);
-                de.UndoRedoCommit();
+                undoRedoArea.Commit();
             }
             else if (iData.GetDataPresent(DataFormats.Text))
             {
-                de.UndoRedoStart(string.Format("{0} Text", opPrefix));
+                undoRedoArea.Start(string.Format("{0} Text", opPrefix));
                 TextFigure f = new TextFigure(new DPoint(objX, objY), (string)iData.GetData(DataFormats.Text), 0);
                 tsEngineState.DapText.ApplyPropertiesToFigure(f);
                 de.PasteAsSelectedFigures(new List<Figure>(new Figure[] { f }));
-                de.UndoRedoCommit();
+                undoRedoArea.Commit();
             }
             else if (iData.GetDataPresent(DataFormats.Bitmap))
             {
-                de.UndoRedoStart(string.Format("{0} Bitmap", opPrefix));
+                undoRedoArea.Start(string.Format("{0} Bitmap", opPrefix));
                 Bitmap bmp = (Bitmap)iData.GetData(DataFormats.Bitmap, true);
                 byte[] imageData = WFHelper.ToImageData(bmp);
                 ImageFigure f = new ImageFigure(new DRect(objX, objY, bmp.Width, bmp.Height), 0, imageData, "Clipboard.bmp");
                 de.PasteAsSelectedFigures(new List<Figure>(new Figure[] { f }));
-                de.UndoRedoCommit();
+                undoRedoArea.Commit();
             }
             else if (iData.GetDataPresent(DataFormats.FileDrop))
             {
-                de.UndoRedoStart(string.Format("{0} File", opPrefix));
+                undoRedoArea.Start(string.Format("{0} File", opPrefix));
                 string path = ((string[])iData.GetData(DataFormats.FileDrop))[0];
                 if (IsImageFilePath(path))
                 {
@@ -977,11 +977,11 @@ namespace Workbook
                     tsEngineState.DapText.ApplyPropertiesToFigure(f);
                     de.PasteAsSelectedFigures(new List<Figure>(new Figure[] { f }));
                 }
-                de.UndoRedoCommit();
+                undoRedoArea.Commit();
             }
             else if (iData.GetDataPresent(attachmentView1.GetType()))
             {
-                de.UndoRedoStart(string.Format("{0} Attachment", opPrefix));
+                undoRedoArea.Start(string.Format("{0} Attachment", opPrefix));
                 foreach (ListViewItem item in attachmentView1.SelectedItems)
                 {
                     if (IsImageFilePath(item.Text))
@@ -1003,7 +1003,7 @@ namespace Workbook
                         de.PasteAsSelectedFigures(new List<Figure>(new Figure[] { f }));
                     }
                 }
-                de.UndoRedoCommit();
+                undoRedoArea.Commit();
             }
         }
 
@@ -1406,11 +1406,11 @@ namespace Workbook
             {
                 Application.DoEvents();
                 // import annotations
-                de.UndoRedoStart("Import Screen Capture");
+                undoRedoArea.Start("Import Screen Capture");
                 ImageFigure f = new ImageFigure(new DRect(10, 10, bmp.Width, bmp.Height), 0, WFHelper.ToImageData(bmp), "screencap.png");
                 de.AddFigure(f);
                 dvEditor.Update();
-                de.UndoRedoCommit();
+                undoRedoArea.Commit();
                 // close dialog
                 pf.Close();
             };
@@ -1458,7 +1458,7 @@ namespace Workbook
                 switch (lf.ShowDialog())
                 {
                     case DialogResult.OK:
-                        de.UndoRedoStart("Change Link");
+                        undoRedoArea.Start("Change Link");
                         f.UserAttrs[Links.LinkType] = lf.LinkType.ToString();
                         switch (lf.LinkType)
                         {
@@ -1496,15 +1496,15 @@ namespace Workbook
                             f.UserAttrs.Remove(Links.LinkType);
                             f.UserAttrs.Remove(Links.LinkBody);
                         }
-                        de.UndoRedoCommit();
+                        undoRedoArea.Commit();
                         CheckLinkGlyph(f);
                         break;
                     case DialogResult.Abort:
-                        de.UndoRedoStart("Remove Link");
+                        undoRedoArea.Start("Remove Link");
                         f.UserAttrs.Remove(Links.Link);
                         f.UserAttrs.Remove(Links.LinkType);
                         f.UserAttrs.Remove(Links.LinkBody);
-                        de.UndoRedoCommit();
+                        undoRedoArea.Commit();
                         CheckLinkGlyph(f);
                         break;
                 }
@@ -1517,10 +1517,10 @@ namespace Workbook
         {
             if (de.SelectedFigures.Count > 0)
             {
-                de.UndoRedoStart("Change Figure Lock");
+                undoRedoArea.Start("Change Figure Lock");
                 foreach (Figure f in de.SelectedFigures)
                     f.Locked = !f.Locked;
-                de.UndoRedoCommit();
+                undoRedoArea.Commit();
                 dvEditor.Update();
             }
         }
@@ -1549,7 +1549,7 @@ namespace Workbook
             df.Figures = de.SelectedFigures;
             if (df.ShowDialog() == DialogResult.OK)
             {
-                de.UndoRedoStart("Change Figure Dimensions");
+                undoRedoArea.Start("Change Figure Dimensions");
                 DRect origRect = df.BoundingRect(df.Figures);
                 foreach (Figure f in df.Figures)
                 {
@@ -1578,7 +1578,7 @@ namespace Workbook
                     df.Figures[0].AfterResize();
                     df.Figures[0].Rotation = df.FigRotation;
                 }
-                de.UndoRedoCommit();
+                undoRedoArea.Commit();
                 de.UpdateViewers();
             }
         }
@@ -1592,10 +1592,10 @@ namespace Workbook
                 if (f.ShowDialog() == DialogResult.OK)
                 {
                     // update all selected figures to have the same properties as the PropertiesForm figures
-                    de.UndoRedoStart("Change Properties");
+                    undoRedoArea.Start("Change Properties");
                     for (int i = 0; i < f.Figures.Count; i++)
-                        DAuthorProperties.FromFigure(f.Figures[i]).ApplyPropertiesToFigure(de.SelectedFigures[i]);                  
-                    de.UndoRedoCommit();
+                        DAuthorProperties.FromFigure(f.Figures[i]).ApplyPropertiesToFigure(de.SelectedFigures[i]);
+                    undoRedoArea.Commit();
                     de.UpdateViewers();
                     // update property state toolstrip
                     tsPropState.De = de;
@@ -1651,11 +1651,11 @@ namespace Workbook
             {
                 Application.DoEvents();
                 // import annotations
-                de.UndoRedoStart("Import Annotations");
+                undoRedoArea.Start("Import Annotations");
                 ImageFigure f = new ImageFigure(new DRect(10, 10, bmp.Width, bmp.Height), 0, WFHelper.ToImageData(bmp), "annotations.png");
                 de.AddFigure(f);
                 dvEditor.Update();
-                de.UndoRedoCommit();
+                undoRedoArea.Commit();
                 // close dialog
                 pf.Close();
             };
@@ -1906,19 +1906,19 @@ namespace Workbook
 
         private void flipXToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            de.UndoRedoStart("Flip X");
+            undoRedoArea.Start("Flip X");
             foreach (Figure fig in de.SelectedFigures)
                 fig.FlipX = !fig.FlipX;
-            de.UndoRedoCommit();
+            undoRedoArea.Commit();
             dvEditor.Update();
         }
 
         private void flipYToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            de.UndoRedoStart("Flip Y");
+            undoRedoArea.Start("Flip Y");
             foreach (Figure fig in de.SelectedFigures)
                 fig.FlipY = !fig.FlipY;
-            de.UndoRedoCommit();
+            undoRedoArea.Commit();
             dvEditor.Update();
         }
 

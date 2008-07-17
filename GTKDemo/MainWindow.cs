@@ -55,7 +55,7 @@ namespace GTKDemo
 			de.DebugMessage += new DebugMessageHandler(DebugMessage);
             de.ContextClick += new ClickHandler(de_ContextClick);
 			// add figures
-            de.UndoRedoStart("add initial figures");
+            de.UndoRedo.Start("add initial figures");
 			de.AddFigure(new EllipseFigure(new DRect(20, 30, 100, 100), 0));
 			RectFigure rf = new RectFigure(new DRect(10, 20, 100, 100), 0);
 			rf.Alpha = 0.7;
@@ -85,8 +85,8 @@ namespace GTKDemo
             ((LineFigure)f).StrokeStyle = DStrokeStyle.DashDot;
             ((LineFigure)f).StrokeWidth = 5;
             de.AddFigure(f);
-            de.UndoRedoCommit();
-            de.UndoRedoClearHistory();
+            de.UndoRedo.Commit();
+            de.UndoRedo.ClearHistory();
             // resize window			
 			Resize(400, 300);
 		}

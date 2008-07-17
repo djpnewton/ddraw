@@ -119,9 +119,9 @@ namespace Workbook.PersonalToolbar
             de = new DEngine(null);
             de.AddViewer(dv);
             // set page height to viewer size
-            de.UndoRedoStart("blah");
+            de.UndoRedo.Start("blah");
             de.PageSize = new DPoint(vcCustomFigure.Width, vcCustomFigure.Height);
-            de.UndoRedoCommit();
+            de.UndoRedo.Commit();
             // default to toolbutton edit
             SetupToolButtonEdit();
         }

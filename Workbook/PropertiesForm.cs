@@ -19,17 +19,17 @@ namespace Workbook
             {
                 // copy figures to our DEngine
                 string xml = FigureSerialize.FormatToXml(value, null);
-                de.UndoRedoStart("blah");
+                de.UndoRedo.Start("blah");
                 List<Figure> figs = FigureSerialize.FromXml(xml);
                 foreach (Figure f in figs)
                     de.AddFigure(f);
-                de.UndoRedoCommit();
+                de.UndoRedo.Commit();
                 // put figures in center of page and adjust for aspect ratios
                 if (figs.Count > 1)         // group figures
                     de.GroupFigures(figs);
                 if (de.Figures.Count == 1)  // position single (or grouped) figure and adjust page size
                 {
-                    de.UndoRedoStart("blah");
+                    de.UndoRedo.Start("blah");
                     Figure f = de.Figures[0];
                     const int space = 5;
                     double vcAr = vc.Width / (double)vc.Height;
@@ -47,7 +47,7 @@ namespace Workbook
                         f.Left = f.Left - r.Left + space;
                         f.Top = f.Top - r.Top + (de.PageSize.Y / 2 - r.Height / 2);
                     }
-                    de.UndoRedoCommit();
+                    de.UndoRedo.Commit();
                     if (figs.Count > 1)     // ungroup figures
                         de.UngroupFigures(de.Figures);
                 }
@@ -70,9 +70,9 @@ namespace Workbook
             de = new DEngine(null);
             de.AddViewer(dv);
             // set page height to viewer size
-            de.UndoRedoStart("blah");
+            de.UndoRedo.Start("blah");
             de.PageSize = new DPoint(vc.Width, vc.Height);
-            de.UndoRedoCommit();
+            de.UndoRedo.Commit();
 
             tsFigureProps.De = de;
             tsFigureProps.Dv = dv;

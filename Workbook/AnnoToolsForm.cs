@@ -64,7 +64,7 @@ namespace Workbook
             if (annotationForm != null)
             {
                 // ask if user wants to cancel
-                if (!haveImportedAnnotations && annotationForm.De.CanUndo)
+                if (!haveImportedAnnotations && annotationForm.De.UndoRedo.CanUndo)
                 {
                     if (MessageBox.Show("You have not imported any annotations. This action will erase your annotations, are you sure you want to continue?",
                         "No Annotations Imported", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.No)
@@ -156,7 +156,7 @@ namespace Workbook
 
         private void btnUndo_Click(object sender, EventArgs e)
         {
-            annotationForm.De.Undo();
+            annotationForm.De.UndoRedo.Undo();
         }
 
         private void btnImportArea_Click(object sender, EventArgs e)
