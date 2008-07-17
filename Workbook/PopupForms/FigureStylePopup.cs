@@ -36,7 +36,7 @@ namespace Workbook
             dv.Preview = true;
             dv.AntiAlias = antiAlias;
             // create the DEngine
-            de = new DEngine(false);
+            de = new DEngine(null);
             de.AddViewer(dv);
             // set page height to viewer size
             de.UndoRedoStart("blah");

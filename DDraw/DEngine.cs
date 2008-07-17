@@ -424,12 +424,13 @@ namespace DDraw
         public event AddedFigureHandler AddedFigure;
         public event SelectMeasureHandler MeasureRect;
 
-        static int instanceNumber = 0;
-
-        public DEngine(bool usingEngineManager)
+        public DEngine(UndoRedoArea area)
         {
-            // create the undo/redo manager
-            undoRedoArea = new UndoRedoArea(string.Format("area #{0}", instanceNumber));
+            // setup undo/redo manager
+            if (area == null)
+                undoRedoArea = new UndoRedoArea("");
+            else
+                undoRedoArea = area;
             undoRedoArea.CommandDone += new EventHandler<CommandDoneEventArgs>(undoRedoArea_CommandDone);
             // create viewer handler
             viewerHandler = new DViewerHandler();
@@ -437,8 +438,6 @@ namespace DDraw
             viewerHandler.MouseDown += new DMouseButtonEventHandler(viewerHandler_MouseDown);
             viewerHandler.MouseUp += new DMouseButtonEventHandler(viewerHandler_MouseUp);
             // create figure handler
-            if (!usingEngineManager)
-                undoRedoArea.Start("create figure handler");
             figureHandler = new DFigureHandler();
             figureHandler.SelectedFiguresChanged += new SelectedFiguresHandler(DoSelectedFiguresChanged);
             figureHandler.AddedFigure += delegate(DEngine de, Figure fig, bool fromHsm)
@@ -446,11 +445,6 @@ namespace DDraw
                 if (AddedFigure != null)
                     AddedFigure(this, fig, fromHsm);
             };
-            if (!usingEngineManager)
-            {
-                undoRedoArea.Commit();
-                undoRedoArea.ClearHistory();
-            }
             // create state machine
             hsm = new DHsm(undoRedoArea, viewerHandler, figureHandler);
             hsm.DebugMessage += new DebugMessageHandler(hsm_DebugMessage);
@@ -463,8 +457,6 @@ namespace DDraw
             hsm.DragFigureEnd += new DragFigureHandler(hsm_DragFigureEnd);
             hsm.MeasureRect += new SelectMeasureHandler(hsm_MeasureRect);
             hsm.StateChanged += new HsmStateChangedHandler(hsm_StateChanged);
-            // update instance number
-            instanceNumber++;
         }
 
         void viewerHandler_MouseMove(DTkViewer dv, DPoint pt)

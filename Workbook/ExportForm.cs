@@ -15,15 +15,15 @@ namespace Workbook
     public partial class ExportForm : Form
     {
         string docFileName;
-        DEngineManager dem;
+        IList<DEngine> engines;
         DEngine current;
 
-        public ExportForm(string docFileName, DEngineManager dem, DEngine current)
+        public ExportForm(string docFileName, IList<DEngine> engines, DEngine current)
         {
             InitializeComponent();
             // 
             this.docFileName = docFileName;
-            this.dem = dem;
+            this.engines = engines;
             this.current = current;
             // select starting options
             rbPDF.Enabled = WFHelper.Cairo;
@@ -34,7 +34,7 @@ namespace Workbook
             rbCurrent.Checked = true;
             // fill lbPageSelect
             lbPageSelect.Items.Clear();
-            for (int i = 1; i <= dem.GetEngines().Count; i++)
+            for (int i = 1; i <= engines.Count; i++)
                 lbPageSelect.Items.Add(i);
             lbPageSelect.Enabled = false;
         }
@@ -47,14 +47,14 @@ namespace Workbook
         private void btnOk_Click(object sender, EventArgs e)
         {
             // create list of engines to export
-            List<DEngine> expEngines = new List<DEngine>();
+            IList<DEngine> expEngines = new List<DEngine>();
             if (rbCurrent.Checked)
                 expEngines.Add(current);
             else if (rbAllPages.Checked)
-                expEngines = dem.GetEngines();
+                expEngines = engines;
             else
                 foreach (int item in lbPageSelect.SelectedItems)
-                    expEngines.Add(dem.GetEngine(item - 1));
+                    expEngines.Add(engines[item - 1]);
             // export to selected format
             if (expEngines.Count <= 0)
                 MessageBox.Show("No pages selected", "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -84,7 +84,7 @@ namespace Workbook
             }
         }
 
-        private bool ExportPDF(List<DEngine> expEngines)
+        private bool ExportPDF(IList<DEngine> expEngines)
         {
             bool result = false;
             SaveFileDialog sfd = new SaveFileDialog();
@@ -126,7 +126,7 @@ namespace Workbook
             return result;
         }
 
-        private bool ExportImage(List<DEngine> expEngines)
+        private bool ExportImage(IList<DEngine> expEngines)
         {
             bool result = false;
             FolderBrowserDialog fbd = new FolderBrowserDialog();
@@ -147,7 +147,7 @@ namespace Workbook
                             DBitmap bmp = WFHelper.MakeBitmap((int)de.PageSize.X, (int)de.PageSize.Y);
                             DGraphics dg = WFHelper.MakeGraphics(bmp);
                             dvPrint.Paint(dg, de.BackgroundFigure, de.Figures);
-                            bmp.Save(Path.Combine(fbd.SelectedPath, string.Format(fileNameTemplate, dem.IndexOfEngine(de) + 1)));
+                            bmp.Save(Path.Combine(fbd.SelectedPath, string.Format(fileNameTemplate, engines.IndexOf(de) + 1)));
                             dg.Dispose();
                             bmp.Dispose();
                         }

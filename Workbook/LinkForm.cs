@@ -132,8 +132,8 @@ namespace Workbook
             }
         }
 
-        List<DEngine> engines;
-        public List<DEngine> Engines
+        IList<DEngine> engines;
+        public IList<DEngine> Engines
         {
             get { return engines; }
             set 

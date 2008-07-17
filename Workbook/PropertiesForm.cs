@@ -67,7 +67,7 @@ namespace Workbook
             dv.EditFigures = false;
             dv.AntiAlias = true;
             dv.Preview = true;
-            de = new DEngine(false);
+            de = new DEngine(null);
             de.AddViewer(dv);
             // set page height to viewer size
             de.UndoRedoStart("blah");

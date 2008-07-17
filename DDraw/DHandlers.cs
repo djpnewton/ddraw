@@ -22,7 +22,7 @@ namespace DDraw
             }
         }
 
-        UndoRedo<BackgroundFigure> _backgroundFigure = new UndoRedo<BackgroundFigure>();
+        UndoRedo<BackgroundFigure> _backgroundFigure = new UndoRedo<BackgroundFigure>(new BackgroundFigure());
         public BackgroundFigure BackgroundFigure
         {
             get { return _backgroundFigure.Value; }
@@ -60,7 +60,6 @@ namespace DDraw
         {
             figures.ItemAdded += new ItemAddedDelegate<Figure>(figures_ItemAdded);
 
-            BackgroundFigure = new BackgroundFigure();
             BackgroundFigure.Fill = DColor.White;
             DPoint sz = PageTools.FormatToSize(PageFormat.Default);
             BackgroundFigure.Width = sz.X;

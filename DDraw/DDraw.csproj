@@ -54,7 +54,6 @@
   <ItemGroup>
     <Compile Include="DColor.cs" />
     <Compile Include="DDraw.cs" />
-    <Compile Include="DEngineManager.cs" />
     <Compile Include="DHsm.cs" />
     <Compile Include="DHandlers.cs" />
     <Compile Include="DGeom.cs" />

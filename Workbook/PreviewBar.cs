@@ -215,7 +215,7 @@ namespace Workbook
                 PreviewSelected(p);
         }
 
-        public void MatchPreviewsToEngines(List<DEngine> engines, DViewer dv)
+        public void MatchPreviewsToEngines(IList<DEngine> engines, DViewer dv)
         {
             // Remove previews that dont have a matching preview
             for (int i = Controls.Count-1; i >= 0; i--)
@@ -249,12 +249,6 @@ namespace Workbook
             }
             if (reorder)
                 SetPreviewTops(0);
-        }
-
-        public void UpdatePreviewsDirtyProps()
-        {
-            foreach (Preview p in Controls)
-                p.Dirty = p.DEngine.CanUndo;
         }
 
         private void PreviewBar_SizeChanged(object sender, EventArgs e)

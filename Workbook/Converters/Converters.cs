@@ -4,12 +4,13 @@ using System.Text;
 using System.Xml;
 
 using DDraw;
+using DejaVu;
 
 namespace Workbook.Converters
 {
     public static class Converters
     {
-        public static List<DEngine> FromNotebook(string fileName, out Dictionary<string, byte[]> attachments)
+        public static List<DEngine> FromNotebook(string fileName, UndoRedoArea undoRedoArea, out Dictionary<string, byte[]> attachments)
         {
             List<DEngine> result = new List<DEngine>();
             // create notebook converter
@@ -19,7 +20,7 @@ namespace Workbook.Converters
             List<string> pageEntries = nbk.GetPageEntries(manifest);
             foreach (string entry in pageEntries)
             {
-                DEngine de = new DEngine(true);
+                DEngine de = new DEngine(undoRedoArea);
                 XmlDocument page = nbk.GetPage(entry);
                 if (page != null)
                 {

@@ -70,5 +70,9 @@
       <Project>{483D8236-B660-429C-A441-19FF82EA3867}</Project>
       <Name>DDraw</Name>
     </ProjectReference>
+    <ProjectReference Include="..\libs\Dejavu\DejaVu.csproj">
+      <Project>{A204BD9C-1C1A-4AE8-9716-B7B6C67E09F7}</Project>
+      <Name>DejaVu</Name>
+    </ProjectReference>
   </ItemGroup>
 </Project>

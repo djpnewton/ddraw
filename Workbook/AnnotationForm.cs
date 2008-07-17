@@ -46,7 +46,7 @@ namespace Workbook
             dv.Preview = true;
             dv.EditFigures = true;
             dv.AntiAlias = true;
-            de = new DEngine(false);
+            de = new DEngine(null);
             de.AddedFigure += new AddedFigureHandler(de_AddedFigure);
             de.AddViewer(dv);
             WorkBookUtils.SetupDEngine(de);

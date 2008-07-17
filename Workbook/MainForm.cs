@@ -12,15 +12,53 @@ using System.Drawing.Printing;
 
 using DDraw;
 using DDraw.WinForms;
+using DejaVu;
+using DejaVu.Collections.Generic;
 using Workbook.PersonalToolbar;
 
 namespace Workbook
 {
     public partial class MainForm : WorkBookForm
     {
-        DEngineManager dem;
-        DEngine de = null;
+        UndoRedoArea undoRedoArea = new UndoRedoArea("Workbook Area");
+        UndoRedoList<DEngine> engines = new UndoRedoList<DEngine>();
 
+        public bool Dirty
+        {
+            set
+            {
+                if (value == false)
+                {
+                    undoRedoArea.ClearHistory();
+                    undoRedoArea_UndoRedoChanged(this, new CommandDoneEventArgs(CommandDoneType.Commit));
+                }
+            }
+            get { return undoRedoArea.CanUndo; }
+        }
+
+        UndoRedo<DPoint> _pageSize = new UndoRedo<DPoint>(PageTools.FormatToSize(PageFormat.Default));
+        public DPoint PageSize
+        {
+            get { return _pageSize.Value; }
+            set
+            {
+                if (!value.Equals(_pageSize.Value))
+                    _pageSize.Value = value;
+            }
+        }
+
+        UndoRedo<BackgroundFigure> _backgroundFigure = new UndoRedo<BackgroundFigure>();
+        public BackgroundFigure BackgroundFigure
+        {
+            get { return _backgroundFigure.Value; }
+            set
+            {
+                if (_backgroundFigure.Value != value)
+                    _backgroundFigure.Value = value;
+            }
+        }
+
+        DEngine de = null;
         DTkViewer dvEditor;
 
         BitmapGlyph linkGlyph;
@@ -48,23 +86,23 @@ namespace Workbook
 
         void CreateDEngine(DEngine sibling)
         {
-            DEngine de = new DEngine(true);
+            DEngine de = new DEngine(undoRedoArea);
             if (sibling != null)
             {
-                int idx = dem.IndexOfEngine(sibling);
+                int idx = engines.IndexOf(sibling);
                 if (idx >= 0)
-                    dem.InsertEngine(idx + 1, de);
+                    engines.Insert(idx + 1, de);
                 else
-                    dem.AddEngine(de);
+                    engines.Add(de);
             }
             else
-                dem.AddEngine(de);
+                engines.Add(de);
             // page size and name
-            de.PageSize = dem.PageSize;
-            de.PageName = dem.EngineCount.ToString();
+            de.PageSize = PageSize;
+            de.PageName = engines.Count.ToString();
             // background figure
-            if (dem.BackgroundFigure != null && !de.CustomBackgroundFigure)
-                de.SetBackgroundFigure(dem.BackgroundFigure, false);
+            if (BackgroundFigure != null && !de.CustomBackgroundFigure)
+                de.SetBackgroundFigure(BackgroundFigure, false);
             // 
             InitDEngine(de, true);
         }
@@ -136,9 +174,8 @@ namespace Workbook
             IntPtr h = Handle;
             // Initialze DGraphics
             WFHelper.InitGraphics();
-            // DEngine Manager
-            dem = new DEngineManager();
-            dem.UndoRedoChanged += new EventHandler(dem_UndoRedoChanged);
+            // undo redo
+            undoRedoArea.CommandDone += new EventHandler<CommandDoneEventArgs>(undoRedoArea_UndoRedoChanged);
             // edit viewer
             dvEditor = new WFViewer(wfvcEditor);
             dvEditor.EditFigures = true;
@@ -155,7 +192,7 @@ namespace Workbook
             LinebaseFigure._hitTestExtension = 5;
             // new document
             New();
-            dem.UndoRedoClearHistory();
+            undoRedoArea.ClearHistory();
             // update some controls and titlebar
             UpdateUndoRedoActions();
             UpdateTitleBar();
@@ -353,41 +390,49 @@ namespace Workbook
 
         void UpdateUndoRedoActions()
         {
-            actUndo.Enabled = dem.CanUndo(de);
+            actUndo.Enabled = undoRedoArea.CanUndo;
+            actUndo.Text = "Undo";
             if (actUndo.Enabled)
-                actUndo.Text = string.Format("Undo \"{0}\"", dem.UndoCaption(de));
-            else
-                actUndo.Text = "Undo";
-            actRedo.Enabled = dem.CanRedo(de);
+            {
+                IEnumerator<CommandId> en = undoRedoArea.UndoCommands.GetEnumerator();
+                if (en.MoveNext())
+                    actUndo.Text = string.Format("Undo \"{0}\"", en.Current.Caption);
+            };
+            actRedo.Enabled = undoRedoArea.CanRedo;
+            actRedo.Text = "Redo";
             if (actRedo.Enabled)
-                actRedo.Text = string.Format("Redo \"{0}\"", dem.RedoCaption(de));
-            else
-                actRedo.Text = "Redo";
+            {
+                IEnumerator<CommandId> en = undoRedoArea.UndoCommands.GetEnumerator();
+                if (en.MoveNext())
+                    actRedo.Text = string.Format("Redo \"{0}\"", en.Current.Caption);
+            }
+                
         }
 
-        void dem_UndoRedoChanged(object sender, EventArgs e)
+        void undoRedoArea_UndoRedoChanged(object sender, CommandDoneEventArgs e)
         {
             UpdateUndoRedoActions();
             UpdateTitleBar();
-            if (sender == dem)
-            {
-                // check if engines have changed order
-                previewBar1.MatchPreviewsToEngines(dem.GetEngines(), dvEditor);
-                foreach (DEngine de in dem.GetEngines())
-                    de.UpdateViewers();
-            }
+            if (e.CommandDoneType == CommandDoneType.Commit)
+                // clear all redos for undoRedoArea
+                undoRedoArea.ClearRedos();
             else
             {
+                // in case the page size was undooed
+                foreach (DEngine en in engines)
+                    en.PageSize = en.PageSize;
+                foreach (DEngine de in engines)
+                    de.UpdateViewers();
                 // check if UserAttrs have changed and update glyphs
                 foreach (Figure f in de.Figures)
                     CheckLinkGlyph(f);
                 // check if a page is renamed
                 previewBar1.UpdatePreviewNames();
+                // check if attachments have changed
+                attachmentView1.UpdateAttachmentView();
             }
-            // check if attachments have changed
-            attachmentView1.UpdateAttachmentView();
-            // update previews dirty states
-            previewBar1.UpdatePreviewsDirtyProps();
+            // check if engines have changed order
+            previewBar1.MatchPreviewsToEngines(engines, dvEditor);
         }
 
         void de_FigureClick(DEngine de, Figure clickedFigure, DPoint pt)
@@ -471,30 +516,30 @@ namespace Workbook
                         switch (lp)
                         {
                             case LinkPage.First:
-                                previewBar1.SetPreviewSelected(dem.GetEngine(0));
+                                previewBar1.SetPreviewSelected(engines[0]);
                                 break;
                             case LinkPage.Last:
-                                previewBar1.SetPreviewSelected(dem.GetEngine(dem.EngineCount - 1));
+                                previewBar1.SetPreviewSelected(engines[engines.Count - 1]);
                                 break;
                             case LinkPage.Next:
-                                int idx = dem.IndexOfEngine(de) + 1;
-                                if (idx < dem.EngineCount)
-                                    previewBar1.SetPreviewSelected(dem.GetEngine(idx));
+                                int idx = engines.IndexOf(de) + 1;
+                                if (idx < engines.Count)
+                                    previewBar1.SetPreviewSelected(engines[idx]);
                                 else
                                     goto case LinkPage.First;
                                 break;
                             case LinkPage.Previous:
-                                int idx2 = dem.IndexOfEngine(de) - 1;
+                                int idx2 = engines.IndexOf(de) - 1;
                                 if (idx2 > 0)
-                                    previewBar1.SetPreviewSelected(dem.GetEngine(idx2));
+                                    previewBar1.SetPreviewSelected(engines[idx2]);
                                 else
                                     goto case LinkPage.Last;
                                 break;
                             default:
                                 int n = 0;
                                 int.TryParse(link, out n);
-                                if (n >= 0 && n < dem.EngineCount)
-                                    previewBar1.SetPreviewSelected(dem.GetEngine(n));
+                                if (n >= 0 && n < engines.Count)
+                                    previewBar1.SetPreviewSelected(engines[n]);
                                 else
                                     MessageBox.Show(string.Format("Page \"{0}\" does not exist", n + 1), "Page link error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                                 break;
@@ -607,9 +652,11 @@ namespace Workbook
         private void previewBar1_PreviewMove(Preview p, Preview to)
         {
             CheckState();
-            dem.UndoRedoStart("Move Page");
-            dem.MoveEngine(p.DEngine, to.DEngine);
-            dem.UndoRedoCommit();
+            undoRedoArea.Start("Move Page");
+            int idx = engines.IndexOf(to.DEngine);
+            engines.Remove(p.DEngine);
+            engines.Insert(idx, p.DEngine);
+            undoRedoArea.Commit();
         }
 
         private void previewBar1_PreviewFigureDrop(Preview p, List<Figure> figs)
@@ -617,7 +664,7 @@ namespace Workbook
             if (!p.Selected)
             {
                 CheckState();
-                dem.UndoRedoStart("Drag to New Page");
+                undoRedoArea.Start("Drag to New Page");
                 foreach (Figure f in figs)
                 {
                     WorkBookUtils.PutInBounds(p.DEngine, f);
@@ -625,7 +672,7 @@ namespace Workbook
                     p.DEngine.AddFigure(f);
                 }
                 de.ClearSelected();
-                dem.UndoRedoCommit();
+                undoRedoArea.Commit();
                 de.UpdateViewers();
                 p.DEngine.UpdateViewers();
             }
@@ -667,10 +714,10 @@ namespace Workbook
             ofd.Filter = "All Files|*.*";
             if (ofd.ShowDialog() == DialogResult.OK)
             {
-                dem.UndoRedoStart("Add Attachment");
+                undoRedoArea.Start("Add Attachment");
                 if (attachmentView1.CheckAttachmentExists(ofd.FileName))
                     attachmentView1.AddAttachment(ofd.FileName);
-                dem.UndoRedoCommit();
+                undoRedoArea.Commit();
             }
         }
 
@@ -812,11 +859,11 @@ namespace Workbook
             {
                 if (f.ApplyAll)
                 {
-                    dem.UndoRedoStart("Set Global Page Size");
-                    dem.PageSize = f.PageSize;
-                    foreach (DEngine en in dem.GetEngines())
+                    undoRedoArea.Start("Set Global Page Size");
+                    PageSize = f.PageSize;
+                    foreach (DEngine en in engines)
                         SetEnginePageSize(en, f.PageSize);
-                    dem.UndoRedoCommit();
+                    undoRedoArea.Commit();
                 }
                 else
                 {
@@ -842,11 +889,11 @@ namespace Workbook
             {
                 if (bf.ApplyAll)
                 {
-                    dem.UndoRedoStart("Set Global Background");
-                    dem.BackgroundFigure = bf.BackgroundFigure;
-                    foreach (DEngine en in dem.GetEngines())
-                        en.SetBackgroundFigure(dem.BackgroundFigure, false);
-                    dem.UndoRedoCommit();
+                    undoRedoArea.Start("Set Global Background");
+                    BackgroundFigure = bf.BackgroundFigure;
+                    foreach (DEngine en in engines)
+                        en.SetBackgroundFigure(BackgroundFigure, false);
+                    undoRedoArea.Commit();
                 }
                 else
                 {
@@ -968,7 +1015,7 @@ namespace Workbook
 
         bool AttachmentLinked(string name)
         {
-            foreach (DEngine de in dem.GetEngines())
+            foreach (DEngine de in engines)
                 foreach (Figure f in de.Figures)
                 {
                     if (f.UserAttrs.ContainsKey(Links.Link) && f.UserAttrs.ContainsKey(Links.LinkType))
@@ -987,11 +1034,11 @@ namespace Workbook
             else if (previewBar1Focused)
             {
                 CheckState();
-                dem.UndoRedoStart("Delete Page");
-                dem.RemoveEngine(de);
-                if (dem.EngineCount == 0)
+                undoRedoArea.Start("Delete Page");
+                engines.Remove(de);
+                if (engines.Count == 0)
                     CreateDEngine(de);
-                dem.UndoRedoCommit();
+                undoRedoArea.Commit();
             }
             else if (attachmentView1.Focused)
                 DeleteAttachment();
@@ -1009,10 +1056,10 @@ namespace Workbook
                         return;
                 }
             CheckState();
-            dem.UndoRedoStart("Delete Attachments");
+            undoRedoArea.Start("Delete Attachments");
             foreach (ListViewItem item in attachmentView1.SelectedItems)
                 attachmentView1.RemoveAttachment(item);
-            dem.UndoRedoCommit();
+            undoRedoArea.Commit();
         }
 
         private void actDelete_Execute(object sender, EventArgs e)
@@ -1022,7 +1069,7 @@ namespace Workbook
 
         void UpdateTitleBar()
         {
-            if (dem.Dirty)
+            if (Dirty)
                 Text = string.Format("{0} - {1}{2}", ProgramName, Path.GetFileNameWithoutExtension(fileName), "*");
             else
                 Text = string.Format("{0} - {1}", ProgramName, Path.GetFileNameWithoutExtension(fileName));
@@ -1033,14 +1080,20 @@ namespace Workbook
             fileName = "New Document";
             beenSaved = false;
 
-            dem.UndoRedoStart("New Document");
-            dem.Clear();
+            undoRedoArea.Start("New Document");
+            ClearDocument();
             CreateDEngine(null);
             attachmentView1.ClearAttachments();
-            dem.UndoRedoCommit();
-            dem.Dirty = false;
+            undoRedoArea.Commit();
+            Dirty = false;
 
             UpdateTitleBar();
+        }
+
+        void ClearDocument()
+        {
+            engines.Clear();
+            BackgroundFigure = new BackgroundFigure();
         }
 
         void OpenFile(string fileName)
@@ -1053,29 +1106,29 @@ namespace Workbook
             {
                 Application.DoEvents();
                 // start undo/redo
-                dem.UndoRedoStart("Open Document");
+                undoRedoArea.Start("Open Document");
                 try
                 {
                     // load new engines
-                    dem.Clear();
+                    ClearDocument();
                     DPoint pageSize;
                     BackgroundFigure bf;
                     Dictionary<string, byte[]> extraEntries;
-                    List<DEngine> engines = FileHelper.Load(fileName, true, out pageSize, out bf,
+                    List<DEngine> engines = FileHelper.Load(fileName, undoRedoArea, out pageSize, out bf,
                         new string[] { AttachmentView.ATTACHMENTS_DIR }, out extraEntries);
                     if (pageSize != null)
-                        dem.PageSize = pageSize;
+                        PageSize = pageSize;
                     else
-                        dem.PageSize = PageTools.FormatToSize(PageFormat.Default);
+                        PageSize = PageTools.FormatToSize(PageFormat.Default);
                     if (bf != null)
-                        dem.BackgroundFigure = bf;
+                        BackgroundFigure = bf;
                     else
-                        dem.BackgroundFigure = new BackgroundFigure();
+                        BackgroundFigure = new BackgroundFigure();
                     // init new dengines
                     foreach (DEngine newDe in engines)
                     {
                         InitDEngine(newDe, false);
-                        dem.AddEngine(newDe);
+                        this.engines.Add(newDe);
                         Application.DoEvents(); // update progress form
                     }
                     // set attachments
@@ -1085,8 +1138,8 @@ namespace Workbook
                             if (name.IndexOf(AttachmentView.ATTACHMENTS_DIR) == 0)
                                 attachmentView1.AddAttachment(name, extraEntries[name]);
                     // commit undo/redo
-                    dem.UndoRedoCommit();
-                    dem.Dirty = false;
+                    undoRedoArea.Commit();
+                    Dirty = false;
                     // update vars
                     this.fileName = fileName;
                     beenSaved = true;
@@ -1098,7 +1151,7 @@ namespace Workbook
                 }
                 catch (Exception e2)
                 {
-                    dem.UndoRedoCancel();
+                    undoRedoArea.Cancel();
                     MessageBox.Show(e2.Message, "Error Reading File", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
                 pf.Close();
@@ -1128,11 +1181,11 @@ namespace Workbook
                         attachmentView1.GetAttachment(name));
                 // save
                 if (backupFile != null)
-                    FileHelper.Save(backupFile, dem.GetEngines(), dem.PageSize, dem.BackgroundFigure, extraEntries);
+                    FileHelper.Save(backupFile, engines, PageSize, BackgroundFigure, extraEntries);
                 else
                 {
-                    FileHelper.Save(fileName, dem.GetEngines(), dem.PageSize, dem.BackgroundFigure, extraEntries);
-                    dem.Dirty = false;
+                    FileHelper.Save(fileName, engines, PageSize, BackgroundFigure, extraEntries);
+                    Dirty = false;
                     beenSaved = true;
                     UpdateTitleBar();
                     // add to recent documents
@@ -1181,7 +1234,7 @@ namespace Workbook
 
         bool CheckDirty()
         {
-            if (dem.Dirty)
+            if (Dirty)
             {
                 switch (MessageBox.Show(string.Format("Save changes to \"{0}\"?", fileName), ProgramName,
                     MessageBoxButtons.YesNoCancel, MessageBoxIcon.Exclamation))
@@ -1228,25 +1281,25 @@ namespace Workbook
 
         private void actPrint_Execute(object sender, EventArgs e)
         {
-            if (dem.EngineCount > 0)
+            if (engines.Count > 0)
             {
                 PrintDialog pf = new PrintDialog();
                 pf.UseEXDialog = true;
                 pf.AllowSelection = false;
-                if (dem.EngineCount > 1)
+                if (engines.Count > 1)
                 {
                     pf.AllowCurrentPage = true;
                     pf.AllowSomePages = true;
                     pf.PrinterSettings.MinimumPage = 1;
-                    pf.PrinterSettings.MaximumPage = dem.EngineCount;
+                    pf.PrinterSettings.MaximumPage = engines.Count;
                     pf.PrinterSettings.FromPage = 1;
-                    pf.PrinterSettings.ToPage = dem.EngineCount;
+                    pf.PrinterSettings.ToPage = engines.Count;
                 }
                 if (pf.ShowDialog() == DialogResult.OK)
                 {
                     DPrintViewer dvPrint = new DPrintViewer();
                     // page iteration vars
-                    IEnumerator<DEngine> engineEnumerator = dem.GetEngines().GetEnumerator();
+                    IEnumerator<DEngine> engineEnumerator = engines.GetEnumerator();
                     engineEnumerator.MoveNext();
                     int pageIdx = pf.PrinterSettings.FromPage - 1;
                     // print document settings
@@ -1264,7 +1317,7 @@ namespace Workbook
                                 de = this.de;
                                 break;
                             case PrintRange.SomePages:
-                                de = dem.GetEngine(pageIdx);
+                                de = engines[pageIdx];
                                 pageIdx += 1;
                                 e2.HasMorePages = pageIdx < pd.PrinterSettings.ToPage;
                                 break;
@@ -1289,9 +1342,9 @@ namespace Workbook
         private void actNewPage_Execute(object sender, EventArgs e)
         {
             CheckState();
-            dem.UndoRedoStart("New Page");
+            undoRedoArea.Start("New Page");
             CreateDEngine(de);
-            dem.UndoRedoCommit();
+            undoRedoArea.Commit();
         }
 
         private void actDeletePage_Execute(object sender, EventArgs e)
@@ -1302,7 +1355,7 @@ namespace Workbook
         private void actClonePage_Execute(object sender, EventArgs e)
         {
             CheckState();
-            dem.UndoRedoStart("Clone Page");
+            undoRedoArea.Start("Clone Page");
             // clone data
             string clonedFigures = FigureSerialize.FormatToXml(de.Figures, null);
             string clonedBackground = null;
@@ -1318,7 +1371,7 @@ namespace Workbook
             List<Figure> figs = FigureSerialize.FromXml(clonedFigures);
             foreach (Figure f in figs)
                 de.AddFigure(f);
-            dem.UndoRedoCommit();
+            undoRedoArea.Commit();
         }
 
         private void actClearPage_Execute(object sender, EventArgs e)
@@ -1372,7 +1425,7 @@ namespace Workbook
                 Figure f = figs[0];
                 LinkForm lf = new LinkForm();
                 lf.CurrentEngine = de;
-                lf.Engines = dem.GetEngines();
+                lf.Engines = engines;
                 lf.Attachments = attachmentView1.GetAttachmentNames();
                 if (f.UserAttrs.ContainsKey(Links.LinkType) && f.UserAttrs.ContainsKey(Links.Link))
                 {
@@ -1475,13 +1528,13 @@ namespace Workbook
         private void actUndo_Execute(object sender, EventArgs e)
         {
             CheckState();
-            dem.Undo(de);
+            undoRedoArea.Undo();
         }
 
         private void actRedo_Execute(object sender, EventArgs e)
         {
             CheckState();
-            dem.Redo(de);
+            undoRedoArea.Redo();
         }
 
         private void actSelectAll_Execute(object sender, EventArgs e)
@@ -1574,13 +1627,13 @@ namespace Workbook
             {
                 Application.DoEvents();
                 // import annotations
-                dem.UndoRedoStart("Import Annotations");
+                undoRedoArea.Start("Import Annotations");
                 CreateDEngine(this.de);
                 this.de.PageSize = de.PageSize;
                 this.de.SetBackgroundFigure(de.BackgroundFigure, true);
                 foreach (Figure f in de.Figures)
                     this.de.AddFigure(f);
-                dem.UndoRedoCommit();
+                undoRedoArea.Commit();
                 // make sure previews line up properly
                 previewBar1.ResetPreviewPositions();
                 // close dialog
@@ -1736,11 +1789,11 @@ namespace Workbook
         private void attachmentView1_FileDrop(object sender, string[] filePaths)
         {
             CheckState();
-            dem.UndoRedoStart("Add Attachments");
+            undoRedoArea.Start("Add Attachments");
             foreach (string path in filePaths)
                 if (attachmentView1.CheckAttachmentExists(path))
                     attachmentView1.AddAttachment(path);
-            dem.UndoRedoCommit();
+            undoRedoArea.Commit();
         }
 
         private void attachmentView1_Insert(object sender, EventArgs e)
@@ -1781,28 +1834,28 @@ namespace Workbook
                     {
                         Application.DoEvents();
                         // start undo/redo
-                        dem.UndoRedoStart("Import Notebook");
+                        undoRedoArea.Start("Import Notebook");
                         try
                         {
                             // clear pages & attachments
-                            dem.Clear();
+                            ClearDocument();
                             attachmentView1.ClearAttachments();
                             // load notebook file
                             Dictionary<string, byte[]> attachments;
-                            List<DEngine> engines = Converters.Converters.FromNotebook(ofd.FileName, out attachments);
+                            List<DEngine> engines = Converters.Converters.FromNotebook(ofd.FileName, undoRedoArea, out attachments);
                             // add new pages
                             foreach (DEngine de in engines)
                             {
                                 InitDEngine(de, false);
-                                dem.AddEngine(de);
+                                this.engines.Add(de);
                                 Application.DoEvents(); // update progress form
                             }
                             // add new attachments
                             foreach (string name in attachments.Keys)
                                 attachmentView1.AddAttachment(name, attachments[name]);
                             // clear undos
-                            dem.UndoRedoCommit();
-                            dem.UndoRedoClearHistory();
+                            undoRedoArea.Commit();
+                            undoRedoArea.ClearHistory();
                             // update vars
                             fileName = Path.GetFileNameWithoutExtension(ofd.FileName);
                             beenSaved = false;
@@ -1812,7 +1865,7 @@ namespace Workbook
                         }
                         catch (Exception e3)
                         {
-                            dem.UndoRedoCancel();
+                            undoRedoArea.Cancel();
                             MessageBox.Show(e3.Message, "Error Reading File", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         }
                         pf.Close();
@@ -1825,13 +1878,13 @@ namespace Workbook
         private void exportToolStripMenuItem_Click(object sender, EventArgs e)
         {
             CheckState();
-            new ExportForm(fileName, dem, de).ShowDialog();
+            new ExportForm(fileName, engines, de).ShowDialog();
         }
 
         void ShowFirstPage()
         {
-            if (dem.EngineCount > 0)
-                previewBar1.SetPreviewSelected(dem.GetEngine(0));
+            if (engines.Count > 0)
+                previewBar1.SetPreviewSelected(engines[0]);
         }
 
         private void Toolbars_MenuItem_Click(object sender, EventArgs e)
