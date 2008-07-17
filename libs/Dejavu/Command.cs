@@ -6,31 +6,20 @@ using System.Diagnostics;
 
 namespace DejaVu
 {
-    public struct CommandId
-    {
-        public int Id;
-        public string Caption;
-        public CommandId(int id, string caption)
-        {
-            Id = id;
-            Caption = caption;
-        }
-    }
-
     class Command : IDisposable
     {
 		readonly UndoRedoArea parentArea;
-        public readonly CommandId CommandId;
+        public readonly string Caption;
+		internal readonly bool Visible;
+		Dictionary<IUndoRedoMember, object> changes = new Dictionary<IUndoRedoMember, object>();
 
-        static int _currentId = 0;
-
-		public Command(string caption, UndoRedoArea parentArea)
+		public Command(string caption, UndoRedoArea parentArea, bool visible)
         {
-            CommandId = new CommandId(_currentId++, caption);
+            Caption = caption;
 			this.parentArea = parentArea;
+			this.Visible = visible;
         }
 
-		Dictionary<IUndoRedoMember, object> changes = new Dictionary<IUndoRedoMember, object>();
 		public bool IsEnlisted(IUndoRedoMember member)
 		{
 			// if command suspended, it will always return true to prevent changes registration
@@ -50,11 +39,6 @@ namespace DejaVu
 			
 		}
 
-        public bool HasChanges
-        {
-            get { return changes.Count > 0; }
-        }
-
 		internal void Commit()
 		{
 			foreach (IUndoRedoMember member in changes.Keys)
@@ -62,6 +46,10 @@ namespace DejaVu
 		}
 		internal void Undo()
 		{
+			if (merges != null)
+				foreach (IUndoRedoMember member in merges.Keys)
+					member.OnUndo(merges[member]);
+
 			foreach (IUndoRedoMember member in changes.Keys)
 				member.OnUndo(changes[member]);
 		}
@@ -69,6 +57,15 @@ namespace DejaVu
 		{
 			foreach (IUndoRedoMember member in changes.Keys)
 				member.OnRedo(changes[member]);
+
+			if (merges != null)
+				foreach (IUndoRedoMember member in merges.Keys)
+					member.OnRedo(merges[member]);
+		}
+
+		public bool HasChanges
+		{
+			get { return changes.Count > 0; }
 		}
 
 		#region IDisposable Members
@@ -83,5 +80,14 @@ namespace DejaVu
 		}
 
 		#endregion
+
+		Dictionary<IUndoRedoMember, object> merges;
+		internal void Merge(Command mergedCommand)
+		{
+			if (merges == null)
+				merges = new Dictionary<IUndoRedoMember, object>();
+			foreach (IUndoRedoMember member in mergedCommand.changes.Keys)
+				merges[member] = mergedCommand[member];
+		}
 	}
 }

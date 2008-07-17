@@ -19,6 +19,8 @@ namespace DejaVu
 	{
 		/// <summary>This field serves primarily for debugging purposes</summary>
 		public readonly string Name;
+		object affinityOwner;		
+
 		/// <summary>
 		/// Initializes new area
 		/// </summary>
@@ -43,132 +45,144 @@ namespace DejaVu
 			get { return currentCommand; }
 		}
 
-        private bool span = false;
-        private void CheckSpan()
-        {
-            if (span)
-                Commit();
-        }
-
 		#region Undo/Redo stuff
 		/// <summary>Returns true if history has command that can be undone</summary>
-        public bool CanUndo
+		public bool CanUndo
 		{
-			get 
-            {
-                if (span)
-                    return true;
-                else
-                    return currentPosition >= 0; 
-            }
+			get { return currentPosition >= 0; }
 		}
 		/// <summary>Returns true if history has command that can be redone</summary>
-        public bool CanRedo
+		public bool CanRedo
 		{
-            get
-            {
-                if (span)
-                    return false;
-                else
-                    return currentPosition < history.Count - 1;
-            }          
+			get { return currentPosition < history.Count - 1; }
 		}
 		/// <summary>Undo last command from history list</summary>
 		public void Undo()
 		{
-            CheckSpan();
 			AssertNoCommand();
 			if (CanUndo)
 			{
+				affinityOwner = null;
 				Command command = history[currentPosition--];
 				command.Undo();
+				
 				OnCommandDone(CommandDoneType.Undo);
 			}
 		}
 		/// <summary>Repeats command that was undone before</summary>
-        public void Redo()
+		public void Redo()
 		{
-            CheckSpan();
 			AssertNoCommand();
 			if (CanRedo)
 			{
+				affinityOwner = null;
 				Command command = history[++currentPosition];
 				command.Redo();
+				
 				OnCommandDone(CommandDoneType.Redo);
 			}
 		}
 		#endregion
 
-		/// <summary>Start command. Any data changes must be done within a command.</summary>
+		/// <summary>Start a command. Any data changes must be done within a command.</summary>
 		/// <param name="commandCaption"></param>
 		/// <returns>Interface that allows properly finish the command with 'using' statement</returns>
-        public IDisposable Start(string commandCaption)
+		public IDisposable Start(string commandCaption)
 		{
-            CheckSpan();
+			this.affinityOwner = null;
+			return Start(commandCaption, true);
+		}
+		/// <summary>
+		/// Start a command with affinity checking. 
+		/// If several commands with equal captions and owners follow each other, 
+		/// they are affined and will be merged into single command.
+		/// This method is useful when you want a bunch of similar routine actions looks like a single command. 
+		/// E.g. user moves a rectangle 10 times and then sees one Move command in the undo list.
+		/// </summary>
+		/// <param name="commandCaption">Caption of the command</param>
+		/// <param name="owner">
+		/// Owner is used as an identifier to check affinity of commands. Any object can be an owner. 
+		/// If command has no owner (null), it never has affinity with any other command.
+		/// </param>
+		/// <returns>Interface that allows properly finish the command with 'using' statement</returns>
+		public IDisposable Start(string commandCaption, object owner)
+		{
+			if (owner == this.affinityOwner && // owners are equal
+				owner != null && // owners are not null
+				currentPosition >= 0 && // history has a command to check affinity
+				history[currentPosition].Caption == commandCaption) // captions are equal
+			{
+				return Start(commandCaption, false);
+			}
+			else
+			{
+				this.affinityOwner = owner;
+				return Start(commandCaption, true);
+			}
+		}
+		/// <summary>
+		/// Start invisible command. 
+		/// Any data changes must be done within a command. 
+		/// This command will never appear in the history. 
+		/// It will be undone/redone in bundle with previous visible command.</summary>
+		/// <param name="commandCaption">Caption of invisible command. Serves for tracking purposes only.</param>
+		/// <remarks><para>
+		/// Invisible commands are useful if you need to do some changes by some event 
+		/// but do not expose them to user as a standalone command. </para>
+		/// <para>For example, when user clicks on object, we could change SelectedObject property.
+		/// However, it is redundant to show this operation in history and allow to undo/redo it as a valuable command.
+		/// Instead of that, we can start invisible command and its results will be joined to previous command. 
+		/// Thus, when the previuos command will be undone, the selection will be undone too.
+		/// </remarks>
+		/// <returns>Interface that allows properly finish the command with 'using' statement</returns>
+		public IDisposable StartInvisible(string commandCaption)
+		{
+			return Start(commandCaption, false);
+		}
+		private IDisposable Start(string commandCaption, bool visible)
+		{
 			AssertNoCommand();
 			currentArea = this;
-			currentCommand = new Command(commandCaption, this);
+			currentCommand = new Command(commandCaption, this, visible);
 			return currentCommand;
 		}
-
-        /// <summary>StartSpan command. A span command will accrue changes between multiple StartSpan/CommitSpan 
-        /// commands (if nameMustMatch is true the same name must be given for each StartSpan command).
-        /// Any other command (Start, Commit, Undo, CanUndo etc..) will end the span command.
-        /// </summary>
-        /// <param name="commandCaption"></param>
-        /// <returns>Interface that allows properly finish the command with 'using' statement</returns>
-        public IDisposable StartSpan(string name, bool nameMustMatch)
-        {
-            if (IsCommandStarted)
-            {
-                if (nameMustMatch)
-                    AssertOnHoldCommandHasThisName(name);
-                return currentCommand;
-            }
-            else
-            {
-                Start(name);
-                span = true;
-                return currentCommand;
-            }
-        }
-
 		/// <summary>Commits current command and saves changes into history</summary>
-        public void Commit()
-        {
-            span = false;
-            AssertCurrentCommand();
-            if (currentCommand.HasChanges)
-            {
-                currentCommand.Commit();
+		public void Commit()
+		{
+			AssertCurrentCommand();
+			if (currentCommand.HasChanges)
+			{
+				currentCommand.Commit();
 
-                // add command to history (all redo records will be removed)
-                int count = history.Count - currentPosition - 1;
-                history.RemoveRange(currentPosition + 1, count);
+				// remove all redo records
+				int count = history.Count - currentPosition - 1;
+				history.RemoveRange(currentPosition + 1, count);
 
-                history.Add(currentCommand);
-                currentPosition++;
-                TruncateHistory();
-
-                OnCommandDone(CommandDoneType.Commit);
-            }
-            currentCommand = null;
-        }
-
-        /// <summary>Pretends to Commit current command (sends event)</summary>
-        public void CommitSpan()
-        {
-            AssertSpanCommand();
-            OnCommandDone(CommandDoneType.Commit);
-        }
-
+				// add command to history 
+				if (currentCommand.Visible)
+				{
+					history.Add(currentCommand);
+					currentPosition++;
+					TruncateHistory();
+				}
+				else
+				{
+					// merge with previous command
+					if (currentPosition >= 0)
+						history[currentPosition].Merge(currentCommand);
+				}
+				
+				currentCommand = null;
+				OnCommandDone(CommandDoneType.Commit);
+			}
+			else
+				currentCommand = null;
+		}
 		/// <summary>
 		/// Rollback current command. It does not saves any changes done in current command.
 		/// </summary>
-        public void Cancel()
+		public void Cancel()
 		{
-            if (span)
-                span = false;
 			AssertCurrentCommand();
 			currentCommand.Undo();
 			currentCommand = null;
@@ -178,24 +192,12 @@ namespace DejaVu
 		/// Clears all history. It does not affect current data but history only. 
 		/// It is usefull after any data initialization if you want forbid user to undo this initialization.
 		/// </summary>
-        public void ClearHistory()
+		public void ClearHistory()
 		{
-            CheckSpan();
 			currentCommand = null;
 			currentPosition = -1;
 			history.Clear();
 		}
-
-        /// <summary>
-        /// Clears all redo history. It does not affect current data but redos only. 
-        /// </summary>
-        public void ClearRedos()
-        {
-            CheckSpan();
-            currentCommand = null;
-            int count = history.Count - currentPosition - 1;
-            history.RemoveRange(currentPosition + 1, count);
-        }
 
 		/// <summary>Checks that there is no command started in current thread</summary>
 		internal void AssertNoCommand()
@@ -221,22 +223,6 @@ namespace DejaVu
 				throw new InvalidOperationException("Command in given area is not started.");
 		}
 
-        /// <summary>Checks that command has been started and that it is a span command</summary>
-        internal void AssertSpanCommand()
-        {
-            AssertCommand();
-            if (!span)
-                throw new InvalidOperationException("Command is not a spanned command.");
-        }
-
-        /// <summary>Checks that command has been started and that it is a span command and matches the name given</summary>
-        internal void AssertOnHoldCommandHasThisName(string name)
-        {
-            AssertSpanCommand();
-            if (currentCommand.CommandId.Caption != name)
-                throw new InvalidOperationException("Previous command is not completed. Use UndoRedoManager.Commit() to complete current command.");
-        }
-
 		public bool IsCommandStarted
 		{
 			get { return currentCommand != null; }
@@ -245,27 +231,24 @@ namespace DejaVu
 		#region Commands Lists
 		/// <summary>Gets an enumeration of commands captions that can be undone.</summary>
 		/// <remarks>The first command in the enumeration will be undone first</remarks>
-		public IEnumerable<CommandId> UndoCommands
+		public IEnumerable<string> UndoCommands
 		{
 			get
 			{
-                if (span)
-                {
-                    AssertCommand();
-                    yield return currentCommand.CommandId;
-                }
 				for (int i = currentPosition; i >= 0; i--)
-					yield return history[i].CommandId;
+					if (history[i].Visible)
+						yield return history[i].Caption;
 			}
 		}
 		/// <summary>Gets an enumeration of commands captions that can be redone.</summary>
 		/// <remarks>The first command in the enumeration will be redone first</remarks>
-        public IEnumerable<CommandId> RedoCommands
+		public IEnumerable<string> RedoCommands
 		{
 			get
 			{
 				for (int i = currentPosition + 1; i < history.Count; i++)
-                    yield return history[i].CommandId;
+					if (history[i].Visible)
+						yield return history[i].Caption;
 			}
 		}
 		#endregion
@@ -305,7 +288,7 @@ namespace DejaVu
 		#endregion
 
 		public event EventHandler<CommandDoneEventArgs> CommandDone;
-		protected void OnCommandDone(CommandDoneType type)
+		void OnCommandDone(CommandDoneType type)
 		{
 			if (CommandDone != null)
 				CommandDone(null, new CommandDoneEventArgs(type));

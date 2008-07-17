@@ -53,6 +53,42 @@ namespace DejaVu
         {
 			return DefaultArea.Start(commandCaption);
         }
+		/// <summary>
+		/// Start a command with affinity checking. 
+		/// If several commands with equal captions and owners follow each other,
+		/// they are affined and will be merged into single command.
+		/// This method is useful when you want a bunch of similar routine actions looks like a single command. 
+		/// E.g. user moves a rectangle 10 times and then sees one Move command in the undo list.
+		/// </summary>
+		/// <param name="commandCaption">Caption of the command</param>
+		/// <param name="owner">
+		/// Owner is used as an identifier to check affinity of commands. Any object can be an owner. 
+		/// If command has no owner (null), it never has affinity with any other command.
+		/// </param>
+		/// <returns>Interface that allows properly finish the command with 'using' statement</returns>
+		public static IDisposable Start(string commandCaption, object owner)
+		{
+			return DefaultArea.Start(commandCaption, owner);
+		}
+		/// <summary>
+		/// Start invisible command. 
+		/// Any data changes must be done within a command. 
+		/// This command will never appear in the history. 
+		/// It will be undone/redone in bundle with previous visible command.</summary>
+		/// <param name="commandCaption"></param>
+		/// <returns>Interface that allows properly finish the command with 'using' statement</returns>
+		/// <remarks><para>
+		/// Invisible commands are useful if you need to do some changes by some event 
+		/// but do not expose them to user as a standalone command. </para>
+		/// <para>For example, when user clicks on object, we could change SelectedObject property.
+		/// However, it is redundant to show this operation in history and allow to undo/redo it as a valuable command.
+		/// Instead of that, we can start invisible command and its results will be joined to previous command. 
+		/// Thus, when the previuos command will be undone, the selection will be undone too.
+		/// </remarks>
+		public static IDisposable StartInvisible(string commandCaption)
+		{
+			return DefaultArea.StartInvisible(commandCaption);
+		}
 		/// <summary>Commits current command and saves changes into history</summary>
         public static void Commit()
         {
@@ -79,7 +115,7 @@ namespace DejaVu
 		}
 		/// <summary>Gets an enumeration of commands captions that can be undone.</summary>
 		/// <remarks>The first command in the enumeration will be undone first</remarks>
-        public static IEnumerable<CommandId> UndoCommands
+		public static IEnumerable<string> UndoCommands
 		{
 			get
 			{
@@ -88,7 +124,7 @@ namespace DejaVu
 		}
 		/// <summary>Gets an enumeration of commands captions that can be redone.</summary>
 		/// <remarks>The first command in the enumeration will be redone first</remarks>
-        public static IEnumerable<CommandId> RedoCommands
+		public static IEnumerable<string> RedoCommands
 		{
 			get
 			{
@@ -107,6 +143,11 @@ namespace DejaVu
             get { return DefaultArea.MaxHistorySize; }
 			set { DefaultArea.MaxHistorySize = value; }
         }
+
+		public static bool IsCommandStarted
+		{
+			get { return DefaultArea.IsCommandStarted; }
+		}
 	}
 
 	public enum CommandDoneType

@@ -394,17 +394,17 @@ namespace Workbook
             actUndo.Text = "Undo";
             if (actUndo.Enabled)
             {
-                IEnumerator<CommandId> en = undoRedoArea.UndoCommands.GetEnumerator();
+                IEnumerator<string> en = undoRedoArea.UndoCommands.GetEnumerator();
                 if (en.MoveNext())
-                    actUndo.Text = string.Format("Undo \"{0}\"", en.Current.Caption);
+                    actUndo.Text = string.Format("Undo \"{0}\"", en.Current);
             };
             actRedo.Enabled = undoRedoArea.CanRedo;
             actRedo.Text = "Redo";
             if (actRedo.Enabled)
             {
-                IEnumerator<CommandId> en = undoRedoArea.UndoCommands.GetEnumerator();
+                IEnumerator<string> en = undoRedoArea.RedoCommands.GetEnumerator();
                 if (en.MoveNext())
-                    actRedo.Text = string.Format("Redo \"{0}\"", en.Current.Caption);
+                    actRedo.Text = string.Format("Redo \"{0}\"", en.Current);
             }
                 
         }
@@ -413,10 +413,7 @@ namespace Workbook
         {
             UpdateUndoRedoActions();
             UpdateTitleBar();
-            if (e.CommandDoneType == CommandDoneType.Commit)
-                // clear all redos for undoRedoArea
-                undoRedoArea.ClearRedos();
-            else
+            if (e.CommandDoneType != CommandDoneType.Commit)
             {
                 // in case the page size was undooed
                 foreach (DEngine en in engines)

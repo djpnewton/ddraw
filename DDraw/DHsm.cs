@@ -781,13 +781,13 @@ namespace DDraw
             }
             if (dx != 0 || dy != 0)
             {
-                undoRedoArea.StartSpan("Move", true);
+                undoRedoArea.Start("Move", this);
                 foreach (Figure f in figureHandler.SelectedFigures)
                 {
                     f.X += dx;
                     f.Y += dy;
                 }
-                undoRedoArea.CommitSpan();
+                undoRedoArea.Commit();
                 dv.Update();
             }
         }
@@ -1388,7 +1388,7 @@ namespace DDraw
         {
             if (btn == DMouseButton.Left)
             {
-                undoRedoArea.StartSpan("Add Text", false);
+                undoRedoArea.Start("Add Text");
                 // bound pt to canvas
                 BoundPtToPage(pt);
                 // create TextFigure
@@ -1584,7 +1584,8 @@ namespace DDraw
                     // reset textEditMouseDown
                     textEditMouseDown = false;
                     // start undo record
-                    undoRedoArea.StartSpan("Text Edit", false);
+                    if (!undoRedoArea.IsCommandStarted) // can be started from other means
+                        undoRedoArea.Start("Text Edit");
                     // add TextEditFigure
                     Figure tf = currentFigure;
                     currentFigure = new TextEditFigure((TextFigure)tf);
