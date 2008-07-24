@@ -449,10 +449,7 @@ namespace Workbook
         void de_ContextClick(DEngine de, Figure clickedFigure, DPoint pt)
         {
             if (clickedFigure != null)
-            {
-                if (!clickedFigure.Locked)
                     cmsFigure.Show(wfvcEditor, new Point((int)pt.X, (int)pt.Y));
-            }
             else
                 cmsCanvas.Show(wfvcEditor, new Point((int)pt.X, (int)pt.Y));
         }
