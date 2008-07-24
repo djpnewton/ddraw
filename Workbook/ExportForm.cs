@@ -26,11 +26,7 @@ namespace Workbook
             this.engines = engines;
             this.current = current;
             // select starting options
-            rbPDF.Enabled = WFHelper.Cairo;
-            if (WFHelper.Cairo)
-                rbPDF.Checked = true;
-            else
-                rbImage.Checked = true;
+            rbPDF.Checked = true;
             rbCurrent.Checked = true;
             // fill lbPageSelect
             lbPageSelect.Items.Clear();
@@ -62,17 +58,12 @@ namespace Workbook
             {
                 if (rbPDF.Checked)
                 {
-                    if (WFHelper.Cairo)
+                    if (ExportPDF(expEngines))
                     {
-                        if (ExportPDF(expEngines))
-                        {
-                            DialogResult = DialogResult.OK;
-                            Close();
-                        }
+                        DialogResult = DialogResult.OK;
+                        Close();
                     }
-                    else
-                        MessageBox.Show("Export to PDF only works with Cairo enabled builds", "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
+                 }
                 else if (rbImage.Checked)
                 {
                     if (ExportImage(expEngines))
@@ -95,27 +86,25 @@ namespace Workbook
                 result = true;
                 try
                 {
-                    // setup progress form
-                    ProgressForm pf = new ProgressForm();
-                    pf.Text = "Exporting to PDF Document";
-                    pf.Shown += delegate(object s, EventArgs e)
+                    /*** no progress form as this requires Application.DoEvents which will 
+                    kill rendering (cairo/gdi+ at the same time) ***/
+
+                    WFCairoGraphics dg = WFHelper.MakeCairoPDFGraphics(sfd.FileName, 0, 0);
+                    dg.Scale(0.75, 0.75); // TODO figure out why this is needed (gak!)
+                    foreach (DEngine de in expEngines)
                     {
-                        WFCairoGraphics dg = WFHelper.MakePDFCairoGraphics(sfd.FileName, 0, 0);
-                        dg.Scale(0.75, 0.75); // TODO figure out why this is needed (gak!)
-                        foreach (DEngine de in expEngines)
-                        {
-                            Application.DoEvents();
-                            WFHelper.SetCairoPDFSurfaceSize(dg, PageTools.SizetoSizeMM(de.PageSize));
-                            DPrintViewer dvPrint = new DPrintViewer();
-                            //dvPrint.SetPageSize(de.PageSize);
-                            dvPrint.Paint(dg, de.BackgroundFigure, de.Figures);
-                            WFHelper.ShowCairoPDFPage(dg);
-                        }
-                        dg.Dispose();
-                        pf.Close();
-                        System.Diagnostics.Process.Start(sfd.FileName);
-                    };
-                    pf.ShowDialog();
+                        WFHelper.SetCairoPDFSurfaceSize(dg, PageTools.SizetoSizeMM(de.PageSize));
+                        // create cairifyed figures/DEngine
+                        DEngine cairoDe = CairifyEngine(de);
+                        // print page
+                        DPrintViewer dvPrint = new DPrintViewer();
+                        //dvPrint.SetPageSize(de.PageSize);
+                        dvPrint.Paint(dg, cairoDe.BackgroundFigure, cairoDe.Figures);
+                        WFHelper.ShowCairoPDFPage(dg);
+                    }
+                    dg.Dispose();
+                    GC.Collect(); // release all the cairo stuff so the pdf gets written?
+                    System.Diagnostics.Process.Start(sfd.FileName);
                 }
                 catch (Exception e)
                 {
@@ -124,6 +113,33 @@ namespace Workbook
                 }
             }
             return result;
+        }
+
+        private DEngine CairifyEngine(DEngine de)
+        {
+            if (!WFHelper.Cairo)
+            {
+                // set to cairo graphics
+                WFCairoGraphics.Init();
+                // create new engine
+                DEngine cairoDe = new DEngine(null);
+                cairoDe.UndoRedo.Start("blah");
+                // page size
+                cairoDe.PageSize = de.PageSize;
+                // figures
+                List<Figure> figs = FigureSerialize.FromXml(FigureSerialize.FormatToXml(de.Figures, null));
+                foreach (Figure f in figs)
+                    cairoDe.AddFigure(f);
+                // background figure
+                figs = FigureSerialize.FromXml(FigureSerialize.FormatToXml(de.BackgroundFigure, null));
+                //CairifyFigures(figs);
+                cairoDe.SetBackgroundFigure((BackgroundFigure)figs[0], de.CustomBackgroundFigure);
+                cairoDe.UndoRedo.Commit();
+                // reset back to GDI graphics
+                GDIGraphics.Init();
+                return cairoDe;
+            }
+            return de;
         }
 
         private bool ExportImage(IList<DEngine> expEngines)

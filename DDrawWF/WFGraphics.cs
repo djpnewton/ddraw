@@ -119,7 +119,7 @@ namespace DDraw.WinForms
 #endif
         }
 
-        public static WFCairoGraphics MakePDFCairoGraphics(string pdfFile, double width, double height)
+        public static WFCairoGraphics MakeCairoPDFGraphics(string pdfFile, double width, double height)
         {
             return new WFCairoGraphics(pdfFile, width, height);
         }
