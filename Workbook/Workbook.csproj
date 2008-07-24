@@ -397,4 +397,8 @@
   <Target Name="AfterBuild">
   </Target>
   -->
+  <PropertyGroup>
+    <PostBuildEvent>xcopy $(SolutionDir)\libs\win32\libcairo-2.dll $(TargetDir)
+xcopy $(SolutionDir)\libs\win32\FreeImage.dll $(TargetDir)</PostBuildEvent>
+  </PropertyGroup>
 </Project>
