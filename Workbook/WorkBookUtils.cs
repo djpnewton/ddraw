@@ -8,6 +8,7 @@ using System.IO;
 
 using Nini.Config;
 using DDraw;
+using DDraw.WinForms;
 
 namespace Workbook
 {
@@ -51,6 +52,7 @@ namespace Workbook
                 de.KeyMovementRate = 1;
         }
 
+        #region ClickThroughWndProc
         const uint MA_ACTIVATE = 1;
         const uint MA_ACTIVATEANDEAT = 2;
         const uint MA_NOACTIVATE = 3;
@@ -82,6 +84,7 @@ namespace Workbook
             }
             return returnVal;
         }
+        #endregion
 
         public static bool IsOurAppActive
         {
@@ -185,6 +188,26 @@ namespace Workbook
             return bytes;
         }
 
+        public static string GetTempFileName(string proposedName, string tempDir)
+        {
+            return GetTempFileName(proposedName, tempDir, Path.GetExtension(proposedName));
+        }
+
+        public static string GetTempFileName(string proposedName, string tempDir, string fileExt)
+        {
+            string leaf = Path.GetFileNameWithoutExtension(proposedName);
+            string tempFileName;
+            int n = 1;
+            do
+            {
+                tempFileName = string.Format("{0}[{1}]{2}", Path.Combine(tempDir, leaf), n, fileExt);
+                n++;
+            }
+            while (File.Exists(tempFileName));
+            return tempFileName;
+        }
+
+        #region DAuthorProperties Config
         const string FILL_OPT = "Fill";
         const string STROKE_OPT = "Stroke";
         const string STROKEWIDTH_OPT = "StrokeWidth";
@@ -229,6 +252,58 @@ namespace Workbook
             dap.Underline = config.GetBoolean(UNDERLINE_OPT);
             dap.Strikethrough = config.GetBoolean(STRIKETHROUGH_OPT);
         }
+        #endregion
+
+        #region Render DEngine to PDF
+        public static void RenderPdf(IList<DEngine> expEngines, string fileName)
+        {
+            /*** no progress form as this requires Application.DoEvents which will 
+            kill rendering (cairo/gdi+ at the same time) ***/
+
+            WFCairoGraphics dg = WFHelper.MakeCairoPDFGraphics(fileName, 0, 0);
+            dg.Scale(0.75, 0.75); // TODO figure out why this is needed (gak!)
+            foreach (DEngine de in expEngines)
+            {
+                WFHelper.SetCairoPDFSurfaceSize(dg, PageTools.SizetoSizeMM(de.PageSize));
+                // create cairifyed figures/DEngine
+                DEngine cairoDe = CairifyEngine(de);
+                // print page
+                DPrintViewer dvPrint = new DPrintViewer();
+                //dvPrint.SetPageSize(de.PageSize);
+                dvPrint.Paint(dg, cairoDe.BackgroundFigure, cairoDe.Figures);
+                WFHelper.ShowCairoPDFPage(dg);
+            }
+            dg.Dispose();
+            GC.Collect(); // release all the cairo stuff so the pdf gets written?
+        }
+
+        private static DEngine CairifyEngine(DEngine de)
+        {
+            if (!WFHelper.Cairo)
+            {
+                // set to cairo graphics
+                WFCairoGraphics.Init();
+                // create new engine
+                DEngine cairoDe = new DEngine(null);
+                cairoDe.UndoRedo.Start("blah");
+                // page size
+                cairoDe.PageSize = de.PageSize;
+                // figures
+                List<Figure> figs = FigureSerialize.FromXml(FigureSerialize.FormatToXml(de.Figures, null));
+                foreach (Figure f in figs)
+                    cairoDe.AddFigure(f);
+                // background figure
+                figs = FigureSerialize.FromXml(FigureSerialize.FormatToXml(de.BackgroundFigure, null));
+                //CairifyFigures(figs);
+                cairoDe.SetBackgroundFigure((BackgroundFigure)figs[0], de.CustomBackgroundFigure);
+                cairoDe.UndoRedo.Commit();
+                // reset back to GDI graphics
+                GDIGraphics.Init();
+                return cairoDe;
+            }
+            return de;
+        }
+        #endregion
     }
 
     public class WorkBookForm : Form

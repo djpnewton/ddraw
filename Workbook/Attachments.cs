@@ -214,17 +214,7 @@ namespace Workbook
                 string tempDir = TempDir;
                 if (tempDir == null || tempDir.Length == 0)
                     tempDir = Path.GetTempPath();
-                string ext = Path.GetExtension(name);
-                string namePart = Path.GetFileNameWithoutExtension(name);
-                int n = 0;
-                string fileName;
-                do
-                {
-                    fileName = string.Format("{0}[{1}]{2}", namePart, n, ext);
-                    fileName = Path.Combine(tempDir, fileName);
-                    n++;
-                }
-                while (File.Exists(fileName));
+                string fileName = WorkBookUtils.GetTempFileName(name, tempDir);
                 // copy attachment to temp file
                 using (FileStream fs = File.Create(fileName))
                 {

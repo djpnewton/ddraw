@@ -1946,23 +1946,34 @@ namespace Workbook
         private void mailRecipientToolStripMenuItem_Click(object sender, EventArgs e)
         {
             // find filename
-            string leaf = Path.GetFileNameWithoutExtension(fileName);
-            string tempFileName;
-            int n = 1;
-            do
-            {
-                tempFileName = string.Format("{0}[{1}]{2}", Path.Combine(TempDir, leaf), n, FileExt);
-                n++;
-            }
-            while (File.Exists(tempFileName));
+            string tempFileName = WorkBookUtils.GetTempFileName(Path.GetFileName(fileName), TempDir, FileExt);
             // save file
             if (_Save(tempFileName))
             {
                 // load mail client
                 MAPI mapi = new MAPI();
                 mapi.AddAttachment(tempFileName);
-                mapi.SendMailPopup(string.Format("Emailing: {0}", leaf), "");
+                mapi.SendMailPopup(string.Format("Emailing: {0}", Path.GetFileNameWithoutExtension(fileName)), "");
             }
+        }
+
+        private void mailRecipientasPDFToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            // find filename
+            string tempFileName = WorkBookUtils.GetTempFileName(Path.GetFileName(fileName), TempDir, ".pdf");
+            try
+            {
+                WorkBookUtils.RenderPdf(engines, tempFileName);
+                // load mail client
+                MAPI mapi = new MAPI();
+                mapi.AddAttachment(tempFileName);
+                mapi.SendMailPopup(string.Format("Emailing: {0}", Path.GetFileNameWithoutExtension(fileName)), "");
+            }
+            catch (Exception e2)
+            {
+                MessageBox.Show(e2.Message, "ERROR Mailing PDF", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
         }
     }
 }

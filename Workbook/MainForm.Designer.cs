@@ -96,6 +96,8 @@ namespace Workbook
             this.exportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator7 = new System.Windows.Forms.ToolStripSeparator();
             this.printToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.sendToToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.mailRecipientToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -203,8 +205,7 @@ namespace Workbook
             this.actRedo = new Burkovsky.Controls.Action();
             this.actAnnoTools = new Burkovsky.Controls.Action();
             this.actScreenCapture = new Burkovsky.Controls.Action();
-            this.sendToToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.mailRecipientToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.mailRecipientasPDFToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.cmsFigure.SuspendLayout();
             this.cmsCanvas.SuspendLayout();
             this.cmsPreview.SuspendLayout();
@@ -865,6 +866,24 @@ namespace Workbook
             this.printToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.P)));
             this.printToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
             this.printToolStripMenuItem.Text = "Print";
+            // 
+            // sendToToolStripMenuItem
+            // 
+            this.actionListProvider1.SetAction(this.sendToToolStripMenuItem, null);
+            this.sendToToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.mailRecipientToolStripMenuItem,
+            this.mailRecipientasPDFToolStripMenuItem});
+            this.sendToToolStripMenuItem.Name = "sendToToolStripMenuItem";
+            this.sendToToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
+            this.sendToToolStripMenuItem.Text = "Send To";
+            // 
+            // mailRecipientToolStripMenuItem
+            // 
+            this.actionListProvider1.SetAction(this.mailRecipientToolStripMenuItem, null);
+            this.mailRecipientToolStripMenuItem.Name = "mailRecipientToolStripMenuItem";
+            this.mailRecipientToolStripMenuItem.Size = new System.Drawing.Size(194, 22);
+            this.mailRecipientToolStripMenuItem.Text = "Mail Recipient";
+            this.mailRecipientToolStripMenuItem.Click += new System.EventHandler(this.mailRecipientToolStripMenuItem_Click);
             // 
             // toolStripSeparator3
             // 
@@ -1777,22 +1796,13 @@ namespace Workbook
             this.actScreenCapture.Text = "Screen Capture";
             this.actScreenCapture.Execute += new System.EventHandler(this.actScreenCapture_Execute);
             // 
-            // sendToToolStripMenuItem
+            // mailRecipientasPDFToolStripMenuItem
             // 
-            this.actionListProvider1.SetAction(this.sendToToolStripMenuItem, null);
-            this.sendToToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.mailRecipientToolStripMenuItem});
-            this.sendToToolStripMenuItem.Name = "sendToToolStripMenuItem";
-            this.sendToToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
-            this.sendToToolStripMenuItem.Text = "Send To";
-            // 
-            // mailRecipientToolStripMenuItem
-            // 
-            this.actionListProvider1.SetAction(this.mailRecipientToolStripMenuItem, null);
-            this.mailRecipientToolStripMenuItem.Name = "mailRecipientToolStripMenuItem";
-            this.mailRecipientToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.mailRecipientToolStripMenuItem.Text = "Mail Recipient";
-            this.mailRecipientToolStripMenuItem.Click += new System.EventHandler(this.mailRecipientToolStripMenuItem_Click);
+            this.actionListProvider1.SetAction(this.mailRecipientasPDFToolStripMenuItem, null);
+            this.mailRecipientasPDFToolStripMenuItem.Name = "mailRecipientasPDFToolStripMenuItem";
+            this.mailRecipientasPDFToolStripMenuItem.Size = new System.Drawing.Size(194, 22);
+            this.mailRecipientasPDFToolStripMenuItem.Text = "Mail Recipient (as PDF)";
+            this.mailRecipientasPDFToolStripMenuItem.Click += new System.EventHandler(this.mailRecipientasPDFToolStripMenuItem_Click);
             // 
             // MainForm
             // 
@@ -2017,6 +2027,7 @@ namespace Workbook
         private System.Windows.Forms.ToolStripMenuItem recentDocumentsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem sendToToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem mailRecipientToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem mailRecipientasPDFToolStripMenuItem;
     }
 }
 
