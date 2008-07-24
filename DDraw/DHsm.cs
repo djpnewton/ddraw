@@ -287,7 +287,9 @@ namespace DDraw
             }
         }
 
+#if DEBUG
         public event DebugMessageHandler DebugMessage;
+#endif
         public event ClickHandler FigureClick;
         public event ClickHandler FigureContextClick;
         public event ClickHandler FigureLockClick;
@@ -517,11 +519,13 @@ namespace DDraw
             return DGeom.AngleBetweenPoints(f.GetSelectRect().Center, pt);
         }
 
+#if DEBUG
         void DoDebugMessage(string msg)
         {
             if (DebugMessage != null)
                 DebugMessage(msg);
         }
+#endif
 
         // state methods
 
@@ -700,7 +704,9 @@ namespace DDraw
                     dv.SetCursor(glyph.Cursor);
                     break;
             }
+#if DEBUG
             DoDebugMessage(string.Format("{0}, {1}", pt.X, pt.Y));
+#endif
         }
 
         void DoSelectDefaultMouseUp(DTkViewer dv, DMouseButton btn, DPoint pt)
@@ -908,7 +914,9 @@ namespace DDraw
                     // alert figure we have finished resizing
                     currentFigure.AfterResize();
                     // debug message
+#if DEBUG
                     DoDebugMessage(string.Format("{0} {1}", dSize.X, dSize.Y));
+#endif
                     break;
                 case DHitTest.ReposLinePt1:
                     System.Diagnostics.Trace.Assert(currentFigure != null, "currentFigure is null");
@@ -1016,8 +1024,10 @@ namespace DDraw
                         currentFigure.Rotation = newRot;
                     // final update rect
                     updateRect = updateRect.Union(GetBoundingBox(currentFigure));
+#if DEBUG
                     // debug message
                     DoDebugMessage((currentFigure.Rotation * 180 / Math.PI).ToString());
+#endif
                     break;
             }
             // update drawing

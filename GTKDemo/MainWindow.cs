@@ -48,11 +48,15 @@ namespace GTKDemo
 			// create DViewer and DEngine			
 			dv = new GTKViewer(dvc);
 			dv.EditFigures = true;
+#if DEBUG
 			dv.DebugMessage += new DebugMessageHandler(DebugMessage);
+#endif
 			de = new DEngine(null);
 			de.AddViewer(dv);
 			de.HsmState = DHsmState.Select;
+#if DEBUG
 			de.DebugMessage += new DebugMessageHandler(DebugMessage);
+#endif
             de.ContextClick += new ClickHandler(de_ContextClick);
 			// add figures
             de.UndoRedo.Start("add initial figures");

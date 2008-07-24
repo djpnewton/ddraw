@@ -18,7 +18,9 @@ namespace DDraw
             get;
         }
 
+#if DEBUG
         public event DebugMessageHandler DebugMessage;
+#endif
 
         public DViewer()
         {
@@ -39,11 +41,13 @@ namespace DDraw
 
         // Other //
 
+#if DEBUG
         protected void DoDebugMessage(string msg)
         {
             if (DebugMessage != null)
                 DebugMessage(msg);
         }
+#endif
     }
 
     /// <summary>

@@ -13,7 +13,9 @@ namespace DDraw.WinForms
         WFViewerControl control;
         Cursor RotateCursor;
         Point mousePt;
-		System.Diagnostics.Stopwatch stopWatch;
+#if DEBUG
+        System.Diagnostics.Stopwatch stopWatch = new System.Diagnostics.Stopwatch();
+#endif
 
         protected override void UpdateAutoScroll()
         {
@@ -110,8 +112,6 @@ namespace DDraw.WinForms
             control.Scroll += new ScrollEventHandler(control_Scroll);
 
             RotateCursor = new Cursor(Resource1.RotateIcon.GetHicon());
-
-            stopWatch = new System.Diagnostics.Stopwatch();
         }
 
         ~WFViewer()
@@ -121,8 +121,10 @@ namespace DDraw.WinForms
 
         void control_Paint(object sender, PaintEventArgs e)
         {
+#if DEBUG
             // start stopwatch
 			stopWatch.Start();
+#endif
             // create DGraphics object for the paint routine
             DGraphics dg = WFHelper.MakeGraphics(e.Graphics);
             // call paint events
@@ -130,10 +132,12 @@ namespace DDraw.WinForms
             // clear DGraphics
             dg.Dispose();
             dg = null;
+#if DEBUG
             // stop stopwatch and report duration
             stopWatch.Stop();
 			DoDebugMessage("control_Paint duration: " + stopWatch.ElapsedMilliseconds.ToString());
 			stopWatch.Reset();
+#endif
         }
 
         DMouseButton MouseButtonFromWFEvent(MouseButtons btns)

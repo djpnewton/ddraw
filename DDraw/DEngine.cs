@@ -7,7 +7,9 @@ using DejaVu.Collections.Generic;
 
 namespace DDraw
 {
+#if DEBUG
     public delegate void DebugMessageHandler(string msg);
+#endif
     public delegate void PageSizeChangedHandler(DEngine de, DPoint pageSize);
     public delegate void ClickHandler(DEngine de, Figure clickedFigure, DPoint pt);
     public delegate void DragFigureHandler(DEngine de, Figure dragFigure, DPoint pt);
@@ -364,8 +366,9 @@ namespace DDraw
                     _pageName.Value = value;
             }
         }
-
+#if DEBUG
         public event DebugMessageHandler DebugMessage;
+#endif
         public event SelectedFiguresHandler SelectedFiguresChanged;
         public event ClickHandler FigureClick;
         public event ClickHandler FigureContextClick;
@@ -407,7 +410,9 @@ namespace DDraw
             };
             // create state machine
             hsm = new DHsm(undoRedoArea, viewerHandler, figureHandler);
+#if DEBUG
             hsm.DebugMessage += new DebugMessageHandler(hsm_DebugMessage);
+#endif
             hsm.FigureClick += new ClickHandler(hsm_FigureClick);
             hsm.FigureContextClick += new ClickHandler(hsm_FigureContextClick);
             hsm.FigureLockClick += new ClickHandler(hsm_FigureLockClick);
@@ -504,11 +509,13 @@ namespace DDraw
                 MeasureRect(this, rect);
         }
 
+#if DEBUG
         void hsm_DebugMessage(string msg)
         {
             if (DebugMessage != null)
                 DebugMessage(msg);
         }
+#endif
 
         // Public Functions //
 
@@ -770,11 +777,13 @@ namespace DDraw
 
         // Other //
 
-        void DoDebugMessage(string msg)
+#if DEBUG
+       void DoDebugMessage(string msg)
         {
             if (DebugMessage != null)
                 DebugMessage(msg);
         }
+#endif
 
         void DoSelectedFiguresChanged()
         {

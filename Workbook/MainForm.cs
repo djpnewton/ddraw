@@ -112,7 +112,9 @@ namespace Workbook
             // DEngine settings
             WorkBookUtils.SetupDEngine(de);
             // DEngine events
+#if DEBUG
             de.DebugMessage += new DebugMessageHandler(DebugMessage);
+#endif
             de.SelectedFiguresChanged += new SelectedFiguresHandler(de_SelectedFiguresChanged);
             de.FigureClick += new ClickHandler(de_FigureClick);
             de.FigureContextClick += new ClickHandler(de_ContextClick);
@@ -179,7 +181,11 @@ namespace Workbook
             // edit viewer
             dvEditor = new WFViewer(wfvcEditor);
             dvEditor.EditFigures = true;
+#if DEBUG
             dvEditor.DebugMessage += new DebugMessageHandler(DebugMessage);
+#else
+            statusStrip1.Parent = null;
+#endif
             // glyphs
             linkGlyph = new BitmapGlyph(WFHelper.MakeBitmap(Resource1.link), DGlyphPosition.BottomLeft);
             linkGlyph.Visiblility = DGlyphVisiblity.Always;
