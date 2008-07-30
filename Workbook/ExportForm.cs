@@ -21,6 +21,7 @@ namespace Workbook
         public ExportForm(string docFileName, IList<DEngine> engines, DEngine current)
         {
             InitializeComponent();
+            LocalizeUI();
             // 
             this.docFileName = docFileName;
             this.engines = engines;
@@ -33,6 +34,20 @@ namespace Workbook
             for (int i = 1; i <= engines.Count; i++)
                 lbPageSelect.Items.Add(i);
             lbPageSelect.Enabled = false;
+        }
+
+        private void LocalizeUI()
+        {
+            Text = WbLocale.Export;
+            gbExportFormat.Text = WbLocale.Format;
+            gbPages.Text = WbLocale.Pages;
+            rbPDF.Text = WbLocale.PDF;
+            rbImage.Text = WbLocale.Image;
+            rbCurrent.Text = WbLocale.Current;
+            rbAllPages.Text = WbLocale.All;
+            rbSelectPages.Text = WbLocale.Select;
+            btnOk.Text = WbLocale.Ok;
+            btnCancel.Text = WbLocale.Cancel;
         }
 
         private void rbSelectPages_CheckedChanged(object sender, EventArgs e)
@@ -53,7 +68,7 @@ namespace Workbook
                     expEngines.Add(engines[item - 1]);
             // export to selected format
             if (expEngines.Count <= 0)
-                MessageBox.Show("No pages selected", "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(WbLocale.NoPagesSelected, WbLocale.ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
             else
             {
                 if (rbPDF.Checked)
@@ -92,7 +107,7 @@ namespace Workbook
                 catch (Exception e)
                 {
                     result = false;
-                    MessageBox.Show("ERROR", e.Message, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(WbLocale.ERROR, e.Message, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
             return result;
@@ -109,7 +124,7 @@ namespace Workbook
                 {
                     // setup progress form
                     ProgressForm pf = new ProgressForm();
-                    pf.Text = "Exporting to Images";
+                    pf.Text = WbLocale.ExportingToImages;
                     pf.Shown += delegate(object s, EventArgs e)
                     {
                         string fileNameTemplate = Path.GetFileNameWithoutExtension(docFileName) + "{0}.png";
@@ -131,7 +146,7 @@ namespace Workbook
                 catch (Exception e)
                 {
                     result = false;
-                    MessageBox.Show("ERROR", e.Message, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(WbLocale.ERROR, e.Message, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
             return result;

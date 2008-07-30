@@ -63,6 +63,7 @@ namespace Workbook
         public PropertiesForm()
         {
             InitializeComponent();
+            LocalizeUI();
             dv = new WFViewer(vc);
             dv.EditFigures = false;
             dv.AntiAlias = true;
@@ -76,6 +77,13 @@ namespace Workbook
 
             tsFigureProps.De = de;
             tsFigureProps.Dv = dv;
+        }
+
+        private void LocalizeUI()
+        {
+            Text = WbLocale.FigureProperties;
+            btnOk.Text = WbLocale.Ok;
+            btnCancel.Text = WbLocale.Cancel;
         }
     }
 }

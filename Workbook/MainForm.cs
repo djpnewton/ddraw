@@ -161,7 +161,11 @@ namespace Workbook
 
         public MainForm()
         {
+            // Init localization
+            WbLocale.Init(System.Globalization.CultureInfo.CurrentUICulture);
+            // Init Component
             InitializeComponent();
+            LocalizeUI();
             // create temp path
             if (!Directory.Exists(TempDir))
                 try
@@ -208,6 +212,77 @@ namespace Workbook
             ipc.MessageReceived += new MessageReceivedHandler(ipc_MessageReceived);
             // get command line arguments
             ActionCommandLine();
+        }
+
+        private void LocalizeUI()
+        {
+            // Menu Items
+            fileToolStripMenuItem.Text = WbLocale.File;
+            editToolStripMenuItem.Text = WbLocale.Edit;
+            viewToolStripMenuItem.Text = WbLocale.View;
+            insertToolStripMenuItem.Text = WbLocale.Insert;
+            formatToolStripMenuItem.Text = WbLocale.Format;
+            toolsToolStripMenuItem.Text = WbLocale.Tools;
+            recentDocumentsToolStripMenuItem.Text = WbLocale.RecentDocuments;
+            importNotebookToolStripMenuItem.Text = WbLocale.ImportNotebook;
+            exportToolStripMenuItem.Text = WbLocale.Export;
+            sendToToolStripMenuItem.Text = WbLocale.SendTo;
+            mailRecipientToolStripMenuItem.Text = WbLocale.MailRecipient;
+            mailRecipientasPDFToolStripMenuItem.Text = WbLocale.MailRecipientPDF;
+            exitToolStripMenuItem.Text = WbLocale.Exit;
+            zoomToolStripMenuItem.Text = WbLocale.Zoom;
+            fitToPageToolStripMenuItem.Text = WbLocale.FitToPage;
+            fitToWidthToolStripMenuItem.Text = WbLocale.FitToWidth;
+            _050PcToolStripMenuItem.Text = WbLocale._050Percent;
+            _100PcToolStripMenuItem.Text = WbLocale._100Percent;
+            _150PcToolStripMenuItem.Text = WbLocale._150Percent;
+            antialiasToolStripMenuItem.Text = WbLocale.Antialias;
+            toolbarsToolStripMenuItem.Text = WbLocale.Toolbars;
+            editToolStripMenuItem1.Text = WbLocale.Edit;
+            personalToolStripMenuItem.Text = WbLocale.Personal;
+            modeSelectToolStripMenuItem.Text = WbLocale.ModeSelect;
+            propertySelectToolStripMenuItem.Text = WbLocale.PropertySelect;
+            pageNavigationToolStripMenuItem.Text = WbLocale.PageNavigation;
+            toolsToolStripMenuItem1.Text = WbLocale.Tools;
+            imageToolStripMenuItem.Text = WbLocale.Image;
+            attachmentToolStripMenuItem.Text = WbLocale.Attachment;
+            orderToolStripMenuItem.Text = WbLocale.Order;
+            resetToolbarsToolStripMenuItem.Text = WbLocale.ResetToolbars;
+            aboutToolStripMenuItem.Text = WbLocale.About;
+            flipXToolStripMenuItem.Text = WbLocale.FlipLeftRight;
+            flipYToolStripMenuItem.Text = WbLocale.FlipUpDown;
+            orderStripMenuItem.Text = WbLocale.Order;
+            // Actions
+            actAnnoTools.Text = WbLocale.ScreenAnnotate;
+            actBackground.Text = WbLocale.Background;
+            actBringForward.Text = WbLocale.BringForward;
+            actBringToFront.Text = WbLocale.BringToFront;
+            actClearPage.Text = WbLocale.ClearPage;
+            actClonePage.Text = WbLocale.ClonePage;
+            actCopy.Text = WbLocale.Copy;
+            actCut.Text = WbLocale.Cut;
+            actDelete.Text = WbLocale.Delete;
+            actDeletePage.Text = WbLocale.DeletePage;
+            actDimensions.Text = WbLocale.Dimensions;
+            actGroupFigures.Text = WbLocale.Group;
+            actLink.Text = WbLocale.Link;
+            actLockFigure.Text = WbLocale.Lock;
+            actNew.Text = WbLocale.New;
+            actNewPage.Text = WbLocale.NewPage;
+            actOpen.Text = WbLocale.Open;
+            actPageSize.Text = WbLocale.PageSize;
+            actPaste.Text = WbLocale.Paste;
+            actPrint.Text = WbLocale.Print;
+            actProperties.Text = WbLocale.Properties;
+            actRedo.Text = WbLocale.Redo;
+            actRenamePage.Text = WbLocale.RenamePage;
+            actSave.Text = WbLocale.Save;
+            actSaveAs.Text = WbLocale.SaveAs;
+            actScreenCapture.Text = WbLocale.ScreenCapture;
+            actSelectAll.Text = WbLocale.SelectAll;
+            actSendBackward.Text = WbLocale.SendBackward;
+            actSendToBack.Text = WbLocale.SendToBack;
+            actUndo.Text = WbLocale.Undo;
         }
 
         private void MainForm_Load(object sender, EventArgs e)
@@ -397,20 +472,20 @@ namespace Workbook
         void UpdateUndoRedoActions()
         {
             actUndo.Enabled = undoRedoArea.CanUndo;
-            actUndo.Text = "Undo";
+            actUndo.Text = WbLocale.Undo;
             if (actUndo.Enabled)
             {
                 IEnumerator<string> en = undoRedoArea.UndoCommands.GetEnumerator();
                 if (en.MoveNext())
-                    actUndo.Text = string.Format("Undo \"{0}\"", en.Current);
+                    actUndo.Text = string.Format("{0} \"{1}\"", WbLocale.Undo, en.Current);
             };
             actRedo.Enabled = undoRedoArea.CanRedo;
-            actRedo.Text = "Redo";
+            actRedo.Text = WbLocale.Redo;
             if (actRedo.Enabled)
             {
                 IEnumerator<string> en = undoRedoArea.RedoCommands.GetEnumerator();
                 if (en.MoveNext())
-                    actRedo.Text = string.Format("Redo \"{0}\"", en.Current);
+                    actRedo.Text = string.Format("{0} \"{1}\"", WbLocale.Redo, en.Current);
             }
                 
         }
@@ -446,7 +521,7 @@ namespace Workbook
 
         void de_FigureLockClick(DEngine de, Figure clickedFigure, DPoint pt)
         {
-            undoRedoArea.Start("Unlock Figure");
+            undoRedoArea.Start(WbLocale.UnlockFigure);
             clickedFigure.Locked = false;
             undoRedoArea.Commit();
             dvEditor.Update();
@@ -498,7 +573,7 @@ namespace Workbook
                             System.Diagnostics.Process.Start(ub.Uri.AbsoluteUri);
                         }
                         catch (Exception e)
-                        { MessageBox.Show(e.Message, "Web Link Error", MessageBoxButtons.OK, MessageBoxIcon.Error); }
+                        { MessageBox.Show(e.Message, WbLocale.WebLinkError, MessageBoxButtons.OK, MessageBoxIcon.Error); }
                         break;
                     case LinkType.File:
                         if (File.Exists(link))
@@ -507,9 +582,9 @@ namespace Workbook
                                 System.Diagnostics.Process.Start(link);
                             }
                             catch (Exception e)
-                            { MessageBox.Show(e.Message, "File Link Error", MessageBoxButtons.OK, MessageBoxIcon.Error); }
+                            { MessageBox.Show(e.Message, WbLocale.FileLinkError, MessageBoxButtons.OK, MessageBoxIcon.Error); }
                         else
-                            MessageBox.Show(string.Format("Could not find file \"{0}\"", link), "File link error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            MessageBox.Show(string.Format("{0} \"{1}\"", WbLocale.CouldNotFindFile, link), WbLocale.FileLinkError, MessageBoxButtons.OK, MessageBoxIcon.Error);
                         break;
                     case LinkType.Page:
                         LinkPage lp = (LinkPage)Enum.Parse(typeof(LinkPage), link, true);
@@ -541,7 +616,7 @@ namespace Workbook
                                 if (n >= 0 && n < engines.Count)
                                     previewBar1.SetPreviewSelected(engines[n]);
                                 else
-                                    MessageBox.Show(string.Format("Page \"{0}\" does not exist", n + 1), "Page link error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                    MessageBox.Show(string.Format("{0} \"{1}\" {2}", WbLocale.Page, n + 1, WbLocale.DoesNotExist), WbLocale.PageLinkError, MessageBoxButtons.OK, MessageBoxIcon.Error);
                                 break;
                         }
                         break;
@@ -551,7 +626,7 @@ namespace Workbook
                             attachmentView1.ExecuteAttachment(link);
                         }
                         catch (Exception e)
-                        { MessageBox.Show(e.Message, "Attachment Link Error", MessageBoxButtons.OK, MessageBoxIcon.Error); }
+                        { MessageBox.Show(e.Message, WbLocale.AttachmentLinkError, MessageBoxButtons.OK, MessageBoxIcon.Error); }
                         break;
                 }
             }
@@ -568,9 +643,9 @@ namespace Workbook
             // update group action
             actGroupFigures.Enabled = true;
             if (de.CanUngroupFigures(figs))
-                actGroupFigures.Text = "Ungroup";
+                actGroupFigures.Text = WbLocale.Ungroup;
             else if (de.CanGroupFigures(figs))
-                actGroupFigures.Text = "Group";
+                actGroupFigures.Text = WbLocale.Group;
             else
                 actGroupFigures.Enabled = false;
             // update order menu actions
@@ -652,7 +727,7 @@ namespace Workbook
         private void previewBar1_PreviewMove(Preview p, Preview to)
         {
             CheckState();
-            undoRedoArea.Start("Move Page");
+            undoRedoArea.Start(WbLocale.MovePage);
             int idx = engines.IndexOf(to.DEngine);
             engines.Remove(p.DEngine);
             engines.Insert(idx, p.DEngine);
@@ -664,7 +739,7 @@ namespace Workbook
             if (!p.Selected)
             {
                 CheckState();
-                undoRedoArea.Start("Drag to New Page");
+                undoRedoArea.Start(WbLocale.DragFigureToNewPage);
                 foreach (Figure f in figs)
                 {
                     WorkBookUtils.PutInBounds(p.DEngine, f);
@@ -681,7 +756,7 @@ namespace Workbook
         private void previewBar1_PreviewNameChanged(Preview p, string name)
         {
             CheckState();
-            undoRedoArea.Start("Change Page Name");
+            undoRedoArea.Start(WbLocale.ChangePageName);
             de.PageName = name;
             undoRedoArea.Commit();
         }
@@ -696,7 +771,7 @@ namespace Workbook
                 de.ClearSelected();
                 DBitmap bmp =  WFHelper.MakeBitmap(ofd.FileName);
                 byte[] imageData = WorkBookUtils.GetBytesFromFile(ofd.FileName);
-                undoRedoArea.Start("Add Image");
+                undoRedoArea.Start(WbLocale.AddImage);
                 de.AddFigure(new ImageFigure(new DRect(10, 10, bmp.Width, bmp.Height), 0, imageData, ofd.FileName));
                 undoRedoArea.Commit();
                 de.UpdateViewers();
@@ -714,7 +789,7 @@ namespace Workbook
             ofd.Filter = "All Files|*.*";
             if (ofd.ShowDialog() == DialogResult.OK)
             {
-                undoRedoArea.Start("Add Attachment");
+                undoRedoArea.Start(WbLocale.AddAttachment);
                 if (attachmentView1.CheckAttachmentExists(ofd.FileName))
                     attachmentView1.AddAttachment(ofd.FileName);
                 undoRedoArea.Commit();
@@ -806,7 +881,7 @@ namespace Workbook
         {
             if (!nonTextInsertionKey && textInsertionPoint != null && de.HsmState != DHsmState.TextEdit)
             {
-                de.UndoRedo.Start("Text Edit");
+                de.UndoRedo.Start(WbLocale.TextEdit);
                 TextFigure tf = new TextFigure(textInsertionPoint, "", 0);
                 tsEngineState.DapText.ApplyPropertiesToFigure(tf);
                 de.AddFigure(tf);
@@ -859,7 +934,7 @@ namespace Workbook
             {
                 if (f.ApplyAll)
                 {
-                    undoRedoArea.Start("Set Global Page Size");
+                    undoRedoArea.Start(WbLocale.SetGlobalPageSize);
                     PageSize = f.PageSize;
                     foreach (DEngine en in engines)
                         SetEnginePageSize(en, f.PageSize);
@@ -867,7 +942,7 @@ namespace Workbook
                 }
                 else
                 {
-                    undoRedoArea.Start("Change Page Size");
+                    undoRedoArea.Start(WbLocale.ChangePageSize);
                     SetEnginePageSize(de, f.PageSize);
                     undoRedoArea.Commit();
                 }
@@ -889,7 +964,7 @@ namespace Workbook
             {
                 if (bf.ApplyAll)
                 {
-                    undoRedoArea.Start("Set Global Background");
+                    undoRedoArea.Start(WbLocale.SetGlobalBackground);
                     BackgroundFigure = bf.BackgroundFigure;
                     foreach (DEngine en in engines)
                         en.SetBackgroundFigure(BackgroundFigure, false);
@@ -897,7 +972,7 @@ namespace Workbook
                 }
                 else
                 {
-                    undoRedoArea.Start("Set Background");
+                    undoRedoArea.Start(WbLocale.SetBackground);
                     de.SetBackgroundFigure(bf.BackgroundFigure, true);
                     undoRedoArea.Commit();
                 }
@@ -934,7 +1009,7 @@ namespace Workbook
         {
             if (iData.GetDataPresent(FigureSerialize.DDRAW_FIGURE_XML))
             {
-                undoRedoArea.Start(string.Format("{0} Figures", opPrefix));
+                undoRedoArea.Start(string.Format("{0} {1}", opPrefix, WbLocale.Figures));
                 List<Figure> figs = FigureSerialize.FromXml((string)iData.GetData(FigureSerialize.DDRAW_FIGURE_XML));
                 foreach (Figure f in figs)
                     WorkBookUtils.PutInBounds(de, f);
@@ -943,7 +1018,7 @@ namespace Workbook
             }
             else if (iData.GetDataPresent(DataFormats.Text))
             {
-                undoRedoArea.Start(string.Format("{0} Text", opPrefix));
+                undoRedoArea.Start(string.Format("{0} {1}", opPrefix, WbLocale.Text));
                 TextFigure f = new TextFigure(new DPoint(objX, objY), (string)iData.GetData(DataFormats.Text), 0);
                 tsEngineState.DapText.ApplyPropertiesToFigure(f);
                 de.PasteAsSelectedFigures(new List<Figure>(new Figure[] { f }));
@@ -951,7 +1026,7 @@ namespace Workbook
             }
             else if (iData.GetDataPresent(DataFormats.Bitmap))
             {
-                undoRedoArea.Start(string.Format("{0} Bitmap", opPrefix));
+                undoRedoArea.Start(string.Format("{0} {1}", opPrefix, WbLocale.Bitmap));
                 Bitmap bmp = (Bitmap)iData.GetData(DataFormats.Bitmap, true);
                 byte[] imageData = WFHelper.ToImageData(bmp);
                 ImageFigure f = new ImageFigure(new DRect(objX, objY, bmp.Width, bmp.Height), 0, imageData, "Clipboard.bmp");
@@ -960,7 +1035,7 @@ namespace Workbook
             }
             else if (iData.GetDataPresent(DataFormats.FileDrop))
             {
-                undoRedoArea.Start(string.Format("{0} File", opPrefix));
+                undoRedoArea.Start(string.Format("{0} {1}", opPrefix, WbLocale.File));
                 string path = ((string[])iData.GetData(DataFormats.FileDrop))[0];
                 if (IsImageFilePath(path))
                 {
@@ -981,7 +1056,7 @@ namespace Workbook
             }
             else if (iData.GetDataPresent(attachmentView1.GetType()))
             {
-                undoRedoArea.Start(string.Format("{0} Attachment", opPrefix));
+                undoRedoArea.Start(string.Format("{0} {1}", opPrefix, WbLocale.Attachment));
                 foreach (ListViewItem item in attachmentView1.SelectedItems)
                 {
                     if (IsImageFilePath(item.Text))
@@ -1010,7 +1085,7 @@ namespace Workbook
         private void actPaste_Execute(object sender, EventArgs e)
         {
             CheckState();
-            PasteDataObject(Clipboard.GetDataObject(), "Paste", 10, 10);
+            PasteDataObject(Clipboard.GetDataObject(), WbLocale.Paste, 10, 10);
         }
 
         bool AttachmentLinked(string name)
@@ -1034,7 +1109,7 @@ namespace Workbook
             else if (previewBar1Focused)
             {
                 CheckState();
-                undoRedoArea.Start("Delete Page");
+                undoRedoArea.Start(WbLocale.DeletePage);
                 engines.Remove(de);
                 if (engines.Count == 0)
                     CreateDEngine(de);
@@ -1049,14 +1124,14 @@ namespace Workbook
             foreach (ListViewItem item in attachmentView1.SelectedItems)
                 if (AttachmentLinked(item.Text))
                 {
-                    if (MessageBox.Show("One of the attachments is linked by a figure. Are you sure you want to delete it?",
-                        "Attachment is Linked", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
+                    if (MessageBox.Show(WbLocale.AttachmentIsLinkedMsg, WbLocale.AttachmentIsLinked, 
+                        MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
                         break;
                     else
                         return;
                 }
             CheckState();
-            undoRedoArea.Start("Delete Attachments");
+            undoRedoArea.Start(WbLocale.DeleteAttachments);
             foreach (ListViewItem item in attachmentView1.SelectedItems)
                 attachmentView1.RemoveAttachment(item);
             undoRedoArea.Commit();
@@ -1077,10 +1152,10 @@ namespace Workbook
 
         void New()
         {
-            fileName = "New Document";
+            fileName = WbLocale.NewDocument;
             beenSaved = false;
 
-            undoRedoArea.Start("New Document");
+            undoRedoArea.Start(WbLocale.NewDocument);
             ClearDocument();
             CreateDEngine(null);
             attachmentView1.ClearAttachments();
@@ -1101,12 +1176,12 @@ namespace Workbook
             CheckState();
             // create progress form
             ProgressForm pf = new ProgressForm();
-            pf.Text = "Opening File";
+            pf.Text = WbLocale.OpeningFile;
             pf.Shown += delegate(object s, EventArgs e)
             {
                 Application.DoEvents();
                 // start undo/redo
-                undoRedoArea.Start("Open Document");
+                undoRedoArea.Start(WbLocale.OpenDocument);
                 try
                 {
                     // load new engines
@@ -1152,7 +1227,7 @@ namespace Workbook
                 catch (Exception e2)
                 {
                     undoRedoArea.Cancel();
-                    MessageBox.Show(e2.Message, "Error Reading File", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(e2.Message, WbLocale.ErrorReadingFile, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
                 pf.Close();
             };
@@ -1196,7 +1271,7 @@ namespace Workbook
             }
             catch (Exception e2)
             {
-                MessageBox.Show(e2.Message, "Error Writing File", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(e2.Message, WbLocale.ErrorWritingFile, MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             return retval;
         }
@@ -1206,7 +1281,7 @@ namespace Workbook
             bool retval = false;
             // progress form
             ProgressForm pf = new ProgressForm();
-            pf.Text = "Saving File";
+            pf.Text = WbLocale.SavingFile;
             pf.Shown += delegate(object s, EventArgs e)
             {
                 Application.DoEvents();
@@ -1236,7 +1311,7 @@ namespace Workbook
         {
             if (Dirty)
             {
-                switch (MessageBox.Show(string.Format("Save changes to \"{0}\"?", fileName), ProgramName,
+                switch (MessageBox.Show(string.Format("{0} \"{1}\"?", WbLocale.SaveChangesTo, fileName), ProgramName,
                     MessageBoxButtons.YesNoCancel, MessageBoxIcon.Exclamation))
                 {
                     case DialogResult.Yes:
@@ -1342,7 +1417,7 @@ namespace Workbook
         private void actNewPage_Execute(object sender, EventArgs e)
         {
             CheckState();
-            undoRedoArea.Start("New Page");
+            undoRedoArea.Start(WbLocale.NewPage);
             CreateDEngine(de);
             undoRedoArea.Commit();
         }
@@ -1355,7 +1430,7 @@ namespace Workbook
         private void actClonePage_Execute(object sender, EventArgs e)
         {
             CheckState();
-            undoRedoArea.Start("Clone Page");
+            undoRedoArea.Start(WbLocale.ClonePage);
             // clone data
             string clonedFigures = FigureSerialize.FormatToXml(de.Figures, null);
             string clonedBackground = null;
@@ -1401,12 +1476,12 @@ namespace Workbook
         {
             // progress form
             ProgressForm pf = new ProgressForm();
-            pf.Text = "Importing Screen Capture";
+            pf.Text = WbLocale.ImportingScreenCapture;
             pf.Shown += delegate(object s, EventArgs e)
             {
                 Application.DoEvents();
                 // import annotations
-                undoRedoArea.Start("Import Screen Capture");
+                undoRedoArea.Start(WbLocale.ImportScreenCapture);
                 ImageFigure f = new ImageFigure(new DRect(10, 10, bmp.Width, bmp.Height), 0, WFHelper.ToImageData(bmp), "screencap.png");
                 de.AddFigure(f);
                 dvEditor.Update();
@@ -1458,7 +1533,7 @@ namespace Workbook
                 switch (lf.ShowDialog())
                 {
                     case DialogResult.OK:
-                        undoRedoArea.Start("Change Link");
+                        undoRedoArea.Start(WbLocale.ChangeLink);
                         f.UserAttrs[Links.LinkType] = lf.LinkType.ToString();
                         switch (lf.LinkType)
                         {
@@ -1500,7 +1575,7 @@ namespace Workbook
                         CheckLinkGlyph(f);
                         break;
                     case DialogResult.Abort:
-                        undoRedoArea.Start("Remove Link");
+                        undoRedoArea.Start(WbLocale.RemoveLink);
                         f.UserAttrs.Remove(Links.Link);
                         f.UserAttrs.Remove(Links.LinkType);
                         f.UserAttrs.Remove(Links.LinkBody);
@@ -1517,7 +1592,7 @@ namespace Workbook
         {
             if (de.SelectedFigures.Count > 0)
             {
-                undoRedoArea.Start("Change Figure Lock");
+                undoRedoArea.Start(WbLocale.ChangeFigureLock);
                 foreach (Figure f in de.SelectedFigures)
                     f.Locked = !f.Locked;
                 undoRedoArea.Commit();
@@ -1549,7 +1624,7 @@ namespace Workbook
             df.Figures = de.SelectedFigures;
             if (df.ShowDialog() == DialogResult.OK)
             {
-                undoRedoArea.Start("Change Figure Dimensions");
+                undoRedoArea.Start(WbLocale.ChangeFigureDimensions);
                 DRect origRect = df.BoundingRect(df.Figures);
                 foreach (Figure f in df.Figures)
                 {
@@ -1592,7 +1667,7 @@ namespace Workbook
                 if (f.ShowDialog() == DialogResult.OK)
                 {
                     // update all selected figures to have the same properties as the PropertiesForm figures
-                    undoRedoArea.Start("Change Properties");
+                    undoRedoArea.Start(WbLocale.ChangeFigureProperties);
                     for (int i = 0; i < f.Figures.Count; i++)
                         DAuthorProperties.FromFigure(f.Figures[i]).ApplyPropertiesToFigure(de.SelectedFigures[i]);
                     undoRedoArea.Commit();
@@ -1622,12 +1697,12 @@ namespace Workbook
         {
             // progress form
             ProgressForm pf = new ProgressForm();
-            pf.Text = "Importing Screen as Page";
+            pf.Text = WbLocale.ImportingScreenAsPage;
             pf.Shown += delegate(object s, EventArgs e)
             {
                 Application.DoEvents();
                 // import annotations
-                undoRedoArea.Start("Import Annotations");
+                undoRedoArea.Start(WbLocale.ImportAnnotations);
                 CreateDEngine(this.de);
                 this.de.PageSize = de.PageSize;
                 this.de.SetBackgroundFigure(de.BackgroundFigure, true);
@@ -1646,12 +1721,12 @@ namespace Workbook
         {
             // progress form
             ProgressForm pf = new ProgressForm();
-            pf.Text = "Importing Area as Image";
+            pf.Text = WbLocale.ImportingAreaAsImage;
             pf.Shown += delegate(object s, EventArgs e)
             {
                 Application.DoEvents();
                 // import annotations
-                undoRedoArea.Start("Import Annotations");
+                undoRedoArea.Start(WbLocale.ImportAnnotations);
                 ImageFigure f = new ImageFigure(new DRect(10, 10, bmp.Width, bmp.Height), 0, WFHelper.ToImageData(bmp), "annotations.png");
                 de.AddFigure(f);
                 dvEditor.Update();
@@ -1691,7 +1766,7 @@ namespace Workbook
             CheckState();
             Point cpt = wfvcEditor.PointToClient(new Point(e.X, e.Y));
             DPoint pt = dvEditor.ClientToEngine(new DPoint(cpt.X, cpt.Y));
-            PasteDataObject(e.Data, "Copy", pt.X, pt.Y);
+            PasteDataObject(e.Data, WbLocale.Copy, pt.X, pt.Y);
         }
 
         // Sidebar //////////////////////////////////////////////////////
@@ -1789,7 +1864,7 @@ namespace Workbook
         private void attachmentView1_FileDrop(object sender, string[] filePaths)
         {
             CheckState();
-            undoRedoArea.Start("Add Attachments");
+            undoRedoArea.Start(WbLocale.AddAttachments);
             foreach (string path in filePaths)
                 if (attachmentView1.CheckAttachmentExists(path))
                     attachmentView1.AddAttachment(path);
@@ -1829,12 +1904,12 @@ namespace Workbook
                     CheckState();
                     // setup progress form
                     ProgressForm pf = new ProgressForm();
-                    pf.Text = "Importing Notebook File";
+                    pf.Text = WbLocale.ImportingNotebookFile;
                     pf.Shown += delegate(object s, EventArgs e2)
                     {
                         Application.DoEvents();
                         // start undo/redo
-                        undoRedoArea.Start("Import Notebook");
+                        undoRedoArea.Start(WbLocale.ImportNotebook);
                         try
                         {
                             // clear pages & attachments
@@ -1866,7 +1941,7 @@ namespace Workbook
                         catch (Exception e3)
                         {
                             undoRedoArea.Cancel();
-                            MessageBox.Show(e3.Message, "Error Reading File", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            MessageBox.Show(e3.Message, WbLocale.ErrorReadingFile, MessageBoxButtons.OK, MessageBoxIcon.Error);
                         }
                         pf.Close();
                     };
@@ -1906,7 +1981,7 @@ namespace Workbook
 
         private void flipXToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            undoRedoArea.Start("Flip X");
+            undoRedoArea.Start(WbLocale.FlipLeftRight);
             foreach (Figure fig in de.SelectedFigures)
                 fig.FlipX = !fig.FlipX;
             undoRedoArea.Commit();
@@ -1915,7 +1990,7 @@ namespace Workbook
 
         private void flipYToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            undoRedoArea.Start("Flip Y");
+            undoRedoArea.Start(WbLocale.FlipUpDown);
             foreach (Figure fig in de.SelectedFigures)
                 fig.FlipY = !fig.FlipY;
             undoRedoArea.Commit();
@@ -1953,7 +2028,7 @@ namespace Workbook
                 // load mail client
                 MAPI mapi = new MAPI();
                 mapi.AddAttachment(tempFileName);
-                mapi.SendMailPopup(string.Format("Emailing: {0}", Path.GetFileNameWithoutExtension(fileName)), "");
+                mapi.SendMailPopup(string.Format("{0}: {1}", WbLocale.Emailing, Path.GetFileNameWithoutExtension(fileName)), "");
             }
         }
 
@@ -1967,11 +2042,11 @@ namespace Workbook
                 // load mail client
                 MAPI mapi = new MAPI();
                 mapi.AddAttachment(tempFileName);
-                mapi.SendMailPopup(string.Format("Emailing: {0}", Path.GetFileNameWithoutExtension(fileName)), "");
+                mapi.SendMailPopup(string.Format("{0}: {1}", WbLocale.Emailing, Path.GetFileNameWithoutExtension(fileName)), "");
             }
             catch (Exception e2)
             {
-                MessageBox.Show(e2.Message, "ERROR Mailing PDF", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(e2.Message, WbLocale.ErrorMailingPDF, MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
         }

@@ -32,10 +32,10 @@ namespace Workbook
         {
             // columns
             ColumnHeader FileName = new ColumnHeader();
-            FileName.Text = "File Name";
+            FileName.Text = WbLocale.FileName;
             FileName.Width = 100;
             ColumnHeader Size = new ColumnHeader();
-            Size.Text = "Size";
+            Size.Text = WbLocale.Size;
             Size.Width = 40;
             Columns.AddRange(new System.Windows.Forms.ColumnHeader[] { FileName, Size});
             // details view
@@ -49,9 +49,9 @@ namespace Workbook
             Activation = ItemActivation.Standard;
             ItemActivate += new EventHandler(AttachmentView_ItemActivate);
             // context menu
-            MenuItem ins = new MenuItem("Insert");
+            MenuItem ins = new MenuItem(WbLocale.Insert);
             ins.Click += new EventHandler(insert_Click);
-            deleteMenuItem = new MenuItem("Delete");
+            deleteMenuItem = new MenuItem(WbLocale.Delete);
             deleteMenuItem.Click += new EventHandler(delete_Click);
             ContextMenu = new ContextMenu(new MenuItem[] { ins, deleteMenuItem });
             ContextMenu.Popup += new EventHandler(ContextMenu_Popup);
@@ -80,7 +80,7 @@ namespace Workbook
                 try
                 { ExecuteAttachment(SelectedItems[0].Text); }
                 catch (Exception ex)
-                { MessageBox.Show(ex.Message, "Attachment Execute Error"); }
+                { MessageBox.Show(ex.Message, WbLocale.AttachmentExecuteError); }
         }
 
         void insert_Click(object sender, EventArgs e)

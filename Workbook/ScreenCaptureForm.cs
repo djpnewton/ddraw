@@ -20,6 +20,15 @@ namespace Workbook
         public ScreenCaptureForm()
         {
             InitializeComponent();
+            LocalizeUI();
+        }
+
+        private void LocalizeUI()
+        {
+            Text = WbLocale.ScreenCapture;
+            btnCaptureRect.Text = WbLocale.CaptureRectArea;
+            btnCaptureFull.Text = WbLocale.CaptureFullScreen;
+            btnCaptureWindow.Text = WbLocale.CaptureWindow;
         }
 
         private void btnCaptureRect_Click(object sender, EventArgs e)

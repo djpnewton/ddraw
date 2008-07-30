@@ -70,7 +70,20 @@ namespace Workbook
         public BackgroundForm()
         {
             InitializeComponent();
+            LocalizeUI();
             ImagePosition = DImagePosition.Stretch;
+        }
+
+        private void LocalizeUI()
+        {
+            Text = WbLocale.SetBackground;
+            rbColor.Text = WbLocale.SolidColor;
+            rbImage.Text = WbLocale.Image;
+            btnColor.Text = WbLocale.Color;
+            btnImageBrowse.Text = WbLocale.Browse;
+            btnOk.Text = WbLocale.Ok;
+            btnCancel.Text = WbLocale.Cancel;
+            cbApplyAll.Text = WbLocale.ApplyToAllPages;
         }
 
         private void btnColor_Click(object sender, EventArgs e)

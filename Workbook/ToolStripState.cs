@@ -166,29 +166,29 @@ namespace Workbook
 
         public FigureToolStrip()
         {
-            btnSelect = new ToolStripButton("Select", Resource1.cursor, btnClick);
+            btnSelect = new ToolStripButton(WbLocale.Select, Resource1.cursor, btnClick);
             Items.Add(btnSelect);
-            btnPen = new ToolStripButton("Pen", Resource1.pencil, btnClick);
+            btnPen = new ToolStripButton(WbLocale.Pen, Resource1.pencil, btnClick);
             Items.Add(btnPen);
-            btnEraser = new ToolStripButton("Eraser", Resource1.eraser, btnClick);
+            btnEraser = new ToolStripButton(WbLocale.Eraser, Resource1.eraser, btnClick);
             Items.Add(btnEraser);
-            btnRect = new ToolStripButton("Rectangle", Resource1.rect, btnClick);
+            btnRect = new ToolStripButton(WbLocale.Rectangle, Resource1.rect, btnClick);
             Items.Add(btnRect);
-            btnEllipse = new ToolStripButton("Ellipse", Resource1.ellipse, btnClick);
+            btnEllipse = new ToolStripButton(WbLocale.Ellipse, Resource1.ellipse, btnClick);
             Items.Add(btnEllipse);
-            btnText = new ToolStripButton("Text", Resource1.style, btnClick);
+            btnText = new ToolStripButton(WbLocale.Text, Resource1.style, btnClick);
             Items.Add(btnText);
-            btnClock = new ToolStripButton("Clock", Resource1.clock, btnClick);
+            btnClock = new ToolStripButton(WbLocale.Clock, Resource1.clock, btnClick);
             Items.Add(btnClock);
-            btnTriangle = new ToolStripButton("Trangle", Resource1.tri, btnClick);
+            btnTriangle = new ToolStripButton(WbLocale.Triangle, Resource1.tri, btnClick);
             Items.Add(btnTriangle);
-            btnRATriangle = new ToolStripButton("Right Angled Triangle", Resource1.tri2, btnClick);
+            btnRATriangle = new ToolStripButton(WbLocale.RightAngledTriangle, Resource1.tri2, btnClick);
             Items.Add(btnRATriangle);
-            btnDiamond = new ToolStripButton("Diamond", Resource1.dia, btnClick);
+            btnDiamond = new ToolStripButton(WbLocale.Diamond, Resource1.dia, btnClick);
             Items.Add(btnDiamond);
-            btnPentagon = new ToolStripButton("Pentagon", Resource1.pent, btnClick);
+            btnPentagon = new ToolStripButton(WbLocale.Pentagon, Resource1.pent, btnClick);
             Items.Add(btnPentagon);
-            btnLine = new ToolStripButton("Line", Resource1.line, btnClick);
+            btnLine = new ToolStripButton(WbLocale.Line, Resource1.line, btnClick);
             Items.Add(btnLine);
             foreach (ToolStripItem b in Items)
             {
@@ -437,47 +437,47 @@ namespace Workbook
         {
             btnFill = new ToolStripColorButton();
             btnFill.ColorType = ColorType.Fill;
-            btnFill.Text = "Fill";
+            btnFill.Text = WbLocale.Fill;
             Items.Add(btnFill);
             btnStroke = new ToolStripColorButton();
             btnStroke.ColorType = ColorType.Stroke;
-            btnStroke.Text = "Stroke";
+            btnStroke.Text = WbLocale.Stroke;
             Items.Add(btnStroke);
             btnStrokeWidth = new ToolStripStrokeWidthButton();
-            btnStrokeWidth.Text = "Stroke Width";
+            btnStrokeWidth.Text = WbLocale.StrokeWidth;
             btnStrokeWidth.StrokeWidthChanged += new StrokeWidthChangedHandler(btnStrokeWidth_StrokeWidthChanged);
             Items.Add(btnStrokeWidth);
             btnStrokeStyle = new ToolStripStrokeStyleButton();
-            btnStrokeStyle.Text = "Stroke Style";
+            btnStrokeStyle.Text = WbLocale.StrokeStyle;
             btnStrokeStyle.StrokeStyleChanged += new StrokeStyleChangedHandler(btnStrokeStyle_StrokeStyleChanged);
             Items.Add(btnStrokeStyle);
             btnStartMarker = new ToolStripMarkerButton();
             btnStartMarker.Start = true;
-            btnStartMarker.Text = "Start Marker";
+            btnStartMarker.Text = WbLocale.StartMarker;
             btnStartMarker.MarkerChanged += new MarkerChangedHandler(btnMarker_MarkerChanged);
             Items.Add(btnStartMarker);
             btnEndMarker = new ToolStripMarkerButton();
             btnEndMarker.Start = false;
-            btnEndMarker.Text = "End Marker";
+            btnEndMarker.Text = WbLocale.EndMarker;
             btnEndMarker.MarkerChanged += new MarkerChangedHandler(btnMarker_MarkerChanged);
             Items.Add(btnEndMarker);
             btnAlpha = new ToolStripAlphaButton();
-            btnAlpha.Text = "Opacity";
+            btnAlpha.Text = WbLocale.Opacity;
             btnAlpha.AlphaChanged += new AlphaChangedHandler(btnAlpha_AlphaChanged);
             Items.Add(btnAlpha);
             btnFontName = new ToolStripFontNameButton();
-            btnFontName.Text = "Font";
+            btnFontName.Text = WbLocale.Font;
             Items.Add(btnFontName);
-            btnBold = new ToolStripButton("Bold", Resource1.text_bold);
+            btnBold = new ToolStripButton(WbLocale.Bold, Resource1.text_bold);
             btnBold.CheckOnClick = true;
             Items.Add(btnBold);
-            btnItalic = new ToolStripButton("Italic", Resource1.text_italic);
+            btnItalic = new ToolStripButton(WbLocale.Italic, Resource1.text_italic);
             btnItalic.CheckOnClick = true;
             Items.Add(btnItalic);
-            btnUnderline = new ToolStripButton("Underline", Resource1.text_underline);
+            btnUnderline = new ToolStripButton(WbLocale.Underline, Resource1.text_underline);
             btnUnderline.CheckOnClick = true;
             Items.Add(btnUnderline);
-            btnStrikethrough = new ToolStripButton("Strikethrough", Resource1.text_strikethrough);
+            btnStrikethrough = new ToolStripButton(WbLocale.Strikethrough, Resource1.text_strikethrough);
             btnStrikethrough.CheckOnClick = true;
             Items.Add(btnStrikethrough);
             foreach (ToolStripItem b in Items)
@@ -1052,7 +1052,7 @@ namespace Workbook
         {
             if (de != null && dv != null)
             {
-                de.UndoRedo.Start("Change Property");
+                de.UndoRedo.Start(WbLocale.ChangeProperty);
                 foreach (Figure f in de.SelectedFigures)
                 {
                     if (sender == btnFill && f is IFillable)

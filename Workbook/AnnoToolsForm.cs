@@ -44,8 +44,18 @@ namespace Workbook
         public AnnoToolsForm()
         {
             InitializeComponent();
+            LocalizeUI();
             MouseMode();
             Disposed += new EventHandler(FloatingToolsForm_Disposed);
+        }
+
+        private void LocalizeUI()
+        {
+            Text = WbLocale.ScreenAnnotate;
+            btnMouse.Text = WbLocale.Mouse;
+            btnUndo.Text = WbLocale.Undo;
+            btnImportArea.Text = WbLocale.ImportArea;
+            btnImportPage.Text = WbLocale.ImportPage;
         }
 
         void  FloatingToolsForm_Disposed(object sender, EventArgs e)
@@ -66,8 +76,8 @@ namespace Workbook
                 // ask if user wants to cancel
                 if (!haveImportedAnnotations && annotationForm.De.UndoRedo.CanUndo)
                 {
-                    if (MessageBox.Show("You have not imported any annotations. This action will erase your annotations, are you sure you want to continue?",
-                        "No Annotations Imported", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.No)
+                    if (MessageBox.Show(WbLocale.NoAnnotationsImportedMsg, WbLocale.NoAnnotationsImported, 
+                        MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.No)
                         return false;
                 }
                 haveImportedAnnotations = false;

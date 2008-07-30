@@ -1,0 +1,690 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="_050Percent" xml:space="preserve">
+    <value>50%</value>
+  </data>
+  <data name="_100Percent" xml:space="preserve">
+    <value>100%</value>
+  </data>
+  <data name="_150Percent" xml:space="preserve">
+    <value>150%</value>
+  </data>
+  <data name="About" xml:space="preserve">
+    <value>About</value>
+  </data>
+  <data name="AddAttachment" xml:space="preserve">
+    <value>Add Attachment</value>
+  </data>
+  <data name="AddAttachments" xml:space="preserve">
+    <value>Add Attachments</value>
+  </data>
+  <data name="AddImage" xml:space="preserve">
+    <value>Add Image</value>
+  </data>
+  <data name="Address" xml:space="preserve">
+    <value>Address</value>
+  </data>
+  <data name="All" xml:space="preserve">
+    <value>All</value>
+  </data>
+  <data name="Angle" xml:space="preserve">
+    <value>Angle (°)</value>
+  </data>
+  <data name="Antialias" xml:space="preserve">
+    <value>Antialias</value>
+  </data>
+  <data name="ApplyToAllPages" xml:space="preserve">
+    <value>Apply to all pages</value>
+  </data>
+  <data name="Attachment" xml:space="preserve">
+    <value>Attachment</value>
+  </data>
+  <data name="AttachmentExecuteError" xml:space="preserve">
+    <value>Attachment Execute Error</value>
+  </data>
+  <data name="AttachmentIsLinked" xml:space="preserve">
+    <value>Attachment is Linked</value>
+  </data>
+  <data name="AttachmentIsLinkedMsg" xml:space="preserve">
+    <value>One of the attachments is linked by a figure. Are you sure you want to delete it?</value>
+  </data>
+  <data name="AttachmentLinkError" xml:space="preserve">
+    <value>Attachment Link Error</value>
+  </data>
+  <data name="Background" xml:space="preserve">
+    <value>Background</value>
+  </data>
+  <data name="Bitmap" xml:space="preserve">
+    <value>Bitmap</value>
+  </data>
+  <data name="Bold" xml:space="preserve">
+    <value>Bold</value>
+  </data>
+  <data name="BringForward" xml:space="preserve">
+    <value>Bring Forward</value>
+  </data>
+  <data name="BringToFront" xml:space="preserve">
+    <value>Bring to Front</value>
+  </data>
+  <data name="Browse" xml:space="preserve">
+    <value>Browse...</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="CaptureFullScreen" xml:space="preserve">
+    <value>Capture Full Screen</value>
+  </data>
+  <data name="CaptureRectArea" xml:space="preserve">
+    <value>Capture Rectangular Area</value>
+  </data>
+  <data name="CaptureWindow" xml:space="preserve">
+    <value>Capture Window</value>
+  </data>
+  <data name="ChangeFigureDimensions" xml:space="preserve">
+    <value>Change Figure Dimensions</value>
+  </data>
+  <data name="ChangeFigureLock" xml:space="preserve">
+    <value>Change Figure Lock</value>
+  </data>
+  <data name="ChangeFigureProperties" xml:space="preserve">
+    <value>Change Figure Properties</value>
+  </data>
+  <data name="ChangeLink" xml:space="preserve">
+    <value>Change Link</value>
+  </data>
+  <data name="ChangePageName" xml:space="preserve">
+    <value>Change Page Name</value>
+  </data>
+  <data name="ChangePageSize" xml:space="preserve">
+    <value>Change Page Size</value>
+  </data>
+  <data name="ChangeProperty" xml:space="preserve">
+    <value>Change Property</value>
+  </data>
+  <data name="ClearPage" xml:space="preserve">
+    <value>Clear Page</value>
+  </data>
+  <data name="Clock" xml:space="preserve">
+    <value>Clock</value>
+  </data>
+  <data name="ClonePage" xml:space="preserve">
+    <value>Clone Page</value>
+  </data>
+  <data name="Color" xml:space="preserve">
+    <value>Color</value>
+  </data>
+  <data name="Copy" xml:space="preserve">
+    <value>Copy</value>
+  </data>
+  <data name="CopyFileToAttachments" xml:space="preserve">
+    <value>Copy File to Attachments</value>
+  </data>
+  <data name="CouldNotFindFile" xml:space="preserve">
+    <value>Could not find file</value>
+  </data>
+  <data name="Current" xml:space="preserve">
+    <value>Current</value>
+  </data>
+  <data name="Custom" xml:space="preserve">
+    <value>Custom</value>
+  </data>
+  <data name="Cut" xml:space="preserve">
+    <value>Cut</value>
+  </data>
+  <data name="Default" xml:space="preserve">
+    <value>Default</value>
+  </data>
+  <data name="Delete" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="DeleteAttachments" xml:space="preserve">
+    <value>Delete Attachments</value>
+  </data>
+  <data name="DeletePage" xml:space="preserve">
+    <value>Delete Page</value>
+  </data>
+  <data name="Diamond" xml:space="preserve">
+    <value>Diamond</value>
+  </data>
+  <data name="Dimensions" xml:space="preserve">
+    <value>Dimensions</value>
+  </data>
+  <data name="DoesNotExist" xml:space="preserve">
+    <value>does not exist</value>
+  </data>
+  <data name="DragFigureToNewPage" xml:space="preserve">
+    <value>Drag figure to New Page</value>
+  </data>
+  <data name="Edit" xml:space="preserve">
+    <value>Edit</value>
+  </data>
+  <data name="Ellipse" xml:space="preserve">
+    <value>Ellipse</value>
+  </data>
+  <data name="Emailing" xml:space="preserve">
+    <value>Emailing</value>
+  </data>
+  <data name="EndMarker" xml:space="preserve">
+    <value>End Marker</value>
+  </data>
+  <data name="Eraser" xml:space="preserve">
+    <value>Eraser</value>
+  </data>
+  <data name="ERROR" xml:space="preserve">
+    <value>ERROR</value>
+  </data>
+  <data name="ErrorMailingPDF" xml:space="preserve">
+    <value>Error Mailing PDF</value>
+  </data>
+  <data name="ErrorReadingFile" xml:space="preserve">
+    <value>Error Reading File</value>
+  </data>
+  <data name="ErrorWritingFile" xml:space="preserve">
+    <value>Error Writing File</value>
+  </data>
+  <data name="Exit" xml:space="preserve">
+    <value>Exit</value>
+  </data>
+  <data name="Export" xml:space="preserve">
+    <value>Export</value>
+  </data>
+  <data name="ExportingToImages" xml:space="preserve">
+    <value>Exporting to Images</value>
+  </data>
+  <data name="FigureBody" xml:space="preserve">
+    <value>Figure Body</value>
+  </data>
+  <data name="FigureDimensions" xml:space="preserve">
+    <value>Figure Dimensions</value>
+  </data>
+  <data name="FigureLink" xml:space="preserve">
+    <value>Figure Link</value>
+  </data>
+  <data name="FigureProperties" xml:space="preserve">
+    <value>Figure Properties</value>
+  </data>
+  <data name="Figures" xml:space="preserve">
+    <value>Figures</value>
+  </data>
+  <data name="File" xml:space="preserve">
+    <value>File</value>
+  </data>
+  <data name="FileLinkError" xml:space="preserve">
+    <value>File Link Error</value>
+  </data>
+  <data name="FileName" xml:space="preserve">
+    <value>File Name</value>
+  </data>
+  <data name="FileOnThisComputer" xml:space="preserve">
+    <value>File on this Computer</value>
+  </data>
+  <data name="Fill" xml:space="preserve">
+    <value>Fill</value>
+  </data>
+  <data name="First" xml:space="preserve">
+    <value>First</value>
+  </data>
+  <data name="FitToPage" xml:space="preserve">
+    <value>Fit to Page</value>
+  </data>
+  <data name="FitToWidth" xml:space="preserve">
+    <value>Fit to Width</value>
+  </data>
+  <data name="FlipLeftRight" xml:space="preserve">
+    <value>Flip Left/Right</value>
+  </data>
+  <data name="FlipUpDown" xml:space="preserve">
+    <value>Flip Up/Down</value>
+  </data>
+  <data name="Font" xml:space="preserve">
+    <value>Font</value>
+  </data>
+  <data name="Format" xml:space="preserve">
+    <value>Format</value>
+  </data>
+  <data name="Group" xml:space="preserve">
+    <value>Group</value>
+  </data>
+  <data name="Height" xml:space="preserve">
+    <value>Height</value>
+  </data>
+  <data name="HeightMM" xml:space="preserve">
+    <value>Height (mm)</value>
+  </data>
+  <data name="Hello" xml:space="preserve">
+    <value>Hello</value>
+  </data>
+  <data name="Image" xml:space="preserve">
+    <value>Image</value>
+  </data>
+  <data name="ImportAnnotations" xml:space="preserve">
+    <value>Import Annotations</value>
+  </data>
+  <data name="ImportArea" xml:space="preserve">
+    <value>Import Area as Image</value>
+  </data>
+  <data name="ImportingAreaAsImage" xml:space="preserve">
+    <value>Importing Area as Image</value>
+  </data>
+  <data name="ImportingNotebookFile" xml:space="preserve">
+    <value>Importing Notebook File</value>
+  </data>
+  <data name="ImportingScreenAsPage" xml:space="preserve">
+    <value>Importing Screen as Page</value>
+  </data>
+  <data name="ImportingScreenCapture" xml:space="preserve">
+    <value>Importing Screen Capture</value>
+  </data>
+  <data name="ImportNotebook" xml:space="preserve">
+    <value>Import Notebook</value>
+  </data>
+  <data name="ImportPage" xml:space="preserve">
+    <value>Import Screen as Page</value>
+  </data>
+  <data name="ImportScreenCapture" xml:space="preserve">
+    <value>Import Screen Capture</value>
+  </data>
+  <data name="Insert" xml:space="preserve">
+    <value>Insert</value>
+  </data>
+  <data name="Italic" xml:space="preserve">
+    <value>Italic</value>
+  </data>
+  <data name="Last" xml:space="preserve">
+    <value>Last</value>
+  </data>
+  <data name="Left" xml:space="preserve">
+    <value>Left</value>
+  </data>
+  <data name="Line" xml:space="preserve">
+    <value>Line</value>
+  </data>
+  <data name="Link" xml:space="preserve">
+    <value>Link</value>
+  </data>
+  <data name="LinkIcon" xml:space="preserve">
+    <value>Link Icon</value>
+  </data>
+  <data name="LinkMethod" xml:space="preserve">
+    <value>Link Method</value>
+  </data>
+  <data name="LinkType" xml:space="preserve">
+    <value>Link Type</value>
+  </data>
+  <data name="Lock" xml:space="preserve">
+    <value>Lock</value>
+  </data>
+  <data name="LockAspect" xml:space="preserve">
+    <value>Lock Aspect</value>
+  </data>
+  <data name="MailRecipient" xml:space="preserve">
+    <value>Mail Recipient</value>
+  </data>
+  <data name="MailRecipientPDF" xml:space="preserve">
+    <value>Mail Recipient (as PDF)</value>
+  </data>
+  <data name="ModeSelect" xml:space="preserve">
+    <value>Mode Select</value>
+  </data>
+  <data name="Mouse" xml:space="preserve">
+    <value>Mouse</value>
+  </data>
+  <data name="MovePage" xml:space="preserve">
+    <value>Move Page</value>
+  </data>
+  <data name="New" xml:space="preserve">
+    <value>New</value>
+  </data>
+  <data name="NewDocument" xml:space="preserve">
+    <value>New Document</value>
+  </data>
+  <data name="NewPage" xml:space="preserve">
+    <value>New Page</value>
+  </data>
+  <data name="Next" xml:space="preserve">
+    <value>Next</value>
+  </data>
+  <data name="NoAnnotationsImported" xml:space="preserve">
+    <value>No Annotations Imported</value>
+  </data>
+  <data name="NoAnnotationsImportedMsg" xml:space="preserve">
+    <value>You have not imported any annotations. This action will erase your annotations, are you sure you want to continue?</value>
+  </data>
+  <data name="NoPagesSelected" xml:space="preserve">
+    <value>No pages selected</value>
+  </data>
+  <data name="Ok" xml:space="preserve">
+    <value>Ok</value>
+  </data>
+  <data name="Opacity" xml:space="preserve">
+    <value>Opacity</value>
+  </data>
+  <data name="Open" xml:space="preserve">
+    <value>Open</value>
+  </data>
+  <data name="OpenDocument" xml:space="preserve">
+    <value>Open Document</value>
+  </data>
+  <data name="OpeningFile" xml:space="preserve">
+    <value>Opening File</value>
+  </data>
+  <data name="Order" xml:space="preserve">
+    <value>Order</value>
+  </data>
+  <data name="Page" xml:space="preserve">
+    <value>Page</value>
+  </data>
+  <data name="PageInThisDocument" xml:space="preserve">
+    <value>Page in this Document</value>
+  </data>
+  <data name="PageLinkError" xml:space="preserve">
+    <value>Page Link Error</value>
+  </data>
+  <data name="PageNavigation" xml:space="preserve">
+    <value>Page Navigation</value>
+  </data>
+  <data name="Pages" xml:space="preserve">
+    <value>Pages</value>
+  </data>
+  <data name="PageSize" xml:space="preserve">
+    <value>Page Size</value>
+  </data>
+  <data name="Paste" xml:space="preserve">
+    <value>Paste</value>
+  </data>
+  <data name="PDF" xml:space="preserve">
+    <value>PDF</value>
+  </data>
+  <data name="Pen" xml:space="preserve">
+    <value>Pen</value>
+  </data>
+  <data name="Pentagon" xml:space="preserve">
+    <value>Pentagon</value>
+  </data>
+  <data name="Personal" xml:space="preserve">
+    <value>Personal</value>
+  </data>
+  <data name="Previous" xml:space="preserve">
+    <value>Previous</value>
+  </data>
+  <data name="Print" xml:space="preserve">
+    <value>Print</value>
+  </data>
+  <data name="Properties" xml:space="preserve">
+    <value>Properties</value>
+  </data>
+  <data name="PropertySelect" xml:space="preserve">
+    <value>Property Select</value>
+  </data>
+  <data name="RecentDocuments" xml:space="preserve">
+    <value>Recent Documents</value>
+  </data>
+  <data name="Rectangle" xml:space="preserve">
+    <value>Rectangle</value>
+  </data>
+  <data name="Redo" xml:space="preserve">
+    <value>Redo</value>
+  </data>
+  <data name="RemoveLink" xml:space="preserve">
+    <value>Remove Link</value>
+  </data>
+  <data name="RenamePage" xml:space="preserve">
+    <value>Rename Page</value>
+  </data>
+  <data name="ResetToolbars" xml:space="preserve">
+    <value>Reset Toolbars</value>
+  </data>
+  <data name="RightAngledTriangle" xml:space="preserve">
+    <value>Right Angled Triangle</value>
+  </data>
+  <data name="Save" xml:space="preserve">
+    <value>Save</value>
+  </data>
+  <data name="SaveAs" xml:space="preserve">
+    <value>Save As</value>
+  </data>
+  <data name="SaveChangesTo" xml:space="preserve">
+    <value>Save changes to</value>
+  </data>
+  <data name="SavingFile" xml:space="preserve">
+    <value>Saving File</value>
+  </data>
+  <data name="ScreenAnnotate" xml:space="preserve">
+    <value>Screen Annotate</value>
+  </data>
+  <data name="ScreenCapture" xml:space="preserve">
+    <value>Screen Capture</value>
+  </data>
+  <data name="Select" xml:space="preserve">
+    <value>Select</value>
+  </data>
+  <data name="SelectAll" xml:space="preserve">
+    <value>Select All</value>
+  </data>
+  <data name="SendBackward" xml:space="preserve">
+    <value>Send Backward</value>
+  </data>
+  <data name="SendTo" xml:space="preserve">
+    <value>Send To</value>
+  </data>
+  <data name="SendToBack" xml:space="preserve">
+    <value>Send to Back</value>
+  </data>
+  <data name="Set Background" xml:space="preserve">
+    <value>Set Background</value>
+  </data>
+  <data name="SetBackground" xml:space="preserve">
+    <value>Set Background</value>
+  </data>
+  <data name="SetGlobalBackground" xml:space="preserve">
+    <value>Set Global Background</value>
+  </data>
+  <data name="SetGlobalPageSize" xml:space="preserve">
+    <value>Set Global Page Size</value>
+  </data>
+  <data name="Size" xml:space="preserve">
+    <value>Size</value>
+  </data>
+  <data name="SolidColor" xml:space="preserve">
+    <value>Solid Color</value>
+  </data>
+  <data name="StartMarker" xml:space="preserve">
+    <value>Start Marker</value>
+  </data>
+  <data name="Strikethrough" xml:space="preserve">
+    <value>Strikethrough</value>
+  </data>
+  <data name="Stroke" xml:space="preserve">
+    <value>Stroke</value>
+  </data>
+  <data name="StrokeStyle" xml:space="preserve">
+    <value>StrokeStyle</value>
+  </data>
+  <data name="StrokeWidth" xml:space="preserve">
+    <value>Stroke Width</value>
+  </data>
+  <data name="Text" xml:space="preserve">
+    <value>Text</value>
+  </data>
+  <data name="TextEdit" xml:space="preserve">
+    <value>Text Edit</value>
+  </data>
+  <data name="Toolbars" xml:space="preserve">
+    <value>Toolbars</value>
+  </data>
+  <data name="Tools" xml:space="preserve">
+    <value>Tools</value>
+  </data>
+  <data name="Top" xml:space="preserve">
+    <value>Top</value>
+  </data>
+  <data name="Triangle" xml:space="preserve">
+    <value>Triangle</value>
+  </data>
+  <data name="Underline" xml:space="preserve">
+    <value>Underline</value>
+  </data>
+  <data name="Undo" xml:space="preserve">
+    <value>Undo</value>
+  </data>
+  <data name="Ungroup" xml:space="preserve">
+    <value>Ungroup</value>
+  </data>
+  <data name="UnifyAngle" xml:space="preserve">
+    <value>Unify Angle</value>
+  </data>
+  <data name="UnifyHeight" xml:space="preserve">
+    <value>Unify Height</value>
+  </data>
+  <data name="UnifyLeft" xml:space="preserve">
+    <value>Unify Left</value>
+  </data>
+  <data name="UnifyTop" xml:space="preserve">
+    <value>Unify Top</value>
+  </data>
+  <data name="UnifyWidth" xml:space="preserve">
+    <value>Unify Width</value>
+  </data>
+  <data name="UnlockFigure" xml:space="preserve">
+    <value>Unlock Figure</value>
+  </data>
+  <data name="Version" xml:space="preserve">
+    <value>Version</value>
+  </data>
+  <data name="View" xml:space="preserve">
+    <value>View</value>
+  </data>
+  <data name="WebLinkError" xml:space="preserve">
+    <value>Web Link Error</value>
+  </data>
+  <data name="WebPage" xml:space="preserve">
+    <value>Web Page</value>
+  </data>
+  <data name="Width" xml:space="preserve">
+    <value>Width</value>
+  </data>
+  <data name="WidthMM" xml:space="preserve">
+    <value>Width (mm)</value>
+  </data>
+  <data name="Zoom" xml:space="preserve">
+    <value>Zoom</value>
+  </data>
+</root>

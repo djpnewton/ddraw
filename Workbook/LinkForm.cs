@@ -178,6 +178,33 @@ namespace Workbook
         public LinkForm()
         {
             InitializeComponent();
+            LocalizeUI();
+        }
+
+        private void LocalizeUI()
+        {
+            Text = WbLocale.FigureLink;
+            gbLinkType.Text = WbLocale.LinkType;
+            gbLinkMethod.Text = WbLocale.LinkMethod;
+            rbWebPage.Text = WbLocale.WebPage;
+            rbFile.Text = WbLocale.FileOnThisComputer;
+            rbPage.Text = WbLocale.PageInThisDocument;
+            rbAttachment.Text = WbLocale.Attachment;
+            rbLinkIcon.Text = WbLocale.LinkIcon;
+            rbLinkBody.Text = WbLocale.FigureBody;
+            lbPage.Text = WbLocale.Page + ":";
+            rbPageFirst.Text = WbLocale.First;
+            rbPageLast.Text = WbLocale.Last;
+            rbPageNext.Text = WbLocale.Next;
+            rbPagePrevious.Text = WbLocale.Previous;
+            lbAddress.Text = WbLocale.Address + ":";
+            lbFile.Text = WbLocale.File + ":";
+            btnBrowse.Text = WbLocale.Browse;
+            cbCopyFileToAttachments.Text = WbLocale.CopyFileToAttachments;
+            lbAttachment.Text = WbLocale.Attachment + ":";
+            btnClear.Text = WbLocale.RemoveLink;
+            btnOk.Text = WbLocale.Ok;
+            btnCancel.Text = WbLocale.Cancel;
         }
 
         private void LinkType_Changed(object sender, EventArgs e)

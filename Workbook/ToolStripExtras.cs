@@ -726,7 +726,7 @@ namespace Workbook
         {
             DisplayStyle = ToolStripItemDisplayStyle.Image;
             Image = Resource1.font;
-            ToolTipText = "Font";
+            ToolTipText = WbLocale.Font;
         }
     }
 

@@ -124,6 +124,25 @@ namespace Workbook
         public DimensionsForm()
         {
             InitializeComponent();
+            LocalizeUI();
+        }
+
+        private void LocalizeUI()
+        {
+            Text = WbLocale.FigureDimensions;
+            lbX.Text = WbLocale.Left;
+            lbY.Text = WbLocale.Top;
+            lbWidth.Text = WbLocale.Width;
+            lbHeight.Text = WbLocale.Height;
+            lbRotation.Text = WbLocale.Angle;
+            cbGroupX.Text = WbLocale.UnifyLeft;
+            cbGroupY.Text = WbLocale.UnifyTop;
+            cbGroupWidth.Text = WbLocale.UnifyWidth;
+            cbGroupHeight.Text = WbLocale.UnifyHeight;
+            cbGroupRot.Text = WbLocale.UnifyAngle;
+            cbLockAspect.Text = WbLocale.LockAspect;
+            btnOk.Text = WbLocale.Ok;
+            btnCancel.Text = WbLocale.Cancel;
         }
 
         private void cbGroupWidth_CheckedChanged(object sender, EventArgs e)

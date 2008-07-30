@@ -57,6 +57,19 @@ namespace Workbook
         public CustomPageSizeForm()
         {
             InitializeComponent();
+            LocalizeUI();
+        }
+
+        private void LocalizeUI()
+        {
+            Text = WbLocale.PageSize;
+            rbDefault.Text = WbLocale.Default;
+            rbCustom.Text = WbLocale.Custom;
+            lbWidth.Text = WbLocale.WidthMM;
+            lbHeight.Text = WbLocale.HeightMM;
+            cbApplyAll.Text = WbLocale.ApplyToAllPages;
+            btnOk.Text = WbLocale.Ok;
+            btnCancel.Text = WbLocale.Cancel;
         }
 
         void UpdatePageFormat(PageFormat value)
