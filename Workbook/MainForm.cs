@@ -896,33 +896,49 @@ namespace Workbook
         {
             List<Figure> figs = new List<Figure>(de.SelectedFigures);
             if (de.CanUngroupFigures(figs))
+            {
+                de.UndoRedo.Start(WbLocale.Ungroup);
                 de.UngroupFigures(figs);
+                de.UndoRedo.Commit();
+            }
             else if (de.CanGroupFigures(figs))
+            {
+                de.UndoRedo.Start(WbLocale.Group);
                 de.GroupFigures(figs);
+                de.UndoRedo.Commit();
+            }
             InitActions();
         }
 
         private void actSendToBack_Execute(object sender, EventArgs e)
         {
+            de.UndoRedo.Start(WbLocale.SendToBack);
             de.SendToBack(de.SelectedFigures);
+            de.UndoRedo.Commit();
             InitActions();
         }
 
         private void actBringToFront_Execute(object sender, EventArgs e)
         {
+            de.UndoRedo.Start(WbLocale.BringToFront);
             de.BringToFront(de.SelectedFigures);
+            de.UndoRedo.Commit();
             InitActions();
         }
 
         private void actSendBackward_Execute(object sender, EventArgs e)
         {
+            de.UndoRedo.Start(WbLocale.SendBackward);
             de.SendBackward(de.SelectedFigures);
+            de.UndoRedo.Commit();
             InitActions();
         }
 
         private void actBringForward_Execute(object sender, EventArgs e)
         {
+            de.UndoRedo.Start(WbLocale.BringForward);
             de.BringForward(de.SelectedFigures);
+            de.UndoRedo.Commit();
             InitActions();
         }
 
@@ -983,7 +999,9 @@ namespace Workbook
         {
             List<Figure> figs = de.SelectedFigures;
             DBitmap bmp;
+            de.UndoRedo.Start(WbLocale.Cut);
             string data = de.Cut(figs, out bmp, dvEditor.AntiAlias);
+            de.UndoRedo.Commit();
             CopyToClipboard(data, WFHelper.FromImageData(WFHelper.ToImageData(bmp)), figs);
         }
 
@@ -1105,7 +1123,11 @@ namespace Workbook
         void DoDelete()
         {
             if (wfvcEditor.Focused)
+            {
+                de.UndoRedo.Start(WbLocale.DeleteFigures);
                 de.Delete(de.SelectedFigures);
+                de.UndoRedo.Commit();
+            }
             else if (previewBar1Focused)
             {
                 CheckState();
@@ -1452,7 +1474,9 @@ namespace Workbook
         private void actClearPage_Execute(object sender, EventArgs e)
         {
             CheckState();
+            de.UndoRedo.Start(WbLocale.ClearPage);
             de.ClearPage();
+            de.UndoRedo.Commit();
         }
 
         private void actRenamePage_Execute(object sender, EventArgs e)

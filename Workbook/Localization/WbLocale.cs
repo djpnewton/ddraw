@@ -125,6 +125,11 @@ namespace Workbook
         public static string RemoveLink
         {
             get { return GetString("RemoveLink"); }
+        }
+
+        public static string DeleteFigures
+        {
+            get { return GetString("DeleteFigures"); }
         }  
         #endregion
 
@@ -1000,6 +1005,43 @@ namespace Workbook
         public static string ErrorMailingPDF
         {
             get { return GetString("ErrorMailingPDF"); }
+        }
+        #endregion
+
+        #region DEngine strings
+        public static string SelectOperation
+        {
+            get { return GetString("SelectOperation"); }
+        }
+        
+        public static string AddLine
+        {
+            get { return GetString("AddLine"); }
+        }
+        
+        public static string AddText
+        {
+            get { return GetString("AddText"); }
+        }
+        
+        public static string Add
+        {
+            get { return GetString("Add"); }
+        }
+        
+        public static string FigureEdit
+        {
+            get { return GetString("FigureEdit"); }
+        }
+        
+        public static string EraseOperation
+        {
+            get { return GetString("EraseOperation"); }
+        }
+        
+        public static string Move
+        {
+            get { return GetString("Move"); }
         }
         #endregion
     }

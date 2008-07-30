@@ -23,13 +23,11 @@ namespace Workbook
                 List<Figure> figs = FigureSerialize.FromXml(xml);
                 foreach (Figure f in figs)
                     de.AddFigure(f);
-                de.UndoRedo.Commit();
                 // put figures in center of page and adjust for aspect ratios
                 if (figs.Count > 1)         // group figures
                     de.GroupFigures(figs);
                 if (de.Figures.Count == 1)  // position single (or grouped) figure and adjust page size
                 {
-                    de.UndoRedo.Start("blah");
                     Figure f = de.Figures[0];
                     const int space = 5;
                     double vcAr = vc.Width / (double)vc.Height;
@@ -47,10 +45,10 @@ namespace Workbook
                         f.Left = f.Left - r.Left + space;
                         f.Top = f.Top - r.Top + (de.PageSize.Y / 2 - r.Height / 2);
                     }
-                    de.UndoRedo.Commit();
                     if (figs.Count > 1)     // ungroup figures
                         de.UngroupFigures(de.Figures);
                 }
+                de.UndoRedo.Commit();
                 // select all figures for property adjustment
                 de.SelectAll();
             }

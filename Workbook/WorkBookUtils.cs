@@ -26,6 +26,15 @@ namespace Workbook
             de.UsePolylineDots = true;
             de.FiguresBoundToPage = true;
             de.FiguresDeselectOnSingleClick = true;
+            // localize undo/redo commands
+            de.SelectOperationName = WbLocale.SelectOperation;
+            de.AddLineName = WbLocale.AddLine;
+            de.AddTextName = WbLocale.AddText;
+            de.AddName = WbLocale.Add;
+            de.TextEditName = WbLocale.TextEdit;
+            de.FigureEditName = WbLocale.FigureEdit;
+            de.EraseOperationName = WbLocale.EraseOperation;
+            de.MoveName = WbLocale.Move;
         }
 
         public static void ViewerKeyDown(DEngine de, KeyEventArgs e)
@@ -135,8 +144,8 @@ namespace Workbook
         public static void PreviewFigure(DEngine de, DTkViewer dv, Type figureClass, DAuthorProperties dap, DPoint viewerSize)
         {
             // add figure de so it shows on the viewer
-            de.ClearPage();
             de.UndoRedo.Start("blah");
+            de.ClearPage();
             Figure f = (Figure)Activator.CreateInstance(figureClass);
             dap.ApplyPropertiesToFigure(f);
             if (f is PolylineFigure || f is LineFigure)

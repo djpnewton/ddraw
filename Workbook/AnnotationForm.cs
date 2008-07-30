@@ -76,7 +76,11 @@ namespace Workbook
             WorkBookUtils.ViewerKeyDown(de, e);
             // delete
             if (e.KeyCode == Keys.Delete && !e.Control && !e.Alt && !e.Shift)
+            {
+                de.UndoRedo.Start(WbLocale.DeleteFigures);
                 de.Delete(de.SelectedFigures);
+                de.UndoRedo.Commit();
+            }
         }
 
         private void wfViewerControl1_KeyUp(object sender, KeyEventArgs e)
