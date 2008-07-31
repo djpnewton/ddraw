@@ -240,6 +240,55 @@ namespace DDraw
             set { figuresBoundToPage = value; }
         }
 
+        string selectOperationName = "Select Operation";
+        public string SelectOperationName
+        {
+            get { return selectOperationName; }
+            set { selectOperationName = value; }
+        }
+        string addLineName = "addLine";
+        public string AddLineName
+        {
+            get { return addLineName; }
+            set { addLineName = value; }
+        }
+        string addTextName = "Add Text";
+        public string AddTextName
+        {
+            get { return addTextName; }
+            set { addTextName = value; }
+        }
+        string addName = "Add";
+        public string AddName
+        {
+            get { return addName; }
+            set { addName = value; }
+        }
+        string textEditName = "Text Edit";
+        public string TextEditName
+        {
+            get { return textEditName; }
+            set { textEditName = value; }
+        }
+        string figureEditName = "Figure Edit";
+        public string FigureEditName
+        {
+            get { return figureEditName; }
+            set { figureEditName = value; }
+        }
+        string eraseOperationName = "Erase Operation";
+        public string EraseOperationName
+        {
+            get { return eraseOperationName; }
+            set { eraseOperationName = value; }
+        }
+        string moveName = "Move";
+        public string MoveName
+        {
+            get { return moveName; }
+            set { moveName = value; }
+        }
+
         bool drawSelection = false;
         bool drawEraser = false;
 
@@ -787,7 +836,7 @@ namespace DDraw
             }
             if (dx != 0 || dy != 0)
             {
-                undoRedoArea.Start("Move", this);
+                undoRedoArea.Start(moveName, this);
                 foreach (Figure f in figureHandler.SelectedFigures)
                 {
                     f.X += dx;
@@ -1055,7 +1104,7 @@ namespace DDraw
             {
                 case (int)QSignals.Entry:
                     // record state for undo/redo manager
-                    undoRedoArea.Start("Select Operation");
+                    undoRedoArea.Start(selectOperationName);
                     return null;
                 case (int)QSignals.Exit:
                     // commit undo changes
@@ -1230,7 +1279,7 @@ namespace DDraw
         {
             if (btn == DMouseButton.Left)
             {                
-                undoRedoArea.Start("Add Line");
+                undoRedoArea.Start(addLineName);
                 // bound pt to canvas
                 BoundPtToPage(pt);
                 // create line figure
@@ -1398,7 +1447,7 @@ namespace DDraw
         {
             if (btn == DMouseButton.Left)
             {
-                undoRedoArea.Start("Add Text");
+                undoRedoArea.Start(addTextName);
                 // bound pt to canvas
                 BoundPtToPage(pt);
                 // create TextFigure
@@ -1595,7 +1644,7 @@ namespace DDraw
                     textEditMouseDown = false;
                     // start undo record
                     if (!undoRedoArea.IsCommandStarted) // can be started from other means
-                        undoRedoArea.Start("Text Edit");
+                        undoRedoArea.Start(textEditName);
                     // add TextEditFigure
                     Figure tf = currentFigure;
                     currentFigure = new TextEditFigure((TextFigure)tf);
@@ -1674,7 +1723,7 @@ namespace DDraw
         {
             if (btn == DMouseButton.Left)
             {
-                undoRedoArea.Start(string.Format("Add {0}", currentFigureClass.Name));
+                undoRedoArea.Start(string.Format("{0} {1}", addName, currentFigureClass.Name));
                 // bound pt to canvas
                 BoundPtToPage(pt);
                 // create Figure
@@ -1789,7 +1838,7 @@ namespace DDraw
                 case (int)QSignals.Entry:
                     DoStateChanged(DHsmState.FigureEdit);
                     // start undo record
-                    undoRedoArea.Start("Figure Edit");
+                    undoRedoArea.Start(figureEditName);
                     // set editing and connect to edit finished event
                     ((IEditable)currentFigure).StartEdit();
                     ((IEditable)currentFigure).EditFinished += new EditFinishedHandler(currentFigure_EditFinished);
@@ -2012,7 +2061,7 @@ namespace DDraw
             {
                 case (int)QSignals.Entry:
                     // record state for undo/redo manager
-                    undoRedoArea.Start("Erase Operation");
+                    undoRedoArea.Start(eraseOperationName);
                     return null;
                 case (int)QSignals.Exit:
                     // commit undo changes

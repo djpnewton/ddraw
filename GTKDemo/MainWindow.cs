@@ -193,12 +193,16 @@ namespace GTKDemo
 		
         void miGroup_ButtonPressEvent(object o, ButtonPressEventArgs args)
         {
+            de.UndoRedo.Start("Group");
             de.GroupFigures(de.SelectedFigures);
+            de.UndoRedo.Commit();
         }
             
         void miUngroup_ButtonPressEvent(object o, ButtonPressEventArgs args)
         {
+            de.UndoRedo.Start("Ungroup");
             de.UngroupFigures(de.SelectedFigures);
+            de.UndoRedo.Commit();
         }
 		
 		void DebugMessage(string msg)

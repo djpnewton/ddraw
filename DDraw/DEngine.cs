@@ -341,6 +341,47 @@ namespace DDraw
             set { hsm.KeyMovementRate = value; }
         }
 
+        public string SelectOperationName
+        {
+            get { return hsm.SelectOperationName; }
+            set { hsm.SelectOperationName = value; }
+        }
+        public string AddLineName
+        {
+            get { return hsm.AddLineName; }
+            set { hsm.AddLineName = value; }
+        }
+        public string AddTextName
+        {
+            get { return hsm.AddTextName; }
+            set { hsm.AddTextName = value; }
+        }
+        public string AddName
+        {
+            get { return hsm.AddName; }
+            set { hsm.AddName = value; }
+        }
+        public string TextEditName
+        {
+            get { return hsm.TextEditName; }
+            set { hsm.TextEditName = value; }
+        }
+        public string FigureEditName
+        {
+            get { return hsm.FigureEditName; }
+            set { hsm.FigureEditName = value; }
+        }
+        public string EraseOperationName
+        {
+            get { return hsm.EraseOperationName; }
+            set { hsm.EraseOperationName = value; }
+        }
+        public string MoveName
+        {
+            get { return hsm.MoveName; }
+            set { hsm.MoveName = value; }
+        }
+
         UndoRedo<DPoint> _pageSize = new UndoRedo<DPoint>(PageTools.FormatToSize(PageFormat.Default));
         public DPoint PageSize
         {
@@ -564,12 +605,8 @@ namespace DDraw
         {
             if (CanGroupFigures(figs))
             {
-                // init undoRedo frame
-                undoRedoArea.Start("Group");
                 // make group
                 figureHandler.GroupFigures(figs);
-                // commit changes to undoRedoArea
-                undoRedoArea.Commit();
                 // update all viewers
                 UpdateViewers();
             }
@@ -584,12 +621,8 @@ namespace DDraw
         {
             if (CanUngroupFigures(figs))
             {
-                // init undoRedo frame
-                undoRedoArea.Start("Ungroup");
                 // perform ungroup
                 figureHandler.UngroupFigures(figs);
-                // commit changes to undoRedoArea
-                undoRedoArea.Commit();
                 // update all viewers
                 UpdateViewers();
             }
@@ -597,38 +630,26 @@ namespace DDraw
 
         public void SendToBack(List<Figure> figs)
         {
-            // init undoRedo frame
-            undoRedoArea.Start("Send to Back");
             // send to back
             figureHandler.SendToBack(figs);
             // update viewers
             UpdateViewers();
-            // commit changes to undoRedoArea
-            undoRedoArea.Commit(); 
         }
 
         public void BringToFront(List<Figure> figs)
         {
-            // init undoRedo frame
-            undoRedoArea.Start("Bring to Front");
             // bring to front
             figureHandler.BringToFront(figs);
             // update viewers
             UpdateViewers();
-            // commit changes to undoRedoArea
-            undoRedoArea.Commit(); 
         }
 
         public void SendBackward(List<Figure> figs)
         {            
-            // init undoRedo frame
-            undoRedoArea.Start("Send Backward");
             // send backward
             figureHandler.SendBackward(figs);
             // update
             UpdateViewers();
-            // commit changes to undoRedoArea
-            undoRedoArea.Commit(); 
         }
 
         public bool CanSendBackward(List<Figure> figs)
@@ -638,14 +659,10 @@ namespace DDraw
 
         public void BringForward(List<Figure> figs)
         {
-            // init undoRedo frame
-            undoRedoArea.Start("Bring Forward");
             // bring forward
             figureHandler.BringForward(figs);
             // update viewers
             UpdateViewers();
-            // commit changes to undoRedoArea
-            undoRedoArea.Commit();
         }
 
         public bool CanBringForward(List<Figure> figs)
@@ -658,10 +675,8 @@ namespace DDraw
             if (CanCopy(figs))
             {
                 string data = Copy(figs, out bmp, bmpAntiAlias, DColor.White);
-                undoRedoArea.Start("Cut");
                 foreach (Figure f in figs)
                     RemoveFigure(f);
-                undoRedoArea.Commit();
                 ClearSelected();
                 UpdateViewers();
                 return data;
@@ -698,10 +713,8 @@ namespace DDraw
         {
             if (CanDelete(figs))
             {
-                undoRedoArea.Start("Delete Figures");
                 foreach (Figure f in figs)
                     RemoveFigure(f);
-                undoRedoArea.Commit();
                 ClearSelected();
                 UpdateViewers();
             }
@@ -752,9 +765,7 @@ namespace DDraw
 
         public void ClearPage()
         {
-            undoRedoArea.Start("Clear Page");
             figureHandler.Figures.Clear();
-            undoRedoArea.Commit();
             DoSelectedFiguresChanged();
             UpdateViewers();
         }
