@@ -455,6 +455,11 @@ namespace Workbook
             get { return GetString("Ellipse"); }
         }
 
+        public static string TextBox
+        {
+            get { return GetString("TextBox"); }
+        }
+
         public static string Clock
         {
             get { return GetString("Clock"); }

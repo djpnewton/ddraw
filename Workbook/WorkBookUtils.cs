@@ -172,8 +172,8 @@ namespace Workbook
                     ((LineFigure)f).Pt2 = pt2;
                 }
             }
-            else if (f is TextFigure)
-                ((TextFigure)f).Text = "Aa";
+            else if (f is ITextable)
+                ((ITextable)f).Text = "Aa";
             f.Left = viewerSize.X / 4.0;
             f.Top = viewerSize.Y / 4.0;
             f.Width = viewerSize.X / 2.0;

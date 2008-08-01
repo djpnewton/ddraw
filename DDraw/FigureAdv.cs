@@ -197,4 +197,81 @@ namespace DDraw
             }
         }
     }
+
+    public class TextBoxFigure : RectFigure, ITextable
+    {
+        public override double MinSize
+        {
+            get { return 5; }
+        }
+
+        TextFigure tf;
+
+        public TextBoxFigure()
+        {
+            tf = new TextFigure();
+            tf.Text = "hello";
+            tf.Fill = DColor.Black;
+        }
+
+        protected override void PaintBody(DGraphics dg)
+        {
+            base.PaintBody(dg);
+            dg.Save();
+            dg.Clip(Rect);
+            DPoint offset = TextOffset;
+            dg.Translate(X + offset.X, Y + offset.Y);
+            tf.Paint(dg);
+            dg.Restore();
+        }
+
+        #region ITextable members
+        public string Text
+        {
+            get { return tf.Text; }
+            set { tf.Text = value; }
+        }
+        public bool HasText
+        {
+            get { return tf.HasText; }
+        }
+        public string FontName
+        {
+            get { return tf.FontName; }
+            set { tf.FontName = value; }
+        }
+        public double FontSize
+        {
+            get { return tf.FontSize; }
+            set { tf.FontSize = value; }
+        }
+        public bool Bold
+        {
+            get { return tf.Bold; }
+            set { tf.Bold = value; }
+        }
+        public bool Italics
+        {
+            get { return tf.Italics; }
+            set { tf.Italics = value; }
+        }
+        public bool Underline
+        {
+            get { return tf.Underline; }
+            set { tf.Underline = value; }
+        }
+        public bool Strikethrough
+        {
+            get { return tf.Strikethrough; }
+            set { tf.Strikethrough = value; }
+        }
+        public DPoint TextOffset
+        {
+            get { return new DPoint(Width / 2 - tf.Width / 2, Height / 2 - tf.Height / 2); }
+        }
+        #endregion
+
+        void UpdateSize()
+        { }
+    }
 }

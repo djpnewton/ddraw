@@ -196,6 +196,10 @@ namespace DDraw
            get;
            set;
         }
+        DPoint TextOffset
+        {
+            get;
+        }
     }
 
     public interface IChildFigureable
@@ -1932,6 +1936,11 @@ namespace DDraw
             get { return Text != null && Text.Length > 0; }
         }
 
+        public DPoint TextOffset
+        {
+            get { return new DPoint(0, 0); }
+        }
+
         public override double Width
         {
             get { return base.Width; }
@@ -1998,78 +2007,81 @@ namespace DDraw
     {
         const int border = 6;
 
-        TextFigure tf;
-        public TextFigure TextFigure
+        ITextable itext;
+        public ITextable IText
         {
-            get { return tf; }
+            get { return itext; }
+        }
+
+        Figure f;
+        public Figure Figure
+        {
+            get { return f; }
         }
 
         public string Text
         {
-            get { return tf.Text; }
-            set { tf.Text = value; }
+            get { return itext.Text; }
+            set { itext.Text = value; }
         }
-
         public bool HasText
         {
-            get { return tf.HasText; }
+            get { return itext.HasText; }
         }
-
         public string FontName
         {
-            get { return tf.FontName; }
-            set { tf.FontName = value; }
+            get { return itext.FontName; }
+            set { itext.FontName = value; }
         }
-
         public double FontSize
         {
-            get { return tf.FontSize; }
-            set { tf.FontSize = value; }
+            get { return itext.FontSize; }
+            set { itext.FontSize = value; }
         }
-
         public bool Bold
         {
-            get { return tf.Bold; }
-            set { tf.Bold = value; }
+            get { return itext.Bold; }
+            set { itext.Bold = value; }
         }
         public bool Italics
         {
-            get { return tf.Italics; }
-            set { tf.Italics = value; }
+            get { return itext.Italics; }
+            set { itext.Italics = value; }
         }
         public bool Underline
         {
-            get { return tf.Underline; }
-            set { tf.Underline = value; }
+            get { return itext.Underline; }
+            set { itext.Underline = value; }
         }
         public bool Strikethrough
         {
-            get { return tf.Strikethrough; }
-            set { tf.Strikethrough = value; }
+            get { return itext.Strikethrough; }
+            set { itext.Strikethrough = value; }
+        }
+        public DPoint TextOffset
+        {
+            get { return itext.TextOffset.Offset(border, border); }
         }
 
         public override double X
         {
-            get { return tf.Left - border; }
-            set { tf.Left = value + border; }
+            get { return f.Left - border; }
+            set { f.Left = value + border; }
         }
-
         public override double Y
         {
-            get { return tf.Top - border; }
-            set { tf.Top = value + border; }
+            get { return f.Top - border; }
+            set { f.Top = value + border; }
         }
-
         public override double Width
         {
-            get { return tf.Width + border + border; }
-            set { tf.Width = value - border - border; }
+            get { return f.Width + border + border; }
+            set { f.Width = value - border - border; }
         }
-
         public override double Height
         {
-            get { return tf.Height + border + border; }
-            set { tf.Height = value - border - border; }
+            get { return f.Height + border + border; }
+            set { f.Height = value - border - border; }
         }
 
         // cursor position can range from 0 to Text.Length
@@ -2086,13 +2098,14 @@ namespace DDraw
             get { return Text.Split('\n'); }
         }
 
-        public TextEditFigure(TextFigure tf)
+        public TextEditFigure(Figure f, ITextable itext)
         {
-            this.tf = tf;
+            this.f = f;
+            this.itext = itext;
             SetCursorPos(Text.Length, false);
         }
 
-        public TextEditFigure(DPoint pt, TextFigure tf) : this(tf)
+        public TextEditFigure(DPoint pt, Figure f, ITextable itext) : this(f, itext)
         {
             TopLeft = pt;
         }
@@ -2102,23 +2115,29 @@ namespace DDraw
             // paint border
             DRect r = Rect;
             dg.FillRect(r.X, r.Y, r.Width, r.Height, DColor.Black, 1, DFillStyle.ForwardDiagonalHatch);
-            dg.FillRect(tf.X, tf.Y, tf.Width, tf.Height, DColor.White, 1);
+            dg.FillRect(f.X, f.Y, f.Width, f.Height, DColor.White, 1);
             // paint text
-            double alpha = tf.Alpha;
-            tf.Alpha = 1;
-            double rot = tf.Rotation;
-            tf.Rotation = 0;
-            bool flipX = tf.FlipX, flipY = tf.FlipY;
-            tf.FlipX = false;
-            tf.FlipY = false;
-            tf.Paint(dg);
-            tf.FlipX = flipX;
-            tf.FlipY = flipY;
-            tf.Alpha = alpha;
-            tf.Rotation = rot;
+            double alpha = 1;
+            if (f is IAlphaBlendable)
+            {
+                alpha = ((IAlphaBlendable)f).Alpha;
+                ((IAlphaBlendable)f).Alpha = 1;
+            }
+            double rot = f.Rotation;
+            f.Rotation = 0;
+            bool flipX = f.FlipX, flipY = f.FlipY;
+            f.FlipX = false;
+            f.FlipY = false;
+            f.Paint(dg);
+            f.FlipX = flipX;
+            f.FlipY = flipY;
+            if (f is IAlphaBlendable)
+                ((IAlphaBlendable)f).Alpha = alpha;
+            f.Rotation = rot;
             // paint selection & cursor
             string[] lines = Lines;
-            DPoint pt = tf.Rect.TopLeft;
+            DPoint offset = itext.TextOffset;
+            DPoint pt = f.Rect.TopLeft.Offset(offset.X, offset.Y);
             double height = LineHeight(lines);
             DPoint cpt = MeasureCursorPosition(lines, height);
             DRect[] selRects = MeasureSelectionRects(lines, height);
@@ -2424,7 +2443,8 @@ namespace DDraw
 
         public void SetCursorPoint(DPoint pt, bool select)
         {
-            pt = new DPoint(pt.X - X - border, pt.Y - Y - border);
+            DPoint offset = TextOffset;
+            pt = new DPoint(pt.X - X - offset.X, pt.Y - Y - offset.Y);
             string[] lines = Lines;
             double lineHeight = LineHeight(lines);
             int pos = 0;

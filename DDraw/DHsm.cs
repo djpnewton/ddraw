@@ -804,7 +804,7 @@ namespace DDraw
             DHitTest ht;
             IGlyph glyph;
             Figure f = figureHandler.HitTestFigures(pt, out ht, null, out glyph);
-            if (f is TextFigure)
+            if (f is ITextable)
             {
                 currentFigure = f;
                 TransitionTo(TextEdit);
@@ -1520,7 +1520,7 @@ namespace DDraw
                     {
                         if (tef.HasText)
                         {
-                            f = tef.TextFigure;
+                            f = tef.Figure;
                             figureHandler.SelectFigures(new List<Figure>(new Figure[] { f }), false);
                         }
                     }
@@ -1647,7 +1647,7 @@ namespace DDraw
                         undoRedoArea.Start(textEditName);
                     // add TextEditFigure
                     Figure tf = currentFigure;
-                    currentFigure = new TextEditFigure((TextFigure)tf);
+                    currentFigure = new TextEditFigure(tf, (ITextable)tf);
                     figureHandler.Insert(currentFigure, tf);
                     figureHandler.Remove(tf);
                     // update view
@@ -1659,8 +1659,9 @@ namespace DDraw
                     // replace text edit figure with the textfigure
                     if (currentFigure is TextEditFigure)
                     {
-                        if (((TextEditFigure)currentFigure).HasText)
-                            figureHandler.Insert(((TextEditFigure)currentFigure).TextFigure, currentFigure);
+                        TextEditFigure tef = (TextEditFigure)currentFigure;
+                        if (tef.HasText || !(tef.Figure is TextFigure))
+                            figureHandler.Insert(tef.Figure, currentFigure);
                         figureHandler.Remove(currentFigure);
                         // nullify currentfigure
                         currentFigure = null;

@@ -235,6 +235,13 @@ namespace Workbook {
             }
         }
         
+        internal static System.Drawing.Bitmap textbox {
+            get {
+                object obj = ResourceManager.GetObject("textbox", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
         internal static System.Drawing.Bitmap tri {
             get {
                 object obj = ResourceManager.GetObject("tri", resourceCulture);

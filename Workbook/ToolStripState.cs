@@ -23,6 +23,7 @@ namespace Workbook
         ToolStripButton btnPen;
         ToolStripButton btnRect;
         ToolStripButton btnEllipse;
+        ToolStripButton btnTextBox;
         ToolStripButton btnText;
         ToolStripButton btnClock;
         ToolStripButton btnTriangle;
@@ -76,6 +77,7 @@ namespace Workbook
         static DAuthorProperties dapPolyline = new DAuthorProperties();
         static DAuthorProperties dapRect = new DAuthorProperties();
         static DAuthorProperties dapEllipse = new DAuthorProperties();
+        static DAuthorProperties dapTextBox = new DAuthorProperties();
         static DAuthorProperties dapText = new DAuthorProperties();
         static DAuthorProperties dapClock = new DAuthorProperties();
         static DAuthorProperties dapTriangle = new DAuthorProperties();
@@ -88,6 +90,7 @@ namespace Workbook
         const string POLYLINE_SECT = "Polyline";
         const string RECT_SECT = "Rect";
         const string ELLIPSE_SECT = "Ellipse";
+        const string TEXTBOX_SECT = "TextBox";
         const string TEXT_SECT = "Text";
         const string CLOCK_SECT = "Clock";
         const string TRIANGLE_SECT = "Triangle";
@@ -116,6 +119,8 @@ namespace Workbook
                         WorkBookUtils.ReadConfigToDap(config, dapPolyline);
                     else if (config.Name == ELLIPSE_SECT)
                         WorkBookUtils.ReadConfigToDap(config, dapEllipse);
+                    else if (config.Name == TEXTBOX_SECT)
+                        WorkBookUtils.ReadConfigToDap(config, dapTextBox);
                     else if (config.Name == TEXT_SECT)
                         WorkBookUtils.ReadConfigToDap(config, dapText);
                     else if (config.Name == CLOCK_SECT)
@@ -140,6 +145,7 @@ namespace Workbook
             WorkBookUtils.WriteDapToConfig(dapPolyline, source.AddConfig(POLYLINE_SECT));
             WorkBookUtils.WriteDapToConfig(dapRect, source.AddConfig(RECT_SECT));
             WorkBookUtils.WriteDapToConfig(dapEllipse, source.AddConfig(ELLIPSE_SECT));
+            WorkBookUtils.WriteDapToConfig(dapTextBox, source.AddConfig(TEXTBOX_SECT));
             WorkBookUtils.WriteDapToConfig(dapText, source.AddConfig(TEXT_SECT));
             WorkBookUtils.WriteDapToConfig(dapClock, source.AddConfig(CLOCK_SECT));
             WorkBookUtils.WriteDapToConfig(dapTriangle, source.AddConfig(TRIANGLE_SECT));
@@ -176,6 +182,8 @@ namespace Workbook
             Items.Add(btnRect);
             btnEllipse = new ToolStripButton(WbLocale.Ellipse, Resource1.ellipse, btnClick);
             Items.Add(btnEllipse);
+            btnTextBox = new ToolStripButton(WbLocale.TextBox, Resource1.textbox, btnClick);
+            Items.Add(btnTextBox);
             btnText = new ToolStripButton(WbLocale.Text, Resource1.style, btnClick);
             Items.Add(btnText);
             btnClock = new ToolStripButton(WbLocale.Clock, Resource1.clock, btnClick);
@@ -204,6 +212,7 @@ namespace Workbook
             btnPen.Checked = de.HsmCurrentFigClassIs(typeof(PolylineFigure));
             btnRect.Checked = de.HsmCurrentFigClassIs(typeof(RectFigure));
             btnEllipse.Checked = de.HsmCurrentFigClassIs(typeof(EllipseFigure));
+            btnTextBox.Checked = de.HsmCurrentFigClassIs(typeof(TextBoxFigure));
             btnText.Checked = state == DHsmState.DrawText;
             btnClock.Checked = de.HsmCurrentFigClassIs(typeof(ClockFigure));
             btnTriangle.Checked = de.HsmCurrentFigClassIs(typeof(TriangleFigure));
@@ -231,6 +240,8 @@ namespace Workbook
                 return dapRect;
             else if (btn == btnEllipse)
                 return dapEllipse;
+            else if (btn == btnTextBox)
+                return dapTextBox;
             else if (btn == btnText)
                 return dapText;
             else if (btn == btnClock)
@@ -256,6 +267,8 @@ namespace Workbook
                 return typeof(RectFigure);
             else if (btn == btnEllipse)
                 return typeof(EllipseFigure);
+            else if (btn == btnTextBox)
+                return typeof(TextBoxFigure);
             else if (btn == btnText)
                 return typeof(TextFigure);
             else if (btn == btnClock)
@@ -303,6 +316,8 @@ namespace Workbook
                     figureClass = typeof(RectFigure);
                 else if (sender == btnEllipse)
                     figureClass = typeof(EllipseFigure);
+                else if (sender == btnTextBox)
+                    figureClass = typeof(TextBoxFigure);
                 else if (sender == btnText)
                     figureClass = typeof(TextFigure);
                 else if (sender == btnClock)
@@ -347,6 +362,7 @@ namespace Workbook
             btnPen.Checked = typeof(PolylineFigure).Equals(figureClass);
             btnRect.Checked = typeof(RectFigure).Equals(figureClass);
             btnEllipse.Checked = typeof(EllipseFigure).Equals(figureClass);
+            btnText.Checked = typeof(TextBoxFigure).Equals(figureClass);
             btnText.Checked = typeof(TextFigure).Equals(figureClass);
             btnClock.Checked = typeof(ClockFigure).Equals(figureClass);
             btnTriangle.Checked = typeof(TriangleFigure).Equals(figureClass);
