@@ -450,8 +450,7 @@ namespace Workbook
             }
         }
 
-        public ToolStripStrokeStyleButton()
-            : base()
+        public ToolStripStrokeStyleButton() : base()
         {
             ShowDropDownArrow = false;
             DropDown.Items.Add(new StrokeStyleMenuItem(DStrokeStyle.Solid, new EventHandler(MenuItem_OnClick)));
@@ -727,6 +726,46 @@ namespace Workbook
             DisplayStyle = ToolStripItemDisplayStyle.Image;
             Image = Resource1.font;
             ToolTipText = WbLocale.Font;
+        }
+    }
+
+    public delegate void FontSizeChangedHandler(object sender, double fontSize);
+
+    [ToolStripItemDesignerAvailability(ToolStripItemDesignerAvailability.ToolStrip | ToolStripItemDesignerAvailability.StatusStrip)]
+    public class ToolStripFontSizeButton : ToolStripDropDownButton
+    {
+        public event FontSizeChangedHandler FontSizeChanged;
+
+        public static int Empty = -1;
+
+        double fontSize = 14;
+        public double Value
+        {
+            get { return fontSize; }
+            set { fontSize = value; }
+        }
+
+        public ToolStripFontSizeButton() : base()
+        {
+            DisplayStyle = ToolStripItemDisplayStyle.Image;
+            Image = Resource1.font_size;
+            ToolTipText = WbLocale.FontSize;
+            ShowDropDownArrow = false;
+            DropDown.Items.Add(new ToolStripMenuItem("8", null, new EventHandler(MenuItem_OnClick)));
+            DropDown.Items.Add(new ToolStripMenuItem("10", null, new EventHandler(MenuItem_OnClick)));
+            DropDown.Items.Add(new ToolStripMenuItem("12", null, new EventHandler(MenuItem_OnClick)));
+            DropDown.Items.Add(new ToolStripMenuItem("14", null, new EventHandler(MenuItem_OnClick)));
+            DropDown.Items.Add(new ToolStripMenuItem("24", null, new EventHandler(MenuItem_OnClick)));
+            DropDown.Items.Add(new ToolStripMenuItem("36", null, new EventHandler(MenuItem_OnClick)));
+            DropDown.Items.Add(new ToolStripMenuItem("48", null, new EventHandler(MenuItem_OnClick)));
+            DropDown.Items.Add(new ToolStripMenuItem("72", null, new EventHandler(MenuItem_OnClick)));
+        }
+
+        void MenuItem_OnClick(object sender, EventArgs e)
+        {
+            Value = double.Parse(((ToolStripMenuItem)sender).Text);
+            if (FontSizeChanged != null)
+                FontSizeChanged(this, Value);
         }
     }
 

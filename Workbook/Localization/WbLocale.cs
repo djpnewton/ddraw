@@ -549,6 +549,11 @@ namespace Workbook
         {
             get { return GetString("ChangeProperty"); }
         }
+
+        public static string FontSize
+        {
+            get { return GetString("FontSize"); }
+        }
         #endregion
 
         #region MainForm strings

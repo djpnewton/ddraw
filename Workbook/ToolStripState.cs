@@ -389,6 +389,7 @@ namespace Workbook
         ToolStripMarkerButton btnEndMarker;
         ToolStripAlphaButton btnAlpha;
         ToolStripFontNameButton btnFontName;
+        ToolStripFontSizeButton btnFontSize;
         ToolStripButton btnBold;
         ToolStripButton btnItalic;
         ToolStripButton btnUnderline;
@@ -484,6 +485,9 @@ namespace Workbook
             btnFontName = new ToolStripFontNameButton();
             btnFontName.Text = WbLocale.Font;
             Items.Add(btnFontName);
+            btnFontSize = new ToolStripFontSizeButton();
+            btnFontSize.FontSizeChanged += new FontSizeChangedHandler(btnFontSize_FontSizeChanged);
+            Items.Add(btnFontSize);
             btnBold = new ToolStripButton(WbLocale.Bold, Resource1.text_bold);
             btnBold.CheckOnClick = true;
             Items.Add(btnBold);
@@ -658,6 +662,25 @@ namespace Workbook
             return fontName;
         }
 
+        double GetFontSizeMatch(List<Figure> figs)
+        {
+            double fontSize = ToolStripFontSizeButton.Empty;
+            foreach (Figure f in figs)
+                if (f is ITextable)
+                {
+                    fontSize = ((ITextable)f).FontSize;
+                    break;
+                }
+            if (fontSize != ToolStripFontSizeButton.Empty)
+                foreach (Figure f in figs)
+                    if (f is ITextable)
+                    {
+                        if (fontSize != ((ITextable)f).FontSize)
+                            return ToolStripFontSizeButton.Empty;
+                    }
+            return fontSize;
+        }
+
         bool GetBoldMatch(List<Figure> figs)
         {
             bool bold = false;
@@ -744,6 +767,7 @@ namespace Workbook
             btnEndMarker.Value = DMarker.None;
             btnAlpha.Value = ToolStripAlphaButton.Empty;
             btnFontName.Value = "";
+            btnFontSize.Value = 14;
             btnBold.Checked = false;
             btnItalic.Checked = false;
             btnUnderline.Checked = false;
@@ -760,6 +784,7 @@ namespace Workbook
             btnEndMarker.Enabled = false;
             btnAlpha.Enabled = false;
             btnFontName.Enabled = false;
+            btnFontSize.Enabled = false;
             btnBold.Enabled = false;
             btnItalic.Enabled = false;
             btnUnderline.Enabled = false;
@@ -802,6 +827,7 @@ namespace Workbook
                         if (f is ITextable)
                         {
                             btnFontName.Enabled = true;
+                            btnFontSize.Enabled = true;
                             btnBold.Enabled = true;
                             btnItalic.Enabled = true;
                             btnUnderline.Enabled = true;
@@ -818,6 +844,7 @@ namespace Workbook
                         btnEndMarker.Value = GetMarkerMatch(figs, false);
                         btnAlpha.Value = GetAlphaMatch(figs);
                         btnFontName.Value = GetFontNameMatch(figs);
+                        btnFontSize.Value = GetFontSizeMatch(figs);
                         btnBold.Checked = GetBoldMatch(figs);
                         btnItalic.Checked = GetItalicMatch(figs);
                         btnUnderline.Checked = GetUnderlineMatch(figs);
@@ -865,6 +892,8 @@ namespace Workbook
                     {
                         btnFontName.Enabled = true;
                         btnFontName.Value = dap.FontName;
+                        btnFontSize.Enabled = true;
+                        btnFontSize.Value = dap.FontSize;
                         btnBold.Enabled = true;
                         btnBold.Checked = dap.Bold;
                         btnItalic.Enabled = true;
@@ -896,6 +925,8 @@ namespace Workbook
                 btnAlpha.Value = dap.Alpha;
             if (btnFontName.Enabled)
                 btnFontName.Value = dap.FontName;
+            if (btnFontSize.Enabled)
+                btnFontSize.Value = dap.FontSize;
             if (btnBold.Enabled)
                 btnBold.Checked = dap.Bold;
             if (btnItalic.Enabled)
@@ -928,6 +959,7 @@ namespace Workbook
             if (typeof(ITextable).IsAssignableFrom(figureClass))
             {
                 btnFontName.Enabled = true;
+                btnFontSize.Enabled = true;
                 btnBold.Enabled = true;
                 btnItalic.Enabled = true;
                 btnUnderline.Enabled = true;
@@ -1030,6 +1062,14 @@ namespace Workbook
                 dap.Alpha = btnAlpha.Value;
         }
 
+        void btnFontSize_FontSizeChanged(object sender, double fontSize)
+        {
+            if (de != null && de.HsmState == DHsmState.Select)
+                UpdateSelectedFigures(btnFontSize);
+            else
+                dap.FontSize = btnFontSize.Value;
+        }
+
         void btnStrokeWidth_StrokeWidthChanged(object sender, int strokeWidth)
         {
             if (de != null && de.HsmState == DHsmState.Select)
@@ -1095,8 +1135,8 @@ namespace Workbook
                     {
                         if (sender == btnFontName)
                             ((ITextable)f).FontName = btnFontName.Value;
-                        if (sender == btnFontName)
-                            ((ITextable)f).FontName = btnFontName.Value;
+                        if (sender == btnFontSize)
+                            ((ITextable)f).FontSize = btnFontSize.Value;
                         if (sender == btnBold)
                             ((ITextable)f).Bold = btnBold.Checked;
                         if (sender == btnItalic)

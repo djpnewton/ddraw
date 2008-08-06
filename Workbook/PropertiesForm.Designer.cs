@@ -40,13 +40,13 @@ namespace Workbook
             this.panel1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.panel1.Location = new System.Drawing.Point(6, 228);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(272, 4);
+            this.panel1.Size = new System.Drawing.Size(290, 4);
             this.panel1.TabIndex = 12;
             // 
             // btnCancel
             // 
             this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.btnCancel.Location = new System.Drawing.Point(198, 238);
+            this.btnCancel.Location = new System.Drawing.Point(215, 238);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(75, 23);
             this.btnCancel.TabIndex = 11;
@@ -56,7 +56,7 @@ namespace Workbook
             // btnOk
             // 
             this.btnOk.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.btnOk.Location = new System.Drawing.Point(117, 238);
+            this.btnOk.Location = new System.Drawing.Point(134, 238);
             this.btnOk.Name = "btnOk";
             this.btnOk.Size = new System.Drawing.Size(75, 23);
             this.btnOk.TabIndex = 10;
@@ -67,7 +67,7 @@ namespace Workbook
             // 
             this.vc.Location = new System.Drawing.Point(9, 37);
             this.vc.Name = "vc";
-            this.vc.Size = new System.Drawing.Size(264, 185);
+            this.vc.Size = new System.Drawing.Size(284, 185);
             this.vc.TabIndex = 22;
             // 
             // tsFigureProps
@@ -79,7 +79,7 @@ namespace Workbook
             this.tsFigureProps.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
             this.tsFigureProps.Location = new System.Drawing.Point(9, 9);
             this.tsFigureProps.Name = "tsFigureProps";
-            this.tsFigureProps.Size = new System.Drawing.Size(264, 25);
+            this.tsFigureProps.Size = new System.Drawing.Size(284, 25);
             this.tsFigureProps.TabIndex = 0;
             this.tsFigureProps.UseDecentToolTips = false;
             // 
@@ -89,7 +89,7 @@ namespace Workbook
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btnCancel;
-            this.ClientSize = new System.Drawing.Size(282, 269);
+            this.ClientSize = new System.Drawing.Size(302, 269);
             this.Controls.Add(this.vc);
             this.Controls.Add(this.tsFigureProps);
             this.Controls.Add(this.panel1);

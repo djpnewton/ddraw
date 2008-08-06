@@ -151,6 +151,13 @@ namespace Workbook {
             }
         }
         
+        internal static System.Drawing.Bitmap font_size {
+            get {
+                object obj = ResourceManager.GetObject("font_size", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
         internal static System.Drawing.Bitmap line {
             get {
                 object obj = ResourceManager.GetObject("line", resourceCulture);

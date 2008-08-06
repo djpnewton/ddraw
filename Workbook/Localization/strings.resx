@@ -375,6 +375,9 @@
   <data name="Font" xml:space="preserve">
     <value>Font</value>
   </data>
+  <data name="FontSize" xml:space="preserve">
+    <value>Font Size</value>
+  </data>
   <data name="Format" xml:space="preserve">
     <value>Format</value>
   </data>

@@ -68,6 +68,12 @@ namespace DDraw
             get { return fontName; }
             set { fontName = value; DoPropertyChanged(); }
         }
+        double fontSize;
+        public double FontSize
+        {
+            get { return fontSize; }
+            set { fontSize = value; DoPropertyChanged(); }
+        }
         bool bold;
         public bool Bold
         {
@@ -105,6 +111,7 @@ namespace DDraw
             endMarker = DMarker.None;
         	alpha = 1;
         	fontName = "Arial";
+            fontSize = 14;
             bold = false;
             italics = false;
             underline = false;
@@ -112,8 +119,8 @@ namespace DDraw
         }
 
         public void SetProperties(DColor fill, DColor stroke, double strokeWidth, DStrokeStyle strokeStyle, 
-            DMarker startMarker, DMarker endMarker, double alpha, string fontName, bool bold, bool italics,
-            bool underline, bool strikethrough)
+            DMarker startMarker, DMarker endMarker, double alpha, string fontName, double fontSize, bool bold, 
+            bool italics, bool underline, bool strikethrough)
         {
             this.fill = fill;
             this.stroke = stroke;
@@ -123,6 +130,7 @@ namespace DDraw
             this.endMarker = endMarker;
             this.alpha = alpha;
             this.fontName = fontName;
+            this.fontSize = fontSize;
             this.bold = bold;
             this.italics = italics;
             this.underline = underline;
@@ -140,6 +148,7 @@ namespace DDraw
             this.endMarker = dap.EndMarker;
             this.alpha = dap.Alpha;
             this.fontName = dap.FontName;
+            this.fontSize = dap.FontSize;
             this.bold = dap.Bold;
             this.italics = dap.Italics;
             this.underline = dap.Underline;
@@ -167,6 +176,7 @@ namespace DDraw
             if (typeof(ITextable).IsAssignableFrom(figureClass))
             {
                 this.fontName = dap.FontName;
+                this.fontSize = dap.FontSize;
                 this.bold = dap.Bold;
                 this.italics = dap.Italics;
                 this.underline = dap.Underline;
@@ -201,6 +211,7 @@ namespace DDraw
             if (f is ITextable)
             {
                 ((ITextable)f).FontName = FontName;
+                ((ITextable)f).FontSize = FontSize;
                 ((ITextable)f).Bold = Bold;
                 ((ITextable)f).Italics = Italics;
                 ((ITextable)f).Underline = Underline;
@@ -236,6 +247,7 @@ namespace DDraw
             if (f is ITextable)
             {
                 dap.FontName = ((ITextable)f).FontName;
+                dap.FontSize = ((ITextable)f).FontSize;
                 dap.Bold = ((ITextable)f).Bold;
                 dap.Italics = ((ITextable)f).Italics;
                 dap.Underline = ((ITextable)f).Underline;
