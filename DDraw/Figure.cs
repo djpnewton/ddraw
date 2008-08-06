@@ -1947,7 +1947,9 @@ namespace DDraw
             set 
             {
                 if (base.Width != 0)
-                    FontSize *= value / base.Width; 
+                    FontSize *= value / base.Width;
+                else if (FontSize < 1)
+                    FontSize = 1;
             }
         }
 
