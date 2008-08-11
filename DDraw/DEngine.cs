@@ -103,8 +103,8 @@ namespace DDraw
         
         public DAuthorProperties()
         {
-        	fill = DColor.Red;
-        	stroke = DColor.Blue;
+        	fill = DColor.White;
+        	stroke = DColor.Black;
         	strokeWidth = 1;
             strokeStyle = DStrokeStyle.Solid;
             startMarker = DMarker.None;

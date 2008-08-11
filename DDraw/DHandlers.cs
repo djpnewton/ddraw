@@ -242,7 +242,10 @@ namespace DDraw
                 DoSelectedFiguresChanged();
                 // remove child figures from figure list
                 foreach (Figure f in figs)
+                {
                     figures.Remove(f);
+                    f.MouseOver = false;
+                }
             }
         }
 
@@ -261,7 +264,10 @@ namespace DDraw
                 // add group figures to selected list
                 ClearSelected();
                 foreach (Figure f in gf.ChildFigures)
+                {
                     AddToSelected(f);
+                    f.MouseOver = false;
+                }
                 DoSelectedFiguresChanged();
             }
         }

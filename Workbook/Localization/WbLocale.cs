@@ -1016,6 +1016,11 @@ namespace Workbook
         {
             get { return GetString("ErrorMailingPDF"); }
         }
+
+        public static string HighlightSelection
+        {
+            get { return GetString("HighlightSelection"); }
+        }
         #endregion
 
         #region DEngine strings

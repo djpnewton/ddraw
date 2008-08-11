@@ -712,6 +712,19 @@ namespace DDraw
             List<Figure> children = new List<Figure>();
             IGlyph glyph;
             Figure f = figureHandler.HitTestFigures(pt, out hitTest, children, out glyph);
+            // set mouseover
+            if (f != null && !f.MouseOver)
+            {
+                f.MouseOver = true;
+                dv.Update(GetBoundingBox(f));
+            }
+            foreach (Figure otherFig in figureHandler.Figures)
+                if (otherFig != f && otherFig.MouseOver)
+                {
+                    otherFig.MouseOver = false;
+                    dv.Update(GetBoundingBox(otherFig));
+                }
+            // set cursor
             switch (hitTest)
             {
                 case DHitTest.None:
@@ -1638,6 +1651,8 @@ namespace DDraw
             switch (qevent.QSignal)
             {
                 case (int)QSignals.Entry:
+                    // unmouseover figure
+                    currentFigure.MouseOver = false;
                     // reset textEditKey
                     textEditKey = new DKey();
                     // reset textEditMouseDown
@@ -1838,6 +1853,8 @@ namespace DDraw
             {
                 case (int)QSignals.Entry:
                     DoStateChanged(DHsmState.FigureEdit);
+                    // unmouseover figure
+                    currentFigure.MouseOver = false;
                     // start undo record
                     undoRedoArea.Start(figureEditName);
                     // set editing and connect to edit finished event

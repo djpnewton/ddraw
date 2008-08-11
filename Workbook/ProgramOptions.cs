@@ -31,6 +31,7 @@ namespace Workbook
         const string PAGENAVIGATIONTOOLBAR_OPT = "PageNavigationToolbar";
         const string TOOLSTOOLBAR_OPT = "ToolsToolbar";
         const string RECENTDOCS_SECTION = "RecentDocuments";
+        const string HIGHLIGHTSELECTION_OPT = "HighLightSelection";
 
         public string IniFile
         {
@@ -54,6 +55,7 @@ namespace Workbook
         public bool PropertyStateToolbar;
         public bool PageNavigationToolbar;
         public bool ToolsToolbar;
+        public bool HighlightSelection;
 
         public ProgramOptions()
         {
@@ -120,6 +122,7 @@ namespace Workbook
             PropertyStateToolbar = config.GetBoolean(PROPERTYSTATETOOLBAR_OPT, true);
             PageNavigationToolbar = config.GetBoolean(PAGENAVIGATIONTOOLBAR_OPT, true);
             ToolsToolbar = config.GetBoolean(TOOLSTOOLBAR_OPT, true);
+            HighlightSelection = config.GetBoolean(HIGHLIGHTSELECTION_OPT, false);
         }
 
         public void WriteIni()
@@ -140,6 +143,7 @@ namespace Workbook
             config.Set(PROPERTYSTATETOOLBAR_OPT, PropertyStateToolbar);
             config.Set(PAGENAVIGATIONTOOLBAR_OPT, PageNavigationToolbar);
             config.Set(TOOLSTOOLBAR_OPT, ToolsToolbar);
+            config.Set(HIGHLIGHTSELECTION_OPT, HighlightSelection);
 
             ConfigSource.Save();
         }

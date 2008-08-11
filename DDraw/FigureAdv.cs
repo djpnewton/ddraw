@@ -22,8 +22,29 @@ namespace DDraw
         string EditAttrsToString();
         void SetEditAttrsFromString(string s);
     }
+
+#if BEHAVIOURS
+    public interface IBehaviours
+    {
+        DBehaviour MouseOverBehaviour
+        {
+            get;
+            set;
+        }
+    }
+
+    public struct DBehaviour
+    {
+        public bool SetFill;
+        public DColor Fill;
+        public bool SetStroke;
+        public DColor Stroke;
+        public bool SetAlpha;
+        public double Alpha; 
+    }
+#endif
     
-    public class ClockFigure : RectbaseFigure, IEditable
+    public class ClockFigure : RectFigure, IEditable
     {
         bool editing = false;
         double origRotation, origAlpha;
@@ -161,11 +182,27 @@ namespace DDraw
 
         protected override void PaintBody (DGraphics dg)
         {
+#if BEHAVIOURS
+            // select paint properties
+            DColor Fill = this.Fill; ;
+            DColor Stroke = this.Stroke;
+            double Alpha = this.Alpha;
+            if (MouseOver)
+            {
+                if (MouseOverBehaviour.SetFill)
+                    Fill = MouseOverBehaviour.Fill;
+                if (MouseOverBehaviour.SetStroke)
+                    Stroke = MouseOverBehaviour.Stroke;
+                if (MouseOverBehaviour.SetAlpha)
+                    Alpha = MouseOverBehaviour.Alpha;
+            }
+#endif
+            // do painting
             DRect r = GetClockRect();
             if (editing)
                 dg.FillRect(r.X, r.Y, r.Width, r.Height, DColor.Black, 1, DFillStyle.ForwardDiagonalHatch);
-            dg.FillEllipse(r, DColor.White, Alpha);
-            dg.DrawEllipse(r, DColor.Black, Alpha);
+            dg.FillEllipse(r, Fill, Alpha);
+            dg.DrawEllipse(r, Stroke, Alpha);
             string text = "12"; string font = "Arial"; double fontSz = 8;
             DPoint textSz = dg.MeasureText(text, font, fontSz);
             dg.DrawText(text, font, fontSz, new DPoint(r.Center.X - textSz.X / 2, r.Y), DColor.Black, Alpha);

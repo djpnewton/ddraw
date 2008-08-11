@@ -393,6 +393,9 @@
   <data name="Hello" xml:space="preserve">
     <value>Hello</value>
   </data>
+  <data name="HighlightSelection" xml:space="preserve">
+    <value>Highlight Selection</value>
+  </data>
   <data name="Image" xml:space="preserve">
     <value>Image</value>
   </data>

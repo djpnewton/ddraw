@@ -58,6 +58,22 @@ namespace DDraw
 
         protected override void PaintBody(DGraphics dg)
         {
+#if BEHAVIOURS
+            // select paint properties
+            DColor Fill = this.Fill;
+            DColor Stroke = this.Stroke;
+            double Alpha = this.Alpha;
+            if (MouseOver)
+            {
+                if (MouseOverBehaviour.SetFill)
+                    Fill = MouseOverBehaviour.Fill;
+                if (MouseOverBehaviour.SetStroke)
+                    Stroke = MouseOverBehaviour.Stroke;
+                if (MouseOverBehaviour.SetAlpha)
+                    Alpha = MouseOverBehaviour.Alpha;
+            }
+#endif
+            // draw
             DPoints pts = DrawPoints();
             if (UseRealAlpha && Alpha != 1 && StrokeWidth > 0)
             {

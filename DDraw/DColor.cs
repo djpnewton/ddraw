@@ -124,6 +124,11 @@ namespace DDraw
             get { return new DColor(0, 0, 255); }
         }
 
+        public static DColor Blue50Pc
+        {
+            get { return new DColor(0, 0, 255, 128); }
+        }
+
         public static DColor Black
         {
             get { return new DColor(0, 0, 0); }

@@ -66,6 +66,7 @@ namespace Workbook
         bool nonTextInsertionKey;
 
         bool previewBar1Focused;
+        bool highlightSelection;
 
         bool beenSaved;
         string fileName;
@@ -190,6 +191,10 @@ namespace Workbook
 #else
             statusStrip1.Parent = null;
 #endif
+            // highlight selection
+#if !BEHAVIOURS
+            highlightSelectionToolStripMenuItem.Visible = false;
+#endif
             // glyphs
             linkGlyph = new BitmapGlyph(WFHelper.MakeBitmap(Resource1.link), DGlyphPosition.BottomLeft);
             linkGlyph.Visiblility = DGlyphVisiblity.Always;
@@ -252,6 +257,7 @@ namespace Workbook
             flipXToolStripMenuItem.Text = WbLocale.FlipLeftRight;
             flipYToolStripMenuItem.Text = WbLocale.FlipUpDown;
             orderStripMenuItem.Text = WbLocale.Order;
+            highlightSelectionToolStripMenuItem.Text = WbLocale.HighlightSelection;
             // Actions
             actAnnoTools.Text = WbLocale.ScreenAnnotate;
             actBackground.Text = WbLocale.Background;
@@ -321,6 +327,8 @@ namespace Workbook
             pageNavigationToolStripMenuItem.Checked = options.PageNavigationToolbar;
             toolsToolStripMenuItem1.Checked = options.ToolsToolbar;
             UpdateToolbars();
+            // misc
+            highlightSelection = options.HighlightSelection;
             // load recent docs
             LoadRecentDocuments(options);
             // load personal toolbar
@@ -673,6 +681,8 @@ namespace Workbook
                 fig.Glyphs = new List<IGlyph>();
             // add link glyph if needed
             CheckLinkGlyph(fig);
+            // add behavoiurs
+            AddBehaviours(fig);
             // recurse into child figures
             if (fig is GroupFigure)
                 foreach (Figure child in ((GroupFigure)fig).ChildFigures)
@@ -692,6 +702,31 @@ namespace Workbook
                     fig.Glyphs.Remove(linkGlyph);
             }
             fig.ClickEvent = fig.UserAttrs.ContainsKey(Links.LinkBody);
+        }
+
+        private void AddBehaviours(Figure fig)
+        {
+#if BEHAVIOURS
+            if (fig is IBehaviours)
+            {
+                DBehaviour b = new DBehaviour();
+                if (highlightSelection)
+                {
+                    b.SetFill = true;
+                    b.SetStroke = true;
+                    b.SetAlpha = true;
+                    if (fig is IFillable)
+                    {
+                        b.Fill = DColor.Blue50Pc;
+                        b.Stroke = DColor.Blue;
+                    }
+                    else
+                        b.Stroke = DColor.Blue50Pc;
+                    b.Alpha = 1;
+                }
+                ((IBehaviours)fig).MouseOverBehaviour = b;
+            }
+#endif
         }
 
         void de_AddedFigure(DEngine de, Figure fig, bool fromHsm)
@@ -824,6 +859,8 @@ namespace Workbook
             _150PcToolStripMenuItem.Checked = dvEditor.Scale == 1.5;
             // anti alias
             antialiasToolStripMenuItem.Checked = dvEditor.AntiAlias;
+            // highlight selection
+            highlightSelectionToolStripMenuItem.Checked = highlightSelection;
         }
 
         private void ZoomToolStripMenuItem_Click(object sender, EventArgs e)
@@ -843,6 +880,23 @@ namespace Workbook
         private void antialiasToolStripMenuItem_Click(object sender, EventArgs e)
         {
             dvEditor.AntiAlias = !dvEditor.AntiAlias;
+        }
+
+        private void highlightSelectionToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            highlightSelection = !highlightSelection;
+            foreach (DEngine de in engines)
+                SetFigureBehaviours(de.Figures);
+        }
+
+        private void SetFigureBehaviours(IList<Figure> list)
+        {
+            foreach (Figure f in list)
+            {
+                AddBehaviours(f);
+                if (f is GroupFigure)
+                    SetFigureBehaviours(((GroupFigure)f).ChildFigures);
+            }
         }
 
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)

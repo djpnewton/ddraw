@@ -374,6 +374,12 @@ namespace DDraw
             get { return 0.1; }
         }
         public bool ClickEvent = false;
+        bool mouseOver = false;
+        public virtual bool MouseOver
+        {
+            get { return mouseOver; }
+            set { mouseOver = value; }
+        }
 
         bool contextHandle = false;
         public bool ContextHandle
@@ -860,6 +866,9 @@ namespace DDraw
     }
 
     public abstract class RectbaseFigure : Figure, IAlphaBlendable
+#if BEHAVIOURS
+        , IBehaviours
+#endif    
     {
         public RectbaseFigure()
         { }
@@ -882,6 +891,17 @@ namespace DDraw
             set { if (value != _alpha.Value) _alpha.Value = value; }
         }
         #endregion
+
+#if BEHAVIOURS
+        #region IBehaviours Members
+        DBehaviour mouseOverBehaviour;
+        public DBehaviour MouseOverBehaviour
+        {
+            get { return mouseOverBehaviour; }
+            set { mouseOverBehaviour = value; }
+        }
+        #endregion
+#endif
     }
 
     public class RectFigure : RectbaseFigure, IFillable, IStrokeable
@@ -928,6 +948,22 @@ namespace DDraw
 
         protected override void PaintBody(DGraphics dg)
         {
+#if BEHAVIOURS
+            // select paint properties
+            DColor Fill = this.Fill;
+            DColor Stroke = this.Stroke;
+            double Alpha = this.Alpha;
+            if (MouseOver)
+            {
+                if (MouseOverBehaviour.SetFill)
+                    Fill = MouseOverBehaviour.Fill;
+                if (MouseOverBehaviour.SetStroke)
+                    Stroke = MouseOverBehaviour.Stroke;
+                if (MouseOverBehaviour.SetAlpha)
+                    Alpha = MouseOverBehaviour.Alpha;
+            }
+#endif
+            // do painting
             if (UseRealAlpha && Alpha != 1 && StrokeWidth > 0)
             {
                 dg.StartGroup(X, Y, Width + StrokeWidth, Height + StrokeWidth, SwHalf, SwHalf);
@@ -1025,6 +1061,22 @@ namespace DDraw
 
         protected override void PaintBody(DGraphics dg)
         {
+#if BEHAVIOURS
+            // select paint properties
+            DColor Fill = this.Fill;
+            DColor Stroke = this.Stroke;
+            double Alpha = this.Alpha;
+            if (MouseOver)
+            {
+                if (MouseOverBehaviour.SetFill)
+                    Fill = MouseOverBehaviour.Fill;
+                if (MouseOverBehaviour.SetStroke)
+                    Stroke = MouseOverBehaviour.Stroke;
+                if (MouseOverBehaviour.SetAlpha)
+                    Alpha = MouseOverBehaviour.Alpha;
+            }
+#endif
+            // do painting
             if (UseRealAlpha && Alpha != 1 && StrokeWidth > 0)
             {
                 dg.StartGroup(X, Y, Width + StrokeWidth, Height + StrokeWidth, SwHalf, SwHalf);
@@ -1041,6 +1093,9 @@ namespace DDraw
     }
 
     public abstract class LinebaseFigure : Figure, IStrokeable, IMarkable, IAlphaBlendable
+#if BEHAVIOURS
+        , IBehaviours
+#endif
     {
         public static int _hitTestExtension = 0;
 
@@ -1149,6 +1204,17 @@ namespace DDraw
             set { if (value != _alpha.Value) _alpha.Value = value; }
         }
         #endregion
+
+#if BEHAVIOURS
+        #region IBehaviours Members
+        DBehaviour mouseOverBehaviour;
+        public DBehaviour MouseOverBehaviour
+        {
+            get { return mouseOverBehaviour; }
+            set { mouseOverBehaviour = value; }
+        }
+        #endregion
+#endif
     }
 
     public abstract class LineSegmentbaseFigure : LinebaseFigure, ILineSegment
@@ -1451,6 +1517,19 @@ namespace DDraw
 
         protected override void PaintBody(DGraphics dg)
         {
+#if BEHAVIOURS
+            // select paint properties
+            DColor Stroke = this.Stroke;
+            double Alpha = this.Alpha;
+            if (MouseOver)
+            {
+                if (MouseOverBehaviour.SetStroke)
+                    Stroke = MouseOverBehaviour.Stroke;
+                if (MouseOverBehaviour.SetAlpha)
+                    Alpha = MouseOverBehaviour.Alpha;
+            }
+#endif
+            // do painting
             if (UseRealAlpha && Alpha != 1 && StrokeWidth > 0 && (StartMarker != DMarker.None || EndMarker != DMarker.None))
             {
                 DPoints smp;
@@ -1681,6 +1760,19 @@ namespace DDraw
 
         protected override void PaintBody(DGraphics dg)
         {
+#if BEHAVIOURS
+            // select paint properties
+            DColor Stroke = this.Stroke;
+            double Alpha = this.Alpha;
+            if (MouseOver)
+            {
+                if (MouseOverBehaviour.SetStroke)
+                    Stroke = MouseOverBehaviour.Stroke;
+                if (MouseOverBehaviour.SetAlpha)
+                    Alpha = MouseOverBehaviour.Alpha;
+            }
+#endif
+            // do painting
             if (Points != null && Points.Count > 1)
             {
                 if (UseRealAlpha && Alpha != 1 && StrokeWidth > 0 && (StartMarker != DMarker.None || EndMarker != DMarker.None))
@@ -1828,6 +1920,9 @@ namespace DDraw
     }
 
     public class TextFigure : RectbaseFigure, IFillable, ITextable
+#if BEHAVIOURS
+        , IBehaviours
+#endif
     {
         public override double MinSize
         {
@@ -1992,6 +2087,19 @@ namespace DDraw
 
         protected override void PaintBody(DGraphics dg)
         {
+#if BEHAVIOURS
+            // select paint properties
+            DColor Fill = this.Fill;
+            double Alpha = this.Alpha;
+            if (MouseOver)
+            {
+                if (MouseOverBehaviour.SetFill)
+                    Fill = MouseOverBehaviour.Fill;
+                if (MouseOverBehaviour.SetAlpha)
+                    Alpha = MouseOverBehaviour.Alpha;
+            }
+#endif
+            // do painting
             dg.DrawText(Text, FontName, FontSize, Bold, Italics, Underline, Strikethrough, Rect.TopLeft, Fill, Alpha);
         }
 
@@ -2546,6 +2654,16 @@ namespace DDraw
             get { return 10; }
         }
 
+        public override bool MouseOver
+        {
+            set
+            {
+                base.MouseOver = value;
+                foreach (Figure f in childFigs)
+                    f.MouseOver = value;
+            }
+        }
+        
         public override double X
         {
             get { return boundingBox.X; }
