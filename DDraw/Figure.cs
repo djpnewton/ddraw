@@ -917,6 +917,11 @@ namespace DDraw
             return StrokeHelper.SelectRectIncludingStrokeWidth(base.GetSelectRect(), StrokeWidth);
         }
 
+        public override DRect GetEncompassingRect()
+        {
+            return StrokeHelper.RectIncludingStrokeWidth(base.GetEncompassingRect(), StrokeWidth);
+        }
+
         protected const int noFillThresh = 3;
         protected const int noFillThresh2 = noFillThresh + noFillThresh;
 
@@ -1115,7 +1120,8 @@ namespace DDraw
 
         public override DRect GetEncompassingRect()
         {
-            return base.GetEncompassingRect().Union(GetStartMarkerRect()).Union(GetEndMarkerRect());
+            return StrokeHelper.RectIncludingStrokeWidth(base.GetEncompassingRect(), StrokeWidth)
+                .Union(GetStartMarkerRect()).Union(GetEndMarkerRect());
         }
 
         #region IStrokeable Members
