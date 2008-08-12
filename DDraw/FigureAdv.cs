@@ -172,12 +172,17 @@ namespace DDraw
             
         DPoint FirstHandPoint(DRect r)
         { 
-            return DGeom.RotatePoint(new DPoint(r.Center.X, r.Y), r.Center, firstHandAngle.Value);    
+            return DGeom.RotatePoint(new DPoint(r.Center.X, r.Y + r.Height / 12), r.Center, firstHandAngle.Value);    
         }
             
         DPoint SecondHandPoint(DRect r)
         {
             return DGeom.RotatePoint(new DPoint(r.Center.X, r.Y + r.Height / 6), r.Center, secondHandAngle.Value);
+        }
+
+        DPoint TextPoint(DRect r, int num)
+        {
+            return DGeom.RotatePoint(new DPoint(r.Center.X, r.Y + r.Height / 24), r.Center, (num / 12.0) * (2 * Math.PI));
         }
 
         protected override void PaintBody (DGraphics dg)
@@ -199,15 +204,35 @@ namespace DDraw
 #endif
             // do painting
             DRect r = GetClockRect();
+            const int baseSize = 100;
             if (editing)
                 dg.FillRect(r.X, r.Y, r.Width, r.Height, DColor.Black, 1, DFillStyle.ForwardDiagonalHatch);
             dg.FillEllipse(r, Fill, Alpha);
             dg.DrawEllipse(r, Stroke, Alpha);
-            string text = "12"; string font = "Arial"; double fontSz = 8;
-            DPoint textSz = dg.MeasureText(text, font, fontSz);
-            dg.DrawText(text, font, fontSz, new DPoint(r.Center.X - textSz.X / 2, r.Y), DColor.Black, Alpha);
-            dg.DrawLine(r.Center, FirstHandPoint(r), DColor.Red, Alpha);
-            dg.DrawLine(r.Center, SecondHandPoint(r), DColor.Blue, Alpha);
+            double offset = 0.5 * Width / baseSize;
+            string[] nums = new string[] { "12", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11" };
+            string font = "Arial"; 
+            double fontSz = 6 * Width / baseSize;
+            if (fontSz <= 0) fontSz = 6;
+            for (int i = 0; i < nums.Length; i++)
+            {
+                string text = nums[i];
+                DPoint textPos = TextPoint(r, i);
+                DPoint textSz = dg.MeasureText(text, font, fontSz);
+                dg.Save();
+                dg.Translate(offset, offset);
+                dg.DrawText(text, font, fontSz, new DPoint(textPos.X - textSz.X / 2, textPos.Y - textSz.Y / 2), DColor.Black, Alpha);
+                dg.Restore();
+                dg.DrawText(text, font, fontSz, new DPoint(textPos.X - textSz.X / 2, textPos.Y - textSz.Y / 2), DColor.White, Alpha);
+            }
+            double handWidth = 3 * Width / baseSize;
+            dg.Save();
+            dg.Translate(offset, offset);
+            dg.DrawLine(r.Center, FirstHandPoint(r), DColor.Black, Alpha, DStrokeStyle.Solid, handWidth, DStrokeCap.Round);
+            dg.DrawLine(r.Center, SecondHandPoint(r), DColor.Black, Alpha, DStrokeStyle.Solid, handWidth, DStrokeCap.Round);
+            dg.Restore();
+            dg.DrawLine(r.Center, FirstHandPoint(r), DColor.Red, Alpha, DStrokeStyle.Solid, handWidth, DStrokeCap.Round);
+            dg.DrawLine(r.Center, SecondHandPoint(r), DColor.Blue, Alpha, DStrokeStyle.Solid, handWidth, DStrokeCap.Round);
         }
         
         void DoEditFinished()
