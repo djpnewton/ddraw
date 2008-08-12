@@ -172,17 +172,17 @@ namespace DDraw
             
         DPoint FirstHandPoint(DRect r)
         { 
-            return DGeom.RotatePoint(new DPoint(r.Center.X, r.Y + r.Height / 12), r.Center, firstHandAngle.Value);    
+            return DGeom.RotatePoint(new DPoint(r.Center.X, r.Y + r.Height / 12 + SwHalf), r.Center, firstHandAngle.Value);    
         }
             
         DPoint SecondHandPoint(DRect r)
         {
-            return DGeom.RotatePoint(new DPoint(r.Center.X, r.Y + r.Height / 6), r.Center, secondHandAngle.Value);
+            return DGeom.RotatePoint(new DPoint(r.Center.X, r.Y + r.Height / 6 + SwHalf), r.Center, secondHandAngle.Value);
         }
 
         DPoint TextPoint(DRect r, int num)
         {
-            return DGeom.RotatePoint(new DPoint(r.Center.X, r.Y + r.Height / 24), r.Center, (num / 12.0) * (2 * Math.PI));
+            return DGeom.RotatePoint(new DPoint(r.Center.X, r.Y + r.Height / 24 + SwHalf), r.Center, (num / 12.0) * (2 * Math.PI));
         }
 
         protected override void PaintBody (DGraphics dg)
@@ -208,7 +208,7 @@ namespace DDraw
             if (editing)
                 dg.FillRect(r.X, r.Y, r.Width, r.Height, DColor.Black, 1, DFillStyle.ForwardDiagonalHatch);
             dg.FillEllipse(r, Fill, Alpha);
-            dg.DrawEllipse(r, Stroke, Alpha);
+            dg.DrawEllipse(r.X, r.Y, r.Width, r.Height, Stroke, Alpha, StrokeWidth, StrokeStyle);
             double offset = 0.5 * Width / baseSize;
             string[] nums = new string[] { "12", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11" };
             string font = "Arial"; 
