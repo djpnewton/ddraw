@@ -1746,8 +1746,10 @@ namespace Workbook
                 {
                     // update all selected figures to have the same properties as the PropertiesForm figures
                     undoRedoArea.Start(WbLocale.ChangeFigureProperties);
-                    for (int i = 0; i < f.Figures.Count; i++)
-                        DAuthorProperties.FromFigure(f.Figures[i]).ApplyPropertiesToFigure(de.SelectedFigures[i]);
+                    List<Figure> propFigs = WorkBookUtils.FlatFigureList(f.Figures);
+                    List<Figure> deFigs = WorkBookUtils.FlatFigureList(de.SelectedFigures);
+                    for (int i = 0; i < propFigs.Count; i++)
+                        DAuthorProperties.FromFigure(propFigs[i]).ApplyPropertiesToFigure(deFigs[i]);
                     undoRedoArea.Commit();
                     de.UpdateViewers();
                     // update property state toolstrip

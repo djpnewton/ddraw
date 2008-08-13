@@ -802,7 +802,7 @@ namespace Workbook
             {
                 case DHsmState.Select:
                     // get selected figures
-                    List<Figure> figs = de.SelectedFigures;
+                    List<Figure> figs = WorkBookUtils.FlatFigureList(de.SelectedFigures);
                     // test to enable property controls
                     foreach (Figure f in figs)
                         if (f is IFillable)
@@ -1109,7 +1109,7 @@ namespace Workbook
             if (de != null && dv != null)
             {
                 de.UndoRedo.Start(WbLocale.ChangeProperty);
-                foreach (Figure f in de.SelectedFigures)
+                foreach (Figure f in WorkBookUtils.FlatFigureList(de.SelectedFigures))
                 {
                     if (sender == btnFill && f is IFillable)
                         ((IFillable)f).Fill = WFHelper.MakeColor(btnFill.Color);
@@ -1129,7 +1129,7 @@ namespace Workbook
                         if (sender == btnEndMarker)
                             ((IMarkable)f).EndMarker = btnEndMarker.Value;
                     }
-                    if (sender == btnAlpha && f is IAlphaBlendable)
+                    if (sender == btnAlpha && f is IAlphaBlendable && !(f is IChildFigureable))
                         ((IAlphaBlendable)f).Alpha = btnAlpha.Value;
                     if (f is ITextable)
                     {

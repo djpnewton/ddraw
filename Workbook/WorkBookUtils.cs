@@ -313,6 +313,22 @@ namespace Workbook
             return de;
         }
         #endregion
+
+        public static List<Figure> FlatFigureList(IList<Figure> figs)
+        {
+            List<Figure> result = new List<Figure>();
+            foreach (Figure f in figs)
+            {
+                result.Add(f);
+                if (f is IChildFigureable)
+                {
+                    List<Figure> children = FlatFigureList(((IChildFigureable)f).ChildFigures);
+                    foreach (Figure f2 in children)
+                        result.Add(f2);
+                }
+            }
+            return result;
+        }
     }
 
     public class WorkBookForm : Form
