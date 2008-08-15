@@ -200,6 +200,109 @@ namespace DDraw
         {
             get;
         }
+
+        bool WrapText
+        {
+            get;
+            set;
+        }
+        double WrapThreshold
+        {
+            get;
+            set;
+        }
+        double WrapFontSize
+        {
+            get;
+            set;
+        }
+        string WrappedText
+        {
+            get;
+        }
+    }
+
+    public static class TextHelper
+    {
+        static string WrapLine(string s, ITextable itext, out string remainder)
+        {
+            string result = s;
+            remainder = null;
+            int n = s.Length - 1;
+            DPoint sz = MeasureText(s, itext);
+            while (sz.X > itext.FontSize / itext.WrapFontSize * itext.WrapThreshold)
+            {
+                if (char.IsWhiteSpace(s[n]))
+                {
+                    result = s.Substring(0, n);
+                    remainder = s.Substring(n);
+                }
+                else
+                {
+                    bool foundWord = false;
+                    for (int j = n - 1; j >= 0; j--)
+                        if (char.IsWhiteSpace(s[j]))
+                        {
+                            result = s.Substring(0, j + 1);
+                            remainder = s.Substring(j + 1);
+                            n = j + 1;
+                            foundWord = true;
+                            break;
+                        }
+                    if (!foundWord)
+                    {
+                        result = s.Substring(0, n);
+                        remainder = s.Substring(n);
+                    }
+                }
+                sz = MeasureText(result, itext);
+                n--;
+            }
+            if (result.Length == 0)
+            {
+                if (s.Length > 0)
+                    result = s.Substring(0, 1);
+                if (s.Length > 1)
+                    remainder = s.Substring(1);
+                else
+                    remainder = null;
+            }
+            return result;
+        }
+
+        public static string MakeWrappedText(string text, ITextable itext)
+        {
+            string result = "";
+            string[] lines = text.Split('\n');
+            for (int i = 0; i < lines.Length; i++)
+            {
+                string line = lines[i];
+                // wrap line
+                string remainder = line;
+                string wrappedLine;
+                string wrappedText = null;
+                do
+                {
+                    wrappedLine = WrapLine(remainder, itext, out remainder);
+                    if (wrappedText == null)
+                        wrappedText = wrappedLine;
+                    else
+                        wrappedText = string.Concat(wrappedText, '\n', wrappedLine);
+                }
+                while (remainder != null);
+                // join lines
+                if (i < lines.Length - 1)
+                    result = string.Concat(result, wrappedText, '\n');
+                else
+                    result = string.Concat(result, wrappedText);
+            }
+            return result;
+        }
+
+        public static DPoint MeasureText(string text, ITextable itext)
+        {
+            return GraphicsHelper.MeasureText(text, itext.FontName, itext.FontSize, itext.Bold, itext.Italics, itext.Underline, itext.Strikethrough);
+        }
     }
 
     public interface IChildFigureable
@@ -1935,6 +2038,9 @@ namespace DDraw
             get { return 5; }
         }
 
+        const int defaultFontSize = 10;
+
+        #region ITextable members
         UndoRedo<string> _fontName = new UndoRedo<string>("Courier New");
         public string FontName
         {
@@ -1949,7 +2055,7 @@ namespace DDraw
             }
         }
 
-        UndoRedo<double> _fontSize = new UndoRedo<double>(10);
+        UndoRedo<double> _fontSize = new UndoRedo<double>(defaultFontSize);
         public double FontSize
         {
             get { return _fontSize.Value; }
@@ -2027,6 +2133,7 @@ namespace DDraw
                 if (value != _text.Value)
                 {
                     _text.Value = value;
+                    UpdateWrappedText();
                     UpdateSize();
                 }
             }
@@ -2041,6 +2148,71 @@ namespace DDraw
         {
             get { return new DPoint(0, 0); }
         }
+
+        UndoRedo<bool> _wrapText = new UndoRedo<bool>(true);
+        public bool WrapText
+        {
+            get { return _wrapText.Value; }
+            set
+            {
+                if (value != _wrapText.Value)
+                {
+                    _wrapText.Value = value;
+                    UpdateWrappedText();
+                    UpdateSize();
+                }
+            }
+        }
+
+        UndoRedo<double> _wrapThreshold = new UndoRedo<double>(300);
+        public double WrapThreshold
+        {
+            get { return _wrapThreshold.Value; }
+            set
+            {
+                if (value != _wrapThreshold.Value)
+                {
+                    if (value != _wrapThreshold.Value)
+                    {
+                        _wrapThreshold.Value = value;
+                        UpdateWrappedText();
+                        UpdateSize();
+                    }
+                }
+            }
+        }
+
+        UndoRedo<double> _wrapFontSize = new UndoRedo<double>(defaultFontSize);
+        public double WrapFontSize
+        {
+            get { return _wrapFontSize.Value; }
+            set
+            {
+                if (value != _wrapFontSize.Value)
+                {
+                    if (value != _wrapFontSize.Value)
+                    {
+                        _wrapFontSize.Value = value;
+                        UpdateWrappedText();
+                        UpdateSize();
+                    }
+                }
+            }
+        }
+
+        string _wrappedText = null;
+        public string WrappedText
+        {
+            get 
+            {
+                #warning WrappedText is not changed when Text is changed by undo/redo action
+                if (WrapText)
+                    return _wrappedText;
+                else
+                    return Text;
+            }
+        }
+        #endregion
 
         public override double Width
         {
@@ -2084,9 +2256,17 @@ namespace DDraw
             Rotation = rotation;
         }
 
+        void UpdateWrappedText()
+        {
+            if (WrapText)
+                _wrappedText = TextHelper.MakeWrappedText(Text, this);
+            else
+                _wrappedText = null;
+        }
+
         void UpdateSize()
         {
-            DPoint sz = GraphicsHelper.MeasureText(Text, FontName, FontSize, Bold, Italics, Underline, Strikethrough);
+            DPoint sz = TextHelper.MeasureText(WrappedText, this);
             base.Width = sz.X;
             base.Height = sz.Y;
         }
@@ -2106,7 +2286,7 @@ namespace DDraw
             }
 #endif
             // do painting
-            dg.DrawText(Text, FontName, FontSize, Bold, Italics, Underline, Strikethrough, Rect.TopLeft, Fill, Alpha);
+            dg.DrawText(WrappedText, FontName, FontSize, Bold, Italics, Underline, Strikethrough, Rect.TopLeft, Fill, Alpha);
         }
 
         #region IFillable Members
@@ -2178,6 +2358,25 @@ namespace DDraw
         {
             get { return itext.TextOffset.Offset(border, border); }
         }
+        public bool WrapText
+        {
+            get { return itext.WrapText; }
+            set { itext.WrapText = value; }
+        }
+        public double WrapThreshold
+        {
+            get { return itext.WrapThreshold; }
+            set { itext.WrapThreshold = value; }
+        }
+        public double WrapFontSize
+        {
+            get { return itext.WrapFontSize; }
+            set { itext.WrapFontSize = value; }
+        }
+        public string WrappedText
+        {
+            get { return itext.WrappedText; }
+        }
 
         public override double X
         {
@@ -2211,7 +2410,7 @@ namespace DDraw
 
         string[] Lines
         {
-            get { return Text.Split('\n'); }
+            get { return WrappedText.Split('\n'); }
         }
 
         public TextEditFigure(Figure f, ITextable itext)
@@ -2312,24 +2511,24 @@ namespace DDraw
 
         double LineHeight(string[] lines)
         {
-            return GraphicsHelper.MeasureText(Text, FontName, FontSize, Bold, Italics, Underline, Strikethrough).Y / lines.Length;
+            return TextHelper.MeasureText(WrappedText, this).Y / lines.Length;
         }
 
         DPoint MeasureCursorPosition(string[] lines, double height)
         {
             // find the x,y position of the cursor
-            int n = cursorPosition;
-            if (cursorPosition >= 0)
+            int pos = WrapPos(cursorPosition);
+            if (pos >= 0)
             {
                 for (int i = 0; i < lines.Length; i++)
                 {
                     string line = lines[i];
-                    if (n <= line.Length)
+                    if (pos <= line.Length)
                     {
-                        DPoint sz = GraphicsHelper.MeasureText(line.Substring(0, n), FontName, FontSize, Bold, Italics, Underline, Strikethrough);
+                        DPoint sz = TextHelper.MeasureText(line.Substring(0, pos), this);
                         return new DPoint(sz.X, height * i);
                     }
-                    n -= line.Length + 1;
+                    pos -= line.Length + 1;
                 }
             }
             return new DPoint(0, 0);
@@ -2337,19 +2536,20 @@ namespace DDraw
 
         DRect[] MeasureSelectionRects(string[] lines, double lineHeight)
         {
+            int pos = WrapPos(cursorPosition);
             DRect[] res = new DRect[0];
             if (selectionLength != 0)
             {
                 // init selection variables
-                int selStart = cursorPosition;
+                int selStart = pos;
                 int selEnd;
                 if (selectionLength < 0)
                 {
                     selStart += selectionLength;
-                    selEnd = cursorPosition;
+                    selEnd = pos;
                 }
                 else
-                    selEnd = cursorPosition + selectionLength;
+                    selEnd = pos + selectionLength;
                 // start measuring selection rectangles line by line
                 int n = 0;
                 for (int i = 0; i < lines.Length; i++)
@@ -2377,11 +2577,11 @@ namespace DDraw
                         // start of selection rect for this line
                         double x;
                         if (selIdx != 0)
-                            x = GraphicsHelper.MeasureText(line.Substring(0, selIdx), FontName, FontSize, Bold, Italics, Underline, Strikethrough).X;
+                            x = TextHelper.MeasureText(line.Substring(0, selIdx), this).X;
                         else
                             x = 0;
                         // width of selection rect for this line
-                        double w = GraphicsHelper.MeasureText(selText, FontName, FontSize, Bold, Italics, Underline, Strikethrough).X;
+                        double w = TextHelper.MeasureText(selText, this).X;
                         if (selIdx != 0)
                         {
                             // take into account the space that is put infront of the first character
@@ -2432,7 +2632,7 @@ namespace DDraw
             {
                 if (n >= newLine.Length)
                     return newLine.Length;
-                newXPos = GraphicsHelper.MeasureText(newLine.Substring(0, n), FontName, FontSize, Bold, Italics, Underline, Strikethrough).X;
+                newXPos = TextHelper.MeasureText(newLine.Substring(0, n), this).X;
                 n += 1;
             }
             return n - 1;
@@ -2448,6 +2648,30 @@ namespace DDraw
                 return lines[currentLine].Length - currentLineChar + 1 + newLineChar;
             else
                 return newLineChar - currentLineChar;
+        }
+
+        int WrapPos(int pos)
+        {
+            // find the equvalent cursor position in wrapped text to one given from the base text
+            if (!WrapText)
+                return pos;
+            int diff = 0;
+            for (int i = 0; i < pos; i++)
+                if (Text[i] != WrappedText[i + diff])
+                    diff++;
+            return pos + diff;
+        }
+
+        int UnwrapPos(int pos)
+        {
+            // find the equvalent cursor position in base text to one given from the wrapped text
+            if (!WrapText)
+                return pos;
+            int diff = 0;
+            for (int i = 0; i < pos; i++)
+                if (WrappedText[i] != Text[i + diff])
+                    diff--;
+            return pos + diff;
         }
 
         void SetCursorPos(int pos, bool select)
@@ -2493,8 +2717,9 @@ namespace DDraw
                         break;
                     DPoint cpt = MeasureCursorPosition(lines, LineHeight(lines));
                     int newLineCharNo = FindEquivCharacterPosition(lines[newLineNo], currentlineCharNo, cpt.X);
-                    SetCursorPos(cursorPosition + CharNumberChange(lines, lineNo, newLineNo, currentlineCharNo, newLineCharNo),
-                        select);
+                    SetCursorPos(UnwrapPos(
+                        cursorPosition + CharNumberChange(lines, lineNo, newLineNo, currentlineCharNo, newLineCharNo)
+                        ), select);
                     break;
                 case DKeys.Down:
                     goto case DKeys.Up;
@@ -2575,7 +2800,7 @@ namespace DDraw
                     for (int j = 1; j <= lines[i].Length; j++)
                     {
                         string substr = lines[i].Substring(0, j);
-                        double width = GraphicsHelper.MeasureText(substr, FontName, FontSize, Bold, Italics, Underline, Strikethrough).X;
+                        double width = TextHelper.MeasureText(substr, this).X;
                         if (width >= pt.X)
                         {
                             double middleCharX;
@@ -2597,7 +2822,7 @@ namespace DDraw
                     pos++;
             }
             // set new cursor position
-            SetCursorPos(pos, select);
+            SetCursorPos(UnwrapPos(pos), select);
         }
 
         public bool HitTestBorder(DPoint pt)

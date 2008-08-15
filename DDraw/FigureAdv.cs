@@ -287,6 +287,19 @@ namespace DDraw
             dg.Restore();
         }
 
+        public override double Width
+        {
+            get
+            {
+                return base.Width;
+            }
+            set
+            {
+                base.Width = value;
+                tf.WrapThreshold = value;
+            }
+        }
+
         #region ITextable members
         public string Text
         {
@@ -305,7 +318,11 @@ namespace DDraw
         public double FontSize
         {
             get { return tf.FontSize; }
-            set { tf.FontSize = value; }
+            set 
+            { 
+                tf.FontSize = value;
+                tf.WrapFontSize = value;
+            }
         }
         public bool Bold
         {
@@ -330,6 +347,25 @@ namespace DDraw
         public DPoint TextOffset
         {
             get { return new DPoint(Width / 2 - tf.Width / 2, Height / 2 - tf.Height / 2); }
+        }
+        public bool WrapText
+        {
+            get { return tf.WrapText; }
+            set { tf.WrapText = value; }
+        }
+        public double WrapThreshold
+        {
+            get { return tf.WrapThreshold; }
+            set { }
+        }
+        public double WrapFontSize
+        {
+            get { return tf.WrapFontSize; }
+            set { }
+        }
+        public string WrappedText
+        {
+            get { return tf.WrappedText; }
         }
         #endregion
 
