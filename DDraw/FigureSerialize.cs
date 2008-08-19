@@ -51,6 +51,9 @@ namespace DDraw
         const string ITALICS_ATTR = "Italics";
         const string UNDERLINE_ATTR = "Underline";
         const string STRIKETHROUGH_ATTR = "Strikethrough";
+        const string WRAPTEXT_ATTR = "WrapText";
+        const string WRAPTHRESHOLD_ATTR = "WrapThreshold";
+        const string WRAPFONTSIZE_ATTR = "WrapFontSize";
         const string CHILDFIGURES_ELE = "ChildFigures";
         const string LINESEGMENT_ELE = "LineSegment";
         const string PT1_ATTR = "Pt1";
@@ -151,6 +154,9 @@ namespace DDraw
                 wr.WriteAttributeString(ITALICS_ATTR, ft.Italics.ToString());
                 wr.WriteAttributeString(UNDERLINE_ATTR, ft.Underline.ToString());
                 wr.WriteAttributeString(STRIKETHROUGH_ATTR, ft.Strikethrough.ToString());
+                wr.WriteAttributeString(WRAPTEXT_ATTR, ft.WrapText.ToString());
+                wr.WriteAttributeString(WRAPTHRESHOLD_ATTR, ft.WrapThreshold.ToString());
+                wr.WriteAttributeString(WRAPFONTSIZE_ATTR, ft.WrapFontSize.ToString());
                 wr.WriteString(ft.Text);
                 wr.WriteEndElement();
             }
@@ -467,6 +473,24 @@ namespace DDraw
                     bool b = false;
                     bool.TryParse(re.Value, out b);
                     t.Strikethrough = b;
+                }
+                else if (re.LocalName == WRAPTEXT_ATTR)
+                {
+                    bool b = t.WrapText;
+                    bool.TryParse(re.Value, out b);
+                    t.WrapText = b;
+                }
+                else if (re.LocalName == WRAPTHRESHOLD_ATTR)
+                {
+                    double wt = t.WrapThreshold;
+                    double.TryParse(re.Value, out wt);
+                    t.WrapThreshold = wt;
+                }
+                else if (re.LocalName == WRAPFONTSIZE_ATTR)
+                {
+                    double wfs = t.WrapFontSize;
+                    double.TryParse(re.Value, out wfs);
+                    t.WrapFontSize = wfs;
                 }
             }
             t.Text = re.ReadString();

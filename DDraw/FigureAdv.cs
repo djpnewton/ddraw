@@ -356,12 +356,22 @@ namespace DDraw
         public double WrapThreshold
         {
             get { return tf.WrapThreshold; }
-            set { }
+            set
+            {
+                if (value >= MinSize)
+                    Width = value;
+                else
+                    Width = MinSize;
+            }
         }
         public double WrapFontSize
         {
             get { return tf.WrapFontSize; }
             set { }
+        }
+        public double WrapLength
+        {
+            get { return tf.WrapLength; }
         }
         public string WrappedText
         {

@@ -124,7 +124,8 @@ namespace DDraw
         DHitTest mouseHitTest;
         bool cancelledFigureDrag;
         DKey textEditKey;
-        bool textEditMouseDown, textEditMove;
+        bool textEditMouseDown, textEditChangeTextWrap, textEditMove;
+        double textEditDragWrapThreshold;
 
         bool lockInitialAspectRatio = false;
         double unlockInitalAspectRatioThreshold = 50;
@@ -1515,9 +1516,14 @@ namespace DDraw
                 if (currentFigure.HitTest(pt, null, out glyph) == DHitTest.Body)
                 {
                     textEditMouseDown = true;
+                    textEditChangeTextWrap = tef.HitTestTextWrapHandle(pt);
                     textEditMove = tef.HitTestBorder(pt);
-                    if (textEditMove)
+                    if (textEditChangeTextWrap || textEditMove)
+                    {
                         dragPt = pt;
+                        if (textEditChangeTextWrap)
+                            textEditDragWrapThreshold = tef.WrapThreshold;
+                    }
                     else
                     {
                         tef.SetCursorPoint(pt, false);
@@ -1553,7 +1559,15 @@ namespace DDraw
             TextEditFigure tef = (TextEditFigure)currentFigure;
             if (textEditMouseDown)
             {
-                if (textEditMove)
+                if (textEditChangeTextWrap)
+                {
+                    #warning WrapThreshold not changed exactly right yet
+                    dv.Update(GetBoundingBox(tef));
+                    double offset = tef.X + tef.BorderWidth;
+                    tef.WrapThreshold = textEditDragWrapThreshold * ((pt.X - offset) / (dragPt.X - offset));
+                    dv.Update(GetBoundingBox(tef));
+                }
+                else if (textEditMove)
                 {
                     // bound pt to canvas
                     BoundPtToPage(pt);
@@ -1577,7 +1591,9 @@ namespace DDraw
                 IGlyph glyph;
                 if (currentFigure.HitTest(pt, null, out glyph) == DHitTest.Body)
                 {
-                    if (tef.HitTestBorder(pt))
+                    if (tef.HitTestTextWrapHandle(pt))
+                        dv.SetCursor(DCursor.MoveWE);
+                    else if (tef.HitTestBorder(pt))
                         dv.SetCursor(DCursor.MoveAll);
                     else
                         dv.SetCursor(DCursor.IBeam);

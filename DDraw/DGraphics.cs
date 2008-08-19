@@ -40,6 +40,11 @@ namespace DDraw
             return sz;
         }
 
+        public static DPoint MeasureText(DGraphics dg, string text, string fontName, double fontSize, bool bold, bool italics, bool underline, bool strikethrough)
+        {
+            return dg.MeasureText(text, fontName, fontSize, bold, italics, underline, strikethrough);
+        }
+
         public static void Init(Type bitmapClass, Type graphicsClass)
         {
             // bitmapClass needs to be a desendant of DBitmap

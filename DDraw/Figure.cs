@@ -216,6 +216,10 @@ namespace DDraw
             get;
             set;
         }
+        double WrapLength
+        {
+            get;
+        }
         string WrappedText
         {
             get;
@@ -224,40 +228,46 @@ namespace DDraw
 
     public static class TextHelper
     {
-        static string WrapLine(string s, ITextable itext, out string remainder)
+        static string WrapLine(DGraphics dg, string s, ITextable itext, out string remainder)
         {
-            string result = s;
+            string result;
             remainder = null;
-            int n = s.Length - 1;
-            DPoint sz = MeasureText(s, itext);
-            while (sz.X > itext.FontSize / itext.WrapFontSize * itext.WrapThreshold)
+            if (itext.WrapLength > 0)
             {
-                if (char.IsWhiteSpace(s[n]))
+                result = s;
+                int n = s.Length - 1;
+                DPoint sz = MeasureText(dg, s, itext);
+                while (sz.X > itext.WrapLength)
                 {
-                    result = s.Substring(0, n);
-                    remainder = s.Substring(n);
-                }
-                else
-                {
-                    bool foundWord = false;
-                    for (int j = n - 1; j >= 0; j--)
-                        if (char.IsWhiteSpace(s[j]))
-                        {
-                            result = s.Substring(0, j + 1);
-                            remainder = s.Substring(j + 1);
-                            n = j + 1;
-                            foundWord = true;
-                            break;
-                        }
-                    if (!foundWord)
+                    if (char.IsWhiteSpace(s[n]))
                     {
                         result = s.Substring(0, n);
                         remainder = s.Substring(n);
                     }
+                    else
+                    {
+                        bool foundWord = false;
+                        for (int j = n - 1; j >= 0; j--)
+                            if (char.IsWhiteSpace(s[j]))
+                            {
+                                result = s.Substring(0, j + 1);
+                                remainder = s.Substring(j + 1);
+                                n = j + 1;
+                                foundWord = true;
+                                break;
+                            }
+                        if (!foundWord)
+                        {
+                            result = s.Substring(0, n);
+                            remainder = s.Substring(n);
+                        }
+                    }
+                    sz = MeasureText(dg, result, itext);
+                    n--;
                 }
-                sz = MeasureText(result, itext);
-                n--;
             }
+            else
+                result = "";
             if (result.Length == 0)
             {
                 if (s.Length > 0)
@@ -272,6 +282,9 @@ namespace DDraw
 
         public static string MakeWrappedText(string text, ITextable itext)
         {
+            DBitmap bmp = GraphicsHelper.MakeBitmap(10, 10);
+            DGraphics dg = GraphicsHelper.MakeGraphics(bmp);
+
             string result = "";
             string[] lines = text.Split('\n');
             for (int i = 0; i < lines.Length; i++)
@@ -283,7 +296,7 @@ namespace DDraw
                 string wrappedText = null;
                 do
                 {
-                    wrappedLine = WrapLine(remainder, itext, out remainder);
+                    wrappedLine = WrapLine(dg, remainder, itext, out remainder);
                     if (wrappedText == null)
                         wrappedText = wrappedLine;
                     else
@@ -296,7 +309,16 @@ namespace DDraw
                 else
                     result = string.Concat(result, wrappedText);
             }
+
+            dg.Dispose();
+            bmp.Dispose();
+
             return result;
+        }
+
+        public static DPoint MeasureText(DGraphics dg, string text, ITextable itext)
+        {
+            return GraphicsHelper.MeasureText(dg, text, itext.FontName, itext.FontSize, itext.Bold, itext.Italics, itext.Underline, itext.Strikethrough);
         }
 
         public static DPoint MeasureText(string text, ITextable itext)
@@ -2039,6 +2061,7 @@ namespace DDraw
         }
 
         const int defaultFontSize = 10;
+        const int minWrapThreshold = 5;
 
         #region ITextable members
         UndoRedo<string> _fontName = new UndoRedo<string>("Courier New");
@@ -2164,20 +2187,19 @@ namespace DDraw
             }
         }
 
-        UndoRedo<double> _wrapThreshold = new UndoRedo<double>(300);
+        UndoRedo<double> _wrapThreshold = new UndoRedo<double>(200);
         public double WrapThreshold
         {
             get { return _wrapThreshold.Value; }
             set
             {
+                if (value < minWrapThreshold)
+                    value = minWrapThreshold;
                 if (value != _wrapThreshold.Value)
                 {
-                    if (value != _wrapThreshold.Value)
-                    {
-                        _wrapThreshold.Value = value;
-                        UpdateWrappedText();
-                        UpdateSize();
-                    }
+                    _wrapThreshold.Value = value;
+                    UpdateWrappedText();
+                    UpdateSize();
                 }
             }
         }
@@ -2190,24 +2212,27 @@ namespace DDraw
             {
                 if (value != _wrapFontSize.Value)
                 {
-                    if (value != _wrapFontSize.Value)
-                    {
-                        _wrapFontSize.Value = value;
-                        UpdateWrappedText();
-                        UpdateSize();
-                    }
+                    _wrapFontSize.Value = value;
+                    UpdateWrappedText();
+                    UpdateSize();
                 }
             }
+        }
+
+        public double WrapLength
+        {
+            get { return FontSize / WrapFontSize * WrapThreshold; }
         }
 
         string _wrappedText = null;
         public string WrappedText
         {
-            get 
+            get
             {
-                #warning WrappedText is not changed when Text is changed by undo/redo action
+                #warning _wrappedText is not changed when Text is changed by undo/redo action
                 if (WrapText)
-                    return _wrappedText;
+                    //return _wrappedText;
+                    return TextHelper.MakeWrappedText(Text, this);
                 else
                     return Text;
             }
@@ -2301,7 +2326,11 @@ namespace DDraw
 
     public class TextEditFigure : RectbaseFigure, ITextable
     {
-        const int border = 6;
+        const int border = 8;
+        public int BorderWidth
+        {
+            get { return border; }
+        }
 
         ITextable itext;
         public ITextable IText
@@ -2373,6 +2402,10 @@ namespace DDraw
             get { return itext.WrapFontSize; }
             set { itext.WrapFontSize = value; }
         }
+        public double WrapLength
+        {
+            get { return itext.WrapLength; }
+        }
         public string WrappedText
         {
             get { return itext.WrappedText; }
@@ -2390,7 +2423,12 @@ namespace DDraw
         }
         public override double Width
         {
-            get { return f.Width + border + border; }
+            get 
+            {
+                if (WrapText)
+                    return Math.Max(WrapLength + border + border, f.Width + border + border);
+                return f.Width + border + border; 
+            }
             set { f.Width = value - border - border; }
         }
         public override double Height
@@ -2425,12 +2463,17 @@ namespace DDraw
             TopLeft = pt;
         }
 
+        public DRect TextWrapHandleRect
+        {
+            get { return new DRect(Right - border, Y + Height / 2 - border / 2, border, border); }
+        }
+
         protected override void PaintBody(DGraphics dg)
         {
             // paint border
             DRect r = Rect;
             dg.FillRect(r.X, r.Y, r.Width, r.Height, DColor.Black, 1, DFillStyle.ForwardDiagonalHatch);
-            dg.FillRect(f.X, f.Y, f.Width, f.Height, DColor.White, 1);
+            dg.FillRect(r.X + border, r.Y + border, r.Width - border - border, r.Height - border - border, DColor.White, 1);
             // paint text
             double alpha = 1;
             if (f is IAlphaBlendable)
@@ -2449,13 +2492,17 @@ namespace DDraw
             if (f is IAlphaBlendable)
                 ((IAlphaBlendable)f).Alpha = alpha;
             f.Rotation = rot;
+            // paint text wrap handle
+            r = TextWrapHandleRect;
+            dg.FillEllipse(r, DColor.White);
+            dg.DrawEllipse(r, DColor.Black);
             // paint selection & cursor
             string[] lines = Lines;
             DPoint offset = itext.TextOffset;
             DPoint pt = f.Rect.TopLeft.Offset(offset.X, offset.Y);
-            double height = LineHeight(lines);
+            double height = LineHeight(dg, lines);
             DPoint cpt = MeasureCursorPosition(lines, height);
-            DRect[] selRects = MeasureSelectionRects(lines, height);
+            DRect[] selRects = MeasureSelectionRects(dg, lines, height);
 
             foreach (DRect sr in selRects)
                 dg.FillRect(pt.X + sr.X, pt.Y + sr.Y, sr.Width, sr.Height, DColor.LightGray, 0.5);
@@ -2509,6 +2556,11 @@ namespace DDraw
             return i;
         }
 
+        double LineHeight(DGraphics dg, string[] lines)
+        {
+            return TextHelper.MeasureText(dg, WrappedText, this).Y / lines.Length;
+        }
+
         double LineHeight(string[] lines)
         {
             return TextHelper.MeasureText(WrappedText, this).Y / lines.Length;
@@ -2534,7 +2586,7 @@ namespace DDraw
             return new DPoint(0, 0);
         }
 
-        DRect[] MeasureSelectionRects(string[] lines, double lineHeight)
+        DRect[] MeasureSelectionRects(DGraphics dg, string[] lines, double lineHeight)
         {
             int pos = WrapPos(cursorPosition);
             DRect[] res = new DRect[0];
@@ -2577,11 +2629,11 @@ namespace DDraw
                         // start of selection rect for this line
                         double x;
                         if (selIdx != 0)
-                            x = TextHelper.MeasureText(line.Substring(0, selIdx), this).X;
+                            x = TextHelper.MeasureText(dg, line.Substring(0, selIdx), this).X;
                         else
                             x = 0;
                         // width of selection rect for this line
-                        double w = TextHelper.MeasureText(selText, this).X;
+                        double w = TextHelper.MeasureText(dg, selText, this).X;
                         if (selIdx != 0)
                         {
                             // take into account the space that is put infront of the first character
@@ -2656,8 +2708,9 @@ namespace DDraw
             if (!WrapText)
                 return pos;
             int diff = 0;
+            string wt = WrappedText;
             for (int i = 0; i < pos; i++)
-                if (Text[i] != WrappedText[i + diff])
+                if (Text[i] != wt[i + diff])
                     diff++;
             return pos + diff;
         }
@@ -2668,8 +2721,9 @@ namespace DDraw
             if (!WrapText)
                 return pos;
             int diff = 0;
+            string wt = WrappedText;
             for (int i = 0; i < pos; i++)
-                if (WrappedText[i] != Text[i + diff])
+                if (wt[i] != Text[i + diff])
                     diff--;
             return pos + diff;
         }
@@ -2834,6 +2888,11 @@ namespace DDraw
                     return true;
             }
             return false;
+        }
+
+        public bool HitTestTextWrapHandle(DPoint pt)
+        {
+            return DGeom.PointInRect(pt, TextWrapHandleRect);
         }
 
         delegate int FindCharDelegate(bool findWhiteSpace, bool iterForward, int offset);
