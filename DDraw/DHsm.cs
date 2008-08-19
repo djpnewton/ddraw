@@ -125,7 +125,7 @@ namespace DDraw
         bool cancelledFigureDrag;
         DKey textEditKey;
         bool textEditMouseDown, textEditChangeTextWrap, textEditMove;
-        double textEditDragWrapThreshold;
+        double textEditDragWrapOffset;
 
         bool lockInitialAspectRatio = false;
         double unlockInitalAspectRatioThreshold = 50;
@@ -1518,12 +1518,10 @@ namespace DDraw
                     textEditMouseDown = true;
                     textEditChangeTextWrap = tef.HitTestTextWrapHandle(pt);
                     textEditMove = tef.HitTestBorder(pt);
-                    if (textEditChangeTextWrap || textEditMove)
-                    {
+                    if (textEditChangeTextWrap)
+                        textEditDragWrapOffset = tef.X + tef.BorderWidth + tef.WrapLength - pt.X;
+                    if (textEditMove)
                         dragPt = pt;
-                        if (textEditChangeTextWrap)
-                            textEditDragWrapThreshold = tef.WrapThreshold;
-                    }
                     else
                     {
                         tef.SetCursorPoint(pt, false);
@@ -1561,10 +1559,10 @@ namespace DDraw
             {
                 if (textEditChangeTextWrap)
                 {
-                    #warning WrapThreshold not changed exactly right yet
                     dv.Update(GetBoundingBox(tef));
-                    double offset = tef.X + tef.BorderWidth;
-                    tef.WrapThreshold = textEditDragWrapThreshold * ((pt.X - offset) / (dragPt.X - offset));
+                    const int threshBase = 200;
+                    tef.WrapThreshold = threshBase * ((pt.X - (tef.X + tef.BorderWidth) + textEditDragWrapOffset) / 
+                        (threshBase * tef.FontSize / tef.WrapFontSize));
                     dv.Update(GetBoundingBox(tef));
                 }
                 else if (textEditMove)
