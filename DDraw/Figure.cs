@@ -2231,8 +2231,8 @@ namespace DDraw
             {
                 #warning _wrappedText is not changed when Text is changed by undo/redo action
                 if (WrapText)
-                    //return _wrappedText;
-                    return TextHelper.MakeWrappedText(Text, this);
+                    return _wrappedText;
+                    //return TextHelper.MakeWrappedText(Text, this);
                 else
                     return Text;
             }
@@ -2569,7 +2569,7 @@ namespace DDraw
         DPoint MeasureCursorPosition(string[] lines, double height)
         {
             // find the x,y position of the cursor
-            int pos = WrapPos(cursorPosition);
+            int pos = WrapPos(WrappedText, cursorPosition);
             if (pos >= 0)
             {
                 for (int i = 0; i < lines.Length; i++)
@@ -2588,20 +2588,23 @@ namespace DDraw
 
         DRect[] MeasureSelectionRects(DGraphics dg, string[] lines, double lineHeight)
         {
-            int pos = WrapPos(cursorPosition);
             DRect[] res = new DRect[0];
             if (selectionLength != 0)
             {
                 // init selection variables
-                int selStart = pos;
+                int selStart;
                 int selEnd;
+                string wt = WrappedText; 
                 if (selectionLength < 0)
                 {
-                    selStart += selectionLength;
-                    selEnd = pos;
+                    selStart = WrapPos(wt, cursorPosition + selectionLength);
+                    selEnd = WrapPos(wt, cursorPosition);
                 }
                 else
-                    selEnd = pos + selectionLength;
+                {
+                    selStart = WrapPos(wt, cursorPosition);
+                    selEnd = WrapPos(wt, cursorPosition + selectionLength);
+                }
                 // start measuring selection rectangles line by line
                 int n = 0;
                 for (int i = 0; i < lines.Length; i++)
@@ -2702,28 +2705,26 @@ namespace DDraw
                 return newLineChar - currentLineChar;
         }
 
-        int WrapPos(int pos)
+        int WrapPos(string wrappedText, int pos)
         {
             // find the equvalent cursor position in wrapped text to one given from the base text
             if (!WrapText)
                 return pos;
             int diff = 0;
-            string wt = WrappedText;
             for (int i = 0; i < pos; i++)
-                if (Text[i] != wt[i + diff])
+                if (Text[i] != wrappedText[i + diff])
                     diff++;
             return pos + diff;
         }
 
-        int UnwrapPos(int pos)
+        int UnwrapPos(string wrappedText, int pos)
         {
             // find the equvalent cursor position in base text to one given from the wrapped text
             if (!WrapText)
                 return pos;
             int diff = 0;
-            string wt = WrappedText;
             for (int i = 0; i < pos; i++)
-                if (wt[i] != Text[i + diff])
+                if (wrappedText[i] != Text[i + diff])
                     diff--;
             return pos + diff;
         }
@@ -2771,7 +2772,7 @@ namespace DDraw
                         break;
                     DPoint cpt = MeasureCursorPosition(lines, LineHeight(lines));
                     int newLineCharNo = FindEquivCharacterPosition(lines[newLineNo], currentlineCharNo, cpt.X);
-                    SetCursorPos(UnwrapPos(
+                    SetCursorPos(UnwrapPos(WrappedText,
                         cursorPosition + CharNumberChange(lines, lineNo, newLineNo, currentlineCharNo, newLineCharNo)
                         ), select);
                     break;
@@ -2876,7 +2877,7 @@ namespace DDraw
                     pos++;
             }
             // set new cursor position
-            SetCursorPos(UnwrapPos(pos), select);
+            SetCursorPos(UnwrapPos(WrappedText, pos), select);
         }
 
         public bool HitTestBorder(DPoint pt)
