@@ -270,6 +270,7 @@ namespace Workbook
             actDelete.Text = WbLocale.Delete;
             actDeletePage.Text = WbLocale.DeletePage;
             actDimensions.Text = WbLocale.Dimensions;
+            actExportSelectionToImage.Text = WbLocale.ExportSelectionToImage;
             actGroupFigures.Text = WbLocale.Group;
             actLink.Text = WbLocale.Link;
             actLockFigure.Text = WbLocale.Lock;
@@ -359,6 +360,8 @@ namespace Workbook
             options.PropertyStateToolbar = tsPropState.Visible;
             options.PageNavigationToolbar = tsPageManage.Visible;
             options.ToolsToolbar = tsTools.Visible;
+            // misc
+            options.HighlightSelection = highlightSelection;
             // write to file
             options.WriteIni();
             // save personal toolbar
@@ -406,9 +409,7 @@ namespace Workbook
             }
             else
                 recentDocumentsToolStripMenuItem.Enabled = false;
-
         }
-
 
         void recentDoc_Click(object sender, EventArgs e)
         {
@@ -670,6 +671,8 @@ namespace Workbook
             actLockFigure.Enabled = figs.Count > 0;
             actDimensions.Enabled = figs.Count > 0;
             actProperties.Enabled = figs.Count > 0;
+            // update export selection action
+            actExportSelectionToImage.Enabled = figs.Count > 0;
         }
 
         void AddDefaultProperties(Figure fig)
@@ -1755,6 +1758,19 @@ namespace Workbook
                     // update property state toolstrip
                     tsPropState.De = de;
                 }
+            }
+        }
+
+        private void actExportSelectionToImage_Execute(object sender, EventArgs e)
+        {
+            System.Diagnostics.Debug.Assert(de.SelectedFigures.Count > 0, "ERROR: No figures selected");
+            SaveFileDialog sfd = new SaveFileDialog();
+            sfd.Filter = "PNG File|*.png";
+            if (sfd.ShowDialog() == DialogResult.OK)
+            {
+                CheckState();
+                DBitmap bmp = FigureSerialize.FormatToBmp(de.SelectedFigures, dvEditor.AntiAlias, DColor.Empty);
+                bmp.Save(sfd.FileName);
             }
         }
 

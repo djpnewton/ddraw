@@ -1021,6 +1021,11 @@ namespace Workbook
         {
             get { return GetString("HighlightSelection"); }
         }
+
+        public static string ExportSelectionToImage
+        {
+            get { return GetString("ExportSelectionToImage"); }
+        }
         #endregion
 
         #region DEngine strings

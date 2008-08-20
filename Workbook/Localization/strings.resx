@@ -324,6 +324,9 @@
   <data name="ExportingToImages" xml:space="preserve">
     <value>Exporting to Images</value>
   </data>
+  <data name="ExportSelectionToImage" xml:space="preserve">
+    <value>Export Selection to Image</value>
+  </data>
   <data name="FigureBody" xml:space="preserve">
     <value>Figure Body</value>
   </data>
