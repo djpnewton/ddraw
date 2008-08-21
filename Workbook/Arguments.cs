@@ -179,5 +179,10 @@ namespace Workbook
         {
             get { return HasParam("screenannotate"); }
         }
+
+        public bool Show
+        {
+            get { return HasParam("show"); }
+        }
     }
 }

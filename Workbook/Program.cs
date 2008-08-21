@@ -13,20 +13,19 @@ namespace Workbook
         static void Main()
         {
             // if program not already running then run
-            if (!Ipc.GlobalIpc.MutexUnauthorized)
+            if (Ipc.GlobalIpc.MutexUnauthorized && WorkBookArguments.GlobalWbArgs.Show)
+            {
+                if (WorkBookArguments.GlobalWbArgs.ScreenAnnotate)
+                    Ipc.GlobalIpc.SendMessage(IpcMessage.ScreenAnnotate);
+                else
+                    Ipc.GlobalIpc.SendMessage(IpcMessage.Show);
+            }
+            else
             {
                 Application.EnableVisualStyles();
                 Application.SetCompatibleTextRenderingDefault(false);
                 new MainForm();
                 Application.Run();
-            }
-            else
-            {
-                // send message to other program to show itself
-                if (WorkBookArguments.GlobalWbArgs.ScreenAnnotate)
-                    Ipc.GlobalIpc.SendMessage(IpcMessage.ScreenAnnotate);
-                else
-                    Ipc.GlobalIpc.SendMessage(IpcMessage.Show);
             }
         }
     }
