@@ -7,5 +7,5 @@ Workbook 1.1
   - added "show" command line option to show another running instance of workbook if there is one
 
   bug fixes
-  - 
+  - stop application closing aberrantly when screen annotation form is closed
 

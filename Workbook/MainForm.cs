@@ -1774,7 +1774,7 @@ namespace Workbook
             }
         }
 
-        void ShowAnnoTools(bool alone)
+        void ShowAnnoTools(bool fromCmdLine)
         {
             CheckState();
             AnnoToolsForm atf = AnnoToolsForm.GlobalAtf;
@@ -1783,7 +1783,7 @@ namespace Workbook
                 atf.ImportAnnotationsPage += new ImportAnnotationsPageHandler(AnnoTools_ImportAnnotationsPage);
                 atf.ImportAnnotationsArea += new ImportAnnotationsImageHandler(AnnoTools_ImportAnnotationsArea);
                 atf.MainForm = this;
-                atf.Alone = alone;
+                atf.FromCmdLine = fromCmdLine;
                 atf.Show();
             }
             atf.Focus();

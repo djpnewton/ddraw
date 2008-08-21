@@ -20,11 +20,27 @@ namespace Workbook
         Form prevOwner;
         public Form MainForm;
 
-        public bool Alone;
-
         AnnotationForm annotationForm = null;
 
-        bool haveImportedAnnotations = false;
+        public bool FromCmdLine = false;
+
+        bool _haveImportedAnnotations = false;
+        bool _haveEverImportedAnnotations = false;
+        bool HaveImportedAnnotations
+        {
+            get { return _haveImportedAnnotations; }
+            set
+            {
+                _haveImportedAnnotations = value;
+                if (value)
+                    _haveEverImportedAnnotations = true;
+            }
+        }
+        bool HaveEverImportedAnnotations
+        {
+            get { return _haveEverImportedAnnotations; }
+        }
+
 
         public event ImportAnnotationsPageHandler ImportAnnotationsPage;
         public event ImportAnnotationsImageHandler ImportAnnotationsArea;
@@ -74,13 +90,13 @@ namespace Workbook
             if (annotationForm != null)
             {
                 // ask if user wants to cancel
-                if (!haveImportedAnnotations && annotationForm.De.UndoRedo.CanUndo)
+                if (!HaveImportedAnnotations && annotationForm.De.UndoRedo.CanUndo)
                 {
                     if (MessageBox.Show(WbLocale.NoAnnotationsImportedMsg, WbLocale.NoAnnotationsImported, 
                         MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.No)
                         return false;
                 }
-                haveImportedAnnotations = false;
+                HaveImportedAnnotations = false;
                 // set ownwer back to the mainform
                 Owner = prevOwner;
                 // close the annotation form
@@ -157,10 +173,10 @@ namespace Workbook
             // if the main form is not visible then close it or show it
             if (MainForm != null && !MainForm.Visible)
             {
-                if (Alone)
-                    MainForm.Close();
-                else
+                if (!FromCmdLine || HaveEverImportedAnnotations)
                     MainForm.Show();
+                else
+                    MainForm.Close();
             }
         }
 
@@ -193,7 +209,7 @@ namespace Workbook
             if (ImportAnnotationsArea != null && rect.Width > 0 && rect.Height > 0)
             {
                 // set haveImportedAnnotations
-                haveImportedAnnotations = true;
+                HaveImportedAnnotations = true;
                 // call the ImportAnnotationsArea event passing it the cropped bitmap
                 ImportAnnotationsArea(annotationForm.CaptureImage(rect));
             }
@@ -205,7 +221,7 @@ namespace Workbook
         {
             if (ImportAnnotationsPage != null)
             {
-                haveImportedAnnotations = true;
+                HaveImportedAnnotations = true;
                 ImportAnnotationsPage(annotationForm.De);
             }
         }
