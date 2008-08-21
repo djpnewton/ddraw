@@ -2231,8 +2231,8 @@ namespace DDraw
             {
                 #warning _wrappedText is not changed when Text is changed by undo/redo action
                 if (WrapText)
-                    return _wrappedText;
-                    //return TextHelper.MakeWrappedText(Text, this);
+                    //return _wrappedText;
+                    return TextHelper.MakeWrappedText(Text, this);
                 else
                     return Text;
             }

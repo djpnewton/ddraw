@@ -1,0 +1,11 @@
+Workbook 1.1
+  new stuff
+  - set properties of child figures within groups
+  - text wrap
+  - added "Export Selection to Image" function
+  - allow more then one instance of workbook to run at one time
+  - added "show" command line option to show another running instance of workbook if there is one
+
+  bug fixes
+  - 
+

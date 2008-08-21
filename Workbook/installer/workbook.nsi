@@ -5,7 +5,7 @@
 ; helper defines
 
 !define PRODUCT_NAME "2Touch Workbook"
-!define PRODUCT_VERSION "1.0"
+!define PRODUCT_VERSION "***1.1 Preview***"
 !define PRODUCT_WEB_SITE "http://www.twotouch.com"
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\Workbook.exe"
 !define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}"
