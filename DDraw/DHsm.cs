@@ -1560,8 +1560,15 @@ namespace DDraw
                 if (textEditChangeTextWrap)
                 {
                     dv.Update(GetBoundingBox(tef));
+                    if (!tef.WrapText)
+                    {
+                        tef.WrapFontSize = tef.FontSize;
+                        tef.WrapThreshold = tef.Width - tef.BorderWidth * 2;
+                        tef.WrapText = true;
+                        textEditDragWrapOffset = tef.X + tef.BorderWidth + tef.WrapLength - pt.X;
+                    }
                     const int threshBase = 200;
-                    tef.WrapThreshold = threshBase * ((pt.X - (tef.X + tef.BorderWidth) + textEditDragWrapOffset) / 
+                    tef.WrapThreshold = threshBase * ((pt.X - (tef.X + tef.BorderWidth) + textEditDragWrapOffset) /
                         (threshBase * tef.FontSize / tef.WrapFontSize));
                     dv.Update(GetBoundingBox(tef));
                 }

@@ -1026,6 +1026,11 @@ namespace Workbook
         {
             get { return GetString("ExportSelectionToImage"); }
         }
+
+        public static string RemoveTextWrap
+        {
+            get { return GetString("RemoveTextWrap"); }
+        }
         #endregion
 
         #region DEngine strings

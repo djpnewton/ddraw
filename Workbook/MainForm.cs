@@ -290,6 +290,7 @@ namespace Workbook
             actSendBackward.Text = WbLocale.SendBackward;
             actSendToBack.Text = WbLocale.SendToBack;
             actUndo.Text = WbLocale.Undo;
+            actUnwrapText.Text = WbLocale.RemoveTextWrap;
         }
 
         private void MainForm_Load(object sender, EventArgs e)
@@ -673,6 +674,9 @@ namespace Workbook
             actProperties.Enabled = figs.Count > 0;
             // update export selection action
             actExportSelectionToImage.Enabled = figs.Count > 0;
+            // update unwrap text action
+            actUnwrapText.Enabled = figs.Count == 1 && figs[0] is ITextable && ((ITextable)figs[0]).WrapText;
+            removeTextWrapToolStripMenuItem.Visible = actUnwrapText.Enabled;
         }
 
         void AddDefaultProperties(Figure fig)
@@ -1771,6 +1775,17 @@ namespace Workbook
                 CheckState();
                 DBitmap bmp = FigureSerialize.FormatToBmp(de.SelectedFigures, dvEditor.AntiAlias, DColor.Empty);
                 bmp.Save(sfd.FileName);
+            }
+        }
+
+        private void actUnwrapText_Execute(object sender, EventArgs e)
+        {
+            if (de.SelectedFigures.Count == 1 && de.SelectedFigures[0] is ITextable)
+            {
+                undoRedoArea.Start(WbLocale.RemoveTextWrap);
+                ((ITextable)de.SelectedFigures[0]).WrapText = false;
+                undoRedoArea.Commit();
+                dvEditor.Update();
             }
         }
 

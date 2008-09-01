@@ -48,6 +48,7 @@ namespace Workbook
             this.bringForwardToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator10 = new System.Windows.Forms.ToolStripSeparator();
             this.linkToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.removeTextWrapToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.lockToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.dimensionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.propertiesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -183,6 +184,7 @@ namespace Workbook
             this.actCopy = new Burkovsky.Controls.Action();
             this.actPaste = new Burkovsky.Controls.Action();
             this.actDelete = new Burkovsky.Controls.Action();
+            this.actExportSelectionToImage = new Burkovsky.Controls.Action();
             this.actGroupFigures = new Burkovsky.Controls.Action();
             this.actSendToBack = new Burkovsky.Controls.Action();
             this.actBringToFront = new Burkovsky.Controls.Action();
@@ -209,7 +211,7 @@ namespace Workbook
             this.actRedo = new Burkovsky.Controls.Action();
             this.actAnnoTools = new Burkovsky.Controls.Action();
             this.actScreenCapture = new Burkovsky.Controls.Action();
-            this.actExportSelectionToImage = new Burkovsky.Controls.Action();
+            this.actUnwrapText = new Burkovsky.Controls.Action();
             this.cmsFigure.SuspendLayout();
             this.cmsCanvas.SuspendLayout();
             this.cmsPreview.SuspendLayout();
@@ -245,12 +247,13 @@ namespace Workbook
             this.toolStripSeparator2,
             this.orderStripMenuItem,
             this.toolStripSeparator10,
+            this.removeTextWrapToolStripMenuItem,
             this.linkToolStripMenuItem,
             this.lockToolStripMenuItem,
             this.dimensionsToolStripMenuItem,
             this.propertiesToolStripMenuItem});
             this.cmsFigure.Name = "cmsFigure";
-            this.cmsFigure.Size = new System.Drawing.Size(210, 330);
+            this.cmsFigure.Size = new System.Drawing.Size(210, 352);
             // 
             // cutToolStripMenuItem1
             // 
@@ -386,6 +389,13 @@ namespace Workbook
             this.linkToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.L)));
             this.linkToolStripMenuItem.Size = new System.Drawing.Size(209, 22);
             this.linkToolStripMenuItem.Text = "Link";
+            // 
+            // removeTextWrapToolStripMenuItem
+            // 
+            this.actionListProvider1.SetAction(this.removeTextWrapToolStripMenuItem, this.actUnwrapText);
+            this.removeTextWrapToolStripMenuItem.Name = "removeTextWrapToolStripMenuItem";
+            this.removeTextWrapToolStripMenuItem.Size = new System.Drawing.Size(209, 22);
+            this.removeTextWrapToolStripMenuItem.Text = "Remove Text Wrap";
             // 
             // lockToolStripMenuItem
             // 
@@ -1651,6 +1661,7 @@ namespace Workbook
             this.actionListProvider1.Actions.Add(this.actLockFigure);
             this.actionListProvider1.Actions.Add(this.actDimensions);
             this.actionListProvider1.Actions.Add(this.actExportSelectionToImage);
+            this.actionListProvider1.Actions.Add(this.actUnwrapText);
             // 
             // actCut
             // 
@@ -1675,6 +1686,12 @@ namespace Workbook
             this.actDelete.ShortcutKeys = System.Windows.Forms.Keys.Delete;
             this.actDelete.Text = "Delete";
             this.actDelete.Execute += new System.EventHandler(this.actDelete_Execute);
+            // 
+            // actExportSelectionToImage
+            // 
+            this.actExportSelectionToImage.ShortcutKeys = System.Windows.Forms.Keys.None;
+            this.actExportSelectionToImage.Text = "Export Selection to Image";
+            this.actExportSelectionToImage.Execute += new System.EventHandler(this.actExportSelectionToImage_Execute);
             // 
             // actGroupFigures
             // 
@@ -1834,11 +1851,11 @@ namespace Workbook
             this.actScreenCapture.Text = "Screen Capture";
             this.actScreenCapture.Execute += new System.EventHandler(this.actScreenCapture_Execute);
             // 
-            // actExportSelectionToImage
+            // actUnwrapText
             // 
-            this.actExportSelectionToImage.ShortcutKeys = System.Windows.Forms.Keys.None;
-            this.actExportSelectionToImage.Text = "Export Selection to Image";
-            this.actExportSelectionToImage.Execute += new System.EventHandler(this.actExportSelectionToImage_Execute);
+            this.actUnwrapText.ShortcutKeys = System.Windows.Forms.Keys.None;
+            this.actUnwrapText.Text = "Remove Text Wrap";
+            this.actUnwrapText.Execute += new System.EventHandler(this.actUnwrapText_Execute);
             // 
             // MainForm
             // 
@@ -2068,6 +2085,8 @@ namespace Workbook
         private System.Windows.Forms.ToolStripMenuItem exportSelectionToImageToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem exportSelectionToImage2ToolStripMenuItem;
         private Burkovsky.Controls.Action actExportSelectionToImage;
+        private Burkovsky.Controls.Action actUnwrapText;
+        private System.Windows.Forms.ToolStripMenuItem removeTextWrapToolStripMenuItem;
     }
 }
 

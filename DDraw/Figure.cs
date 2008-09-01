@@ -2172,7 +2172,7 @@ namespace DDraw
             get { return new DPoint(0, 0); }
         }
 
-        UndoRedo<bool> _wrapText = new UndoRedo<bool>(true);
+        UndoRedo<bool> _wrapText = new UndoRedo<bool>(false);
         public bool WrapText
         {
             get { return _wrapText.Value; }
@@ -2494,7 +2494,10 @@ namespace DDraw
             f.Rotation = rot;
             // paint text wrap handle
             r = TextWrapHandleRect;
-            dg.FillEllipse(r, DColor.White);
+            if (WrapText)
+                dg.FillEllipse(r, DColor.White);
+            else
+                dg.FillEllipse(r, DColor.LightGray);
             dg.DrawEllipse(r, DColor.Black);
             // paint selection & cursor
             string[] lines = Lines;

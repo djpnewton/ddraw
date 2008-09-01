@@ -576,6 +576,9 @@
   <data name="RemoveLink" xml:space="preserve">
     <value>Remove Link</value>
   </data>
+  <data name="RemoveTextWrap" xml:space="preserve">
+    <value>Remove Text Wrap</value>
+  </data>
   <data name="RenamePage" xml:space="preserve">
     <value>Rename Page</value>
   </data>

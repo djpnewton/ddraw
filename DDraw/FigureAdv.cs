@@ -273,6 +273,7 @@ namespace DDraw
         {
             tf = new TextFigure();
             tf.Text = "hello";
+            WrapText = true;
             tf.Fill = DColor.Black;
         }
 
