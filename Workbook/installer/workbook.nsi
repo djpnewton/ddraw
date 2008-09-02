@@ -1,8 +1,12 @@
+!include "DotNET.nsh"
+!include "LogicLib.nsh"
 !include "registerExtension.nsh"
 
 ;--------------------------------
 
 ; helper defines
+
+!define DOTNET_VERSION "2" ; version of dot net to require
 
 !define PRODUCT_NAME "2Touch Workbook"
 !define PRODUCT_VERSION "***1.1 Preview***"
@@ -67,6 +71,7 @@ SetCompressor lzma
 
 Section "Install Program" SecMain
   SectionIn RO
+  !insertmacro CheckDotNET ${DOTNET_VERSION}
   SetOutPath "$INSTDIR"
   SetOverwrite ifnewer
   File "..\bin\Release\Workbook.exe"
