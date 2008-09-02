@@ -2224,15 +2224,19 @@ namespace DDraw
             get { return FontSize / WrapFontSize * WrapThreshold; }
         }
 
-        string _wrappedText = null;
+        UndoRedo<string> __wrappedText = new UndoRedo<string>(null);
+        string _wrappedText
+        {
+            get { return __wrappedText.Value; }
+            set { __wrappedText.Value = value; }
+        }
+
         public string WrappedText
         {
             get
             {
-                #warning _wrappedText is not changed when Text is changed by undo/redo action
                 if (WrapText)
-                    //return _wrappedText;
-                    return TextHelper.MakeWrappedText(Text, this);
+                    return _wrappedText;
                 else
                     return Text;
             }
