@@ -79,6 +79,8 @@ Section "Install Program" SecMain
   CreateShortCut "$SMPROGRAMS\2Touch Workbook\2Touch Workbook.lnk" "$INSTDIR\Workbook.exe"
   CreateShortCut "$DESKTOP\2Touch Workbook.lnk" "$INSTDIR\Workbook.exe"
   File "..\bin\Release\*.dll"
+  ; ini settings
+  WriteIniStr "$INSTDIR\Workbook.ini" Main Zoom FitToWidth
 SectionEnd
 
 Section -AdditionalIcons
