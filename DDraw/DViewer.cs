@@ -100,16 +100,17 @@ namespace DDraw
                         if (PageSize.X / Width > PageSize.Y / Height)
                             goto case Zoom.FitToWidth;
                         else
-                            Scale = (Height - MARGIN * 2) / PageSize.Y;
+                            scale = (Height - MARGIN * 2) / PageSize.Y;
                         break;
                     case Zoom.FitToWidth:
-                        Scale = (Width - MARGIN * 2) / PageSize.X;
+                        scale = (Width - MARGIN * 2) / PageSize.X;
                         break;
                     case Zoom.Custom:
-                        System.Diagnostics.Debug.Assert(false, "ERROR: to use a custom zoom use the ZoomPercent property");
+                        System.Diagnostics.Debug.Assert(false, "ERROR: to use a custom zoom use the Scale property");
                         break;
                 }
                 zoom = value;
+                UpdateAutoScroll();
             }
         }
 
@@ -126,11 +127,11 @@ namespace DDraw
 
         protected int PgSzX
         {
-            get { return (int)Math.Round(PageSize.X * scale); }
+            get { return (int)Math.Ceiling(PageSize.X * scale); }
         }
         protected int PgSzY
         {
-            get { return (int)Math.Round(PageSize.Y * scale); }
+            get { return (int)Math.Ceiling(PageSize.Y * scale); }
         }
 
         abstract protected int HortScroll { get; }

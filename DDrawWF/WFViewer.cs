@@ -19,10 +19,15 @@ namespace DDraw.WinForms
 
         protected override void UpdateAutoScroll()
         {
-            if (Preview)
+            if (Preview || Zoom == Zoom.FitToPage)
                 control.AutoScrollMinSize = new Size(0, 0);
             else
-                control.AutoScrollMinSize = new Size(PgSzX + MARGIN * 2, PgSzY + MARGIN * 2);
+            {
+                if (Zoom == Zoom.FitToWidth)
+                    control.AutoScrollMinSize = new Size(0, PgSzY + MARGIN * 2);
+                else
+                    control.AutoScrollMinSize = new Size(PgSzX + MARGIN * 2, PgSzY + MARGIN * 2);
+            }
             Update();
         }
         
@@ -69,7 +74,7 @@ namespace DDraw.WinForms
             {
                 if (preview)
                     return 0;
-                if (control.Width > PgSzX + MARGIN * 2) return (control.Width - PgSzX) / 2;
+                if (Width > PgSzX + MARGIN * 2) return (Width - PgSzX) / 2;
                 else return MARGIN;
             }
         }
@@ -79,14 +84,19 @@ namespace DDraw.WinForms
             {
                 if (preview)
                     return 0;
-                if (control.Height > PgSzY + MARGIN * 2) return (control.Height - PgSzY) / 2;
+                if (Height > PgSzY + MARGIN * 2) return (Height - PgSzY) / 2;
                 else return MARGIN;
             }
         }
 
         protected override int Width
         {
-            get { return control.Width; }
+            get 
+            {
+                if (Zoom == Zoom.FitToWidth && control.VerticalScroll.Visible)
+                    return control.Width - SystemInformation.VerticalScrollBarWidth;
+                return control.Width; 
+            }
         }
         protected override int Height
         {
@@ -108,7 +118,7 @@ namespace DDraw.WinForms
             control.KeyDown += new KeyEventHandler(control_KeyDown);
             control.KeyPress += new KeyPressEventHandler(control_KeyPress);
             control.KeyUp += new KeyEventHandler(control_KeyUp);
-            control.SizeChanged += new EventHandler(control_SizeChanged);
+            control.Resize += new EventHandler(control_Resize);
             control.Scroll += new ScrollEventHandler(control_Scroll);
 
             RotateCursor = new Cursor(Resource1.RotateIcon.GetHicon());
@@ -240,10 +250,18 @@ namespace DDraw.WinForms
             }
         }
 
-        void control_SizeChanged(object sender, EventArgs e)
+        void control_Resize(object sender, EventArgs e)
         {
             if (Zoom != Zoom.Custom)
+            {
                 Zoom = Zoom;
+                if (Zoom == Zoom.FitToWidth)
+                {
+                    // we need to do this because we cant get an event *before* the control changes size
+                    control.AutoScroll = false;
+                    control.AutoScroll = true;
+                }
+            }
             Update();
         }
         
