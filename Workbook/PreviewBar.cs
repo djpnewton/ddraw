@@ -13,7 +13,7 @@ namespace Workbook
 {
     public delegate void PreviewSelectedHandler(Preview p);
 
-    public partial class PreviewBar : UserControl
+    public class PreviewBar : UserControl
     {
         public event PreviewSelectedHandler PreviewSelected;
         public event PreviewContextHandler PreviewContext;
@@ -21,14 +21,21 @@ namespace Workbook
         public event PreviewFigureDropHandler PreviewFigureDrop;
         public event PreviewNameChangedHandler PreviewNameChanged;
 
+        const int PreviewHeight = 75;
+        const int MaxPreviewWidth = 120;
         int IdealPreviewWidth
         {
-            get { return Width - SystemInformation.VerticalScrollBarWidth; }
+            get 
+            {
+                if (Width >= MaxPreviewWidth * 2)
+                    return MaxPreviewWidth;
+                return Width - SystemInformation.VerticalScrollBarWidth; }
         }
 
         public PreviewBar()
         {
-            InitializeComponent();
+            AutoScroll = true;
+            SetAutoScrollMargin(0, 0);
         }
 
         int GetPreviewIndex(DEngine de)
@@ -52,6 +59,8 @@ namespace Workbook
 
         public Preview AddPreview(DEngine de, DViewer dv, DEngine sibling)
         {
+            // suspend layout
+            SuspendLayout();
             // index of new preview
             int idx;
             if (sibling != null)
@@ -63,10 +72,8 @@ namespace Workbook
             p.Parent = this;
             Controls.SetChildIndex(p, idx);
             // set preview properties
-            p.Width = IdealPreviewWidth;
-            p.Height = 75;
-            p.Left = 0;
-            SetPreviewTops(idx); 
+            p.Height = PreviewHeight;
+            SetPreviewPositions(); 
             p.Click += new EventHandler(p_Click);
             p.PreviewContext += new PreviewContextHandler(p_PreviewContext);
             p.PreviewMove += new PreviewMoveHandler(p_PreviewMove);
@@ -75,6 +82,8 @@ namespace Workbook
             // select it
             p.Selected = true;
             DoPreviewSelected(p);
+            // resume layout
+            ResumeLayout();
             // return p
             return p;
         }
@@ -88,7 +97,7 @@ namespace Workbook
                 // remove from pnlPreview.Controls
                 Controls.Remove(p);
                 // set the preview positions
-                SetPreviewTops(idx);
+                SetPreviewPositions();
                 // select a new preview
                 if (p.Selected)
                 {
@@ -105,17 +114,44 @@ namespace Workbook
                 }
             }
         }
-        
-        void SetPreviewTops(int idx)
+
+        void SetPreviewPositions()
         {
-            while (idx < Controls.Count)
+            if (IdealPreviewWidth == MaxPreviewWidth)
             {
-                if (idx == 0)
-                    Controls[idx].Top = 0 - VerticalScroll.Value;
-                else
-                    Controls[idx].Top = Controls[idx - 1].Bottom;
-                idx++;
+                int numInColumn = (Height - SystemInformation.HorizontalScrollBarHeight) / PreviewHeight;
+                foreach (Control c in Controls)
+                {
+                    int idx = Controls.IndexOf(c);
+                    if (idx == 0)
+                    {
+                        c.Left = -HorizontalScroll.Value;
+                        c.Top = -VerticalScroll.Value;
+                    }
+                    else if (idx % numInColumn == 0)
+                    {
+                        c.Left = Controls[idx - 1].Right;
+                        c.Top = -VerticalScroll.Value;
+                    }
+                    else
+                    {
+                        c.Left = Controls[idx - 1].Left;
+                        c.Top = Controls[idx - 1].Bottom;
+                    }
+                    c.Width = MaxPreviewWidth;
+                }
             }
+            else
+                foreach (Control c in Controls)
+                {
+                    c.Left = -HorizontalScroll.Value;
+                    int idx = Controls.IndexOf(c);
+                    if (idx == 0)
+                        c.Top = -VerticalScroll.Value;
+                    else
+                        c.Top = Controls[idx - 1].Bottom;
+                    c.Width = IdealPreviewWidth;
+                }
         }
 
         /// <summary>
@@ -125,7 +161,7 @@ namespace Workbook
         /// </summary>
         public void ResetPreviewPositions()
         {
-            SetPreviewTops(0);
+            SetPreviewPositions();
             foreach (Preview p in Controls)
                 if (p.Selected)
                 {
@@ -158,7 +194,7 @@ namespace Workbook
         void p_PreviewMove(Preview p, Preview to)
         {
             Controls.SetChildIndex(p, Controls.IndexOf(to));
-            SetPreviewTops(0);
+            SetPreviewPositions();
             if (PreviewMove != null)
                 PreviewMove(p, to);
         }
@@ -248,17 +284,17 @@ namespace Workbook
                 }
             }
             if (reorder)
-                SetPreviewTops(0);
+                SetPreviewPositions();
         }
 
-        private void PreviewBar_SizeChanged(object sender, EventArgs e)
+        protected override void OnResize(EventArgs e)
         {
-            if (Controls.Count > 0)
-            {
-                if (Controls[0].Width != IdealPreviewWidth)
-                    foreach (Preview p in Controls)
-                        p.Width = IdealPreviewWidth;
-            }
+            base.OnResize(e);
+            SuspendLayout();
+            SetPreviewPositions();
+            AutoScroll = false; // we need to do this because we cant get an event before the control changes size
+            AutoScroll = true;
+            ResumeLayout();
         }
 
         public void RenameCurrentPreview()

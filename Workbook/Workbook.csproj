@@ -179,9 +179,6 @@
     <Compile Include="PreviewBar.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="PreviewBar.Designer.cs">
-      <DependentUpon>PreviewBar.cs</DependentUpon>
-    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="AboutBox.resx">
@@ -229,10 +226,6 @@
     <EmbeddedResource Include="PersonalToolbar\PtForm.resx">
       <SubType>Designer</SubType>
       <DependentUpon>PtForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="PreviewBar.resx">
-      <SubType>Designer</SubType>
-      <DependentUpon>PreviewBar.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ProgressForm.resx">
       <SubType>Designer</SubType>

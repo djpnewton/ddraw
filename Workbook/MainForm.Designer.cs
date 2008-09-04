@@ -625,7 +625,6 @@ namespace Workbook
             // 
             // previewBar1
             // 
-            this.previewBar1.AutoScroll = true;
             this.previewBar1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.previewBar1.Location = new System.Drawing.Point(0, 50);
             this.previewBar1.Name = "previewBar1";

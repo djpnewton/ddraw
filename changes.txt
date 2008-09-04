@@ -8,6 +8,7 @@ Workbook 1.1
   - added check for DotNet framework version 2 in installer (and prompt to download if not present)
   - installer sets Inifile->Zoom option to "FitToWidth"
   - improved WFViewer scrollbars (including reduced flickering and not showing when they should not)
+  - previews tile horizontally when the previewbar is twice the width (or more) of MaxPreviewWidth
 
   bug fixes
   - stop application closing aberrantly when screen annotation form is closed
