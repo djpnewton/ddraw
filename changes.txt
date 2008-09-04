@@ -14,4 +14,5 @@ Workbook 1.1
 
   bug fixes
   - stop application closing aberrantly when screen annotation form is closed
+  - pages not using global background when document loaded
 

@@ -122,6 +122,20 @@ namespace DDraw
             byte[] data = Read(zf, PAGES_INI);
             if (data != null)
             {
+                // read general background figure
+                byte[]genBkgndFigureData = Read(zf, GENBKGNDFIGURE);
+                if (genBkgndFigureData != null)
+                {
+                    List<Figure> figs = FigureSerialize.FromXml(encoding.GetString(genBkgndFigureData));
+                    if (figs.Count == 1 && figs[0] is BackgroundFigure)
+                    {
+                        LoadImage(zf, figs[0]);
+                        bf = (BackgroundFigure)figs[0];
+                        // read page size from background figure
+                        if (bf.Width > 0 && bf.Height > 0)
+                            pageSize = new DPoint(bf.Width, bf.Height);
+                    }
+                }
                 // create Nini config source from pages ini entry stream
                 IniConfigSource source = new IniConfigSource(new MemoryStream(data));
                 // load each page info mentioned in ini entry
@@ -164,22 +178,10 @@ namespace DDraw
                             }
                         }
                     }
+                    else if (bf != null)
+                        de.SetBackgroundFigure(bf, false);
                     // add to list of DEngines
                     res.Add(de);
-                }
-                // read general background figure
-                data = Read(zf, GENBKGNDFIGURE);
-                if (data != null)
-                {
-                    List<Figure> figs = FigureSerialize.FromXml(encoding.GetString(data));
-                    if (figs.Count == 1 && figs[0] is BackgroundFigure)
-                    {
-                        LoadImage(zf, figs[0]);
-                        bf = (BackgroundFigure)figs[0];
-                        // read page size from background figure
-                        if (bf.Width > 0 && bf.Height > 0)
-                            pageSize = new DPoint(bf.Width, bf.Height);
-                    }
                 }
                 // read extra entries
                 if (extraEntryDirs != null)
