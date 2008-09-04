@@ -2943,6 +2943,31 @@ namespace DDraw
                 SetCursorPos(cursorPosition - start + end, true);
             }
         }
+
+        public string Cut()
+        {
+            string text = Copy();
+            if (selectionLength != 0)
+                DeleteAtCursor();
+            return text;
+        }
+
+        public string Copy()
+        {
+            if (selectionLength > 0)
+                return Text.Substring(cursorPosition, selectionLength);
+            else if (selectionLength < 0)
+                return Text.Substring(cursorPosition + selectionLength, -selectionLength);
+            return null;
+        }
+
+        public void Paste(string text)
+        {
+            if (selectionLength > 0)
+                DeleteAtCursor();
+            foreach (char c in text)
+                InsertAtCursor(c);
+        }
     }
 
     public class GroupFigure : RectbaseFigure, IChildFigureable

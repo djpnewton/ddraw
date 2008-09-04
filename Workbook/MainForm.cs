@@ -116,6 +116,7 @@ namespace Workbook
 #if DEBUG
             de.DebugMessage += new DebugMessageHandler(DebugMessage);
 #endif
+            de.HsmStateChanged += new HsmStateChangedHandler(de_HsmStateChanged);
             de.SelectedFiguresChanged += new SelectedFiguresHandler(de_SelectedFiguresChanged);
             de.FigureClick += new ClickHandler(de_FigureClick);
             de.FigureContextClick += new ClickHandler(de_ContextClick);
@@ -126,6 +127,8 @@ namespace Workbook
             de.DragFigureEnd += new DragFigureHandler(de_DragFigureEnd);
             de.MouseDown += new DMouseButtonEventHandler(de_MouseDown);
             de.AddedFigure += new AddedFigureHandler(de_AddedFigure);
+            de.TextCopy += new HsmTextHandler(de_TextCopy);
+            de.TextCut += new HsmTextHandler(de_TextCut);
             // add default properties to figures
             foreach (Figure f in de.Figures)
                 AddDefaultProperties(f);
@@ -474,6 +477,15 @@ namespace Workbook
             de.CheckState();
         }
 
+        void de_HsmStateChanged(DEngine de, DHsmState state)
+        {
+            if (state == DHsmState.TextEdit)
+            {
+                actCut.Enabled = true;
+                actCopy.Enabled = true;
+            }
+        }
+
         void de_SelectedFiguresChanged()
         {
             InitActions();
@@ -743,6 +755,18 @@ namespace Workbook
             AddDefaultProperties(fig);
         }
 
+        void de_TextCut(DEngine de, string text)
+        {
+            if (text != null)
+                Clipboard.SetText(text);
+        }
+
+        void de_TextCopy(DEngine de, string text)
+        {
+            if (text != null)
+                Clipboard.SetText(text);
+        }
+
         private void previewBar1_Enter(object sender, EventArgs e)
         {
             // previewBar1.Focused does not seem to be working :(
@@ -848,12 +872,6 @@ namespace Workbook
         {
             AboutBox f = new AboutBox();
             f.ShowDialog();
-        }
-
-        private void editToolStripMenuItem_DropDownOpened(object sender, EventArgs e)
-        {
-            if (de.HsmState != DHsmState.Select)
-                de.HsmState = DHsmState.Select;
         }
 
         private void viewToolStripMenuItem_DropDownOpening(object sender, EventArgs e)
@@ -1058,12 +1076,18 @@ namespace Workbook
 
         private void actCut_Execute(object sender, EventArgs e)
         {
-            List<Figure> figs = de.SelectedFigures;
-            DBitmap bmp;
-            de.UndoRedo.Start(WbLocale.Cut);
-            string data = de.Cut(figs, out bmp, dvEditor.AntiAlias);
-            de.UndoRedo.Commit();
-            CopyToClipboard(data, WFHelper.FromImageData(WFHelper.ToImageData(bmp)), figs);
+            if (de.HsmState == DHsmState.TextEdit)
+                de.CutText();
+            else
+            {
+                CheckState();
+                List<Figure> figs = de.SelectedFigures;
+                DBitmap bmp;
+                de.UndoRedo.Start(WbLocale.Cut);
+                string data = de.Cut(figs, out bmp, dvEditor.AntiAlias);
+                de.UndoRedo.Commit();
+                CopyToClipboard(data, WFHelper.FromImageData(WFHelper.ToImageData(bmp)), figs);
+            }
         }
 
         void CopyToClipboard(string data, Bitmap bmp, List<Figure> figs)
@@ -1078,10 +1102,16 @@ namespace Workbook
 
         private void actCopy_Execute(object sender, EventArgs e)
         {
-            List<Figure> figs = de.SelectedFigures;
-            DBitmap bmp;
-            string data = de.Copy(figs, out bmp, dvEditor.AntiAlias, DColor.White);
-            CopyToClipboard(data, WFHelper.FromImageData(WFHelper.ToImageData(bmp)), figs);
+            if (de.HsmState == DHsmState.TextEdit)
+                de.CopyText();
+            else
+            {
+                CheckState();
+                List<Figure> figs = de.SelectedFigures;
+                DBitmap bmp;
+                string data = de.Copy(figs, out bmp, dvEditor.AntiAlias, DColor.White);
+                CopyToClipboard(data, WFHelper.FromImageData(WFHelper.ToImageData(bmp)), figs);
+            }
         }
 
         void PasteDataObject(IDataObject iData, string opPrefix, double objX, double objY)
@@ -1163,8 +1193,16 @@ namespace Workbook
 
         private void actPaste_Execute(object sender, EventArgs e)
         {
-            CheckState();
-            PasteDataObject(Clipboard.GetDataObject(), WbLocale.Paste, 10, 10);
+            if (de.HsmState == DHsmState.TextEdit)
+            {
+                if (Clipboard.GetText() != null)
+                    de.PasteText(Clipboard.GetText());
+            }
+            else
+            {
+                CheckState();
+                PasteDataObject(Clipboard.GetDataObject(), WbLocale.Paste, 10, 10);
+            }
         }
 
         bool AttachmentLinked(string name)
@@ -1185,6 +1223,7 @@ namespace Workbook
         {
             if (wfvcEditor.Focused)
             {
+                CheckState();
                 de.UndoRedo.Start(WbLocale.DeleteFigures);
                 de.Delete(de.SelectedFigures);
                 de.UndoRedo.Commit();

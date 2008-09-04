@@ -440,6 +440,9 @@ namespace DDraw
         public event AddedFigureHandler AddedFigure;
         public event SelectMeasureHandler MeasureRect;
 
+        public event HsmTextHandler TextCut;
+        public event HsmTextHandler TextCopy;
+
         public DEngine(UndoRedoArea area)
         {
             // setup undo/redo manager
@@ -475,6 +478,8 @@ namespace DDraw
             hsm.DragFigureEnd += new DragFigureHandler(hsm_DragFigureEnd);
             hsm.MeasureRect += new SelectMeasureHandler(hsm_MeasureRect);
             hsm.StateChanged += new HsmStateChangedHandler(hsm_StateChanged);
+            hsm.TextCut += new HsmTextHandler(hsm_TextCut);
+            hsm.TextCopy += new HsmTextHandler(hsm_TextCopy);
         }
 
         void viewerHandler_MouseMove(DTkViewer dv, DPoint pt)
@@ -569,6 +574,18 @@ namespace DDraw
                 DebugMessage(msg);
         }
 #endif
+
+        void hsm_TextCut(DEngine de, string text)
+        {
+            if (TextCut != null)
+                TextCut(this, text);
+        }
+
+        void hsm_TextCopy(DEngine de, string text)
+        {
+            if (TextCopy != null)
+                TextCopy(this, text);
+        }
 
         // Public Functions //
 
@@ -796,6 +813,23 @@ namespace DDraw
         public void CheckState()
         {
             hsm.CheckState();
+        }
+
+        public void CutText()
+        {
+            hsm.CutText();
+            UpdateViewers();
+        }
+
+        public void CopyText()
+        {
+            hsm.CopyText();
+        }
+
+        public void PasteText(string text)
+        {
+            hsm.PasteText(text);
+            UpdateViewers();
         }
 
         // Other //

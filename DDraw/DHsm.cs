@@ -11,7 +11,8 @@ namespace DDraw
     public enum DHsmSignals : int
     {
         //enum values must start at UserSig value or greater
-        GSelect = QSignals.UserSig, GSelectMeasure, GDrawLine, GDrawText, GDrawRect, GEraser, GCancelFigureDrag, GTextEdit, GCheckState,
+        GSelect = QSignals.UserSig, GSelectMeasure, GDrawLine, GDrawText, GDrawRect, GEraser, 
+        GCancelFigureDrag, GTextEdit, GCheckState, GCutText, GCopyText, GPasteText,
         TextEdit, FigureEdit,
         MouseDown, MouseMove, MouseUp, DoubleClick,
         KeyDown, KeyPress, KeyUp
@@ -107,9 +108,24 @@ namespace DDraw
         }
     }
 
+    public class QGPasteTextEvent : QEvent
+    {
+        string text;
+        public string Text
+        {
+            get { return text; }
+        }
+        public QGPasteTextEvent(int qSignal, string text)
+            : base(qSignal)
+        {
+            this.text = text;
+        }
+    }
+
     public enum DHsmState { Select, SelectMeasure, DrawLine, DrawText, TextEdit, DrawRect, FigureEdit, Eraser };
 
     public delegate void HsmStateChangedHandler(DEngine de, DHsmState state);
+    public delegate void HsmTextHandler(DEngine de, string text);
     public class DHsm : QHsm
     {
         // private variables
@@ -349,6 +365,9 @@ namespace DDraw
         public event DragFigureHandler DragFigureEnd;
         public event SelectMeasureHandler MeasureRect;
 
+        public event HsmTextHandler TextCut;
+        public event HsmTextHandler TextCopy;
+
         // state variables (showing state hierachy here)
         QState Main;
             QState Select;
@@ -497,6 +516,21 @@ namespace DDraw
         public void CheckState()
         {
             Dispatch(new QEvent((int)DHsmSignals.GCheckState));
+        }
+
+        public void CutText()
+        {
+            Dispatch(new QEvent((int)DHsmSignals.GCutText));
+        }
+
+        public void CopyText()
+        {
+            Dispatch(new QEvent((int)DHsmSignals.GCopyText));
+        }
+
+        public void PasteText(string text)
+        {
+            Dispatch(new QGPasteTextEvent((int)DHsmSignals.GPasteText, text));
         }
 
         // private methods
@@ -1725,6 +1759,19 @@ namespace DDraw
                     return null;
                 case (int)DHsmSignals.KeyUp:
                     DoTextEditKeyUp(((QKeyEvent)qevent).Dv, ((QKeyEvent)qevent).Key);
+                    return null;
+                case (int)DHsmSignals.GCutText:
+                    string text = ((TextEditFigure)currentFigure).Cut();
+                    if (TextCut != null)
+                        TextCut(null, text);
+                    return null;
+                case (int)DHsmSignals.GCopyText:
+                    string text2 = ((TextEditFigure)currentFigure).Copy();
+                    if (TextCopy != null)
+                        TextCopy(null, text2);
+                    return null;
+                case (int)DHsmSignals.GPasteText:
+                    ((TextEditFigure)currentFigure).Paste(((QGPasteTextEvent)qevent).Text);
                     return null;
                 case (int)DHsmSignals.GCheckState:
                     TransitionTo(Select);
