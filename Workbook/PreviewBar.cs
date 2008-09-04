@@ -36,6 +36,7 @@ namespace Workbook
         {
             AutoScroll = true;
             SetAutoScrollMargin(0, 0);
+            AllowDrop = true;
         }
 
         int GetPreviewIndex(DEngine de)
@@ -79,6 +80,7 @@ namespace Workbook
             p.PreviewMove += new PreviewMoveHandler(p_PreviewMove);
             p.PreviewFigureDrop += new PreviewFigureDropHandler(p_PreviewFigureDrop);
             p.PreviewNameChanged += new PreviewNameChangedHandler(p_PreviewNameChanged);
+            p.DragOver += new DragEventHandler(p_DragOver);
             // select it
             p.Selected = true;
             DoPreviewSelected(p);
@@ -209,6 +211,39 @@ namespace Workbook
         {
             if (PreviewNameChanged != null)
                 PreviewNameChanged(p, name);
+        }
+
+        const int DRAGSCROLL_THRESH = 25;
+        const int DRAGSCROLL_RATE = 5;
+
+        private void DragScroll(DragEventArgs e)
+        {
+            Point pt = PointToClient(new Point(e.X, e.Y));
+            if (HorizontalScroll.Visible)
+            {
+                if (HorizontalScroll.Value < HorizontalScroll.Maximum && pt.X >= Width - DRAGSCROLL_THRESH)
+                    HorizontalScroll.Value += DRAGSCROLL_RATE;
+                else if (HorizontalScroll.Value > HorizontalScroll.Minimum && pt.X <= DRAGSCROLL_THRESH)
+                    HorizontalScroll.Value -= DRAGSCROLL_RATE;
+            }
+            if (VerticalScroll.Visible)
+            {
+                if (VerticalScroll.Value < VerticalScroll.Maximum && pt.Y >= Height - DRAGSCROLL_THRESH)
+                    VerticalScroll.Value += DRAGSCROLL_RATE;
+                else if (VerticalScroll.Value > VerticalScroll.Minimum && pt.Y <= DRAGSCROLL_THRESH)
+                    VerticalScroll.Value -= DRAGSCROLL_RATE;
+            }
+        }
+
+        void p_DragOver(object sender, DragEventArgs e)
+        {
+            DragScroll(e);
+        }
+
+        protected override void OnDragOver(DragEventArgs drgevent)
+        {
+            base.OnDragOver(drgevent);
+            DragScroll(drgevent);
         }
 
         public void Previous()

@@ -9,6 +9,7 @@ Workbook 1.1
   - installer sets Inifile->Zoom option to "FitToWidth"
   - improved WFViewer scrollbars (including reduced flickering and not showing when they should not)
   - previews tile horizontally when the previewbar is twice the width (or more) of MaxPreviewWidth
+  - autoscroll the previewbar when a drag and drop operation nears the edges
 
   bug fixes
   - stop application closing aberrantly when screen annotation form is closed
