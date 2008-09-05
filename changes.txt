@@ -12,6 +12,7 @@ Workbook 1.1
   - previews tile horizontally when the previewbar is twice the width (or more) of MaxPreviewWidth
   - autoscroll the previewbar when a drag and drop operation nears the edges
   - cut/copy/paste functions within TextEditFigure
+  - apply text wrap to smart notepad imports
 
   bug fixes
   - stop application closing aberrantly when screen annotation form is closed

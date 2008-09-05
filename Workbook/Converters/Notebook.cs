@@ -330,7 +330,19 @@ namespace Workbook.Converters
                     ((TextFigure)f).Bold = bold;
                     ((TextFigure)f).Italics = italic;
                     ((TextFigure)f).Underline = underline;
-
+                    // set wrap threshold
+                    const double editWidthMod = 1.435;
+                    if (((SvgTextElement)e).Attributes.ContainsKey(NBTextEditWidth))
+                    {
+                        string editwidth = (string)((SvgTextElement)e).Attributes[NBTextEditWidth];
+                        if (editwidth != null && editwidth.Length != 0)
+                        {
+                            ((TextFigure)f).WrapThreshold = double.Parse(editwidth) * editWidthMod;
+                            ((TextFigure)f).WrapFontSize = ((TextFigure)f).FontSize;
+                            ((TextFigure)f).WrapText = true;
+                        }
+                    }
+                    // scale
                     DPoint scale = GetSvgElementScale((SvgTextElement)e);
                     const double scaleMod = 0.694;
                     f.Width *= scale.X * scaleMod;
@@ -376,6 +388,7 @@ namespace Workbook.Converters
         const string NBFontWeightAttr = "font-weight";
         const string NBFontStyleAttr = "font-style";
         const string NBTextDecorationAttr = "text-decoration";
+        const string NBTextEditWidth = "editwidth";
 
         string ExtractText(SvgElement e, int level, out double fontSize, out string fontFamily, out DColor fill, out bool bold, out bool italic, out bool underline)
         {
