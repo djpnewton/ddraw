@@ -80,7 +80,8 @@ Section "Install Program" SecMain
   CreateShortCut "$DESKTOP\2Touch Workbook.lnk" "$INSTDIR\Workbook.exe"
   File "..\bin\Release\*.dll"
   ; ini settings
-  WriteIniStr "$INSTDIR\Workbook.ini" Main Zoom FitToWidth
+  WriteIniStr "$INSTDIR\Workbook.ini" Main Zoom FitToWidth   ; default to Zoom->FitToWidth
+  WriteIniStr "$INSTDIR\FigureTools.ini" Text Fill 0,0,0,255 ; default to black text
 SectionEnd
 
 Section -AdditionalIcons

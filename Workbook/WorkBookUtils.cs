@@ -250,16 +250,19 @@ namespace Workbook
         {
             dap.Fill = DColor.FromString(config.Get(FILL_OPT));
             dap.Stroke = DColor.FromString(config.Get(STROKE_OPT));
-            dap.StrokeWidth = config.GetInt(STROKEWIDTH_OPT);
-            dap.StrokeStyle = (DStrokeStyle)Enum.Parse(typeof(DStrokeStyle), config.Get(STROKESTYLE_OPT), true);
-            dap.Alpha = config.GetDouble(ALPHA_OPT);
-            dap.StartMarker = (DMarker)Enum.Parse(typeof(DMarker), config.Get(STARTMARKER_OPT), true);
-            dap.EndMarker = (DMarker)Enum.Parse(typeof(DMarker), config.Get(ENDMARKER_OPT), true);
-            dap.FontName = config.Get(FONTNAME_OPT);
-            dap.Bold = config.GetBoolean(BOLD_OPT);
-            dap.Italics = config.GetBoolean(ITALICS_OPT);
-            dap.Underline = config.GetBoolean(UNDERLINE_OPT);
-            dap.Strikethrough = config.GetBoolean(STRIKETHROUGH_OPT);
+            dap.StrokeWidth = config.GetInt(STROKEWIDTH_OPT, 1);
+            dap.StrokeStyle = (DStrokeStyle)Enum.Parse(typeof(DStrokeStyle), 
+                config.Get(STROKESTYLE_OPT, DStrokeStyle.Solid.ToString()), true);
+            dap.Alpha = config.GetDouble(ALPHA_OPT, 1);
+            dap.StartMarker = (DMarker)Enum.Parse(typeof(DMarker), 
+                config.Get(STARTMARKER_OPT, DMarker.None.ToString()), true);
+            dap.EndMarker = (DMarker)Enum.Parse(typeof(DMarker),
+                config.Get(ENDMARKER_OPT, DMarker.None.ToString()), true);
+            dap.FontName = config.Get(FONTNAME_OPT, "Arial");
+            dap.Bold = config.GetBoolean(BOLD_OPT, false);
+            dap.Italics = config.GetBoolean(ITALICS_OPT, false);
+            dap.Underline = config.GetBoolean(UNDERLINE_OPT, false);
+            dap.Strikethrough = config.GetBoolean(STRIKETHROUGH_OPT, false);
         }
         #endregion
 
