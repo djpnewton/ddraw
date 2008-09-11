@@ -150,11 +150,13 @@ namespace DDraw
             {
                 wr.WriteStartElement(BITMAP_ELE);
                 wr.WriteAttributeString(BITMAPPOSITION_ATTR, ((IBitmap)f).BitmapPosition.ToString());
+                wr.WriteEndElement();
             }
             if (f is IMetafile)
             {
                 wr.WriteStartElement(METAFILE_ELE);
                 wr.WriteAttributeString(METAFILETYPE_ATTR, ((IMetafile)f).MetafileType.ToString());
+                wr.WriteEndElement();
             }
             if (f is ITextable)
             {
