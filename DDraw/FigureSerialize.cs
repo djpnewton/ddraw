@@ -41,9 +41,12 @@ namespace DDraw
         const string ALPHA_ELE = "Alpha";
         const string VALUE_ATTR = "Value";
         const string IMAGE_ELE = "Image";
-        const string POSITION_ATTR = "Position";
         const string FILENAME_ATTR = "FileName";
         const string BASE64_VAL = "base64";
+        const string BITMAP_ELE = "Bitmap";
+        const string BITMAPPOSITION_ATTR = "BitmapPosition";
+        const string METAFILE_ELE = "Metafile";
+        const string METAFILETYPE_ATTR = "MetafileType";
         const string TEXT_ELE = "Text";
         const string FONTNAME_ATTR = "FontName";
         const string FONTSIZE_ATTR = "FontSize";
@@ -125,7 +128,6 @@ namespace DDraw
             {
                 wr.WriteStartElement(IMAGE_ELE);
                 IImage img = (IImage)f;
-                wr.WriteAttributeString(POSITION_ATTR, img.Position.ToString());
                 if (img.ImageData != null)
                 {
                     if (images != null && img.FileName != null)
@@ -143,6 +145,16 @@ namespace DDraw
                     }
                 }
                 wr.WriteEndElement();
+            }
+            if (f is IBitmap)
+            {
+                wr.WriteStartElement(BITMAP_ELE);
+                wr.WriteAttributeString(BITMAPPOSITION_ATTR, ((IBitmap)f).BitmapPosition.ToString());
+            }
+            if (f is IMetafile)
+            {
+                wr.WriteStartElement(METAFILE_ELE);
+                wr.WriteAttributeString(METAFILETYPE_ATTR, ((IMetafile)f).MetafileType.ToString());
             }
             if (f is ITextable)
             {
@@ -423,8 +435,6 @@ namespace DDraw
                 re.MoveToAttribute(i);
                 if (re.LocalName == TYPE_ATTR && re.Value == BASE64_VAL)
                     base64Data = true;
-                else if (re.LocalName == POSITION_ATTR)
-                    b.Position = (DImagePosition)Enum.Parse(typeof(DImagePosition), re.Value, true);
                 else if (re.LocalName == FILENAME_ATTR)
                     b.FileName = re.Value;
             }
@@ -433,6 +443,28 @@ namespace DDraw
                 string data = re.ReadString();
                 if (data.Length > 0)
                     b.ImageData = Convert.FromBase64String(data);
+            }
+        }
+
+        static void ApplyBitmap(XmlReader re, IBitmap b)
+        {
+            re.MoveToContent();
+            for (int i = 0; i < re.AttributeCount; i++)
+            {
+                re.MoveToAttribute(i);
+                if (re.LocalName == BITMAPPOSITION_ATTR)
+                    b.BitmapPosition = (DBitmapPosition)Enum.Parse(typeof(DBitmapPosition), re.Value, true);
+            }
+        }
+
+        static void ApplyMetafile(XmlReader re, IMetafile b)
+        {
+            re.MoveToContent();
+            for (int i = 0; i < re.AttributeCount; i++)
+            {
+                re.MoveToAttribute(i);
+                if (re.LocalName == METAFILETYPE_ATTR)
+                    b.MetafileType = (DMetafileType)Enum.Parse(typeof(DMetafileType), re.Value, true);
             }
         }
 
@@ -592,6 +624,10 @@ namespace DDraw
                             ApplyAlpha(re.ReadSubtree(), (IAlphaBlendable)result);
                         else if (re.LocalName == IMAGE_ELE && result is IImage)
                             ApplyImage(re.ReadSubtree(), (IImage)result);
+                        else if (re.LocalName == BITMAP_ELE && result is IBitmap)
+                            ApplyBitmap(re.ReadSubtree(), (IBitmap)result);
+                        else if (re.LocalName == METAFILE_ELE && result is IMetafile)
+                            ApplyMetafile(re.ReadSubtree(), (IMetafile)result);
                         else if (re.LocalName == TEXT_ELE && result is ITextable)
                             ApplyText(re.ReadSubtree(), (ITextable)result);
                         else if (re.LocalName == CHILDFIGURES_ELE && result is IChildFigureable)
@@ -612,8 +648,54 @@ namespace DDraw
             return result;
         }
 
+        /// <summary>
+        /// Update any old versions of xml that may have been released
+        /// </summary>
+        /// <param name="xml">The xml string to be parsed</param>
+        /// <returns>An updated xml string</returns>
+        static string FormatOld(string xml)
+        {            
+            XmlDocument xmldoc = new XmlDocument();
+            xmldoc.LoadXml(xml);
+            // update old BackgroundFigure type
+            XmlNodeList nodes = xmldoc.SelectNodes("/Figure[@Type='DDraw.BackgroundFigure']");
+            foreach (XmlNode node in nodes)
+                UpdateOldIImage(xmldoc, node, null);
+            // update old ImageFigure type to BitmapFigure
+            nodes = xmldoc.SelectNodes("/FigureList/Figure[@Type='DDraw.ImageFigure']");
+            foreach (XmlNode node in nodes)
+                UpdateOldIImage(xmldoc, node, typeof(BitmapFigure).ToString());
+            return xmldoc.OuterXml;
+        }
+
+        private static void UpdateOldIImage(XmlDocument xmldoc, XmlNode node, string newType)
+        {
+            if (newType != null)
+                node.Attributes["Type"].Value = newType;
+            XmlNode bitmapNode = node.SelectSingleNode(BITMAP_ELE);
+            if (bitmapNode == null) // no need if bitmapNode already exists
+            {
+                XmlNode imgNode = node.SelectSingleNode(IMAGE_ELE);
+                if (imgNode != null)
+                {
+                    bitmapNode = xmldoc.CreateElement(BITMAP_ELE);
+                    XmlAttribute positionAttr = imgNode.Attributes["Position"];
+                    if (positionAttr != null)
+                    {
+                        XmlAttribute bitmapPositonAttr = xmldoc.CreateAttribute(BITMAPPOSITION_ATTR);
+                        bitmapPositonAttr.Value = positionAttr.Value;
+                        bitmapNode.Attributes.Append(bitmapPositonAttr);
+                    }
+                    node.AppendChild(bitmapNode);
+                }
+            }
+        }
+
         public static List<Figure> FromXml(string xml)
         {
+            // make sure xml string is updated
+            xml = FormatOld(xml);
+
             MemoryStream ms = new MemoryStream();
             StreamWriter sw = new StreamWriter(ms);
             sw.Write(xml);

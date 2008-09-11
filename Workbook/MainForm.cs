@@ -830,15 +830,21 @@ namespace Workbook
         private void imageToolStripMenuItem_Click(object sender, EventArgs e)
         {
             OpenFileDialog ofd = new OpenFileDialog();
-            ofd.Filter = "Image Files|*.BMP;*.JPG;*.GIF;*.PNG";
+            ofd.Filter = "Image Files|*.BMP;*.JPG;*.GIF;*.PNG;*.WMF";
             if (ofd.ShowDialog() == DialogResult.OK)
             {
                 CheckState();
                 de.ClearSelected();
-                DBitmap bmp =  WFHelper.MakeBitmap(ofd.FileName);
-                byte[] imageData = WorkBookUtils.GetBytesFromFile(ofd.FileName);
                 undoRedoArea.Start(WbLocale.AddImage);
-                de.AddFigure(new ImageFigure(new DRect(10, 10, bmp.Width, bmp.Height), 0, imageData, ofd.FileName));
+                const int left = 10, top = 10;
+                byte[] imageData = WorkBookUtils.GetBytesFromFile(ofd.FileName);
+                if (IsWmfFilePath(ofd.FileName))
+                    de.AddFigure(new MetafileFigure(new DPoint(left, top), 0, DDraw.DMetafileType.Wmf, imageData, ofd.FileName));
+                else
+                {
+                    DBitmap bmp = WFHelper.MakeBitmap(ofd.FileName);
+                    de.AddFigure(new BitmapFigure(new DRect(left, top, bmp.Width, bmp.Height), 0, imageData, ofd.FileName));
+                }
                 undoRedoArea.Commit();
                 de.UpdateViewers();
             }
@@ -1138,7 +1144,7 @@ namespace Workbook
                 undoRedoArea.Start(string.Format("{0} {1}", opPrefix, WbLocale.Bitmap));
                 Bitmap bmp = (Bitmap)iData.GetData(DataFormats.Bitmap, true);
                 byte[] imageData = WFHelper.ToImageData(bmp);
-                ImageFigure f = new ImageFigure(new DRect(objX, objY, bmp.Width, bmp.Height), 0, imageData, "Clipboard.bmp");
+                BitmapFigure f = new BitmapFigure(new DRect(objX, objY, bmp.Width, bmp.Height), 0, imageData, "Clipboard.bmp");
                 de.PasteAsSelectedFigures(new List<Figure>(new Figure[] { f }));
                 undoRedoArea.Commit();
             }
@@ -1148,9 +1154,16 @@ namespace Workbook
                 string path = ((string[])iData.GetData(DataFormats.FileDrop))[0];
                 if (IsImageFilePath(path))
                 {
-                    Bitmap bmp = (Bitmap)Bitmap.FromFile(path);
-                    ImageFigure f = new ImageFigure(new DRect(objX, objY, bmp.Width, bmp.Height), 0,
-                        WFHelper.ToImageData(bmp), path);
+                    Figure f;
+                    if (IsWmfFilePath(path))
+                        f = new MetafileFigure(new DPoint(objX, objY), 0,
+                            DDraw.DMetafileType.Wmf, WorkBookUtils.GetBytesFromFile(path), path);
+                    else
+                    {
+                        Bitmap bmp = (Bitmap)Bitmap.FromFile(path);
+                        f = new BitmapFigure(new DRect(objX, objY, bmp.Width, bmp.Height), 0,
+                            WFHelper.ToImageData(bmp), path);
+                    }
                     de.PasteAsSelectedFigures(new List<Figure>(new Figure[] { f }));
                 }
                 else if (attachmentView1.CheckAttachmentExists(path))
@@ -1172,9 +1185,16 @@ namespace Workbook
                     {
                         using (MemoryStream ms = new MemoryStream(attachmentView1.GetAttachment(item.Text)))
                         {
+                            Figure f ;
+                            if (IsWmfFilePath(item.Text))
+                                f = new MetafileFigure(new DPoint(objX, objY), 0, 
+                                    DDraw.DMetafileType.Wmf, ms.ToArray(), item.Text);
+                            else
+                            {
                             Bitmap bmp = (Bitmap)Bitmap.FromStream(ms);
-                            ImageFigure f = new ImageFigure(new DRect(objX, objY, bmp.Width, bmp.Height), 0,
+                            f = new BitmapFigure(new DRect(objX, objY, bmp.Width, bmp.Height), 0,
                                 WFHelper.ToImageData(bmp), item.Text);
+                            }
                             de.PasteAsSelectedFigures(new List<Figure>(new Figure[] { f }));
                         }
                     }
@@ -1606,7 +1626,7 @@ namespace Workbook
                 Application.DoEvents();
                 // import annotations
                 undoRedoArea.Start(WbLocale.ImportScreenCapture);
-                ImageFigure f = new ImageFigure(new DRect(10, 10, bmp.Width, bmp.Height), 0, WFHelper.ToImageData(bmp), "screencap.png");
+                BitmapFigure f = new BitmapFigure(new DRect(10, 10, bmp.Width, bmp.Height), 0, WFHelper.ToImageData(bmp), "screencap.png");
                 de.AddFigure(f);
                 dvEditor.Update();
                 undoRedoArea.Commit();
@@ -1877,7 +1897,7 @@ namespace Workbook
                 Application.DoEvents();
                 // import annotations
                 undoRedoArea.Start(WbLocale.ImportAnnotations);
-                ImageFigure f = new ImageFigure(new DRect(10, 10, bmp.Width, bmp.Height), 0, WFHelper.ToImageData(bmp), "annotations.png");
+                BitmapFigure f = new BitmapFigure(new DRect(10, 10, bmp.Width, bmp.Height), 0, WFHelper.ToImageData(bmp), "annotations.png");
                 de.AddFigure(f);
                 dvEditor.Update();
                 undoRedoArea.Commit();
@@ -1906,9 +1926,15 @@ namespace Workbook
                 string.Compare(ext, ".gif", true) == 0 ||
                 string.Compare(ext, ".jpg", true) == 0 ||
                 string.Compare(ext, ".jpeg", true) == 0 ||
-                string.Compare(ext, ".bmp", true) == 0)
+                string.Compare(ext, ".bmp", true) == 0 ||
+                string.Compare(ext, ".wmf", true) == 0)
                 return true;
             return false;
+        }
+
+        bool IsWmfFilePath(string path)
+        {
+            return string.Compare(Path.GetExtension(path), ".wmf", true) == 0;
         }
 
         private void wfvcEditor_DragDrop(object sender, DragEventArgs e)

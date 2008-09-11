@@ -28,10 +28,10 @@ namespace Workbook
                 else if (rbImage.Checked)
                 {
                     byte[] imgData = WFHelper.ToImageData((Bitmap)pictureBox1.Image);
-                    if (bg.Bitmap == null || bg.ImageData != imgData || bg.Position != ImagePosition)
+                    if (bg.Bitmap == null || bg.ImageData != imgData || bg.BitmapPosition != BitmapPosition)
                     {
                         bg.ImageData = imgData;
-                        bg.Position = ImagePosition;
+                        bg.BitmapPosition = BitmapPosition;
                         bg.FileName = imageFileName;
                     }
                 }
@@ -49,16 +49,16 @@ namespace Workbook
                 {
                     rbImage.Checked = true;
                     pictureBox1.Image = WFHelper.FromImageData(value.ImageData);
-                    ImagePosition = value.Position;
+                    BitmapPosition = value.BitmapPosition;
                     imageFileName = value.FileName;
                 }
                 UpdateControls();
             }
         }
 
-        DImagePosition ImagePosition
+        DBitmapPosition BitmapPosition
         {
-            get { return (DImagePosition)cbImagePos.SelectedIndex; }
+            get { return (DBitmapPosition)cbImagePos.SelectedIndex; }
             set { cbImagePos.SelectedIndex = (int)value; }
         }
 
@@ -71,7 +71,7 @@ namespace Workbook
         {
             InitializeComponent();
             LocalizeUI();
-            ImagePosition = DImagePosition.Stretch;
+            BitmapPosition = DBitmapPosition.Stretch;
         }
 
         private void LocalizeUI()

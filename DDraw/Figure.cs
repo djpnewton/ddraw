@@ -127,28 +127,31 @@ namespace DDraw
         }
     }
 
-    public enum DImagePosition { Stretch, Normal, Center, Tile, StretchWithAspectRatio }
-
     public interface IImage
     {
-        DBitmap Bitmap
-        {
-            get;
-        }
-
         byte[] ImageData
         {
             get;
             set;
         }
 
-        DImagePosition Position
+        string FileName
         {
             get;
             set;
         }
+    }
 
-        string FileName
+    public enum DBitmapPosition { Stretch, Normal, Center, Tile, StretchWithAspectRatio }
+
+    public interface IBitmap
+    {
+        DBitmap Bitmap
+        {
+            get;
+        }
+
+        DBitmapPosition BitmapPosition
         {
             get;
             set;
@@ -1951,14 +1954,8 @@ namespace DDraw
         }
     }
 
-    public class ImageFigure : RectbaseFigure, IImage
+    public abstract class ImagebaseFigure : RectbaseFigure, IImage
     {
-        UndoRedo<DBitmap> _bitmap = new UndoRedo<DBitmap>(null);
-        public DBitmap Bitmap
-        {
-            get { return _bitmap.Value; }
-        }
-
         UndoRedo<byte[]> _imageData = new UndoRedo<byte[]>(null);
         public Byte[] ImageData
         {
@@ -1968,22 +1965,8 @@ namespace DDraw
                 if (value != _imageData.Value)
                 {
                     _imageData.Value = value;
-                    if (value != null)
-                        _bitmap.Value = GraphicsHelper.MakeBitmap(new MemoryStream(value));
-                    else
-                        _bitmap.Value = null;
+                    ImageDataChanged();
                 }
-            }
-        }
-
-        UndoRedo<DImagePosition> _pos = new UndoRedo<DImagePosition>(DImagePosition.Stretch);
-        public DImagePosition Position
-        {
-            get { return _pos.Value; }
-            set
-            {
-                if (value != _pos.Value)
-                    _pos.Value = value;
             }
         }
 
@@ -1994,13 +1977,53 @@ namespace DDraw
             set { filename = value; }
         }
 
-        public ImageFigure()
+        public ImagebaseFigure()
+        {
+        }
+
+        public ImagebaseFigure(DRect rect, double rotation) : base(rect, rotation)
+        {
+        }
+
+        protected abstract void ImageDataChanged();
+    }
+
+    public class BitmapFigure : ImagebaseFigure, IBitmap
+    {
+        #region IBitmap members
+        UndoRedo<DBitmapPosition> _pos = new UndoRedo<DBitmapPosition>(DBitmapPosition.Stretch);
+        public DBitmapPosition BitmapPosition
+        {
+            get { return _pos.Value; }
+            set
+            {
+                if (value != _pos.Value)
+                    _pos.Value = value;
+            }
+        }
+
+        UndoRedo<DBitmap> _bitmap = new UndoRedo<DBitmap>(null);
+        public DBitmap Bitmap
+        {
+            get { return _bitmap.Value; }
+        }
+        #endregion
+
+        protected override void ImageDataChanged()
+        {
+            if (ImageData != null)
+                _bitmap.Value = GraphicsHelper.MakeBitmap(new MemoryStream(ImageData));
+            else
+                _bitmap.Value = null;
+        }
+
+        public BitmapFigure()
         { }
 
-        public ImageFigure(DRect rect, double rotation, byte[] imageData, string FileName) : base(rect, rotation)
+        public BitmapFigure(DRect rect, double rotation, byte[] imageData, string fileName) : base(rect, rotation)
         {
             ImageData = imageData;
-            filename = FileName;
+            FileName = fileName;
         }
 
         protected override void PaintBody(DGraphics dg)
@@ -2009,26 +2032,26 @@ namespace DDraw
             {
                 dg.Save();
                 dg.Clip(Rect);
-                switch (Position)
+                switch (BitmapPosition)
                 {
-                    case DImagePosition.Stretch:
+                    case DBitmapPosition.Stretch:
                         dg.DrawBitmap(Bitmap, Rect, Alpha);
                         break;
-                    case DImagePosition.Normal:
+                    case DBitmapPosition.Normal:
                         dg.DrawBitmap(Bitmap, TopLeft, Alpha);
                         break;
-                    case DImagePosition.Center:
+                    case DBitmapPosition.Center:
                         dg.DrawBitmap(Bitmap, new DPoint(X + Width / 2 - Bitmap.Width / 2,
                                                          Y + Height / 2 - Bitmap.Height / 2), Alpha);
                         break;
-                    case DImagePosition.Tile:
+                    case DBitmapPosition.Tile:
                         int xTimes = (int)Math.Ceiling(Width / Bitmap.Width);
                         int YTimes = (int)Math.Ceiling(Height / Bitmap.Height);
                         for (int i = 0; i < xTimes; i++)
                             for (int j = 0; j < YTimes; j++)
                                 dg.DrawBitmap(Bitmap, new DPoint(X + i * Bitmap.Width, Y + j * Bitmap.Height), Alpha);
                         break;
-                    case DImagePosition.StretchWithAspectRatio:
+                    case DBitmapPosition.StretchWithAspectRatio:
                         double sx = Width / Bitmap.Width;
                         double sy = Height / Bitmap.Height;
                         DRect bmpRect;
@@ -3327,7 +3350,7 @@ namespace DDraw
         }
     }
 
-    public class BackgroundFigure : ImageFigure, IFillable
+    public class BackgroundFigure : BitmapFigure, IFillable
     {
         // reimplement x,y,width & height to escape the UndoRedo properties
         double x;

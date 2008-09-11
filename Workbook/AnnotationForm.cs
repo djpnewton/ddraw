@@ -56,7 +56,7 @@ namespace Workbook
             BackgroundFigure bf = new BackgroundFigure(); // background figure
             bf.ImageData = WFHelper.ToImageData(bmp);
             bf.FileName = "screen_capture.png";
-            bf.Position = DImagePosition.Normal;
+            bf.BitmapPosition = DBitmapPosition.Normal;
             de.SetBackgroundFigure(bf, true);
             de.UndoRedo.Commit();
             de.UndoRedo.ClearHistory();

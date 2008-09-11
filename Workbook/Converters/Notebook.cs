@@ -228,7 +228,7 @@ namespace Workbook.Converters
                         SvgImageElement e2 = (SvgImageElement)e;
                         byte[] imgData = Read(e2.Href);
                         if (imgData != null)
-                            f = new ImageFigure(r, 0, imgData, Path.GetFileName(e2.Href));
+                            f = new BitmapFigure(r, 0, imgData, Path.GetFileName(e2.Href));
                     }
                 }
             }
