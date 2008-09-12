@@ -291,10 +291,20 @@ namespace DDraw
             */
         }
 
+        // wmf vars
         WmfPlaceable placeable;
         WmfHeader header;
         int winX, winY, winWidth, winHeight;
         int viewX, viewY, viewWidth, viewHeight;
+
+        // drawing primatives
+        DColor fill = DColor.Empty;
+        DColor stroke = DColor.Empty;
+        double strokeWidth = 1;
+        DStrokeStyle strokeStyle = DStrokeStyle.Solid;
+        DStrokeCap strokeCap = DStrokeCap.Butt;
+        DStrokeJoin strokeJoin = DStrokeJoin.Bevel;
+        DPoint curPoint = new DPoint(0, 0);
 
         bool IsPlaceable
         {
@@ -323,14 +333,6 @@ namespace DDraw
                 WmfUpdateMaxtrix(dg, m);
                 // read header
                 header = GetWmfHeader();
-                // drawing primatives
-                DColor fill = DColor.Empty;
-                DColor stroke = DColor.Empty;
-                double strokeWidth = 1;
-                DStrokeStyle strokeStyle = DStrokeStyle.Solid;
-                DStrokeCap strokeCap = DStrokeCap.Butt;
-                DStrokeJoin strokeJoin = DStrokeJoin.Bevel;
-                DPoint curPoint = new DPoint(0, 0);
                 // iterate draw commands
                 bool records = true;
                 while (records)
@@ -396,7 +398,8 @@ namespace DDraw
                             break;
                         case WmfLineTo:
                             DPoint pt = GetPoint();
-                            dg.DrawLine(curPoint, pt, stroke, 1, strokeStyle, strokeWidth, strokeCap);
+                            if (StrokeValid)
+                                dg.DrawLine(curPoint, pt, stroke, 1, strokeStyle, strokeWidth, strokeCap);
                             curPoint = pt;
                             break;
                         case WmfMoveTo:
@@ -454,17 +457,21 @@ namespace DDraw
                             break;
                         case WmfPolygon:
                             DPoints polygonPts = GetPolyPoints(GetInt16(), true);
-                            dg.FillPolygon(polygonPts, fill, 1);
-                            dg.DrawPolyline(polygonPts, stroke, 1, strokeWidth, strokeStyle, strokeJoin, strokeCap);
+                            if (FillValid)
+                                dg.FillPolygon(polygonPts, fill, 1);
+                            if (StrokeValid)
+                                dg.DrawPolyline(polygonPts, stroke, 1, strokeWidth, strokeStyle, strokeJoin, strokeCap);
                             break;
                         case WmfPolyline:
                             DPoints polylinePts = GetPolyPoints(GetInt16(), false);
-                            dg.DrawPolyline(polylinePts, stroke, 1, strokeWidth, strokeStyle, strokeJoin, strokeCap);
+                            if (StrokeValid)
+                                dg.DrawPolyline(polylinePts, stroke, 1, strokeWidth, strokeStyle, strokeJoin, strokeCap);
                             break;
                         case WmfRectangle:
                             DPoint br = GetPoint();
                             DPoint tl = GetPoint();
-                            dg.DrawRect(tl.X, tl.Y, br.X - tl.X, br.Y - tl.Y, fill, 1, strokeWidth, strokeStyle, strokeJoin);
+                            if (StrokeValid)
+                                dg.DrawRect(tl.X, tl.Y, br.X - tl.X, br.Y - tl.Y, stroke, 1, strokeWidth, strokeStyle, strokeJoin);
                             break;
                         case WmfPolyPolygon:
                             int numPolygons = GetInt16();
@@ -474,8 +481,10 @@ namespace DDraw
                             for (int i = 0; i < numPolygons; i++)
                             {
                                 DPoints polygonPts2 = GetPolyPoints(numPoints[i], true);
-                                dg.FillPolygon(polygonPts2, fill, 1);
-                                dg.DrawPolyline(polygonPts2, stroke, 1, strokeWidth, strokeStyle, strokeJoin, strokeCap);
+                                if (FillValid)
+                                    dg.FillPolygon(polygonPts2, fill, 1);
+                                if (StrokeValid)
+                                    dg.DrawPolyline(polygonPts2, stroke, 1, strokeWidth, strokeStyle, strokeJoin, strokeCap);
                             }
                             break;
                         case WmfEscape:
@@ -492,6 +501,16 @@ namespace DDraw
                 }
             }
             dg.Restore();
+        }
+
+        bool FillValid
+        {
+            get { return !fill.IsEmpty; }
+        }
+
+        bool StrokeValid
+        {
+            get { return strokeWidth > 0 && !stroke.IsEmpty; }
         }
 
         DPoint GetWmfSize()
