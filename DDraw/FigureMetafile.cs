@@ -520,8 +520,13 @@ namespace DDraw
                         case 0:
                             records = false;
                             // this does not always work too well (there are some wacky values in wmf files)
-                            return new DPoint(Math.Abs(winWidth) - Math.Max(0, winX), 
-                                Math.Abs(winHeight) - Math.Max(0, winY));
+                            double width = Math.Abs(winWidth);
+                            if (winWidth != Math.Round((placeable.Right - placeable.Left) * ((double)PageTools.DpiX / placeable.Inch)))
+                                width *= (double)PageTools.DpiX / placeable.Inch;
+                            double height = Math.Abs(winHeight);
+                            if (winHeight != Math.Round((placeable.Bottom - placeable.Top) * ((double)PageTools.DpiY / placeable.Inch)))
+                                height *= (double)PageTools.DpiY / placeable.Inch;
+                            return new DPoint(width, height);
                     }
                     if (bytesRead != bytesReadPlusFuncHeaderSize)
                         bytesRead = bytesReadPlusFuncHeaderSize;
