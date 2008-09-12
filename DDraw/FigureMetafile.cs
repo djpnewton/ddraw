@@ -164,6 +164,10 @@ namespace DDraw
         const int WmfPolyPolygon = 0x0538;
         const int WmfEscape = 0x0626;
 
+        // PolyFillMode consts
+        const int WmfPfmAlernate = 0x0001;
+        const int WmfPfmWinding = 0x0002;
+
         // Brush Style consts
         const int WMF_BS_SOLID = 0x0000;
         const int WMF_BS_NULL = 0x0001;
@@ -299,6 +303,7 @@ namespace DDraw
 
         // drawing primatives
         DColor fill = DColor.Empty;
+        DFillRule fillRule = DFillRule.EvenOdd;
         DColor stroke = DColor.Empty;
         double strokeWidth = 1;
         DStrokeStyle strokeStyle = DStrokeStyle.Solid;
@@ -359,6 +364,10 @@ namespace DDraw
                             break;
                         case WmfSetPolyFillMode:
                             int polyfillMode = GetInt16();
+                            if (polyfillMode == WmfPfmAlernate)
+                                fillRule = DFillRule.EvenOdd;
+                            else
+                                fillRule = DFillRule.Winding;
                             break;
                         case WmfSetStretchBltMode:
                             break;
@@ -458,7 +467,7 @@ namespace DDraw
                         case WmfPolygon:
                             DPoints polygonPts = GetPolyPoints(GetInt16(), true);
                             if (FillValid)
-                                dg.FillPolygon(polygonPts, fill, 1);
+                                dg.FillPolygon(polygonPts, fill, 1, fillRule);
                             if (StrokeValid)
                                 dg.DrawPolyline(polygonPts, stroke, 1, strokeWidth, strokeStyle, strokeJoin, strokeCap);
                             break;
@@ -474,18 +483,21 @@ namespace DDraw
                                 dg.DrawRect(tl.X, tl.Y, br.X - tl.X, br.Y - tl.Y, stroke, 1, strokeWidth, strokeStyle, strokeJoin);
                             break;
                         case WmfPolyPolygon:
+                            // find out how many points
                             int numPolygons = GetInt16();
                             int[] numPoints = new int[numPolygons];
                             for (int i = 0; i < numPolygons; i++)
                                 numPoints[i] = GetInt16();
+                            // join polygons together
+                            DPoints polyPolyPoints = new DPoints();
                             for (int i = 0; i < numPolygons; i++)
-                            {
-                                DPoints polygonPts2 = GetPolyPoints(numPoints[i], true);
-                                if (FillValid)
-                                    dg.FillPolygon(polygonPts2, fill, 1);
-                                if (StrokeValid)
-                                    dg.DrawPolyline(polygonPts2, stroke, 1, strokeWidth, strokeStyle, strokeJoin, strokeCap);
-                            }
+                                foreach (DPoint polyPolyPt in GetPolyPoints(numPoints[i], true))
+                                    polyPolyPoints.Add(polyPolyPt);
+                            // draw
+                            if (FillValid)
+                                dg.FillPolygon(polyPolyPoints, fill, 1, fillRule);
+                            if (StrokeValid)
+                                dg.DrawPolyline(polyPolyPoints, stroke, 1, strokeWidth, strokeStyle, strokeJoin, strokeCap);
                             break;
                         case WmfEscape:
                             break;

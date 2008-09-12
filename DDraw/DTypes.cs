@@ -12,6 +12,8 @@ namespace DDraw
 
     public enum DFillStyle { Solid, ForwardDiagonalHatch };
 
+    public enum DFillRule { Winding, EvenOdd };
+
     public enum DMarker { None, Arrow, Dot, Square, Diamond };
 
     public enum DCursor { Default, MoveAll, MoveNS, MoveWE, MoveNESW, MoveNWSE, Rotate, Crosshair, IBeam, Hand };

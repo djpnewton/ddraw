@@ -259,6 +259,13 @@ namespace DDrawCairo
             return LineCap.Butt;
         }
 
+        FillRule MakeFillRule(DFillRule fillRule)
+        {
+            if (fillRule == DFillRule.EvenOdd)
+                return FillRule.EvenOdd;
+            return FillRule.Winding;
+        }
+
         void CairoSetPattern(Context cr, DColor color, double alpha, DFillStyle fillStyle)
         {
             switch (fillStyle)
@@ -482,16 +489,22 @@ namespace DDrawCairo
 
         public override void FillPolygon(DPoints pts, DColor color, double alpha)
         {
+            FillPolygon(pts, color, alpha, DFillRule.EvenOdd);
+        }
+
+        public override void FillPolygon(DPoints pts, DColor color, double alpha, DFillRule fillRule)
+        {
             if (pts.Count > 1)
             {
                 cr.SetSource(MakeColor(color, alpha));
+                cr.FillRule = MakeFillRule(fillRule);
                 cr.MoveTo(pts[0].X, pts[0].Y);
                 for (int i = 1; i < pts.Count; i++)
                     cr.LineTo(pts[i].X, pts[i].Y);
                 cr.Fill();
             }
         }
-
+        
         public override void DrawBitmap(DBitmap bitmap, DPoint pt)
         {
             DrawBitmap(bitmap, pt, 1);

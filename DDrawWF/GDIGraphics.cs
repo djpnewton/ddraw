@@ -241,6 +241,13 @@ namespace DDraw.WinForms
             return res;
         }
 
+        FillMode MakeFillMode(DFillRule fillRule)
+        {
+            if (fillRule == DFillRule.EvenOdd)
+                return FillMode.Alternate;
+            return FillMode.Winding;
+        }
+
         // Drawing Functions //
 
         public override void FillRect(double x, double y, double width, double height, DColor color, double alpha)
@@ -375,8 +382,13 @@ namespace DDraw.WinForms
 
         public override void FillPolygon(DPoints pts, DColor color, double alpha)
         {
+            FillPolygon(pts, color, alpha, DFillRule.EvenOdd);
+        }
+
+        public override void FillPolygon(DPoints pts, DColor color, double alpha, DFillRule fillRule)
+        {
             if (pts.Count > 1)
-                g.FillPolygon(MakeBrush(DFillStyle.Solid, color, alpha), MakePoints(pts));
+                g.FillPolygon(MakeBrush(DFillStyle.Solid, color, alpha), MakePoints(pts), MakeFillMode(fillRule));
         }
 
         public override void DrawBitmap(DBitmap bitmap, DPoint pt)
