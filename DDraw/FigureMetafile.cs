@@ -160,6 +160,7 @@ namespace DDraw
         const int WmfCreateBrushIndirect = 0x02FC;
         const int WmfPolygon = 0x0324;
         const int WmfPolyline = 0x0325;
+        const int WmfEllipse = 0x0418;
         const int WmfRectangle = 0x041B;
         const int WmfPolyPolygon = 0x0538;
         const int WmfEscape = 0x0626;
@@ -282,7 +283,7 @@ namespace DDraw
 
         void WmfApplyTransforms(ref double width)
         {
-            if (winWidth != 0)
+            if (winWidth != 0 && width != 0)
                 width *= Width / winWidth;
         }
 
@@ -552,11 +553,18 @@ namespace DDraw
                             if (StrokeValid)
                                 dg.DrawPolyline(polylinePts, stroke, 1, strokeWidth, strokeStyle, strokeJoin, strokeCap);
                             break;
+                        case WmfEllipse:
+                            goto case WmfRectangle;
                         case WmfRectangle:
                             DPoint br = GetPoint();
                             DPoint tl = GetPoint();
                             if (StrokeValid)
-                                dg.DrawRect(tl.X, tl.Y, br.X - tl.X, br.Y - tl.Y, stroke, 1, strokeWidth, strokeStyle, strokeJoin);
+                            {
+                                if (fh.Function == WmfRectangle)
+                                    dg.DrawRect(tl.X, tl.Y, br.X - tl.X, br.Y - tl.Y, stroke, 1, strokeWidth, strokeStyle, strokeJoin);
+                                else if (fh.Function == WmfEllipse)
+                                    dg.DrawEllipse(tl.X, tl.Y, br.X - tl.X, br.Y - tl.Y, stroke, 1, strokeWidth, strokeStyle);
+                            }
                             break;
                         case WmfPolyPolygon:
                             // find out how many points
