@@ -280,6 +280,12 @@ namespace DDraw
             y += Y;
         }
 
+        void WmfApplyTransforms(ref double width)
+        {
+            if (winWidth != 0)
+                width *= Width / winWidth;
+        }
+
         void WmfUpdateMaxtrix(DGraphics dg, DMatrix m)
         {
             // could not get this working... used wmfApplyTransforms to all points instead :(
@@ -486,6 +492,8 @@ namespace DDraw
                             int widthX = GetInt16();
                             int widthY = GetInt16();
                             DColor penColor = GetColor();
+                            double penWidth = widthX;
+                            WmfApplyTransforms(ref penWidth);
                             DStrokeStyle penStyle;
                             DStrokeCap penCap;
                             DStrokeJoin penJoin;
@@ -516,9 +524,9 @@ namespace DDraw
                                 penJoin = DStrokeJoin.Round;
 
                             if ((gdiPenStyle & WMF_PS_NULL) == WMF_PS_NULL)
-                                WmfAddGdiObject(new WmfGdiPen(DColor.Empty, widthX, penStyle, penCap, penJoin));
+                                WmfAddGdiObject(new WmfGdiPen(DColor.Empty, penWidth, penStyle, penCap, penJoin));
                             else
-                                WmfAddGdiObject(new WmfGdiPen(penColor, widthX, penStyle, penCap, penJoin));
+                                WmfAddGdiObject(new WmfGdiPen(penColor, penWidth, penStyle, penCap, penJoin));
                             break;
                         case WmfCreateFontIndirect:
                             WmfAddGdiObject("font");
