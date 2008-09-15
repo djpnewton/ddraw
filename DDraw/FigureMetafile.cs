@@ -311,7 +311,70 @@ namespace DDraw
         DStrokeJoin strokeJoin = DStrokeJoin.Bevel;
         DPoint curPoint = new DPoint(0, 0);
 
-        bool IsPlaceable
+        struct WmfGdiBrush
+        {
+            public DColor Fill;
+            public WmfGdiBrush(DColor fill)
+            {
+                Fill = fill;
+            }
+        }
+        struct WmfGdiPen
+        {
+            public DColor Stroke;
+            public double StrokeWidth;
+            public DStrokeStyle StrokeStyle;
+            public DStrokeCap StrokeCap;
+            public DStrokeJoin StrokeJoin;
+            public WmfGdiPen(DColor stroke, double strokeWidth, DStrokeStyle strokeStyle, DStrokeCap strokeCap, DStrokeJoin strokeJoin)
+            {
+                Stroke = stroke;
+                StrokeWidth = strokeWidth;
+                StrokeStyle = strokeStyle;
+                StrokeCap = strokeCap;
+                StrokeJoin = strokeJoin;
+            }
+        }
+
+        List<object> WmfGdiObjects = new List<object>();
+
+        void WmfAddGdiObject(object o)
+        {
+            int idx = WmfGdiObjects.IndexOf(null);
+            if (idx == -1)
+                WmfGdiObjects.Add(o);
+            else
+                WmfGdiObjects[idx] = o;
+        }
+
+        void WmfSelectGdiObject(int idx)
+        {
+            // this should not be happening but sometimes does?
+            if (idx == WmfGdiObjects.Count)
+                idx--;
+            // select object and apply properties to our graphics primatives
+            object o = WmfGdiObjects[idx];
+            if (o is WmfGdiBrush)
+                fill = ((WmfGdiBrush)o).Fill;
+            else if (o is WmfGdiPen)
+            {
+                stroke = ((WmfGdiPen)o).Stroke;
+                strokeWidth = ((WmfGdiPen)o).StrokeWidth;
+                strokeStyle = ((WmfGdiPen)o).StrokeStyle;
+                strokeCap = ((WmfGdiPen)o).StrokeCap;
+                strokeJoin = ((WmfGdiPen)o).StrokeJoin;
+            }
+        }
+
+        void WmfDeleteGdiObject(int idx)
+        {
+            // this should not be happening but sometimes does?
+            if (idx == WmfGdiObjects.Count)
+                idx--;
+            WmfGdiObjects[idx] = null;
+        }
+
+        bool WmfIsPlaceable
         {
             get { return BitConverter.ToUInt32(ImageData, 0) == WmfPlaceableKey; }
         }
@@ -322,8 +385,10 @@ namespace DDraw
             dg.Clip(Rect);
             // store current matrix
             DMatrix m = dg.SaveTransform();
+            // clear gdi objects
+            WmfGdiObjects.Clear();
             // check for placeable key
-            if (IsPlaceable)
+            if (WmfIsPlaceable)
             {
                 bytesRead = 0;
                 // read placeable header
@@ -372,12 +437,12 @@ namespace DDraw
                         case WmfSetStretchBltMode:
                             break;
                         case WmfDeleteObject:
-                            int index = GetInt16();
+                            WmfDeleteGdiObject(GetInt16());
                             break;
                         case WmfRestoreDC:
                             break;
                         case WmfSelectObject:
-                            int index2 = GetInt16();
+                            WmfSelectGdiObject(GetInt16());
                             break;
                         case WmfSetTextAlign:
                             break;
@@ -417,52 +482,55 @@ namespace DDraw
                         case WmfSelectPalette:
                             break;
                         case WmfCreatePenIndirect:
-                            int penStyle = GetInt16();
+                            int gdiPenStyle = GetInt16();
                             int widthX = GetInt16();
                             int widthY = GetInt16();
                             DColor penColor = GetColor();
+                            DStrokeStyle penStyle;
+                            DStrokeCap penCap;
+                            DStrokeJoin penJoin;
 
-                            if ((penStyle & WMF_PS_SOLID) == WMF_PS_SOLID)
-                                strokeStyle = DStrokeStyle.Solid;
-                            else if ((penStyle & WMF_PS_DASH) == WMF_PS_DASH)
-                                strokeStyle = DStrokeStyle.Dash;
-                            else if ((penStyle & WMF_PS_DOT) == WMF_PS_DOT)
-                                strokeStyle = DStrokeStyle.Dot;
-                            else if ((penStyle & WMF_PS_DASHDOT) == WMF_PS_DASHDOT)
-                                strokeStyle = DStrokeStyle.DashDot;
-                            else if ((penStyle & WMF_PS_DASHDOTDOT) == WMF_PS_DASHDOTDOT)
-                                strokeStyle = DStrokeStyle.DashDotDot;
+                            if ((gdiPenStyle & WMF_PS_SOLID) == WMF_PS_SOLID)
+                                penStyle = DStrokeStyle.Solid;
+                            else if ((gdiPenStyle & WMF_PS_DASH) == WMF_PS_DASH)
+                                penStyle = DStrokeStyle.Dash;
+                            else if ((gdiPenStyle & WMF_PS_DOT) == WMF_PS_DOT)
+                                penStyle = DStrokeStyle.Dot;
+                            else if ((gdiPenStyle & WMF_PS_DASHDOT) == WMF_PS_DASHDOT)
+                                penStyle = DStrokeStyle.DashDot;
+                            else if ((gdiPenStyle & WMF_PS_DASHDOTDOT) == WMF_PS_DASHDOTDOT)
+                                penStyle = DStrokeStyle.DashDotDot;
 
-                            if ((penStyle & WMF_PS_ENDCAP_FLAT) == WMF_PS_ENDCAP_FLAT)
-                                strokeCap = DStrokeCap.Butt;
-                            else if ((penStyle & WMF_PS_ENDCAP_ROUND) == WMF_PS_ENDCAP_ROUND)
-                                strokeCap = DStrokeCap.Round;
-                            else if ((penStyle & WMF_PS_ENDCAP_SQUARE) == WMF_PS_ENDCAP_SQUARE)
-                                strokeCap = DStrokeCap.Square;
+                            if ((gdiPenStyle & WMF_PS_ENDCAP_FLAT) == WMF_PS_ENDCAP_FLAT)
+                                penCap = DStrokeCap.Butt;
+                            else if ((gdiPenStyle & WMF_PS_ENDCAP_ROUND) == WMF_PS_ENDCAP_ROUND)
+                                penCap = DStrokeCap.Round;
+                            else if ((gdiPenStyle & WMF_PS_ENDCAP_SQUARE) == WMF_PS_ENDCAP_SQUARE)
+                                penCap = DStrokeCap.Square;
 
-                            if ((penStyle & WMF_PS_JOIN_BEVEL) == WMF_PS_JOIN_BEVEL)
-                                strokeJoin = DStrokeJoin.Bevel;
-                            else if ((penStyle & WMF_PS_JOIN_MITER) == WMF_PS_JOIN_MITER)
-                                strokeJoin = DStrokeJoin.Mitre;
-                            else if ((penStyle & WMF_PS_JOIN_ROUND) == WMF_PS_JOIN_ROUND)
-                                strokeJoin = DStrokeJoin.Round;
+                            if ((gdiPenStyle & WMF_PS_JOIN_BEVEL) == WMF_PS_JOIN_BEVEL)
+                                penJoin = DStrokeJoin.Bevel;
+                            else if ((gdiPenStyle & WMF_PS_JOIN_MITER) == WMF_PS_JOIN_MITER)
+                                penJoin = DStrokeJoin.Mitre;
+                            else if ((gdiPenStyle & WMF_PS_JOIN_ROUND) == WMF_PS_JOIN_ROUND)
+                                penJoin = DStrokeJoin.Round;
 
-                            if ((penStyle & WMF_PS_NULL) == WMF_PS_NULL)
-                                stroke = DColor.Empty;
+                            if ((gdiPenStyle & WMF_PS_NULL) == WMF_PS_NULL)
+                                WmfAddGdiObject(new WmfGdiPen(DColor.Empty, widthX, penStyle, penCap, penJoin));
                             else
-                                stroke = penColor;
-                            strokeWidth = widthX;
+                                WmfAddGdiObject(new WmfGdiPen(penColor, widthX, penStyle, penCap, penJoin));
                             break;
                         case WmfCreateFontIndirect:
+                            WmfAddGdiObject("font");
                             break;
                         case WmfCreateBrushIndirect:
                             int brushStyle = GetInt16();
                             DColor brushColor = GetColor();
                             int brushHatch = GetInt16();
                             if ((brushStyle & WMF_BS_NULL) == WMF_BS_NULL)
-                                fill = DColor.Empty;
+                                WmfAddGdiObject(new WmfGdiBrush(DColor.Empty));
                             else
-                                fill = brushColor;
+                                WmfAddGdiObject(new WmfGdiBrush(brushColor));
                             break;
                         case WmfPolygon:
                             DPoints polygonPts = GetPolyPoints(GetInt16(), true);
@@ -527,7 +595,7 @@ namespace DDraw
 
         DPoint GetWmfSize()
         {
-            if (IsPlaceable)
+            if (WmfIsPlaceable)
             {
                 bytesRead = 0;
                 placeable = GetWmfPlaceable();
