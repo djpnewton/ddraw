@@ -32,6 +32,7 @@ namespace Workbook
         const string TOOLSTOOLBAR_OPT = "ToolsToolbar";
         const string RECENTDOCS_SECTION = "RecentDocuments";
         const string HIGHLIGHTSELECTION_OPT = "HighLightSelection";
+        const string DEFAULTPAGESIZE_OPT = "DefaultPageSize";
 
         public string IniFile
         {
@@ -56,6 +57,7 @@ namespace Workbook
         public bool PageNavigationToolbar;
         public bool ToolsToolbar;
         public bool HighlightSelection;
+        public DPoint DefaultPageSize;
 
         public ProgramOptions()
         {
@@ -123,6 +125,8 @@ namespace Workbook
             PageNavigationToolbar = config.GetBoolean(PAGENAVIGATIONTOOLBAR_OPT, true);
             ToolsToolbar = config.GetBoolean(TOOLSTOOLBAR_OPT, true);
             HighlightSelection = config.GetBoolean(HIGHLIGHTSELECTION_OPT, false);
+            DefaultPageSize = DPoint.FromString(config.GetString(DEFAULTPAGESIZE_OPT, 
+                DPoint.FormatToString(PageTools.FormatToSizeMM(PageFormat.Default))));
         }
 
         public void WriteIni()
@@ -144,6 +148,7 @@ namespace Workbook
             config.Set(PAGENAVIGATIONTOOLBAR_OPT, PageNavigationToolbar);
             config.Set(TOOLSTOOLBAR_OPT, ToolsToolbar);
             config.Set(HIGHLIGHTSELECTION_OPT, HighlightSelection);
+            config.Set(DEFAULTPAGESIZE_OPT, DPoint.FormatToString(DefaultPageSize));
 
             ConfigSource.Save();
         }

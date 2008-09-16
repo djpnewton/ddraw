@@ -14,6 +14,7 @@ Workbook 1.1
   - cut/copy/paste functions within TextEditFigure
   - apply text wrap to smart notepad imports
   - preliminary wmf (windows metafile) support
+  - "DefaultPageSize" option in Workbook.ini
 
   bug fixes
   - stop application closing aberrantly when screen annotation form is closed

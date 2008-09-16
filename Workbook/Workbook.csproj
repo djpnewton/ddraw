@@ -214,6 +214,7 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Localization\strings.resx">
       <LastGenOutput>strings.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="MainForm.resx">
       <SubType>Designer</SubType>

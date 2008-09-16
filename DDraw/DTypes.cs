@@ -317,7 +317,7 @@ namespace DDraw
         public const int DpiX = 96;
         public const int DpiY = 96;
 
-        const int DW = 132,  DH  = 106;
+        static double DW = 132, DH  = 106;
         const int A4W = 210, A4H = 297;
         const int A5W = 148, A5H = 210;
         const int LtW = 216, LtH = 279;
@@ -375,6 +375,12 @@ namespace DDraw
         public static DPoint SizetoSizeMM(DPoint pgSz)
         {
             return new DPoint(pgSz.X * MMPerInch / DpiX, pgSz.Y * MMPerInch / DpiY);
+        }
+
+        public static void SetDefaultSizeMM(DPoint pgSz)
+        {
+            DW = pgSz.X;
+            DH = pgSz.Y;
         }
     }
 }

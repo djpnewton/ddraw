@@ -36,14 +36,14 @@ namespace Workbook
             get { return undoRedoArea.CanUndo; }
         }
 
-        UndoRedo<DPoint> _pageSize = new UndoRedo<DPoint>(PageTools.FormatToSize(PageFormat.Default));
-        public DPoint PageSize
+        UndoRedo<DPoint> _newPageSize = new UndoRedo<DPoint>(PageTools.FormatToSize(PageFormat.Default));
+        public DPoint NewPageSize
         {
-            get { return _pageSize.Value; }
+            get { return _newPageSize.Value; }
             set
             {
-                if (!value.Equals(_pageSize.Value))
-                    _pageSize.Value = value;
+                if (!value.Equals(_newPageSize.Value))
+                    _newPageSize.Value = value;
             }
         }
 
@@ -99,7 +99,7 @@ namespace Workbook
             else
                 engines.Add(de);
             // page size and name
-            de.PageSize = PageSize;
+            de.PageSize = NewPageSize;
             de.PageName = engines.Count.ToString();
             // background figure
             if (BackgroundFigure != null && !de.CustomBackgroundFigure)
@@ -311,6 +311,9 @@ namespace Workbook
 
         void ReadOptions()
         {
+            // start undo/redo transaction
+            undoRedoArea.Start("set options");
+
             ProgramOptions options = new ProgramOptions();
             // MainForm options
             SetBounds(options.FormRect.Left, options.FormRect.Top, options.FormRect.Width, options.FormRect.Height);
@@ -334,12 +337,19 @@ namespace Workbook
             UpdateToolbars();
             // misc
             highlightSelection = options.HighlightSelection;
+            PageTools.SetDefaultSizeMM(options.DefaultPageSize);
+            NewPageSize = PageTools.FormatToSize(PageFormat.Default);
+            de.PageSize = NewPageSize;
             // load recent docs
             LoadRecentDocuments(options);
             // load personal toolbar
             PtUtils.LoadPersonalTools(tsPersonal);
             // load figure toolbar
             FigureToolStrip.LoadFigureTools();
+
+            // commit undo redo
+            undoRedoArea.Commit();
+            undoRedoArea.ClearHistory();
         }
 
         void WriteOptions()
@@ -1036,7 +1046,7 @@ namespace Workbook
                 if (f.ApplyAll)
                 {
                     undoRedoArea.Start(WbLocale.SetGlobalPageSize);
-                    PageSize = f.PageSize;
+                    NewPageSize = f.PageSize;
                     foreach (DEngine en in engines)
                         SetEnginePageSize(en, f.PageSize);
                     undoRedoArea.Commit();
@@ -1334,9 +1344,9 @@ namespace Workbook
                     List<DEngine> engines = FileHelper.Load(fileName, undoRedoArea, out pageSize, out bf,
                         new string[] { AttachmentView.ATTACHMENTS_DIR }, out extraEntries);
                     if (pageSize != null)
-                        PageSize = pageSize;
+                        NewPageSize = pageSize;
                     else
-                        PageSize = PageTools.FormatToSize(PageFormat.Default);
+                        NewPageSize = PageTools.FormatToSize(PageFormat.Default);
                     if (bf != null)
                         BackgroundFigure = bf;
                     else
@@ -1398,10 +1408,10 @@ namespace Workbook
                         attachmentView1.GetAttachment(name));
                 // save
                 if (backupFile != null)
-                    FileHelper.Save(backupFile, engines, PageSize, BackgroundFigure, extraEntries);
+                    FileHelper.Save(backupFile, engines, NewPageSize, BackgroundFigure, extraEntries);
                 else
                 {
-                    FileHelper.Save(fileName, engines, PageSize, BackgroundFigure, extraEntries);
+                    FileHelper.Save(fileName, engines, NewPageSize, BackgroundFigure, extraEntries);
                     Dirty = false;
                     beenSaved = true;
                     UpdateTitleBar();
