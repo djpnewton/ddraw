@@ -69,7 +69,10 @@ namespace Workbook
         bool highlightSelection;
 
         bool beenSaved;
+        bool needSave;
         string fileName;
+        Timer autoSaveTimer;
+        string autoSaveFileName;
 
         WorkBookArguments cmdArguments = WorkBookArguments.GlobalWbArgs;
         Ipc ipc = Ipc.GlobalIpc;
@@ -208,12 +211,10 @@ namespace Workbook
             Figure._handleBorder = 4;
             Figure._rotateHandleStemLength = Figure._handleSize - Figure._handleBorder;
             LinebaseFigure._hitTestExtension = 5;
-            // new document
-            New();
-            undoRedoArea.ClearHistory();
-            // update some controls and titlebar
-            UpdateUndoRedoActions();
-            UpdateTitleBar();
+            // setup autosave
+            autoSaveTimer = new Timer();
+            autoSaveTimer.Tick += new EventHandler(autoSaveTimer_Tick);
+            autoSaveFileName = Path.Combine(TempDir, "autosave" + FileExt);
             // set toolstrip properties
             tsPropState.Dv = dvEditor;
             // connect to ipc messages
@@ -307,6 +308,22 @@ namespace Workbook
             menuStrip1.Visible = true;
             // make sure previews line up properly
             previewBar1.ResetPreviewPositions();
+            // check autosave file
+            if (File.Exists(autoSaveFileName))
+            {
+                if (MessageBox.Show("Autosave file found, would you like to restore this file?",
+                    ProgramName, MessageBoxButtons.YesNo) == DialogResult.Yes)
+                {
+                    OpenFile(autoSaveFileName);
+                    beenSaved = false;
+                    needSave = true;
+                }
+                else
+                    New();
+            }
+            else
+                New();
+            Dirty = false;
         }
 
         void ReadOptions()
@@ -339,7 +356,10 @@ namespace Workbook
             highlightSelection = options.HighlightSelection;
             PageTools.SetDefaultSizeMM(options.DefaultPageSize);
             NewPageSize = PageTools.FormatToSize(PageFormat.Default);
-            de.PageSize = NewPageSize;
+            if (options.AutoSaveInterval >= 1)
+                autoSaveTimer.Interval = options.AutoSaveInterval;
+            else
+                autoSaveTimer.Tick -= autoSaveTimer_Tick;
             // load recent docs
             LoadRecentDocuments(options);
             // load personal toolbar
@@ -484,7 +504,8 @@ namespace Workbook
         void CheckState()
         {
             // Change to a safe state if we are in a volatile state like text editing or resizing etc
-            de.CheckState();
+            if (de != null)
+                de.CheckState();
         }
 
         void de_HsmStateChanged(DEngine de, DHsmState state)
@@ -1302,10 +1323,28 @@ namespace Workbook
                 Text = string.Format("{0} - {1}", ProgramName, Path.GetFileNameWithoutExtension(fileName));
         }
 
+        void StartAutoSaveTimer()
+        {
+            RemoveAutoSave();
+            autoSaveTimer.Stop();
+            autoSaveTimer.Start();
+        }
+
+        void RemoveAutoSave()
+        {
+            if (File.Exists(autoSaveFileName))
+                try
+                {
+                    File.Delete(autoSaveFileName);
+                }
+                catch { }
+        }
+
         void New()
         {
             fileName = WbLocale.NewDocument;
             beenSaved = false;
+            needSave = false;
 
             undoRedoArea.Start(WbLocale.NewDocument);
             ClearDocument();
@@ -1315,6 +1354,8 @@ namespace Workbook
             Dirty = false;
 
             UpdateTitleBar();
+            // start autosaving
+            StartAutoSaveTimer();
         }
 
         void ClearDocument()
@@ -1370,11 +1411,14 @@ namespace Workbook
                     // update vars
                     this.fileName = fileName;
                     beenSaved = true;
+                    needSave = false;
                     UpdateTitleBar();
                     // show first page
                     ShowFirstPage();
                     // add to recent documents
                     AddRecentDocument(fileName);
+                    // start autosaving
+                    StartAutoSaveTimer();
                 }
                 catch (Exception e2)
                 {
@@ -1414,6 +1458,7 @@ namespace Workbook
                     FileHelper.Save(fileName, engines, NewPageSize, BackgroundFigure, extraEntries);
                     Dirty = false;
                     beenSaved = true;
+                    needSave = false;
                     UpdateTitleBar();
                     // add to recent documents
                     AddRecentDocument(fileName);
@@ -1461,7 +1506,7 @@ namespace Workbook
 
         bool CheckDirty()
         {
-            if (Dirty)
+            if (Dirty || needSave)
             {
                 switch (MessageBox.Show(string.Format("{0} \"{1}\"?", WbLocale.SaveChangesTo, fileName), ProgramName,
                     MessageBoxButtons.YesNoCancel, MessageBoxIcon.Exclamation))
@@ -2120,9 +2165,12 @@ namespace Workbook
                             // update vars
                             fileName = Path.GetFileNameWithoutExtension(ofd.FileName);
                             beenSaved = false;
+                            needSave = false;
                             UpdateTitleBar();
                             // show first page
                             ShowFirstPage();
+                            // start autosaving
+                            StartAutoSaveTimer();
                         }
                         catch (Exception e3)
                         {
@@ -2235,6 +2283,12 @@ namespace Workbook
                 MessageBox.Show(e2.Message, WbLocale.ErrorMailingPDF, MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
+        }
+
+        void autoSaveTimer_Tick(object sender, EventArgs e)
+        {
+            _Save(autoSaveFileName);
+            autoSaveTimer.Start();
         }
     }
 }

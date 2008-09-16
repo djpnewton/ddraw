@@ -33,6 +33,7 @@ namespace Workbook
         const string RECENTDOCS_SECTION = "RecentDocuments";
         const string HIGHLIGHTSELECTION_OPT = "HighLightSelection";
         const string DEFAULTPAGESIZE_OPT = "DefaultPageSize";
+        const string AUTOSAVEINTERVAL_OPT = "AutosaveInterval";
 
         public string IniFile
         {
@@ -58,6 +59,7 @@ namespace Workbook
         public bool ToolsToolbar;
         public bool HighlightSelection;
         public DPoint DefaultPageSize;
+        public int AutoSaveInterval;
 
         public ProgramOptions()
         {
@@ -127,6 +129,7 @@ namespace Workbook
             HighlightSelection = config.GetBoolean(HIGHLIGHTSELECTION_OPT, false);
             DefaultPageSize = DPoint.FromString(config.GetString(DEFAULTPAGESIZE_OPT, 
                 DPoint.FormatToString(PageTools.FormatToSizeMM(PageFormat.Default))));
+            AutoSaveInterval = config.GetInt(AUTOSAVEINTERVAL_OPT, 300000);
         }
 
         public void WriteIni()
@@ -149,6 +152,7 @@ namespace Workbook
             config.Set(TOOLSTOOLBAR_OPT, ToolsToolbar);
             config.Set(HIGHLIGHTSELECTION_OPT, HighlightSelection);
             config.Set(DEFAULTPAGESIZE_OPT, DPoint.FormatToString(DefaultPageSize));
+            config.Set(AUTOSAVEINTERVAL_OPT, AutoSaveInterval);
 
             ConfigSource.Save();
         }
