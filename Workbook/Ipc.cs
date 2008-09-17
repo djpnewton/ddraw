@@ -11,7 +11,6 @@ namespace Workbook
 {
     public enum IpcMessage { Show, ScreenAnnotate };
     public delegate void MessageReceivedHandler(IpcMessage msg);
-
     public class IpcMessager : MarshalByRefObject
     {
         public event MessageReceivedHandler MessageReceived;
@@ -37,6 +36,25 @@ namespace Workbook
         }
     }
 
+    public enum IpcP2pMessage { Bork, QueryAutoSaveFile, ConfirmAutoSaveFile, RejectAutoSaveFile };
+    public delegate IpcP2pMessage P2pMessageReceivedHandler(IpcP2pMessage msg, string data);
+    public class IpcP2pMessager : MarshalByRefObject
+    {
+        public event P2pMessageReceivedHandler MessageReceived;
+
+        public IpcP2pMessager()
+        {
+
+        }
+
+        public IpcP2pMessage SendMessage(IpcP2pMessage msg, string data)
+        {
+            if (MessageReceived != null)
+                return MessageReceived(msg, data);
+            return IpcP2pMessage.Bork;
+        }
+    }
+
     public class Ipc : MarshalByRefObject
     {
         static Ipc ipc = null;
@@ -57,6 +75,7 @@ namespace Workbook
                 CreateIpcServerChannel();
             else
                 CreateIpcClientChannel();
+            CreateIpcP2pServerChannel();
         }
 
         // Mutex stuff ///////////////////////////////////
@@ -124,14 +143,22 @@ namespace Workbook
         // see http://dotnetaddict.dotnetdevelopersjournal.com/ipc_remoting_real_world_example.htm
 
         public event MessageReceivedHandler MessageReceived;
-
         const string channelServerName = mutexName;
         const string IpcMessagerUri = "IpcMessager.rem";
         string IpcMessagerUrl
         {
             get { return string.Format("ipc://{0}/{1}", channelServerName, IpcMessagerUri); }
         }
-        IpcChannel chan;
+        IpcChannel serverChan;
+
+        public event P2pMessageReceivedHandler P2pMessageRecieved;
+        public string channelP2pServerName;
+        const string IpcP2pMessagerUri = "IpcP2pMessager.rem";
+        string IpcP2pMessagerUrl
+        {
+            get { return string.Format("ipc://{0}/{1}", channelP2pServerName, IpcP2pMessagerUri); }
+        }
+        IpcChannel p2pServerChan;
 
         void CreateIpcServerChannel()
         {
@@ -146,10 +173,11 @@ namespace Workbook
                 Dictionary<string, string> props = new Dictionary<string, string>();  
                 props.Add("authorizedGroup", "Everyone");
                 props.Add("portName", channelServerName);  
-                props.Add("exclusiveAddressUse", "false");  
+                props.Add("exclusiveAddressUse", "false");
+                props.Add("name", channelServerName);
                 // create and register channel
-                chan = new IpcChannel(props, clientProv, serverProv);
-                ChannelServices.RegisterChannel(chan, true);
+                serverChan = new IpcChannel(props, clientProv, serverProv);
+                ChannelServices.RegisterChannel(serverChan, true);
                 // register remote object
                 RemotingConfiguration.RegisterWellKnownServiceType(typeof(IpcMessager),
                     IpcMessagerUri, WellKnownObjectMode.Singleton);
@@ -170,8 +198,8 @@ namespace Workbook
         void CreateIpcClientChannel()
         {
             // create ipc client channel
-            chan = new IpcChannel();
-            ChannelServices.RegisterChannel(chan, true);
+            serverChan = new IpcChannel();
+            ChannelServices.RegisterChannel(serverChan, true);
             // Register as client for remote object.
             WellKnownClientTypeEntry remoteType = new WellKnownClientTypeEntry(typeof(IpcMessager), IpcMessagerUrl);
             RemotingConfiguration.RegisterWellKnownClientType(remoteType);
@@ -189,6 +217,58 @@ namespace Workbook
                 int n = service.GetCount();
                 Console.WriteLine("The remote object has been called {0} times.", n);
             }
+        }
+
+        void CreateIpcP2pServerChannel()
+        {
+            try
+            {
+                // need this or we can't use delegates and remoting.
+                BinaryServerFormatterSinkProvider serverProv = new BinaryServerFormatterSinkProvider();
+                serverProv.TypeFilterLevel = System.Runtime.Serialization.Formatters.TypeFilterLevel.Full;
+
+                BinaryClientFormatterSinkProvider clientProv = new BinaryClientFormatterSinkProvider();
+                // ipc channel properties
+                Dictionary<string, string> props = new Dictionary<string, string>();
+                props.Add("authorizedGroup", "Everyone");
+                channelP2pServerName = Guid.NewGuid().ToString();
+                props.Add("portName", channelP2pServerName);
+                props.Add("exclusiveAddressUse", "false");
+                props.Add("name", channelP2pServerName);
+                // create and register channel
+                p2pServerChan = new IpcChannel(props, clientProv, serverProv);
+                ChannelServices.RegisterChannel(p2pServerChan, true);
+                // register remote object
+                RemotingConfiguration.RegisterWellKnownServiceType(typeof(IpcP2pMessager),
+                    IpcP2pMessagerUri, WellKnownObjectMode.Singleton);
+                // access remote object and hookup event
+                IpcP2pMessager service = (IpcP2pMessager)Activator.GetObject(typeof(IpcP2pMessager), IpcP2pMessagerUrl);
+                service.MessageReceived += new P2pMessageReceivedHandler(ipcP2pMessager_MessageReceived);
+            }
+            catch (Exception)
+            { }
+        }
+
+        IpcP2pMessage ipcP2pMessager_MessageReceived(IpcP2pMessage msg, string data)
+        {
+            if (P2pMessageRecieved != null)
+                return P2pMessageRecieved(msg, data);
+            return IpcP2pMessage.Bork;
+        }
+
+        public IpcP2pMessage SendP2pMessage(string p2pServerName, IpcP2pMessage msg, string data)
+        {
+            // grab the remote object.
+            string ipcP2pMessagerUrl = string.Format("ipc://{0}/{1}", p2pServerName, IpcP2pMessagerUri);
+            IpcP2pMessager service = (IpcP2pMessager)Activator.GetObject(typeof(IpcP2pMessager), ipcP2pMessagerUrl);
+            // send message
+            if (service != null)
+                try
+                {
+                    return service.SendMessage(msg, data);
+                }
+                catch { }
+            return IpcP2pMessage.Bork;
         }
     }
 }

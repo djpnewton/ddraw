@@ -71,8 +71,6 @@ namespace Workbook
         bool beenSaved;
         bool needSave;
         string fileName;
-        Timer autoSaveTimer;
-        string autoSaveFileName;
 
         WorkBookArguments cmdArguments = WorkBookArguments.GlobalWbArgs;
         Ipc ipc = Ipc.GlobalIpc;
@@ -82,6 +80,12 @@ namespace Workbook
         const string OpenFileTypeFilter = "Workbook files|*.ddraw;*.wbook";
         const string SaveFileTypeFilter = "Workbook files|*.wbook";
         string TempDir = Path.Combine(Path.GetTempPath(), "2Touch Workbook");
+        string tempFilesDir;
+        Timer autoSaveTimer;
+        string autoSaveDir;
+        string autoSaveFileName;
+        string autoSaveServerFileName;
+        const string autoSaveServerExt = ".servername";
 
         public PersonalToolStrip PersonalToolStrip
         {
@@ -173,14 +177,20 @@ namespace Workbook
             // Init Component
             InitializeComponent();
             LocalizeUI();
-            // create temp path
-            if (!Directory.Exists(TempDir))
-                try
-                {
+            // create temp paths
+            tempFilesDir = WorkBookUtils.GetTempFileName("tempfiles", TempDir);
+            autoSaveDir = Path.Combine(TempDir, "autosave");
+            try
+            {
+                if (!Directory.Exists(TempDir))
                     Directory.CreateDirectory(TempDir);
-                }
-                catch { }
-            attachmentView1.TempDir = TempDir;
+                if (!Directory.Exists(tempFilesDir))
+                    Directory.CreateDirectory(tempFilesDir);
+                if (!Directory.Exists(autoSaveDir))
+                    Directory.CreateDirectory(autoSaveDir);
+            }
+            catch { }
+            attachmentView1.TempDir = tempFilesDir;
             // set icon
             Icon = Resource1._2touch;
             // Create Handle (so we can respond to ipc events from other threads without showing the form)
@@ -214,11 +224,11 @@ namespace Workbook
             // setup autosave
             autoSaveTimer = new Timer();
             autoSaveTimer.Tick += new EventHandler(autoSaveTimer_Tick);
-            autoSaveFileName = Path.Combine(TempDir, "autosave" + FileExt);
             // set toolstrip properties
             tsPropState.Dv = dvEditor;
             // connect to ipc messages
             ipc.MessageReceived += new MessageReceivedHandler(ipc_MessageReceived);
+            ipc.P2pMessageRecieved += new P2pMessageReceivedHandler(ipc_P2pMessageRecieved);
             // get command line arguments
             ActionCommandLine();
         }
@@ -308,15 +318,60 @@ namespace Workbook
             menuStrip1.Visible = true;
             // make sure previews line up properly
             previewBar1.ResetPreviewPositions();
-            // check autosave file
-            if (File.Exists(autoSaveFileName))
+            // autosave stuff
+            CheckPreviousAutosaves();
+            CreateAutosave();
+        }
+
+        void CheckPreviousAutosaves()
+        {
+            // check for old autosave files
+            string[] autosaves = Directory.GetFiles(autoSaveDir, "*" + FileExt);
+            string orphanedAutosave = null;
+            string autosaveServerInfoFile = null;
+            foreach (string autosave in autosaves)
+            {
+                autosaveServerInfoFile = Path.ChangeExtension(autosave, autoSaveServerExt);
+                if (File.Exists(autosaveServerInfoFile))
+                {
+                    using (StreamReader sr = new StreamReader(autosaveServerInfoFile))
+                    {
+                        if (ipc.SendP2pMessage(sr.ReadToEnd(), IpcP2pMessage.QueryAutoSaveFile, autosave) !=
+                            IpcP2pMessage.ConfirmAutoSaveFile)
+                        {
+                            orphanedAutosave = autosave;
+                            break;
+                        }
+                    }
+                }
+                else
+                {
+                    orphanedAutosave = autosave;
+                    break;
+                }
+            }
+            //choose whether to load autosave file or initialize new document
+            if (orphanedAutosave != null)
             {
                 if (MessageBox.Show("Autosave file found, would you like to restore this file?",
                     ProgramName, MessageBoxButtons.YesNo) == DialogResult.Yes)
                 {
-                    OpenFile(autoSaveFileName);
-                    beenSaved = false;
-                    needSave = true;
+                    if (OpenFile(orphanedAutosave))
+                    {
+                        fileName = "Restored Autosave";
+                        beenSaved = false;
+                        needSave = true;
+                        try
+                        {
+                            if (File.Exists(autosaveServerInfoFile))
+                                File.Delete(autosaveServerInfoFile);
+                            if (File.Exists(orphanedAutosave))
+                                File.Delete(orphanedAutosave);
+                        }
+                        catch { }
+                    }
+                    else
+                        New();
                 }
                 else
                     New();
@@ -324,6 +379,22 @@ namespace Workbook
             else
                 New();
             Dirty = false;
+        }
+
+        void CreateAutosave()
+        {
+            // create autosave file and ipc server info file
+            autoSaveFileName = WorkBookUtils.GetTempFileName("autosave" + FileExt, autoSaveDir);
+            autoSaveServerFileName = Path.ChangeExtension(autoSaveFileName, autoSaveServerExt);
+            try
+            {
+                File.Create(autoSaveFileName).Close();
+                StreamWriter sw = new StreamWriter(autoSaveServerFileName);
+                sw.Write(ipc.channelP2pServerName);
+                sw.Flush();
+                sw.Close();
+            }
+            catch { }
         }
 
         void ReadOptions()
@@ -471,6 +542,18 @@ namespace Workbook
                 }
         }
 
+        IpcP2pMessage ipc_P2pMessageRecieved(IpcP2pMessage msg, string data)
+        {
+            if (msg == IpcP2pMessage.QueryAutoSaveFile)
+            {
+                if (data == autoSaveFileName)
+                    return IpcP2pMessage.ConfirmAutoSaveFile;
+                else
+                    return IpcP2pMessage.RejectAutoSaveFile;
+            }
+            return IpcP2pMessage.Bork;
+        }
+
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
             if (!CheckDirty())
@@ -481,13 +564,17 @@ namespace Workbook
                 WriteOptions();
                 // write toolstrip settings
                 ToolStripManager.SaveSettings(this);
-                // remove temp dir
-                if (Directory.Exists(TempDir))
-                    try
-                    {
-                        Directory.Delete(TempDir, true);
-                    }
-                    catch { }
+                // remove temp files
+                try
+                {
+                    if (File.Exists(autoSaveFileName))
+                        File.Delete(autoSaveFileName);
+                    if (File.Exists(autoSaveServerFileName))
+                        File.Delete(autoSaveServerFileName);
+                    if (Directory.Exists(tempFilesDir))
+                        Directory.Delete(tempFilesDir, true);
+                }
+                catch { }
             }
         }
 
@@ -1325,19 +1412,8 @@ namespace Workbook
 
         void StartAutoSaveTimer()
         {
-            RemoveAutoSave();
             autoSaveTimer.Stop();
             autoSaveTimer.Start();
-        }
-
-        void RemoveAutoSave()
-        {
-            if (File.Exists(autoSaveFileName))
-                try
-                {
-                    File.Delete(autoSaveFileName);
-                }
-                catch { }
         }
 
         void New()
@@ -1364,8 +1440,9 @@ namespace Workbook
             BackgroundFigure = new BackgroundFigure();
         }
 
-        void OpenFile(string fileName)
+        bool OpenFile(string fileName)
         {
+            bool result = false;
             CheckState();
             // create progress form
             ProgressForm pf = new ProgressForm();
@@ -1419,6 +1496,8 @@ namespace Workbook
                     AddRecentDocument(fileName);
                     // start autosaving
                     StartAutoSaveTimer();
+                    // result true!
+                    result = true;
                 }
                 catch (Exception e2)
                 {
@@ -1428,6 +1507,7 @@ namespace Workbook
                 pf.Close();
             };
             pf.ShowDialog();
+            return result;
         }
 
         void Open()
@@ -2255,7 +2335,7 @@ namespace Workbook
         private void mailRecipientToolStripMenuItem_Click(object sender, EventArgs e)
         {
             // find filename
-            string tempFileName = WorkBookUtils.GetTempFileName(Path.GetFileName(fileName), TempDir, FileExt);
+            string tempFileName = WorkBookUtils.GetTempFileName(Path.GetFileName(fileName), tempFilesDir, FileExt);
             // save file
             if (_Save(tempFileName))
             {
@@ -2269,7 +2349,7 @@ namespace Workbook
         private void mailRecipientasPDFToolStripMenuItem_Click(object sender, EventArgs e)
         {
             // find filename
-            string tempFileName = WorkBookUtils.GetTempFileName(Path.GetFileName(fileName), TempDir, ".pdf");
+            string tempFileName = WorkBookUtils.GetTempFileName(Path.GetFileName(fileName), tempFilesDir, ".pdf");
             try
             {
                 WorkBookUtils.RenderPdf(engines, tempFileName);

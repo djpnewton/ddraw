@@ -212,7 +212,7 @@ namespace Workbook
                 tempFileName = string.Format("{0}[{1}]{2}", Path.Combine(tempDir, leaf), n, fileExt);
                 n++;
             }
-            while (File.Exists(tempFileName));
+            while (File.Exists(tempFileName) || Directory.Exists(tempFileName));
             return tempFileName;
         }
 

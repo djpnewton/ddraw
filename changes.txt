@@ -16,6 +16,7 @@ Workbook 1.1
   - preliminary wmf (windows metafile) support
   - "DefaultPageSize" option in Workbook.ini
   - "AutosaveInterval" option in Workbook.ini (milliseconds, set to 0 to turn off)
+  - tempfile and autosave support for multiple instances of workbook
 
   bug fixes
   - stop application closing aberrantly when screen annotation form is closed

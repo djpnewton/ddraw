@@ -117,85 +117,87 @@ namespace DDraw
             extraEntries = null;
             List<DEngine> res = new List<DEngine>();
             // load zipfile
-            ZipFile zf = new ZipFile(fileName);
-            // find pages ini file entry
-            byte[] data = Read(zf, PAGES_INI);
-            if (data != null)
+            using (ZipFile zf = new ZipFile(fileName))
             {
-                // read general background figure
-                byte[]genBkgndFigureData = Read(zf, GENBKGNDFIGURE);
-                if (genBkgndFigureData != null)
+                // find pages ini file entry
+                byte[] data = Read(zf, PAGES_INI);
+                if (data != null)
                 {
-                    List<Figure> figs = FigureSerialize.FromXml(encoding.GetString(genBkgndFigureData));
-                    if (figs.Count == 1 && figs[0] is BackgroundFigure)
+                    // read general background figure
+                    byte[] genBkgndFigureData = Read(zf, GENBKGNDFIGURE);
+                    if (genBkgndFigureData != null)
                     {
-                        LoadImage(zf, figs[0]);
-                        bf = (BackgroundFigure)figs[0];
-                        // read page size from background figure
-                        if (bf.Width > 0 && bf.Height > 0)
-                            pageSize = new DPoint(bf.Width, bf.Height);
-                    }
-                }
-                // create Nini config source from pages ini entry stream
-                IniConfigSource source = new IniConfigSource(new MemoryStream(data));
-                // load each page info mentioned in ini entry
-                foreach (IConfig config in source.Configs)
-                {
-                    // create new DEngine for page
-                    DEngine de = new DEngine(undoRedoArea);
-                    // set page size
-                    if (config.Contains(PAGESIZE))
-                        de.PageSize = DPoint.FromString(config.Get(PAGESIZE));
-                    if (config.Contains(PAGENAME))
-                        de.PageName = config.Get(PAGENAME);
-                    // set the figures
-                    if (config.Contains(FIGURELIST))
-                    {
-                        string figureListEntryName = config.Get(FIGURELIST);
-                        data = Read(zf, figureListEntryName);
-                        if (data != null)
+                        List<Figure> figs = FigureSerialize.FromXml(encoding.GetString(genBkgndFigureData));
+                        if (figs.Count == 1 && figs[0] is BackgroundFigure)
                         {
-                            List<Figure> figs = FigureSerialize.FromXml(encoding.GetString(data));
-                            foreach (Figure f in figs)
-                            {
-                                de.AddFigure(f);
-                                LoadImage(zf, f);
-                            }
+                            LoadImage(zf, figs[0]);
+                            bf = (BackgroundFigure)figs[0];
+                            // read page size from background figure
+                            if (bf.Width > 0 && bf.Height > 0)
+                                pageSize = new DPoint(bf.Width, bf.Height);
                         }
                     }
-                    // set the background figure
-                    if (config.Contains(BACKGROUNDFIGURE))
+                    // create Nini config source from pages ini entry stream
+                    IniConfigSource source = new IniConfigSource(new MemoryStream(data));
+                    // load each page info mentioned in ini entry
+                    foreach (IConfig config in source.Configs)
                     {
-                        string backgroundFigureEntryName = config.Get(BACKGROUNDFIGURE);
-                        data = Read(zf, backgroundFigureEntryName);
-                        if (data != null)
+                        // create new DEngine for page
+                        DEngine de = new DEngine(undoRedoArea);
+                        // set page size
+                        if (config.Contains(PAGESIZE))
+                            de.PageSize = DPoint.FromString(config.Get(PAGESIZE));
+                        if (config.Contains(PAGENAME))
+                            de.PageName = config.Get(PAGENAME);
+                        // set the figures
+                        if (config.Contains(FIGURELIST))
                         {
-                            List<Figure> figs = FigureSerialize.FromXml(encoding.GetString(data));
-                            if (figs.Count == 1 && figs[0] is BackgroundFigure)
+                            string figureListEntryName = config.Get(FIGURELIST);
+                            data = Read(zf, figureListEntryName);
+                            if (data != null)
                             {
-                                LoadImage(zf, figs[0]);
-                                de.SetBackgroundFigure((BackgroundFigure)figs[0], true);
+                                List<Figure> figs = FigureSerialize.FromXml(encoding.GetString(data));
+                                foreach (Figure f in figs)
+                                {
+                                    de.AddFigure(f);
+                                    LoadImage(zf, f);
+                                }
                             }
                         }
-                    }
-                    else if (bf != null)
-                        de.SetBackgroundFigure(bf, false);
-                    // add to list of DEngines
-                    res.Add(de);
-                }
-                // read extra entries
-                if (extraEntryDirs != null)
-                {
-                    extraEntries = new Dictionary<string, byte[]>();
-                    foreach (string dir in extraEntryDirs)
-                    {
-                        IEnumerator en = zf.GetEnumerator();
-                        en.Reset();
-                        while (en.MoveNext())
+                        // set the background figure
+                        if (config.Contains(BACKGROUNDFIGURE))
                         {
-                            ZipEntry entry = (ZipEntry)en.Current;
-                            if (entry.Name.IndexOf(dir) == 0)
-                                extraEntries.Add(entry.Name, Read(zf, entry.Name));
+                            string backgroundFigureEntryName = config.Get(BACKGROUNDFIGURE);
+                            data = Read(zf, backgroundFigureEntryName);
+                            if (data != null)
+                            {
+                                List<Figure> figs = FigureSerialize.FromXml(encoding.GetString(data));
+                                if (figs.Count == 1 && figs[0] is BackgroundFigure)
+                                {
+                                    LoadImage(zf, figs[0]);
+                                    de.SetBackgroundFigure((BackgroundFigure)figs[0], true);
+                                }
+                            }
+                        }
+                        else if (bf != null)
+                            de.SetBackgroundFigure(bf, false);
+                        // add to list of DEngines
+                        res.Add(de);
+                    }
+                    // read extra entries
+                    if (extraEntryDirs != null)
+                    {
+                        extraEntries = new Dictionary<string, byte[]>();
+                        foreach (string dir in extraEntryDirs)
+                        {
+                            IEnumerator en = zf.GetEnumerator();
+                            en.Reset();
+                            while (en.MoveNext())
+                            {
+                                ZipEntry entry = (ZipEntry)en.Current;
+                                if (entry.Name.IndexOf(dir) == 0)
+                                    extraEntries.Add(entry.Name, Read(zf, entry.Name));
+                            }
                         }
                     }
                 }
