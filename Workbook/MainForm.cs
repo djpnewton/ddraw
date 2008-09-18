@@ -74,8 +74,11 @@ namespace Workbook
 
         WorkBookArguments cmdArguments = WorkBookArguments.GlobalWbArgs;
         Ipc ipc = Ipc.GlobalIpc;
-
+#if PREVIEW_BUILD
+        string ProgramName = "Workbook (Preview Build:" + WorkBookUtils.RetrieveLinkerTimestamp().ToShortDateString() + ")";
+#else
         const string ProgramName = "Workbook";
+#endif
         const string FileExt = ".wbook";
         const string OpenFileTypeFilter = "Workbook files|*.ddraw;*.wbook";
         const string SaveFileTypeFilter = "Workbook files|*.wbook";
