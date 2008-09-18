@@ -86,6 +86,7 @@ namespace Workbook
         string autoSaveFileName;
         string autoSaveServerFileName;
         const string autoSaveServerExt = ".servername";
+        bool autoSaveOnSelectState = false;
 
         public PersonalToolStrip PersonalToolStrip
         {
@@ -397,6 +398,26 @@ namespace Workbook
             catch { }
         }
 
+        void Autosave(DHsmState state)
+        {
+            if (state == DHsmState.Select)
+            {
+                autoSaveOnSelectState = false;
+                _Save(autoSaveFileName);
+                autoSaveTimer.Start();
+            }
+            else
+            {
+                autoSaveOnSelectState = true;
+                autoSaveTimer.Stop();
+            }
+        }
+
+        void autoSaveTimer_Tick(object sender, EventArgs e)
+        {
+            Autosave(de.HsmState);
+        }
+
         void ReadOptions()
         {
             // start undo/redo transaction
@@ -602,6 +623,8 @@ namespace Workbook
                 actCut.Enabled = true;
                 actCopy.Enabled = true;
             }
+            if (autoSaveOnSelectState && state == DHsmState.Select)
+                Autosave(state);
         }
 
         void de_SelectedFiguresChanged()
@@ -2363,12 +2386,6 @@ namespace Workbook
                 MessageBox.Show(e2.Message, WbLocale.ErrorMailingPDF, MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
-        }
-
-        void autoSaveTimer_Tick(object sender, EventArgs e)
-        {
-            _Save(autoSaveFileName);
-            autoSaveTimer.Start();
         }
     }
 }

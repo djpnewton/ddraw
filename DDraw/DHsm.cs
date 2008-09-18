@@ -486,12 +486,6 @@ namespace DDraw
             Dispatch(new QGTextEditEvent((int)DHsmSignals.GTextEdit, tf));
         }
 
-        void DoStateChanged(DHsmState state)
-        {
-            if (StateChanged != null)
-                StateChanged(null, state);
-        }
-
         public bool CurrentFigClassImpls(Type _interface)
         {
             if (currentFigureClass != null)
@@ -659,11 +653,7 @@ namespace DDraw
                 case (int)QSignals.Entry:
                     // clear currentFigureClass
                     currentFigureClass = null;
-                    // dont clear selected if we have transitioned from TextEdit state
-                    if (!IsInState(TextEdit))
-                        figureHandler.ClearSelected();
                     viewerHandler.Update();
-                    DoStateChanged(DHsmState.Select);
                     return null;
                 case (int)DHsmSignals.GCheckState:
                     TransitionTo(SelectDefault);
@@ -1249,7 +1239,6 @@ namespace DDraw
                     // clear selected
                     figureHandler.ClearSelected();
                     viewerHandler.Update();
-                    DoStateChanged(DHsmState.SelectMeasure);
                     return null;
                 case (int)QSignals.Init:
                     InitializeState(SelectMeasureDefault);
@@ -1308,7 +1297,6 @@ namespace DDraw
                 case (int)QSignals.Entry:
                     figureHandler.ClearSelected();
                     viewerHandler.Update();
-                    DoStateChanged(DHsmState.DrawLine);
                     return null;
                 case (int)DHsmSignals.GCheckState:
                     // commit to undo/redo
@@ -1526,7 +1514,6 @@ namespace DDraw
                 case (int)QSignals.Entry:
                     figureHandler.ClearSelected();
                     viewerHandler.Update();
-                    DoStateChanged(DHsmState.DrawText);
                     return null;
                 case (int)DHsmSignals.MouseDown:
                     DoDrawTextMouseDown(((QMouseEvent)qevent).Dv, ((QMouseEvent)qevent).Button, ((QMouseEvent)qevent).Pt);
@@ -1723,7 +1710,6 @@ namespace DDraw
                     // update view
                     figureHandler.ClearSelected();
                     viewerHandler.Update();
-                    DoStateChanged(DHsmState.TextEdit);
                     return null;
                 case (int)QSignals.Exit:
                     // replace text edit figure with the textfigure
@@ -1790,7 +1776,6 @@ namespace DDraw
                 case (int)QSignals.Entry:
                     figureHandler.ClearSelected();
                     viewerHandler.Update();
-                    DoStateChanged(DHsmState.DrawRect);
                     return null;
                 case (int)DHsmSignals.GCheckState:
                     // commit to undo/redo
@@ -1920,7 +1905,6 @@ namespace DDraw
             switch (qevent.QSignal)
             {
                 case (int)QSignals.Entry:
-                    DoStateChanged(DHsmState.FigureEdit);
                     // unmouseover figure
                     currentFigure.MouseOver = false;
                     // start undo record
@@ -1980,7 +1964,6 @@ namespace DDraw
                     figureHandler.ClearSelected();
                     // update
                     viewerHandler.Update();
-                    DoStateChanged(DHsmState.Eraser);
                     return null;
                 case (int)DHsmSignals.GCheckState:
                     TransitionTo(EraserDefault);
@@ -2199,5 +2182,12 @@ namespace DDraw
             Erasing = new QState(this.DoErasing);
             InitializeState(Main); // initial transition			
 		}
+
+        new protected void TransitionTo(QState targetState)
+        {
+            base.TransitionTo(targetState);
+            if (StateChanged != null)
+                StateChanged(null, State);
+        }
     }
 }
