@@ -61,8 +61,11 @@ namespace Workbook
 
         void De_HsmStateChanged(DEngine de, DHsmState state)
         {
-            de.HsmStateChanged -= De_HsmStateChanged;
-            CloseAnnotationForm();
+            if (state != DHsmState.SelectMeasure)
+            {
+                de.HsmStateChanged -= De_HsmStateChanged;
+                CloseAnnotationForm();
+            }
         }
 
         void De_MeasureRect(DEngine de, DRect rect)
