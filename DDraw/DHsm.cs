@@ -123,6 +123,7 @@ namespace DDraw
     }
 
     public enum DHsmState { Select, SelectMeasure, DrawLine, DrawText, TextEdit, DrawRect, FigureEdit, Eraser };
+    public enum DHsnSnapAngleMode { Default, Always, Never };
 
     public delegate void HsmStateChangedHandler(DEngine de, DHsmState state);
     public delegate void HsmTextHandler(DEngine de, string text);
@@ -172,11 +173,11 @@ namespace DDraw
             get { return lockInitialAspectRatio || figureLockAspectRatio; }
         }
 
-        bool figureAlwaysSnapAngle = false;
-        public bool FigureAlwaysSnapAngle
+        DHsnSnapAngleMode figureSnapAngleMode = DHsnSnapAngleMode.Default;
+        public DHsnSnapAngleMode FigureSnapAngleMode
         {
-            get { return figureAlwaysSnapAngle; }
-            set { figureAlwaysSnapAngle = value; }
+            get { return figureSnapAngleMode; }
+            set { figureSnapAngleMode = value; }
         }
 
         bool figureSelectToggleToSelection = false;
@@ -1047,43 +1048,52 @@ namespace DDraw
                     double currentAngle = DGeom.AngleBetweenPoints(oldPoint, otherPoint);
                     double ar = currentAngle % figureSnapAngle;
                     // reposition line
-                    if (figureAlwaysSnapAngle)
+                    double newAngle;
+                    switch (FigureSnapAngleMode)
                     {
-                        // slide point along snap angle
-                        double newAngle = DGeom.AngleBetweenPoints(newPoint, otherPoint);
-                        ar = newAngle % figureSnapAngle;
-                        if (ar < figureSnapAngle / 2) 
-                            setPoint(DGeom.RotatePoint(newPoint, otherPoint, -ar));
-                        else
-                            setPoint(DGeom.RotatePoint(newPoint, otherPoint, figureSnapAngle - ar));
-                    }
-                    else if (ar == 0)
-                    {
-                        // line is snapped, test if new angle will unsnap the line
-                        double newAngle = DGeom.AngleBetweenPoints(newPoint, otherPoint);
-                        ar = newAngle % figureSnapAngle;
-                        if (ar > figureSnapRange && ar < figureSnapAngle - figureSnapRange)
-                            // unsnapped, set new point
-                            setPoint(newPoint);
-                        else
-                        {
+                        case DHsnSnapAngleMode.Always:
                             // slide point along snap angle
-                            newPoint = DGeom.RotatePoint(newPoint, otherPoint, getRotationalSnap(ar));
+                            newAngle = DGeom.AngleBetweenPoints(newPoint, otherPoint);
+                            ar = newAngle % figureSnapAngle;
+                            if (ar < figureSnapAngle / 2)
+                                setPoint(DGeom.RotatePoint(newPoint, otherPoint, -ar));
+                            else
+                                setPoint(DGeom.RotatePoint(newPoint, otherPoint, figureSnapAngle - ar));
+                            break;
+                        case DHsnSnapAngleMode.Default:
+                            if (ar == 0)
+                            {
+                                // line is snapped, test if new angle will unsnap the line
+                                newAngle = DGeom.AngleBetweenPoints(newPoint, otherPoint);
+                                ar = newAngle % figureSnapAngle;
+                                if (ar > figureSnapRange && ar < figureSnapAngle - figureSnapRange)
+                                    // unsnapped, set new point
+                                    setPoint(newPoint);
+                                else
+                                {
+                                    // slide point along snap angle
+                                    newPoint = DGeom.RotatePoint(newPoint, otherPoint, getRotationalSnap(ar));
+                                    setPoint(newPoint);
+                                }
+                            }
+                            else
+                            {
+                                // set new point
+                                setPoint(newPoint);
+                                // test whether to snap our line
+                                newAngle = DGeom.AngleBetweenPoints(newPoint, otherPoint);
+                                ar = newAngle % figureSnapAngle;
+                                double rotationalSnap = getRotationalSnap(ar);
+                                // snap it
+                                if (rotationalSnap != 0)
+                                    setPoint(DGeom.RotatePoint(newPoint, otherPoint, rotationalSnap));
+                            }
+                            break;
+                        case DHsnSnapAngleMode.Never:
+                            // set new point
                             setPoint(newPoint);
-                        }
+                            break;
                     }
-                    else
-                    {
-                        // set new point
-                        setPoint(newPoint);
-                        // test whether to snap our line
-                        double newAngle = DGeom.AngleBetweenPoints(newPoint, otherPoint);
-                        ar = newAngle % figureSnapAngle;
-                        double rotationalSnap = getRotationalSnap(ar);
-                        // snap it
-                        if (rotationalSnap != 0)
-                            setPoint(DGeom.RotatePoint(newPoint, otherPoint, rotationalSnap));
-                    }                       
                     // final update rect
                     updateRect = updateRect.Union(GetBoundingBox(currentFigure));
                     break;
@@ -1096,19 +1106,26 @@ namespace DDraw
                     // apply rotation to figure
                     double newRot = GetRotationOfPointComparedToFigure(currentFigure, pt) - dragRot;
                     double r = newRot % figureSnapAngle;
-                    if (figureAlwaysSnapAngle)
+                    switch (figureSnapAngleMode)
                     {
-                        if (r < figureSnapAngle / 2)
-                            currentFigure.Rotation = newRot - r;
-                        else
-                            currentFigure.Rotation = newRot + figureSnapAngle - r;
-                    }
-                    else if (r < figureSnapRange)
-                        currentFigure.Rotation = newRot - r;
-                    else if (r > figureSnapAngle - figureSnapRange)
-                        currentFigure.Rotation = newRot + figureSnapAngle - r;
-                    else
-                        currentFigure.Rotation = newRot;
+                        case DHsnSnapAngleMode.Always:
+                            if (r < figureSnapAngle / 2)
+                                currentFigure.Rotation = newRot - r;
+                            else
+                                currentFigure.Rotation = newRot + figureSnapAngle - r;
+                            break;
+                        case DHsnSnapAngleMode.Default:
+                            if (r < figureSnapRange)
+                                currentFigure.Rotation = newRot - r;
+                            else if (r > figureSnapAngle - figureSnapRange)
+                                currentFigure.Rotation = newRot + figureSnapAngle - r;
+                            else
+                                currentFigure.Rotation = newRot;
+                            break;
+                        case DHsnSnapAngleMode.Never:
+                            currentFigure.Rotation = newRot;
+                            break;
+                    }                      
                     // final update rect
                     updateRect = updateRect.Union(GetBoundingBox(currentFigure));
 #if DEBUG
@@ -1384,7 +1401,7 @@ namespace DDraw
             // bound pt to canvas
             BoundPtToPage(pt);
             // add point
-            if (figureAlwaysSnapAngle && currentFigure is ILineSegment)
+            if (figureSnapAngleMode == DHsnSnapAngleMode.Always && currentFigure is ILineSegment)
             {
                 ILineSegment ls = ((ILineSegment)currentFigure);
                 // slide point along snap angle

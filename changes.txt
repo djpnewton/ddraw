@@ -18,6 +18,8 @@ Workbook 1.1
   - "AutosaveInterval" option in Workbook.ini (milliseconds, set to 0 to turn off)
   - tempfile and autosave support for multiple instances of workbook
   - Added PREVIEW_BUILD compile flag that shows the status and build date of an unofficial "preview build"
+  - added "Ctrl" hotkey to disable auto rotation snapping
+  - added boolean Workbook.ini option AutoRotateSnap
 
   bug fixes
   - stop application closing aberrantly when screen annotation form is closed

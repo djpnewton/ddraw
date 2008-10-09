@@ -292,10 +292,10 @@ namespace DDraw
             get { return hsm.FigureLockAspectRatio; }
             set { hsm.FigureLockAspectRatio = value; }
         }
-        public bool FigureAlwaysSnapAngle
+        public DHsnSnapAngleMode FigureSnapAngleMode
         {
-            get { return hsm.FigureAlwaysSnapAngle; }
-            set { hsm.FigureAlwaysSnapAngle = value; }
+            get { return hsm.FigureSnapAngleMode; }
+            set { hsm.FigureSnapAngleMode = value; }
         }
         public bool FigureSelectToggleToSelection
         {

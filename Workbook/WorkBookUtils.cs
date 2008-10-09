@@ -14,6 +14,8 @@ namespace Workbook
 {
     public static class WorkBookUtils
     {
+        public static bool AutoRotateSnap = true;
+
         public static void SetupDEngine(DEngine de)
         {
             // Workbook DEngine Settings
@@ -26,6 +28,10 @@ namespace Workbook
             de.UsePolylineDots = true;
             de.FiguresBoundToPage = true;
             de.FiguresDeselectOnSingleClick = true;
+            if (AutoRotateSnap)
+                de.FigureSnapAngleMode = DHsnSnapAngleMode.Default;
+            else
+                de.FigureSnapAngleMode = DHsnSnapAngleMode.Never;
             // localize undo/redo commands
             de.SelectOperationName = WbLocale.SelectOperation;
             de.AddLineName = WbLocale.AddLine;
@@ -39,22 +45,28 @@ namespace Workbook
 
         public static void ViewerKeyDown(DEngine de, KeyEventArgs e)
         {
-            de.FigureLockAspectRatio = e.Shift;
-            de.FigureAlwaysSnapAngle = e.Shift;
-            de.FigureSelectToggleToSelection = e.Shift;
-            SetKeyMovementRate(de, e);
+            SetKeyParams(de, e);
         }
 
         public static void ViewerKeyUp(DEngine de, KeyEventArgs e)
         {
-            de.FigureLockAspectRatio = e.Shift;
-            de.FigureAlwaysSnapAngle = e.Shift;
-            de.FigureSelectToggleToSelection = e.Shift;
-            SetKeyMovementRate(de, e);
+            SetKeyParams(de, e);
         }
 
-        static void SetKeyMovementRate(DEngine de, KeyEventArgs e)
+        static void SetKeyParams(DEngine de, KeyEventArgs e)
         {
+            de.FigureLockAspectRatio = e.Shift;
+            if (e.Shift)
+                de.FigureSnapAngleMode = DHsnSnapAngleMode.Always;
+            else if (e.Control)
+                de.FigureSnapAngleMode = DHsnSnapAngleMode.Never;
+            else
+            {
+                de.FigureSnapAngleMode = DHsnSnapAngleMode.Never;
+                if (AutoRotateSnap)
+                    de.FigureSnapAngleMode = DHsnSnapAngleMode.Default;
+            }
+            de.FigureSelectToggleToSelection = e.Shift;
             if (e.Shift)
                 de.KeyMovementRate = 5;
             else

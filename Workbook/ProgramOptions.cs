@@ -34,6 +34,7 @@ namespace Workbook
         const string HIGHLIGHTSELECTION_OPT = "HighLightSelection";
         const string DEFAULTPAGESIZE_OPT = "DefaultPageSize";
         const string AUTOSAVEINTERVAL_OPT = "AutosaveInterval";
+        const string AUTOROTATESNAP_OPT = "AutoRotateSnap";
 
         public string IniFile
         {
@@ -60,6 +61,7 @@ namespace Workbook
         public bool HighlightSelection;
         public DPoint DefaultPageSize;
         public int AutoSaveInterval;
+        public bool AutoRotateSnap;
 
         public ProgramOptions()
         {
@@ -130,6 +132,7 @@ namespace Workbook
             DefaultPageSize = DPoint.FromString(config.GetString(DEFAULTPAGESIZE_OPT, 
                 DPoint.FormatToString(PageTools.FormatToSizeMM(PageFormat.Default))));
             AutoSaveInterval = config.GetInt(AUTOSAVEINTERVAL_OPT, 300000);
+            AutoRotateSnap = config.GetBoolean(AUTOROTATESNAP_OPT, true);
         }
 
         public void WriteIni()
@@ -153,6 +156,7 @@ namespace Workbook
             config.Set(HIGHLIGHTSELECTION_OPT, HighlightSelection);
             config.Set(DEFAULTPAGESIZE_OPT, DPoint.FormatToString(DefaultPageSize));
             config.Set(AUTOSAVEINTERVAL_OPT, AutoSaveInterval);
+            config.Set(AUTOROTATESNAP_OPT, AutoRotateSnap);
 
             ConfigSource.Save();
         }
