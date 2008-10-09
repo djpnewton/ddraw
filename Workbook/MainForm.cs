@@ -327,6 +327,16 @@ namespace Workbook
             CreateAutosave();
         }
 
+        void TryDelete(string fileName)
+        {
+            try
+            {
+                if (File.Exists(fileName))
+                    File.Delete(fileName);
+            }
+            catch { }
+        }
+
         void CheckPreviousAutosaves()
         {
             // check for old autosave files
@@ -357,7 +367,14 @@ namespace Workbook
             //choose whether to load autosave file or initialize new document
             if (orphanedAutosave != null)
             {
-                if (MessageBox.Show("Autosave file found, would you like to restore this file?",
+                FileInfo fi = new FileInfo(orphanedAutosave);
+                if (fi.Length == 0)
+                {
+                    TryDelete(autosaveServerInfoFile);
+                    TryDelete(orphanedAutosave);
+                    New();
+                }
+                else if (MessageBox.Show("Autosave file found, would you like to restore this file?",
                     ProgramName, MessageBoxButtons.YesNo) == DialogResult.Yes)
                 {
                     if (OpenFile(orphanedAutosave))
@@ -365,14 +382,8 @@ namespace Workbook
                         fileName = "Restored Autosave";
                         beenSaved = false;
                         needSave = true;
-                        try
-                        {
-                            if (File.Exists(autosaveServerInfoFile))
-                                File.Delete(autosaveServerInfoFile);
-                            if (File.Exists(orphanedAutosave))
-                                File.Delete(orphanedAutosave);
-                        }
-                        catch { }
+                        TryDelete(autosaveServerInfoFile);
+                        TryDelete(orphanedAutosave);
                     }
                     else
                         New();
