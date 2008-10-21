@@ -405,8 +405,8 @@
   </Target>
   -->
   <PropertyGroup>
-    <PostBuildEvent>xcopy $(SolutionDir)\libs\win32\libcairo-2.dll $(TargetDir) /Y
-xcopy $(SolutionDir)\libs\win32\FreeImage.dll $(TargetDir) /Y
-xcopy $(SolutionDir)\libs\win32\cairo_deps\*.* $(TargetDir) /Y</PostBuildEvent>
+    <PostBuildEvent>xcopy "$(SolutionDir)\libs\win32\libcairo-2.dll" "$(TargetDir)" /Y
+xcopy "$(SolutionDir)\libs\win32\FreeImage.dll" "$(TargetDir)" /Y
+xcopy "$(SolutionDir)\libs\win32\cairo_deps\*.*" "$(TargetDir)" /Y</PostBuildEvent>
   </PropertyGroup>
 </Project>
