@@ -287,12 +287,12 @@ namespace DDraw
         {
             get { return hsm.CurrentFigureClass; }
         }
-        public bool FigureLockAspectRatio
+        public DHsmLockAspectRatioMode FigureLockAspectRatioMode
         {
-            get { return hsm.FigureLockAspectRatio; }
-            set { hsm.FigureLockAspectRatio = value; }
+            get { return hsm.FigureLockAspectRatioMode; }
+            set { hsm.FigureLockAspectRatioMode = value; }
         }
-        public DHsnSnapAngleMode FigureSnapAngleMode
+        public DHsmSnapAngleMode FigureSnapAngleMode
         {
             get { return hsm.FigureSnapAngleMode; }
             set { hsm.FigureSnapAngleMode = value; }

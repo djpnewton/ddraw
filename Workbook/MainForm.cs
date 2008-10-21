@@ -467,6 +467,7 @@ namespace Workbook
             else
                 autoSaveTimer.Tick -= autoSaveTimer_Tick;
             WorkBookUtils.AutoRotateSnap = options.AutoRotateSnap;
+            WorkBookUtils.AutoLockAspectRatio = options.AutoLockAspectRatio;
             // load recent docs
             LoadRecentDocuments(options);
             // load personal toolbar

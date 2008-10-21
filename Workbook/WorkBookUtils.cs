@@ -15,6 +15,7 @@ namespace Workbook
     public static class WorkBookUtils
     {
         public static bool AutoRotateSnap = true;
+        public static bool AutoLockAspectRatio = true;
 
         public static void SetupDEngine(DEngine de)
         {
@@ -29,9 +30,9 @@ namespace Workbook
             de.FiguresBoundToPage = true;
             de.FiguresDeselectOnSingleClick = true;
             if (AutoRotateSnap)
-                de.FigureSnapAngleMode = DHsnSnapAngleMode.Default;
+                de.FigureSnapAngleMode = DHsmSnapAngleMode.Default;
             else
-                de.FigureSnapAngleMode = DHsnSnapAngleMode.Never;
+                de.FigureSnapAngleMode = DHsmSnapAngleMode.Never;
             // localize undo/redo commands
             de.SelectOperationName = WbLocale.SelectOperation;
             de.AddLineName = WbLocale.AddLine;
@@ -55,16 +56,24 @@ namespace Workbook
 
         static void SetKeyParams(DEngine de, KeyEventArgs e)
         {
-            de.FigureLockAspectRatio = e.Shift;
             if (e.Shift)
-                de.FigureSnapAngleMode = DHsnSnapAngleMode.Always;
+            {
+                de.FigureSnapAngleMode = DHsmSnapAngleMode.Always;
+                de.FigureLockAspectRatioMode = DHsmLockAspectRatioMode.Always;
+            }
             else if (e.Control)
-                de.FigureSnapAngleMode = DHsnSnapAngleMode.Never;
+            {
+                de.FigureSnapAngleMode = DHsmSnapAngleMode.Never;
+                de.FigureLockAspectRatioMode = DHsmLockAspectRatioMode.Never;
+            }
             else
             {
-                de.FigureSnapAngleMode = DHsnSnapAngleMode.Never;
+                de.FigureSnapAngleMode = DHsmSnapAngleMode.Never;
                 if (AutoRotateSnap)
-                    de.FigureSnapAngleMode = DHsnSnapAngleMode.Default;
+                    de.FigureSnapAngleMode = DHsmSnapAngleMode.Default;
+                de.FigureLockAspectRatioMode = DHsmLockAspectRatioMode.Never;
+                if (AutoLockAspectRatio)
+                    de.FigureLockAspectRatioMode = DHsmLockAspectRatioMode.Default;
             }
             de.FigureSelectToggleToSelection = e.Shift;
             if (e.Shift)

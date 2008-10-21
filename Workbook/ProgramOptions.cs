@@ -35,6 +35,7 @@ namespace Workbook
         const string DEFAULTPAGESIZE_OPT = "DefaultPageSize";
         const string AUTOSAVEINTERVAL_OPT = "AutosaveInterval";
         const string AUTOROTATESNAP_OPT = "AutoRotateSnap";
+        const string AUTOLOCKASPECTRATIO_OPT = "AutoLockAspectRatio";
 
         public string IniFile
         {
@@ -62,6 +63,7 @@ namespace Workbook
         public DPoint DefaultPageSize;
         public int AutoSaveInterval;
         public bool AutoRotateSnap;
+        public bool AutoLockAspectRatio;
 
         public ProgramOptions()
         {
@@ -133,6 +135,7 @@ namespace Workbook
                 DPoint.FormatToString(PageTools.FormatToSizeMM(PageFormat.Default))));
             AutoSaveInterval = config.GetInt(AUTOSAVEINTERVAL_OPT, 300000);
             AutoRotateSnap = config.GetBoolean(AUTOROTATESNAP_OPT, true);
+            AutoLockAspectRatio = config.GetBoolean(AUTOLOCKASPECTRATIO_OPT, true);
         }
 
         public void WriteIni()
@@ -157,6 +160,7 @@ namespace Workbook
             config.Set(DEFAULTPAGESIZE_OPT, DPoint.FormatToString(DefaultPageSize));
             config.Set(AUTOSAVEINTERVAL_OPT, AutoSaveInterval);
             config.Set(AUTOROTATESNAP_OPT, AutoRotateSnap);
+            config.Set(AUTOLOCKASPECTRATIO_OPT, AutoLockAspectRatio);
 
             ConfigSource.Save();
         }

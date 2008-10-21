@@ -123,7 +123,8 @@ namespace DDraw
     }
 
     public enum DHsmState { Select, SelectMeasure, DrawLine, DrawText, TextEdit, DrawRect, FigureEdit, Eraser };
-    public enum DHsnSnapAngleMode { Default, Always, Never };
+    public enum DHsmSnapAngleMode { Default, Always, Never };
+    public enum DHsmLockAspectRatioMode { Default, Always, Never };
 
     public delegate void HsmStateChangedHandler(DEngine de, DHsmState state);
     public delegate void HsmTextHandler(DEngine de, string text);
@@ -162,19 +163,19 @@ namespace DDraw
             get { return currentFigureClass; }
         }
 
-        bool figureLockAspectRatio = false;
-        public bool FigureLockAspectRatio
+        DHsmLockAspectRatioMode figureLockAspectRatioMode = DHsmLockAspectRatioMode.Default;
+        public DHsmLockAspectRatioMode FigureLockAspectRatioMode
         {
-            get { return figureLockAspectRatio; }
-            set { figureLockAspectRatio = value; }
+            get { return figureLockAspectRatioMode; }
+            set { figureLockAspectRatioMode = value; }
         }
         public bool LockingAspectRatio
         {
-            get { return lockInitialAspectRatio || figureLockAspectRatio; }
+            get { return lockInitialAspectRatio || (figureLockAspectRatioMode == DHsmLockAspectRatioMode.Always); }
         }
 
-        DHsnSnapAngleMode figureSnapAngleMode = DHsnSnapAngleMode.Default;
-        public DHsnSnapAngleMode FigureSnapAngleMode
+        DHsmSnapAngleMode figureSnapAngleMode = DHsmSnapAngleMode.Default;
+        public DHsmSnapAngleMode FigureSnapAngleMode
         {
             get { return figureSnapAngleMode; }
             set { figureSnapAngleMode = value; }
@@ -697,7 +698,7 @@ namespace DDraw
                         case DHitTest.Resize:
                             dragPt = new DPoint(0, 0);
                             dragPt = CalcSizeDelta(f.RotatePointToFigure(pt), f, LockingAspectRatio || f.LockAspectRatio);
-                            lockInitialAspectRatio = true;
+                            lockInitialAspectRatio = figureLockAspectRatioMode == DHsmLockAspectRatioMode.Default;
                             break;
                         case DHitTest.ReposLinePt1:
                             break;
@@ -971,13 +972,14 @@ namespace DDraw
                     pt = currentFigure.RotatePointToFigure(pt);
                     // apply width/height delta to figure
                     DPoint dSize = CalcSizeDelta(pt, currentFigure, LockingAspectRatio || currentFigure.LockAspectRatio);
-                    if (lockInitialAspectRatio && !(figureLockAspectRatio || currentFigure.LockAspectRatio))
+                    if (lockInitialAspectRatio && !(figureLockAspectRatioMode == DHsmLockAspectRatioMode.Always || currentFigure.LockAspectRatio))
                     {
                         DPoint dSizeUnlocked = CalcSizeDelta(pt, currentFigure, false);
-                        if (Math.Abs(dSizeUnlocked.X - dSize.X) >= unlockInitalAspectRatioThreshold ||
+                        if (figureLockAspectRatioMode == DHsmLockAspectRatioMode.Never ||
+                            Math.Abs(dSizeUnlocked.X - dSize.X) >= unlockInitalAspectRatioThreshold ||
                             Math.Abs(dSizeUnlocked.Y - dSize.Y) >= unlockInitalAspectRatioThreshold)
                         {
-                            lockInitialAspectRatio = false;
+                             lockInitialAspectRatio = false;
                             dSize = dSizeUnlocked;
                         }
                     }
@@ -1051,7 +1053,7 @@ namespace DDraw
                     double newAngle;
                     switch (FigureSnapAngleMode)
                     {
-                        case DHsnSnapAngleMode.Always:
+                        case DHsmSnapAngleMode.Always:
                             // slide point along snap angle
                             newAngle = DGeom.AngleBetweenPoints(newPoint, otherPoint);
                             ar = newAngle % figureSnapAngle;
@@ -1060,7 +1062,7 @@ namespace DDraw
                             else
                                 setPoint(DGeom.RotatePoint(newPoint, otherPoint, figureSnapAngle - ar));
                             break;
-                        case DHsnSnapAngleMode.Default:
+                        case DHsmSnapAngleMode.Default:
                             if (ar == 0)
                             {
                                 // line is snapped, test if new angle will unsnap the line
@@ -1089,7 +1091,7 @@ namespace DDraw
                                     setPoint(DGeom.RotatePoint(newPoint, otherPoint, rotationalSnap));
                             }
                             break;
-                        case DHsnSnapAngleMode.Never:
+                        case DHsmSnapAngleMode.Never:
                             // set new point
                             setPoint(newPoint);
                             break;
@@ -1108,13 +1110,13 @@ namespace DDraw
                     double r = newRot % figureSnapAngle;
                     switch (figureSnapAngleMode)
                     {
-                        case DHsnSnapAngleMode.Always:
+                        case DHsmSnapAngleMode.Always:
                             if (r < figureSnapAngle / 2)
                                 currentFigure.Rotation = newRot - r;
                             else
                                 currentFigure.Rotation = newRot + figureSnapAngle - r;
                             break;
-                        case DHsnSnapAngleMode.Default:
+                        case DHsmSnapAngleMode.Default:
                             if (r < figureSnapRange)
                                 currentFigure.Rotation = newRot - r;
                             else if (r > figureSnapAngle - figureSnapRange)
@@ -1122,7 +1124,7 @@ namespace DDraw
                             else
                                 currentFigure.Rotation = newRot;
                             break;
-                        case DHsnSnapAngleMode.Never:
+                        case DHsmSnapAngleMode.Never:
                             currentFigure.Rotation = newRot;
                             break;
                     }                      
@@ -1401,7 +1403,7 @@ namespace DDraw
             // bound pt to canvas
             BoundPtToPage(pt);
             // add point
-            if (figureSnapAngleMode == DHsnSnapAngleMode.Always && currentFigure is ILineSegment)
+            if (figureSnapAngleMode == DHsmSnapAngleMode.Always && currentFigure is ILineSegment)
             {
                 ILineSegment ls = ((ILineSegment)currentFigure);
                 // slide point along snap angle
@@ -1860,7 +1862,7 @@ namespace DDraw
                 currentFigure.Left = pt.X;
                 currentFigure.Right = dragPt.X;
             }
-            if (figureLockAspectRatio || currentFigure.LockAspectRatio)
+            if ((figureLockAspectRatioMode == DHsmLockAspectRatioMode.Always) || currentFigure.LockAspectRatio)
             {
                 currentFigure.Height = currentFigure.Width;
                 if (pt.Y >= dragPt.Y)

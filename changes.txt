@@ -20,6 +20,8 @@ Workbook 1.1
   - Added PREVIEW_BUILD compile flag that shows the status and build date of an unofficial "preview build"
   - added "Ctrl" hotkey to disable auto rotation snapping
   - added boolean Workbook.ini option AutoRotateSnap
+  - added "Ctrl" hotkey to disable auto aspect ratio locking
+  - added boolean Workbook.ini option AutoLockAspectRatio
 
   bug fixes
   - stop application closing aberrantly when screen annotation form is closed
