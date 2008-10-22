@@ -656,7 +656,7 @@ namespace DDrawCairo
 
         public override void ResetTransform()
         {
-            cr.Matrix = new Matrix(1, 0, 0, 0, 1, 0); // identity matrix
+            cr.Matrix = new Matrix(1, 0, 0, 1, 0, 0); // identity matrix
         }
 
         public override void Clip(DRect r)
