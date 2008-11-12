@@ -54,6 +54,30 @@ namespace DDraw
             return new DMatrix(1, 0, 0, 1, 0, 0);
         }
 
+        public static DMatrix Copy(DMatrix m)
+        {
+            return new DMatrix(m.A, m.B, m.C, m.D, m.E, m.F);
+        }
+
+        public static DMatrix InitScaleMatrix(double sx, double sy)
+        {
+            return new DMatrix(sx, 0, 0, sy, 0, 0);
+        }
+
+        public static DMatrix InitRotateMatrix(double rads)
+        {
+            double s;
+            double c;
+            s = Math.Sin(rads);
+            c = Math.Cos(rads);
+            return new DMatrix(c, s, -s, c, 0, 0);
+        }
+
+        public static DMatrix InitTranslateMatrix(double tx, double ty)
+        {
+            return new DMatrix(1, 0, 0, 1, tx, ty);
+        }
+
         public DMatrix(double a, double b, double c, double d, double e, double f)
         {
             A = a;
@@ -74,6 +98,39 @@ namespace DDraw
                 m.F == this.F)
                 return true;
             return false;
+        }
+
+        public DMatrix Multiply(DMatrix m)
+        {
+            DMatrix res = new DMatrix();
+            res.A = this.A * m.A + this.B * m.C;
+            res.B = this.A * m.B + this.B * m.D;
+            res.C = this.C * m.A + this.D * m.C;
+            res.D = this.C * m.B + this.D * m.D;
+            res.E = this.E * m.A + this.F * m.C + m.E;
+            res.F = this.E * m.B + this.F * m.D + m.F;
+            return res;
+        }
+
+        public DMatrix Scale(double sx, double sy)
+        {
+            if (sx != 1 || sy != 1)
+                return Multiply(InitScaleMatrix(sx, sy));
+            return Copy(this);
+        }
+
+        public DMatrix Rotate(double angle)
+        {
+            if (angle != 0)
+                return Multiply(InitRotateMatrix(angle));
+            return Copy(this);
+        }
+
+        public DMatrix Translate(double tx, double ty)
+        {
+            if (tx != 0 || ty != 0)
+                return Multiply(InitTranslateMatrix(tx, ty));
+            return Copy(this);
         }
     }
 

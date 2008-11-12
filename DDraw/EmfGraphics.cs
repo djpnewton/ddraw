@@ -681,36 +681,14 @@ namespace DDraw
             }
         }
 
-        DMatrix MatrixMultiply(DMatrix a, DMatrix b)
-        {
-            DMatrix res = new DMatrix();
-            res.A = a.A * b.A + a.B * b.C;
-            res.B = a.A * b.B + a.B * b.D;
-            res.C = a.C * b.A + a.D * b.C;
-            res.D = a.C * b.B + a.D * b.D;
-            res.E = a.E * b.A + a.F * b.C + b.E;
-            res.F = a.E * b.B + a.F * b.D + b.F;
-            return res;
-        }
-
-        DMatrix InitScaleMatrix(double sx, double sy)
-        {
-            return new DMatrix(sx, 0, 0, sy, 0, 0);
-        }
-
         public override void Scale(double sx, double sy)
         {
             if (sx != 1 || sy != 1)
-                ModifyWorldTransform(InitScaleMatrix(sx, sy));
-        }
-
-        DMatrix InitRotateMatrix(double rads)
-        {
-            double s;
-            double c;
-            s = Math.Sin(rads);
-            c = Math.Cos(rads);
-            return new DMatrix(c, s, -s, c, 0, 0);
+            {
+                DMatrix m = DMatrix.InitScaleMatrix(sx, sy);
+                ModifyWorldTransform(m);
+                currentMatrix = currentMatrix.Multiply(m);
+            }
         }
 
         public override void Rotate(double angle, DPoint center)
@@ -718,25 +696,27 @@ namespace DDraw
             if (angle != 0)
             {
                 Translate(-center.X, -center.Y);
-                ModifyWorldTransform(InitRotateMatrix(angle));
+                DMatrix m = DMatrix.InitRotateMatrix(angle);
+                ModifyWorldTransform(m);
+                currentMatrix = currentMatrix.Multiply(m);
                 Translate(center.X, center.Y);
             }
-        }
-
-        DMatrix InitTranslateMatrix(double tx, double ty)
-        {
-            return new DMatrix(1, 0, 0, 1, tx, ty);
         }
 
         public override void Translate(double tx, double ty)
         {
             if (tx != 0 || ty != 0)
-                ModifyWorldTransform(InitTranslateMatrix(tx, ty));
+            {
+                DMatrix m = DMatrix.InitTranslateMatrix(tx, ty);
+                ModifyWorldTransform(m);
+                currentMatrix = currentMatrix.Multiply(m);
+            }
         }
 
         public override void ResetTransform()
         {
             ResetWorldTransform();
+            currentMatrix = DMatrix.Identity();
         }
 
         public override void Clip(DRect r)
