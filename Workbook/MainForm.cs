@@ -337,6 +337,12 @@ namespace Workbook
             catch { }
         }
 
+        void NewIfNoFileOpen()
+        {
+            if (de == null)
+                New();
+        }
+
         void CheckPreviousAutosaves()
         {
             // check for old autosave files
@@ -372,7 +378,7 @@ namespace Workbook
                 {
                     TryDelete(autosaveServerInfoFile);
                     TryDelete(orphanedAutosave);
-                    New();
+                    NewIfNoFileOpen();
                 }
                 else if (MessageBox.Show("Autosave file found, would you like to restore this file?",
                     ProgramName, MessageBoxButtons.YesNo) == DialogResult.Yes)
@@ -386,13 +392,13 @@ namespace Workbook
                         TryDelete(orphanedAutosave);
                     }
                     else
-                        New();
+                        NewIfNoFileOpen();
                 }
                 else
-                    New();
+                    NewIfNoFileOpen();
             }
             else
-                New();
+                NewIfNoFileOpen();
             Dirty = false;
         }
 
