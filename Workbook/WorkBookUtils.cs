@@ -379,6 +379,23 @@ namespace Workbook
             dt = dt.AddHours(TimeZone.CurrentTimeZone.GetUtcOffset(dt).Hours);
             return dt;
         }
+
+        public static DPoint GetScreenMM()
+        {
+            DPoint sz = new DPoint(0, 0);
+            Graphics g = Graphics.FromHwnd((IntPtr)0);
+            sz.X = Screen.PrimaryScreen.Bounds.Width / g.DpiX * 25.4;
+            sz.Y = Screen.PrimaryScreen.Bounds.Height / g.DpiY * 25.4;
+            return sz;
+        }
+
+        public static DPoint GetScreenRes()
+        {
+            DPoint sz = new DPoint(0, 0);
+            sz.X = Screen.PrimaryScreen.Bounds.Width;
+            sz.Y = Screen.PrimaryScreen.Bounds.Height;
+            return sz;
+        }
     }
 
     public class WorkBookForm : Form

@@ -43,6 +43,8 @@ namespace Workbook
             gbPages.Text = WbLocale.Pages;
             rbPDF.Text = WbLocale.PDF;
             rbImage.Text = WbLocale.Image;
+            rbPng.Text = WbLocale.PNG;
+            rbEmf.Text = WbLocale.EMF;
             rbCurrent.Text = WbLocale.Current;
             rbAllPages.Text = WbLocale.All;
             rbSelectPages.Text = WbLocale.Select;
@@ -127,14 +129,25 @@ namespace Workbook
                     pf.Text = WbLocale.ExportingToImages;
                     pf.Shown += delegate(object s, EventArgs e)
                     {
-                        string fileNameTemplate = Path.GetFileNameWithoutExtension(docFileName) + "{0}.png";
+                        string fileNameTemplate;
+                        if (rbPng.Checked)
+                            fileNameTemplate = Path.GetFileNameWithoutExtension(docFileName) + "{0}.png";
+                        else
+                            fileNameTemplate = Path.GetFileNameWithoutExtension(docFileName) + "{0}.emf";
                         DPrintViewer dvPrint = new DPrintViewer();
                         foreach (DEngine de in expEngines)
                         {
                             DBitmap bmp = WFHelper.MakeBitmap((int)de.PageSize.X, (int)de.PageSize.Y);
-                            DGraphics dg = WFHelper.MakeGraphics(bmp);
+                            DGraphics dg;
+                            if (rbPng.Checked)
+                                dg = WFHelper.MakeGraphics(bmp);
+                            else
+                                dg = new EmfGraphics(new DRect(0, 0, de.PageSize.X, de.PageSize.Y), WorkBookUtils.GetScreenMM(), WorkBookUtils.GetScreenRes());
                             dvPrint.Paint(dg, de.BackgroundFigure, de.Figures);
-                            bmp.Save(Path.Combine(fbd.SelectedPath, string.Format(fileNameTemplate, engines.IndexOf(de) + 1)));
+                            if (rbPng.Checked)
+                                bmp.Save(Path.Combine(fbd.SelectedPath, string.Format(fileNameTemplate, engines.IndexOf(de) + 1)));
+                            else
+                                ((EmfGraphics)dg).SaveToFile(Path.Combine(fbd.SelectedPath, string.Format(fileNameTemplate, engines.IndexOf(de) + 1)));
                             dg.Dispose();
                             bmp.Dispose();
                         }
@@ -150,6 +163,19 @@ namespace Workbook
                 }
             }
             return result;
+        }
+
+        private void rbPDF_CheckedChanged(object sender, EventArgs e)
+        {
+            rbPng.Enabled = false;
+            rbEmf.Enabled = false;
+        }
+
+        private void rbImage_CheckedChanged(object sender, EventArgs e)
+        {
+            rbPng.Enabled = true;
+            rbEmf.Enabled = true;
+            rbPng.Checked = true;
         }
     }
 }

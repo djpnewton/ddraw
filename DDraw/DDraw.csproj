@@ -66,6 +66,7 @@
     <Compile Include="FigureSerialize.cs" />
     <Compile Include="FigureMetafile.cs" />
     <Compile Include="FileHelper.cs" />
+    <Compile Include="EmfGraphics.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="DTypes.cs" />
     <Compile Include="FigureAdv.cs" />

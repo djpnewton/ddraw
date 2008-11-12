@@ -8,6 +8,386 @@ namespace DDraw
 {
     public enum DMetafileType { Wmf };
 
+    public static class Emf
+    {
+        [StructLayout(LayoutKind.Sequential, Pack = 1)]
+        public struct Header
+        {
+            public UInt32 Type, Size;
+            public RectL Bounds, Frame;
+            public UInt32 Signature, Version, Bytes, Records;
+            public UInt16 Handles, Reserved;
+            public UInt32 nDescription, offDescription, nPalEntries;
+            public Wmf.SizeL Device, Millimeters;
+        }
+
+        [StructLayout(LayoutKind.Sequential, Pack = 1)]
+        public struct HeaderExtension1
+        {
+            public uint cbPixelFormat, offPixelFormat, bOpenGL;
+        }
+
+        [StructLayout(LayoutKind.Sequential, Pack = 1)]
+        public struct HeaderExtension2
+        {
+            public uint MicrometersX, MicrometersY;
+        }
+
+        [StructLayout(LayoutKind.Sequential, Pack = 1)]
+        public struct MetafileHeaderExtension2
+        {
+            public Header EmfHeader;
+            public HeaderExtension1 EmfHeaderExtension1;
+            public HeaderExtension2 EmfHeaderExtension2;
+        }
+
+        [StructLayout(LayoutKind.Sequential, Pack = 1)]
+        public struct RecordHeader
+        {
+            public UInt32 Type;
+            public UInt32 Size;
+        }
+
+        public enum FormatSignature
+        {
+            ENHMETA_SIGNATURE = 0x464D4520,
+            EPS_SIGNATURE = 0x46535045
+        }
+
+        public enum RecordType
+        {
+            EMR_HEADER = 0x00000001,
+            EMR_POLYBEZIER = 0x00000002,
+            EMR_POLYGON = 0x00000003,
+            EMR_POLYLINE = 0x00000004,
+            EMR_POLYBEZIERTO = 0x00000005,
+            EMR_POLYLINETO = 0x00000006,
+            EMR_POLYPOLYLINE = 0x00000007,
+            EMR_POLYPOLYGON = 0x00000008,
+            EMR_SETWINDOWEXTEX = 0x00000009,
+            EMR_SETWINDOWORGEX = 0x0000000A,
+            EMR_SETVIEWPORTEXTEX = 0x0000000B,
+            EMR_SETVIEWPORTORGEX = 0x0000000C,
+            EMR_SETBRUSHORGEX = 0x0000000D,
+            EMR_EOF = 0x0000000E,
+            EMR_SETPIXELV = 0x0000000F,
+            EMR_SETMAPPERFLAGS = 0x00000010,
+            EMR_SETMAPMODE = 0x00000011,
+            EMR_SETBKMODE = 0x00000012,
+            EMR_SETPOLYFILLMODE = 0x00000013,
+            EMR_SETROP2 = 0x00000014,
+            EMR_SETSTRETCHBLTMODE = 0x00000015,
+            EMR_SETTEXTALIGN = 0x00000016,
+            EMR_SETCOLORADJUSTMENT = 0x00000017,
+            EMR_SETTEXTCOLOR = 0x00000018,
+            EMR_SETBKCOLOR = 0x00000019,
+            EMR_OFFSETCLIPRGN = 0x0000001A,
+            EMR_MOVETOEX = 0x0000001B,
+            EMR_SETMETARGN = 0x0000001C,
+            EMR_EXCLUDECLIPRECT = 0x0000001D,
+            EMR_INTERSECTCLIPRECT = 0x0000001E,
+            EMR_SCALEVIEWPORTEXTEX = 0x0000001F,
+            EMR_SCALEWINDOWEXTEX = 0x00000020,
+            EMR_SAVEDC = 0x00000021,
+            EMR_RESTOREDC = 0x00000022,
+            EMR_SETWORLDTRANSFORM = 0x00000023,
+            EMR_MODIFYWORLDTRANSFORM = 0x00000024,
+            EMR_SELECTOBJECT = 0x00000025,
+            EMR_CREATEPEN = 0x00000026,
+            EMR_CREATEBRUSHINDIRECT = 0x00000027,
+            EMR_DELETEOBJECT = 0x00000028,
+            EMR_ANGLEARC = 0x00000029,
+            EMR_ELLIPSE = 0x0000002A,
+            EMR_RECTANGLE = 0x0000002B,
+            EMR_ROUNDRECT = 0x0000002C,
+            EMR_ARC = 0x0000002D,
+            EMR_CHORD = 0x0000002E,
+            EMR_PIE = 0x0000002F,
+            EMR_SELECTPALETTE = 0x00000030,
+            EMR_CREATEPALETTE = 0x00000031,
+            EMR_SETPALETTEENTRIES = 0x00000032,
+            EMR_RESIZEPALETTE = 0x00000033,
+            EMR_REALIZEPALETTE = 0x00000034,
+            EMR_EXTFLOODFILL = 0x00000035,
+            EMR_LINETO = 0x00000036,
+            EMR_ARCTO = 0x00000037,
+            EMR_POLYDRAW = 0x00000038,
+            EMR_SETARCDIRECTION = 0x00000039,
+            EMR_SETMITERLIMIT = 0x0000003A,
+            EMR_BEGINPATH = 0x0000003B,
+            EMR_ENDPATH = 0x0000003C,
+            EMR_CLOSEFIGURE = 0x0000003D,
+            EMR_FILLPATH = 0x0000003E,
+            EMR_STROKEANDFILLPATH = 0x0000003F,
+            EMR_STROKEPATH = 0x00000040,
+            EMR_FLATTENPATH = 0x00000041,
+            EMR_WIDENPATH = 0x00000042,
+            EMR_SELECTCLIPPATH = 0x00000043,
+            EMR_ABORTPATH = 0x00000044,
+            EMR_COMMENT = 0x00000046,
+            EMR_FILLRGN = 0x00000047,
+            EMR_FRAMERGN = 0x00000048,
+            EMR_INVERTRGN = 0x00000049,
+            EMR_PAINTRGN = 0x0000004A,
+            EMR_EXTSELECTCLIPRGN = 0x0000004B,
+            EMR_BITBLT = 0x0000004C,
+            EMR_STRETCHBLT = 0x0000004D,
+            EMR_MASKBLT = 0x0000004E,
+            EMR_PLGBLT = 0x0000004F,
+            EMR_SETDIBITSTODEVICE = 0x00000050,
+            EMR_STRETCHDIBITS = 0x00000051,
+            EMR_EXTCREATEFONTINDIRECTW = 0x00000052,
+            EMR_EXTTEXTOUTA = 0x00000053,
+            EMR_EXTTEXTOUTW = 0x00000054,
+            EMR_POLYBEZIER16 = 0x00000055,
+            EMR_POLYGON16 = 0x00000056,
+            EMR_POLYLINE16 = 0x00000057,
+            EMR_POLYBEZIERTO16 = 0x00000058,
+            EMR_POLYLINETO16 = 0x00000059,
+            EMR_POLYPOLYLINE16 = 0x0000005A,
+            EMR_POLYPOLYGON16 = 0x0000005B,
+            EMR_POLYDRAW16 = 0x0000005C,
+            EMR_CREATEMONOBRUSH = 0x0000005D,
+            EMR_CREATEDIBPATTERNBRUSHPT = 0x0000005E,
+            EMR_EXTCREATEPEN = 0x0000005F,
+            EMR_POLYTEXTOUTA = 0x00000060,
+            EMR_POLYTEXTOUTW = 0x00000061,
+            EMR_SETICMMODE = 0x00000062,
+            EMR_CREATECOLORSPACE = 0x00000063,
+            EMR_SETCOLORSPACE = 0x00000064,
+            EMR_DELETECOLORSPACE = 0x00000065,
+            EMR_GLSRECORD = 0x00000066,
+            EMR_GLSBOUNDEDRECORD = 0x00000067,
+            EMR_PIXELFORMAT = 0x00000068,
+            EMR_DRAWESCAPE = 0x00000069,
+            EMR_EXTESCAPE = 0x0000006A,
+            EMR_SMALLTEXTOUT = 0x0000006C,
+            EMR_FORCEUFIMAPPING = 0x0000006D,
+            EMR_NAMEDESCAPE = 0x0000006E,
+            EMR_COLORCORRECTPALETTE = 0x0000006F,
+            EMR_SETICMPROFILEA = 0x00000070,
+            EMR_SETICMPROFILEW = 0x00000071,
+            EMR_ALPHABLEND = 0x00000072,
+            EMR_SETLAYOUT = 0x00000073,
+            EMR_TRANSPARENTBLT = 0x00000074,
+            EMR_GRADIENTFILL = 0x00000076,
+            EMR_SETLINKEDUFIS = 0x00000077,
+            EMR_SETTEXTJUSTIFICATION = 0x00000078,
+            EMR_COLORMATCHTOTARGETW = 0x00000079,
+            EMR_CREATECOLORSPACEW = 0x0000007A
+        }
+
+        public enum PenStyle
+        {
+            PS_COSMETIC = 0x00000000,
+            PS_ENDCAP_ROUND = 0x00000000,
+            PS_JOIN_ROUND = 0x00000000,
+            PS_SOLID = 0x00000000,
+            PS_DASH = 0x00000001,
+            PS_DOT = 0x00000002,
+            PS_DASHDOT = 0x00000003,
+            PS_DASHDOTDOT = 0x00000004,
+            PS_NULL = 0x00000005,
+            PS_INSIDEFRAME = 0x00000006,
+            PS_USERSTYLE = 0x00000007,
+            PS_ALTERNATE = 0x00000008,
+            PS_ENDCAP_SQUARE = 0x00000100,
+            PS_ENDCAP_FLAT = 0x00000200,
+            PS_JOIN_BEVEL = 0x00001000,
+            PS_JOIN_MITER = 0x00002000,
+            PS_GEOMETRIC = 0x00010000
+        }
+
+        public enum StockObject : uint
+        {
+            WHITE_BRUSH = 0x80000000,
+            LTGRAY_BRUSH = 0x80000001,
+            GRAY_BRUSH = 0x80000002,
+            DKGRAY_BRUSH = 0x80000003,
+            BLACK_BRUSH = 0x80000004,
+            NULL_BRUSH = 0x80000005,
+            WHITE_PEN = 0x80000006,
+            BLACK_PEN = 0x80000007,
+            NULL_PEN = 0x80000008,
+            OEM_FIXED_FONT = 0x8000000A,
+            ANSI_FIXED_FONT = 0x8000000B,
+            ANSI_VAR_FONT = 0x8000000C,
+            SYSTEM_FONT = 0x8000000D,
+            DEVICE_DEFAULT_FONT = 0x8000000E,
+            DEFAULT_PALETTE = 0x8000000F,
+            SYSTEM_FIXED_FONT = 0x80000010,
+            DEFAULT_GUI_FONT = 0x80000011,
+            DC_BRUSH = 0x80000012,
+            DC_PEN = 0x80000013
+        }
+
+        [StructLayout(LayoutKind.Sequential, Pack = 1)]
+        public struct RectL
+        {
+            public Int32 Left, Top, Right, Bottom;
+            public RectL(int l, int t, int r, int b)
+            {
+                Left = l;
+                Top = t;
+                Right = r;
+                Bottom = b;
+            }
+        }
+
+        public enum ModifyWorldTransformMode
+        {
+            MWT_IDENTITY = 0x01,
+            MWT_LEFTMULTIPLY = 0x02,
+            MWT_RIGHTMULTIPLY = 0x03,
+            MWT_SET = 0x04
+        }
+
+        [StructLayout(LayoutKind.Sequential, Pack = 1)]
+        public struct XForm
+        {
+            public float M11, M12, M21, M22, Dx, Dy;
+            public XForm(float M11, float M12, float M21, float M22, float Dx, float Dy)
+            {
+                this.M11 = M11;
+                this.M12 = M12;
+                this.M21 = M21;
+                this.M22 = M22;
+                this.Dx = Dx;
+                this.Dy = Dy;
+            }
+            public XForm(DMatrix m)
+            {
+                this.M11 = (float)m.A;
+                this.M12 = (float)m.B;
+                this.M21 = (float)m.C;
+                this.M22 = (float)m.D;
+                this.Dx = (float)m.E;
+                this.Dy = (float)m.F;
+            }
+        }
+    }
+
+    public static class Wmf
+    {
+        public const UInt32 PlaceableKey = 0x9AC6CDD7;
+
+        [StructLayout(LayoutKind.Sequential, Pack = 1)]
+        public struct Header
+        {
+            public UInt16 Type, HeaderSize, Version;
+            public UInt32 Filesize;
+            public UInt16 NumOfObjects;
+            public UInt32 MaxRecord;
+            public UInt16 NumOfMembers; // not used
+        }
+
+        [StructLayout(LayoutKind.Sequential, Pack = 1)]
+        public struct Placeable
+        {
+            public UInt32 Key;
+            public UInt16 HWmf;
+            public UInt16 Left, Top, Right, Bottom;
+            public UInt16 Inch;
+            public UInt32 Reserved;
+            public UInt16 Checksum;
+        }
+
+        [StructLayout(LayoutKind.Sequential, Pack = 1)]
+        public struct FuncHeader
+        {
+            public UInt32 Size;
+            public UInt16 Function;
+        }
+
+        [StructLayout(LayoutKind.Sequential, Pack = 1)]
+        public struct PointL
+        {
+            public Int32 x, y;
+            public PointL(Int32 x, Int32 y)
+            {
+                this.x = x;
+                this.y = y;
+            }
+        }
+
+        [StructLayout(LayoutKind.Sequential, Pack = 1)]
+        public struct SizeL
+        {
+            public UInt32 cx, cy;
+            public SizeL(UInt32 cx, UInt32 cy)
+            {
+                this.cx = cx; this.cy = cy;
+            }
+        }
+
+        // Function consts
+        public const int EOF = 0x0000;
+        public const int SaveDC = 0x001E;
+        public const int CreatePalette = 0x00F7;
+        public const int SetBkMode = 0x0102;
+        public const int SetMapMode = 0x0103;
+        public const int SetROP2 = 0x0104;
+        public const int SetRelabs = 0x0105;
+        public const int SetPolyFillMode = 0x0106;
+        public const int SetStretchBltMode = 0x0107;
+        public const int DeleteObject = 0x01F0;
+        public const int RestoreDC = 0x0127;
+        public const int SelectObject = 0x012D;
+        public const int SetTextAlign = 0x012E;
+        public const int SetBkColor = 0x0201;
+        public const int SetTextColor = 0x0209;
+        public const int SetWindowOrg = 0x020B;
+        public const int SetWindowExt = 0x020C;
+        public const int SetViewportOrg = 0x020D;
+        public const int SetViewportExt = 0x020E;
+        public const int LineTo = 0x0213;
+        public const int MoveTo = 0x0214;
+        public const int SelectPalette = 0x0234;
+        public const int CreatePenIndirect = 0x02FA;
+        public const int CreateFontIndirect = 0x02FB;
+        public const int CreateBrushIndirect = 0x02FC;
+        public const int Polygon = 0x0324;
+        public const int Polyline = 0x0325;
+        public const int Ellipse = 0x0418;
+        public const int Rectangle = 0x041B;
+        public const int PolyPolygon = 0x0538;
+        public const int Escape = 0x0626;
+
+        // PolyFillMode consts
+        public const int PfmAlernate = 0x0001;
+        public const int PfmWinding = 0x0002;
+
+        // Brush Style consts
+        public const int BS_SOLID = 0x0000;
+        public const int BS_NULL = 0x0001;
+        public const int BS_HATCHED = 0x0002;
+        public const int BS_PATTERN = 0x0003;
+        public const int BS_INDEXED = 0x0004;
+        public const int BS_DIBPATTERN = 0x0005;
+        public const int BS_DIBPATTERNPT = 0x0006;
+        public const int BS_PATTERN8X8 = 0x0007;
+        public const int BS_DIBPATTERN8X8 = 0x0008;
+        public const int BS_MONOPATTERN = 0x0009;
+
+        // Pen Style consts
+        public const int PS_COSMETIC = 0x0000;
+        public const int PS_ENDCAP_ROUND = 0x0000;
+        public const int PS_JOIN_ROUND = 0x0000;
+        public const int PS_SOLID = 0x0000;
+        public const int PS_DASH = 0x0001;
+        public const int PS_DOT = 0x0002;
+        public const int PS_DASHDOT = 0x0003;
+        public const int PS_DASHDOTDOT = 0x0004;
+        public const int PS_NULL = 0x0005;
+        public const int PS_INSIDEFRAME = 0x0006;
+        public const int PS_USERSTYLE = 0x0007;
+        public const int PS_ALTERNATE = 0x0008;
+        public const int PS_ENDCAP_SQUARE = 0x0100;
+        public const int PS_ENDCAP_FLAT = 0x0200;
+        public const int PS_JOIN_BEVEL = 0x1000;
+        public const int PS_JOIN_MITER = 0x2000;
+    }
+
     public interface IMetafile
     {
         DMetafileType MetafileType
@@ -94,7 +474,7 @@ namespace DDraw
 
         void PaintMetafile(DGraphics dg)
         {
-            if (MetafileType == DMetafileType.Wmf && ImageData.Length >= Marshal.SizeOf(typeof(WmfPlaceable)))
+            if (MetafileType == DMetafileType.Wmf && ImageData.Length >= Marshal.SizeOf(typeof(Wmf.Placeable)))
                 PaintWmf(dg);
         }
 
@@ -103,122 +483,26 @@ namespace DDraw
         // see http://msdn.microsoft.com/en-us/library/cc215212.aspx for microsoft documentation
         // see http://wvware.sourceforge.net/libwmf.html for some more wmf code
 
-        const UInt32 WmfPlaceableKey = 0x9AC6CDD7;
-
-        [StructLayout(LayoutKind.Sequential, Pack = 1)]
-        struct WmfHeader
+        Wmf.Header GetWmfHeader()
         {
-            public UInt16 Type, HeaderSize, Version;
-            public UInt32 Filesize;
-            public UInt16 NumOfObjects;
-            public UInt32 MaxRecord;
-            public UInt16 NumOfMembers; // not used
+            object obj = RawDeserialize(ImageData, bytesRead, typeof(Wmf.Header));
+            bytesRead += Marshal.SizeOf(typeof(Wmf.Header));
+            return (Wmf.Header)obj;
         }
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1)]
-        struct WmfPlaceable
+        Wmf.Placeable GetWmfPlaceable()
         {
-            public UInt32 Key;
-            public UInt16 HWmf;
-            public UInt16 Left, Top, Right, Bottom;
-            public UInt16 Inch;
-            public UInt32 Reserved;
-            public UInt16 Checksum;
+            object obj = RawDeserialize(ImageData, bytesRead, typeof(Wmf.Placeable));
+            bytesRead += Marshal.SizeOf(typeof(Wmf.Placeable));
+            return (Wmf.Placeable)obj;
         }
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1)]
-        struct WmfFuncHeader
+        int WmfFuncHeaderSize = Marshal.SizeOf(typeof(Wmf.FuncHeader)); // cache so we dont have to call a million times
+        Wmf.FuncHeader GetWmfFuncHeader()
         {
-            public UInt32 Size;
-            public UInt16 Function;
-        }
-
-        // Function consts
-        const int WmfSaveDC = 0x001E;
-        const int WmfCreatePalette = 0x00F7;
-        const int WmfSetBkMode = 0x0102;
-        const int WmfSetMapMode = 0x0103;
-        const int WmfSetROP2 = 0x0104;
-        const int WmfSetRelabs = 0x0105;
-        const int WmfSetPolyFillMode = 0x0106;
-        const int WmfSetStretchBltMode = 0x0107;
-        const int WmfDeleteObject = 0x01F0;
-        const int WmfRestoreDC = 0x0127;
-        const int WmfSelectObject = 0x012D;
-        const int WmfSetTextAlign = 0x012E;
-        const int WmfSetBkColor = 0x0201;
-        const int WmfSetTextColor = 0x0209;
-        const int WmfSetWindowOrg = 0x020B;
-        const int WmfSetWindowExt = 0x020C;
-        const int WmfSetViewportOrg = 0x020D;
-        const int WmfSetViewportExt = 0x020E;
-        const int WmfLineTo = 0x0213;
-        const int WmfMoveTo = 0x0214;
-        const int WmfSelectPalette = 0x0234;
-        const int WmfCreatePenIndirect = 0x02FA;
-        const int WmfCreateFontIndirect = 0x02FB;
-        const int WmfCreateBrushIndirect = 0x02FC;
-        const int WmfPolygon = 0x0324;
-        const int WmfPolyline = 0x0325;
-        const int WmfEllipse = 0x0418;
-        const int WmfRectangle = 0x041B;
-        const int WmfPolyPolygon = 0x0538;
-        const int WmfEscape = 0x0626;
-
-        // PolyFillMode consts
-        const int WmfPfmAlernate = 0x0001;
-        const int WmfPfmWinding = 0x0002;
-
-        // Brush Style consts
-        const int WMF_BS_SOLID = 0x0000;
-        const int WMF_BS_NULL = 0x0001;
-        const int WMF_BS_HATCHED = 0x0002;
-        const int WMF_BS_PATTERN = 0x0003;
-        const int WMF_BS_INDEXED = 0x0004;
-        const int WMF_BS_DIBPATTERN = 0x0005;
-        const int WMF_BS_DIBPATTERNPT = 0x0006;
-        const int WMF_BS_PATTERN8X8 = 0x0007;
-        const int WMF_BS_DIBPATTERN8X8 = 0x0008;
-        const int WMF_BS_MONOPATTERN = 0x0009;
-
-        // Pen Style consts
-        const int WMF_PS_COSMETIC = 0x0000;
-        const int WMF_PS_ENDCAP_ROUND = 0x0000;
-        const int WMF_PS_JOIN_ROUND = 0x0000;
-        const int WMF_PS_SOLID = 0x0000;
-        const int WMF_PS_DASH = 0x0001;
-        const int WMF_PS_DOT = 0x0002;
-        const int WMF_PS_DASHDOT = 0x0003;
-        const int WMF_PS_DASHDOTDOT = 0x0004;
-        const int WMF_PS_NULL = 0x0005;
-        const int WMF_PS_INSIDEFRAME = 0x0006;
-        const int WMF_PS_USERSTYLE = 0x0007;
-        const int WMF_PS_ALTERNATE = 0x0008;
-        const int WMF_PS_ENDCAP_SQUARE = 0x0100;
-        const int WMF_PS_ENDCAP_FLAT = 0x0200;
-        const int WMF_PS_JOIN_BEVEL = 0x1000;
-        const int WMF_PS_JOIN_MITER = 0x2000;
-
-        WmfHeader GetWmfHeader()
-        {
-            object obj = RawDeserialize(ImageData, bytesRead, typeof(WmfHeader));
-            bytesRead += Marshal.SizeOf(typeof(WmfHeader));
-            return (WmfHeader)obj;
-        }
-
-        WmfPlaceable GetWmfPlaceable()
-        {
-            object obj = RawDeserialize(ImageData, bytesRead, typeof(WmfPlaceable));
-            bytesRead += Marshal.SizeOf(typeof(WmfPlaceable));
-            return (WmfPlaceable)obj;
-        }
-
-        int WmfFuncHeaderSize = Marshal.SizeOf(typeof(WmfFuncHeader)); // cache so we dont have to call a million times
-        WmfFuncHeader GetWmfFuncHeader()
-        {
-            object obj = RawDeserialize(ImageData, bytesRead, typeof(WmfFuncHeader));
+            object obj = RawDeserialize(ImageData, bytesRead, typeof(Wmf.FuncHeader));
             bytesRead += WmfFuncHeaderSize;
-            return (WmfFuncHeader)obj;
+            return (Wmf.FuncHeader)obj;
         }
 
         int bytesRead;
@@ -303,8 +587,8 @@ namespace DDraw
         }
 
         // wmf vars
-        WmfPlaceable placeable;
-        WmfHeader header;
+        Wmf.Placeable placeable;
+        Wmf.Header header;
         int winX, winY, winWidth, winHeight;
         int viewX, viewY, viewWidth, viewHeight;
 
@@ -383,7 +667,7 @@ namespace DDraw
 
         bool WmfIsPlaceable
         {
-            get { return BitConverter.ToUInt32(ImageData, 0) == WmfPlaceableKey; }
+            get { return BitConverter.ToUInt32(ImageData, 0) == Wmf.PlaceableKey; }
         }
 
         private void PaintWmf(DGraphics dg)
@@ -402,7 +686,7 @@ namespace DDraw
                 placeable = GetWmfPlaceable();
                 // checksum
                 int sum = 0;
-                for (int i = 0; i < (Marshal.SizeOf(typeof(WmfPlaceable)) - 2 /* WmfPlaceable.Checksum is UInt16 */) / 2; i++)
+                for (int i = 0; i < (Marshal.SizeOf(typeof(Wmf.Placeable)) - 2 /* WmfPlaceable.Checksum is UInt16 */) / 2; i++)
                     sum = sum ^ BitConverter.ToUInt16(ImageData, i * 2);
                 if (sum != placeable.Checksum)
                     System.Diagnostics.Debug.Fail("checksum failed");
@@ -415,158 +699,165 @@ namespace DDraw
                 while (records)
                 {
                     int bytesReadPlusFuncHeaderSize = bytesRead;
-                    WmfFuncHeader fh = GetWmfFuncHeader();
+                    Wmf.FuncHeader fh = GetWmfFuncHeader();
                     bytesReadPlusFuncHeaderSize += (int)fh.Size * 2;
                     bool breakme = false;
                     switch (fh.Function)
                     {
-                        case WmfSaveDC:
+                        case Wmf.SaveDC:
                             break;
-                        case WmfCreatePalette:
+                        case Wmf.CreatePalette:
                             break;
-                        case WmfSetBkMode:
+                        case Wmf.SetBkMode:
                             int bkMode = GetInt16();
                             break;
-                        case WmfSetMapMode:
+                        case Wmf.SetMapMode:
                             int mapMode = GetInt16();
                             break;
-                        case WmfSetROP2:
+                        case Wmf.SetROP2:
                             break;
-                        case WmfSetRelabs:
+                        case Wmf.SetRelabs:
                             break;
-                        case WmfSetPolyFillMode:
+                        case Wmf.SetPolyFillMode:
                             int polyfillMode = GetInt16();
-                            if (polyfillMode == WmfPfmAlernate)
+                            if (polyfillMode == Wmf.PfmAlernate)
                                 fillRule = DFillRule.EvenOdd;
                             else
                                 fillRule = DFillRule.Winding;
                             break;
-                        case WmfSetStretchBltMode:
+                        case Wmf.SetStretchBltMode:
                             break;
-                        case WmfDeleteObject:
+                        case Wmf.DeleteObject:
                             WmfDeleteGdiObject(GetInt16());
                             break;
-                        case WmfRestoreDC:
+                        case Wmf.RestoreDC:
                             break;
-                        case WmfSelectObject:
+                        case Wmf.SelectObject:
                             WmfSelectGdiObject(GetInt16());
                             break;
-                        case WmfSetTextAlign:
+                        case Wmf.SetTextAlign:
                             break;
-                        case WmfSetBkColor:
+                        case Wmf.SetBkColor:
                             break;
-                        case WmfSetTextColor:
+                        case Wmf.SetTextColor:
                             break;
-                        case WmfSetWindowOrg:
+                        case Wmf.SetWindowOrg:
                             winY = GetInt16();
                             winX = GetInt16();
                             WmfUpdateMaxtrix(dg, m);
                             break;
-                        case WmfSetWindowExt:                            
+                        case Wmf.SetWindowExt:                            
                             winHeight = GetInt16();
                             winWidth = GetInt16();
                             WmfUpdateMaxtrix(dg, m);
                             break;
-                        case WmfSetViewportOrg:
+                        case Wmf.SetViewportOrg:
                             viewY = GetInt16();
                             viewX = GetInt16();
                             //wmfUpdateMaxtrix(dg, m);
                             break;
-                        case WmfSetViewportExt:
+                        case Wmf.SetViewportExt:
                             viewHeight = GetInt16();
                             viewWidth = GetInt16();
                             //wmfUpdateMaxtrix(dg, m);
                             break;
-                        case WmfLineTo:
+                        case Wmf.LineTo:
                             DPoint pt = GetPoint();
                             if (StrokeValid)
                                 dg.DrawLine(curPoint, pt, stroke, 1, strokeStyle, strokeWidth, strokeCap);
                             curPoint = pt;
                             break;
-                        case WmfMoveTo:
+                        case Wmf.MoveTo:
                             curPoint = GetPoint();
                             break;
-                        case WmfSelectPalette:
+                        case Wmf.SelectPalette:
                             break;
-                        case WmfCreatePenIndirect:
+                        case Wmf.CreatePenIndirect:
                             int gdiPenStyle = GetInt16();
                             int widthX = GetInt16();
                             int widthY = GetInt16();
                             DColor penColor = GetColor();
                             double penWidth = widthX;
                             WmfApplyTransforms(ref penWidth);
-                            DStrokeStyle penStyle;
-                            DStrokeCap penCap;
-                            DStrokeJoin penJoin;
-
-                            if ((gdiPenStyle & WMF_PS_SOLID) == WMF_PS_SOLID)
-                                penStyle = DStrokeStyle.Solid;
-                            else if ((gdiPenStyle & WMF_PS_DASH) == WMF_PS_DASH)
-                                penStyle = DStrokeStyle.Dash;
-                            else if ((gdiPenStyle & WMF_PS_DOT) == WMF_PS_DOT)
-                                penStyle = DStrokeStyle.Dot;
-                            else if ((gdiPenStyle & WMF_PS_DASHDOT) == WMF_PS_DASHDOT)
-                                penStyle = DStrokeStyle.DashDot;
-                            else if ((gdiPenStyle & WMF_PS_DASHDOTDOT) == WMF_PS_DASHDOTDOT)
+                            DStrokeStyle penStyle = DStrokeStyle.Solid;
+                            DStrokeCap penCap = DStrokeCap.Round;
+                            DStrokeJoin penJoin = DStrokeJoin.Round;
+                            
+                            if ((gdiPenStyle & Wmf.PS_DASHDOTDOT) == Wmf.PS_DASHDOTDOT)
                                 penStyle = DStrokeStyle.DashDotDot;
+                            else if ((gdiPenStyle & Wmf.PS_DASHDOT) == Wmf.PS_DASHDOT)
+                                penStyle = DStrokeStyle.DashDot;
+                            else if ((gdiPenStyle & Wmf.PS_DOT) == Wmf.PS_DOT)
+                                penStyle = DStrokeStyle.Dot;
+                            else if ((gdiPenStyle & Wmf.PS_DASH) == Wmf.PS_DASH)
+                                penStyle = DStrokeStyle.Dash;
+                            else
+                                penStyle = DStrokeStyle.Solid;
 
-                            if ((gdiPenStyle & WMF_PS_ENDCAP_FLAT) == WMF_PS_ENDCAP_FLAT)
+                            if ((gdiPenStyle & Wmf.PS_ENDCAP_FLAT) == Wmf.PS_ENDCAP_FLAT)
                                 penCap = DStrokeCap.Butt;
-                            else if ((gdiPenStyle & WMF_PS_ENDCAP_ROUND) == WMF_PS_ENDCAP_ROUND)
-                                penCap = DStrokeCap.Round;
-                            else if ((gdiPenStyle & WMF_PS_ENDCAP_SQUARE) == WMF_PS_ENDCAP_SQUARE)
+                            else if ((gdiPenStyle & Wmf.PS_ENDCAP_SQUARE) == Wmf.PS_ENDCAP_SQUARE)
                                 penCap = DStrokeCap.Square;
+                            else 
+                                penCap = DStrokeCap.Round;
 
-                            if ((gdiPenStyle & WMF_PS_JOIN_BEVEL) == WMF_PS_JOIN_BEVEL)
-                                penJoin = DStrokeJoin.Bevel;
-                            else if ((gdiPenStyle & WMF_PS_JOIN_MITER) == WMF_PS_JOIN_MITER)
+                            if ((gdiPenStyle & Wmf.PS_JOIN_MITER) == Wmf.PS_JOIN_MITER)
                                 penJoin = DStrokeJoin.Mitre;
-                            else if ((gdiPenStyle & WMF_PS_JOIN_ROUND) == WMF_PS_JOIN_ROUND)
+                            else if ((gdiPenStyle & Wmf.PS_JOIN_BEVEL) == Wmf.PS_JOIN_BEVEL)
+                                penJoin = DStrokeJoin.Bevel;
+                            else
                                 penJoin = DStrokeJoin.Round;
 
-                            if ((gdiPenStyle & WMF_PS_NULL) == WMF_PS_NULL)
+                            if ((gdiPenStyle & Wmf.PS_NULL) == Wmf.PS_NULL)
                                 WmfAddGdiObject(new WmfGdiPen(DColor.Empty, penWidth, penStyle, penCap, penJoin));
                             else
                                 WmfAddGdiObject(new WmfGdiPen(penColor, penWidth, penStyle, penCap, penJoin));
                             break;
-                        case WmfCreateFontIndirect:
+                        case Wmf.CreateFontIndirect:
                             WmfAddGdiObject("font");
                             break;
-                        case WmfCreateBrushIndirect:
+                        case Wmf.CreateBrushIndirect:
                             int brushStyle = GetInt16();
                             DColor brushColor = GetColor();
                             int brushHatch = GetInt16();
-                            if ((brushStyle & WMF_BS_NULL) == WMF_BS_NULL)
+                            if ((brushStyle & Wmf.BS_NULL) == Wmf.BS_NULL)
                                 WmfAddGdiObject(new WmfGdiBrush(DColor.Empty));
                             else
                                 WmfAddGdiObject(new WmfGdiBrush(brushColor));
                             break;
-                        case WmfPolygon:
+                        case Wmf.Polygon:
                             DPoints polygonPts = GetPolyPoints(GetInt16(), true);
                             if (FillValid)
                                 dg.FillPolygon(polygonPts, fill, 1, fillRule);
                             if (StrokeValid)
                                 dg.DrawPolyline(polygonPts, stroke, 1, strokeWidth, strokeStyle, strokeJoin, strokeCap);
                             break;
-                        case WmfPolyline:
+                        case Wmf.Polyline:
                             DPoints polylinePts = GetPolyPoints(GetInt16(), false);
                             if (StrokeValid)
                                 dg.DrawPolyline(polylinePts, stroke, 1, strokeWidth, strokeStyle, strokeJoin, strokeCap);
                             break;
-                        case WmfEllipse:
-                            goto case WmfRectangle;
-                        case WmfRectangle:
+                        case Wmf.Ellipse:
+                            goto case Wmf.Rectangle;
+                        case Wmf.Rectangle:
                             DPoint br = GetPoint();
                             DPoint tl = GetPoint();
+                            if (FillValid)
+                            {
+                                if (fh.Function == Wmf.Rectangle)
+                                    dg.FillRect(tl.X, tl.Y, br.X - tl.X, br.Y - tl.Y, fill, 1);
+                                else if (fh.Function == Wmf.Ellipse)
+                                    dg.FillEllipse(tl.X, tl.Y, br.X - tl.X, br.Y - tl.Y, fill, 1);
+                            }
                             if (StrokeValid)
                             {
-                                if (fh.Function == WmfRectangle)
+                                if (fh.Function == Wmf.Rectangle)
                                     dg.DrawRect(tl.X, tl.Y, br.X - tl.X, br.Y - tl.Y, stroke, 1, strokeWidth, strokeStyle, strokeJoin);
-                                else if (fh.Function == WmfEllipse)
+                                else if (fh.Function == Wmf.Ellipse)
                                     dg.DrawEllipse(tl.X, tl.Y, br.X - tl.X, br.Y - tl.Y, stroke, 1, strokeWidth, strokeStyle);
                             }
                             break;
-                        case WmfPolyPolygon:
+                        case Wmf.PolyPolygon:
                             // find out how many points
                             int numPolygons = GetInt16();
                             int[] numPoints = new int[numPolygons];
@@ -583,7 +874,7 @@ namespace DDraw
                             if (StrokeValid)
                                 dg.DrawPolyline(polyPolyPoints, stroke, 1, strokeWidth, strokeStyle, strokeJoin, strokeCap);
                             break;
-                        case WmfEscape:
+                        case Wmf.Escape:
                             break;
                         default:
                             breakme = true;
@@ -620,19 +911,19 @@ namespace DDraw
                 while (records)
                 {
                     int bytesReadPlusFuncHeaderSize = bytesRead;
-                    WmfFuncHeader fh = GetWmfFuncHeader();
+                    Wmf.FuncHeader fh = GetWmfFuncHeader();
                     bytesReadPlusFuncHeaderSize += (int)fh.Size * 2;
                     switch (fh.Function)
                     {
-                        case WmfSetWindowOrg:
+                        case Wmf.SetWindowOrg:
                             winY = GetInt16();
                             winX = GetInt16();
                             break;
-                        case WmfSetWindowExt:
+                        case Wmf.SetWindowExt:
                             winHeight = GetInt16();
                             winWidth = GetInt16();
                             break;
-                        case 0:
+                        case Wmf.EOF:
                             records = false;
                             // this does not always work too well (there are some wacky values in wmf files)
                             double width = Math.Abs(winWidth);

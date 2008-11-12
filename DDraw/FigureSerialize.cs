@@ -288,40 +288,54 @@ namespace DDraw
                 return DGeom.BoundingBoxOfRotatedRect(f.Rect, f.Rotation);
         }
 
+        private static DRect GetBounds(IList<Figure> figures)
+        {
+            DRect r = GetBoundingRect(figures[0]);
+            if (figures.Count > 1)
+                foreach (Figure f in figures)
+                {
+                    DRect r2 = GetBoundingRect(f);
+                    if (r2.Left < r.Left)
+                        r.Left = r2.Left;
+                    if (r2.Top < r.Top)
+                        r.Top = r2.Top;
+                    if (r2.Right > r.Right)
+                        r.Right = r2.Right;
+                    if (r2.Bottom > r.Bottom)
+                        r.Bottom = r2.Bottom;
+                }
+            return r;
+        }
+
         public static DBitmap FormatToBmp(IList<Figure> figures, bool antiAlias, DColor backgroundColor)
         {
-            double left, top, right, bottom;
             if (figures.Count > 0)
             {
-                DRect r = GetBoundingRect(figures[0]);
-                left = r.Left;
-                top = r.Top;
-                right = r.Right;
-                bottom = r.Bottom;
-                if (figures.Count > 1)
-                    foreach (Figure f in figures)
-                    {
-                        r = GetBoundingRect(f);
-                        if (r.Left < left)
-                            left = r.Left;
-                        if (r.Top < top)
-                            top = r.Top;
-                        if (r.Right > right)
-                            right = r.Right;
-                        if (r.Bottom > bottom)
-                            bottom = r.Bottom;
-                    }
-                DBitmap bmp = GraphicsHelper.MakeBitmap(right - left, bottom - top);
+                DRect r = GetBounds(figures);
+                DBitmap bmp = GraphicsHelper.MakeBitmap(r.Width, r.Height);
                 DGraphics dg = GraphicsHelper.MakeGraphics(bmp);
                 dg.AntiAlias = antiAlias;
-                dg.FillRect(-1, -1, right - left + 2, bottom - top + 2, backgroundColor, 1);
-                dg.Translate(-left, -top);
+                dg.FillRect(-1, -1, r.Width + 2, r.Height + 2, backgroundColor, 1);
+                dg.Translate(-r.Left, -r.Top);
                 foreach (Figure f in figures)
                     f.Paint(dg);
                 return bmp;
             }
             else
                 return null;
+        }
+
+        public static byte[] FormatToEmf(IList<Figure> figures, DPoint screenMM, DPoint deviceRes)
+        {
+            if (figures.Count > 0)
+            {
+                DRect r =  GetBounds(figures);
+                EmfGraphics dg = new EmfGraphics(r, screenMM, deviceRes);
+                foreach (Figure f in figures)
+                    f.Paint(dg);
+                return dg.EmfData;
+            }
+            return null;
         }
 
         static void ApplyUserAttrs(XmlReader re, Figure f)

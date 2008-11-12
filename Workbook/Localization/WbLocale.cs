@@ -1027,6 +1027,16 @@ namespace Workbook
             get { return GetString("ExportSelectionToImage"); }
         }
 
+        public static string PNG
+        {
+            get { return GetString("PNG"); }
+        }
+
+        public static string EMF
+        {
+            get { return GetString("EMF"); }
+        }
+
         public static string RemoveTextWrap
         {
             get { return GetString("RemoveTextWrap"); }

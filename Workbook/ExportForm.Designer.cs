@@ -35,11 +35,15 @@ namespace Workbook
             this.lbPageSelect = new System.Windows.Forms.ListBox();
             this.gbExportFormat = new System.Windows.Forms.GroupBox();
             this.gbPages = new System.Windows.Forms.GroupBox();
+            this.rbCurrent = new System.Windows.Forms.RadioButton();
             this.btnOk = new System.Windows.Forms.Button();
             this.btnCancel = new System.Windows.Forms.Button();
-            this.rbCurrent = new System.Windows.Forms.RadioButton();
+            this.rbPng = new System.Windows.Forms.RadioButton();
+            this.rbEmf = new System.Windows.Forms.RadioButton();
+            this.panel1 = new System.Windows.Forms.Panel();
             this.gbExportFormat.SuspendLayout();
             this.gbPages.SuspendLayout();
+            this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
             // rbPDF
@@ -52,6 +56,7 @@ namespace Workbook
             this.rbPDF.TabStop = true;
             this.rbPDF.Text = "PDF";
             this.rbPDF.UseVisualStyleBackColor = true;
+            this.rbPDF.CheckedChanged += new System.EventHandler(this.rbPDF_CheckedChanged);
             // 
             // rbImage
             // 
@@ -63,6 +68,7 @@ namespace Workbook
             this.rbImage.TabStop = true;
             this.rbImage.Text = "Images";
             this.rbImage.UseVisualStyleBackColor = true;
+            this.rbImage.CheckedChanged += new System.EventHandler(this.rbImage_CheckedChanged);
             // 
             // rbAllPages
             // 
@@ -98,11 +104,12 @@ namespace Workbook
             // 
             // gbExportFormat
             // 
+            this.gbExportFormat.Controls.Add(this.panel1);
             this.gbExportFormat.Controls.Add(this.rbPDF);
             this.gbExportFormat.Controls.Add(this.rbImage);
             this.gbExportFormat.Location = new System.Drawing.Point(12, 12);
             this.gbExportFormat.Name = "gbExportFormat";
-            this.gbExportFormat.Size = new System.Drawing.Size(231, 46);
+            this.gbExportFormat.Size = new System.Drawing.Size(231, 92);
             this.gbExportFormat.TabIndex = 5;
             this.gbExportFormat.TabStop = false;
             this.gbExportFormat.Text = "Format";
@@ -113,32 +120,12 @@ namespace Workbook
             this.gbPages.Controls.Add(this.rbAllPages);
             this.gbPages.Controls.Add(this.rbSelectPages);
             this.gbPages.Controls.Add(this.lbPageSelect);
-            this.gbPages.Location = new System.Drawing.Point(12, 64);
+            this.gbPages.Location = new System.Drawing.Point(12, 110);
             this.gbPages.Name = "gbPages";
             this.gbPages.Size = new System.Drawing.Size(231, 108);
             this.gbPages.TabIndex = 6;
             this.gbPages.TabStop = false;
             this.gbPages.Text = "Pages";
-            // 
-            // btnOk
-            // 
-            this.btnOk.Location = new System.Drawing.Point(87, 178);
-            this.btnOk.Name = "btnOk";
-            this.btnOk.Size = new System.Drawing.Size(75, 23);
-            this.btnOk.TabIndex = 7;
-            this.btnOk.Text = "Ok";
-            this.btnOk.UseVisualStyleBackColor = true;
-            this.btnOk.Click += new System.EventHandler(this.btnOk_Click);
-            // 
-            // btnCancel
-            // 
-            this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.btnCancel.Location = new System.Drawing.Point(168, 178);
-            this.btnCancel.Name = "btnCancel";
-            this.btnCancel.Size = new System.Drawing.Size(75, 23);
-            this.btnCancel.TabIndex = 8;
-            this.btnCancel.Text = "Cancel";
-            this.btnCancel.UseVisualStyleBackColor = true;
             // 
             // rbCurrent
             // 
@@ -151,13 +138,64 @@ namespace Workbook
             this.rbCurrent.Text = "Current";
             this.rbCurrent.UseVisualStyleBackColor = true;
             // 
+            // btnOk
+            // 
+            this.btnOk.Location = new System.Drawing.Point(87, 224);
+            this.btnOk.Name = "btnOk";
+            this.btnOk.Size = new System.Drawing.Size(75, 23);
+            this.btnOk.TabIndex = 7;
+            this.btnOk.Text = "Ok";
+            this.btnOk.UseVisualStyleBackColor = true;
+            this.btnOk.Click += new System.EventHandler(this.btnOk_Click);
+            // 
+            // btnCancel
+            // 
+            this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+            this.btnCancel.Location = new System.Drawing.Point(168, 224);
+            this.btnCancel.Name = "btnCancel";
+            this.btnCancel.Size = new System.Drawing.Size(75, 23);
+            this.btnCancel.TabIndex = 8;
+            this.btnCancel.Text = "Cancel";
+            this.btnCancel.UseVisualStyleBackColor = true;
+            // 
+            // rbPng
+            // 
+            this.rbPng.AutoSize = true;
+            this.rbPng.Location = new System.Drawing.Point(3, 3);
+            this.rbPng.Name = "rbPng";
+            this.rbPng.Size = new System.Drawing.Size(48, 17);
+            this.rbPng.TabIndex = 9;
+            this.rbPng.TabStop = true;
+            this.rbPng.Text = "PNG";
+            this.rbPng.UseVisualStyleBackColor = true;
+            // 
+            // rbEmf
+            // 
+            this.rbEmf.AutoSize = true;
+            this.rbEmf.Location = new System.Drawing.Point(3, 24);
+            this.rbEmf.Name = "rbEmf";
+            this.rbEmf.Size = new System.Drawing.Size(47, 17);
+            this.rbEmf.TabIndex = 10;
+            this.rbEmf.TabStop = true;
+            this.rbEmf.Text = "EMF";
+            this.rbEmf.UseVisualStyleBackColor = true;
+            // 
+            // panel1
+            // 
+            this.panel1.Controls.Add(this.rbPng);
+            this.panel1.Controls.Add(this.rbEmf);
+            this.panel1.Location = new System.Drawing.Point(97, 42);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(73, 44);
+            this.panel1.TabIndex = 11;
+            // 
             // ExportForm
             // 
             this.AcceptButton = this.btnOk;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btnCancel;
-            this.ClientSize = new System.Drawing.Size(255, 209);
+            this.ClientSize = new System.Drawing.Size(254, 254);
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.btnOk);
             this.Controls.Add(this.gbPages);
@@ -173,6 +211,8 @@ namespace Workbook
             this.gbExportFormat.PerformLayout();
             this.gbPages.ResumeLayout(false);
             this.gbPages.PerformLayout();
+            this.panel1.ResumeLayout(false);
+            this.panel1.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -189,5 +229,8 @@ namespace Workbook
         private System.Windows.Forms.Button btnOk;
         private System.Windows.Forms.Button btnCancel;
         private System.Windows.Forms.RadioButton rbCurrent;
+        private System.Windows.Forms.RadioButton rbEmf;
+        private System.Windows.Forms.RadioButton rbPng;
+        private System.Windows.Forms.Panel panel1;
     }
 }

@@ -726,4 +726,10 @@
   <data name="Zoom" xml:space="preserve">
     <value>Zoom</value>
   </data>
+  <data name="PNG" xml:space="preserve">
+    <value>PNG</value>
+  </data>
+  <data name="EMF" xml:space="preserve">
+    <value>EMF</value>
+  </data>
 </root>

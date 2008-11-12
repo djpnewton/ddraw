@@ -46,6 +46,14 @@ namespace DDraw
     {
         public double A, B, C, D, E, F;
 
+        /// <summary>
+        /// Create Identity Matrix
+        /// </summary>
+        public static DMatrix Identity()
+        {
+            return new DMatrix(1, 0, 0, 1, 0, 0);
+        }
+
         public DMatrix(double a, double b, double c, double d, double e, double f)
         {
             A = a;
@@ -54,6 +62,18 @@ namespace DDraw
             D = d;
             E = e;
             F = f;
+        }
+
+        public bool Equals(DMatrix m)
+        {
+            if (m.A == this.A &&
+                m.B == this.B &&
+                m.C == this.C &&
+                m.D == this.D &&
+                m.E == this.E &&
+                m.F == this.F)
+                return true;
+            return false;
         }
     }
 

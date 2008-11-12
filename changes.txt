@@ -13,7 +13,8 @@ Workbook 1.1
   - autoscroll the previewbar when a drag and drop operation nears the edges
   - cut/copy/paste functions within TextEditFigure
   - apply text wrap to smart notepad imports
-  - preliminary wmf (windows metafile) support
+  - preliminary wmf (windows metafile) rendering
+  - preliminary support for emf (enhanced metafile) export
   - "DefaultPageSize" option in Workbook.ini
   - "AutosaveInterval" option in Workbook.ini (milliseconds, set to 0 to turn off)
   - tempfile and autosave support for multiple instances of workbook

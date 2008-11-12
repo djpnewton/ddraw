@@ -289,6 +289,8 @@ namespace Workbook
             actDeletePage.Text = WbLocale.DeletePage;
             actDimensions.Text = WbLocale.Dimensions;
             actExportSelectionToImage.Text = WbLocale.ExportSelectionToImage;
+            actExportSelectionToPng.Text = WbLocale.PNG;
+            actExportSelectionToEmf.Text = WbLocale.EMF;
             actGroupFigures.Text = WbLocale.Group;
             actLink.Text = WbLocale.Link;
             actLockFigure.Text = WbLocale.Lock;
@@ -849,6 +851,8 @@ namespace Workbook
             actProperties.Enabled = figs.Count > 0;
             // update export selection action
             actExportSelectionToImage.Enabled = figs.Count > 0;
+            actExportSelectionToPng.Enabled = figs.Count > 0;
+            actExportSelectionToEmf.Enabled = figs.Count > 0;
             // update unwrap text action
             actUnwrapText.Enabled = figs.Count == 1 && figs[0] is ITextable && ((ITextable)figs[0]).WrapText;
             removeTextWrapToolStripMenuItem.Visible = actUnwrapText.Enabled;
@@ -2014,7 +2018,24 @@ namespace Workbook
                 CheckState();
                 DBitmap bmp = FigureSerialize.FormatToBmp(de.SelectedFigures, dvEditor.AntiAlias, DColor.Empty);
                 bmp.Save(sfd.FileName);
-            }
+            }        
+        }
+
+        private void actExportSelectionToEmf_Execute(object sender, EventArgs e)
+        {
+            System.Diagnostics.Debug.Assert(de.SelectedFigures.Count > 0, "ERROR: No figures selected");
+            SaveFileDialog sfd = new SaveFileDialog();
+            sfd.Filter = "EMF File|*.emf";
+            if (sfd.ShowDialog() == DialogResult.OK)
+            {
+                CheckState();
+                byte[] data = FigureSerialize.FormatToEmf(de.SelectedFigures, WorkBookUtils.GetScreenMM(), WorkBookUtils.GetScreenRes());
+                if (File.Exists(sfd.FileName))
+                    File.Delete(sfd.FileName);
+                FileStream fs = File.Create(sfd.FileName);
+                fs.Write(data, 0, data.Length);
+                fs.Close();
+            }             
         }
 
         private void actUnwrapText_Execute(object sender, EventArgs e)
