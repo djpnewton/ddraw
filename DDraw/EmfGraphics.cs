@@ -65,6 +65,9 @@ namespace DDraw
             WriteRecordHeader(Emf.RecordType.EMR_SETVIEWPORTEXTEX, 16);
             WriteSizeL(new Wmf.SizeL((uint)(h.EmfHeader.Bounds.Right - h.EmfHeader.Bounds.Left),
                 (uint)(h.EmfHeader.Bounds.Bottom - h.EmfHeader.Bounds.Top)));
+
+            WriteRecordHeader(Emf.RecordType.EMR_SETBKMODE, 12);
+            WriteUInt(0x01); // TRANSPARENT
         }
 
         public void SaveToFile(string fileName)
@@ -236,6 +239,12 @@ namespace DDraw
             WriteUInt(Wmf.BS_SOLID);
             WriteColor(col);
             WriteUInt(0); // BrushHatch not supported
+        }
+
+        void SetTextColor(DColor col)
+        {
+            WriteRecordHeader(Emf.RecordType.EMR_SETTEXTCOLOR, 12);
+            WriteColor(col);
         }
 
         void ExtCreateFontIndirectW(uint objectIndex, string fontName, double fontSize, bool bold, bool italic, bool underline, bool strikethrough)
@@ -639,13 +648,11 @@ namespace DDraw
 
         public override void DrawText(string text, string fontName, double fontSize, bool bold, bool italics, bool underline, bool strikethrough, DPoint pt, DColor color, double alpha)
         {
-            UpdateMaxNumOfObjects(2);
-            CreateBrushIndirect(1, color);
-            SelectObject(1);
+            UpdateMaxNumOfObjects(1);
+            SetTextColor(color);
             ExtCreateFontIndirectW(2, fontName, fontSize, bold, italics, underline, strikethrough);
-            SelectObject(2);
+            SelectObject(1);
             ExtTextOutW(text, pt);
-            DeleteObject(2);
             DeleteObject(1);
         }
 
