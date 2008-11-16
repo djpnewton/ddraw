@@ -15,10 +15,12 @@ namespace DDraw
         DMatrix currentMatrix = DMatrix.Identity();
         Stack<DMatrix> matrixStack = new Stack<DMatrix>();
 
+        DPoint screenMM, deviceRes;
+
         public EmfGraphics(DRect bounds, DPoint screenMM, DPoint deviceRes)
         {
-            screenMM.X = 320;
-            screenMM.Y = 200;
+            this.screenMM = screenMM;
+            this.deviceRes = deviceRes;
 
             // create memory stream 
             ms = new MemoryStream();
@@ -132,6 +134,12 @@ namespace DDraw
         }
 
         void WriteUInt(uint num)
+        {
+            byte[] buf = BitConverter.GetBytes(num);
+            ms.Write(buf, 0, buf.Length);
+        }
+
+        void WriteInt(int num)
         {
             byte[] buf = BitConverter.GetBytes(num);
             ms.Write(buf, 0, buf.Length);
@@ -252,7 +260,9 @@ namespace DDraw
             WriteRecordHeader(Emf.RecordType.EMR_EXTCREATEFONTINDIRECTW, 104);
             WriteUInt(objectIndex);
             // LogFont
-            WriteUInt((uint)fontSize); //Height?
+            double dpiY = deviceRes.Y / (screenMM.Y / 25.4);
+            double lfHeight = -((fontSize * dpiY) / 72);
+            WriteInt((int)lfHeight); //Height
             WriteUInt(0); //Width?
             WriteUInt(0); //Escapement?
             WriteUInt(0); //Orientation?
@@ -650,7 +660,7 @@ namespace DDraw
         {
             UpdateMaxNumOfObjects(1);
             SetTextColor(color);
-            ExtCreateFontIndirectW(2, fontName, fontSize, bold, italics, underline, strikethrough);
+            ExtCreateFontIndirectW(1, fontName, fontSize, bold, italics, underline, strikethrough);
             SelectObject(1);
             ExtTextOutW(text, pt);
             DeleteObject(1);
