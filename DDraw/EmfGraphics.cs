@@ -446,7 +446,7 @@ namespace DDraw
             Emf.XForm x = new Emf.XForm(m);
             byte[] data = RawSerialize(x);
             ms.Write(data, 0, data.Length);
-            WriteUInt((uint)Emf.ModifyWorldTransformMode.MWT_RIGHTMULTIPLY);
+            WriteUInt((uint)Emf.ModifyWorldTransformMode.MWT_LEFTMULTIPLY);
         }
 
         void ResetWorldTransform()
@@ -724,11 +724,11 @@ namespace DDraw
         {
             if (angle != 0)
             {
-                Translate(-center.X, -center.Y);
+                Translate(center.X, center.Y);
                 DMatrix m = DMatrix.InitRotateMatrix(angle);
                 ModifyWorldTransform(m);
                 currentMatrix = currentMatrix.Multiply(m);
-                Translate(center.X, center.Y);
+                Translate(-center.X, -center.Y);
             }
         }
 
