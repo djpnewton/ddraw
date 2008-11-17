@@ -70,6 +70,8 @@ namespace DDraw
 
             WriteRecordHeader(Emf.RecordType.EMR_SETBKMODE, 12);
             WriteUInt(0x01); // TRANSPARENT
+            WriteRecordHeader(Emf.RecordType.EMR_SETTEXTALIGN, 12);
+            WriteUInt(Wmf.TA_LEFT | Wmf.TA_TOP);
         }
 
         public void SaveToFile(string fileName)
@@ -213,6 +215,13 @@ namespace DDraw
             return (uint)(_ss | _sj | _sc);
         }
 
+        double GetFontHeight(double fontSize)
+        {
+            double dpiY = deviceRes.Y / (screenMM.Y / 25.4);
+            double lfHeight = ((fontSize * dpiY) / 72);
+            return lfHeight;
+        }
+
         void CreatePen(uint objectIndex, double sw, DColor col, DStrokeStyle ss, DStrokeJoin sj, DStrokeCap sc)
         {
             WriteRecordHeader(Emf.RecordType.EMR_CREATEPEN, 28);
@@ -260,9 +269,7 @@ namespace DDraw
             WriteRecordHeader(Emf.RecordType.EMR_EXTCREATEFONTINDIRECTW, 104);
             WriteUInt(objectIndex);
             // LogFont
-            double dpiY = deviceRes.Y / (screenMM.Y / 25.4);
-            double lfHeight = -((fontSize * dpiY) / 72);
-            WriteInt((int)lfHeight); //Height
+            WriteInt((int)-GetFontHeight(fontSize)); //Height
             WriteUInt(0); //Width?
             WriteUInt(0); //Escapement?
             WriteUInt(0); //Orientation?
@@ -662,7 +669,12 @@ namespace DDraw
             SetTextColor(color);
             ExtCreateFontIndirectW(1, fontName, fontSize, bold, italics, underline, strikethrough);
             SelectObject(1);
-            ExtTextOutW(text, pt);
+            string[] strs = text.Split('\n');
+            for (int i = 0; i < strs.Length; i++)
+            {
+                pt.Y += i * GetFontHeight(fontSize);
+                ExtTextOutW(strs[i], pt);
+            }
             DeleteObject(1);
         }
 

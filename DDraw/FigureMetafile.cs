@@ -386,6 +386,17 @@ namespace DDraw
         public const int PS_ENDCAP_FLAT = 0x0200;
         public const int PS_JOIN_BEVEL = 0x1000;
         public const int PS_JOIN_MITER = 0x2000;
+
+        // TextAlignmentMode consts
+        public const int TA_NOUPDATECP = 0x0000; 
+        public const int TA_LEFT = 0x0000; 
+        public const int TA_TOP = 0x0000; 
+        public const int TA_UPDATECP = 0x0001; 
+        public const int TA_RIGHT = 0x0002; 
+        public const int TA_CENTER = 0x0006; 
+        public const int TA_BOTTOM = 0x0008; 
+        public const int TA_BASELINE = 0x0018;
+        public const int TA_RTLREADING = 0x0100;
     }
 
     public interface IMetafile
