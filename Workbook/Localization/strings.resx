@@ -732,4 +732,19 @@
   <data name="EMF" xml:space="preserve">
     <value>EMF</value>
   </data>
+  <data name="GridSize" xml:space="preserve">
+    <value>Grid Size</value>
+  </data>
+  <data name="ShowGrid" xml:space="preserve">
+    <value>Show Grid</value>
+  </data>
+  <data name="SnapPosition" xml:space="preserve">
+    <value>Snap Position</value>
+  </data>
+  <data name="SnapResize" xml:space="preserve">
+    <value>Snap Resize</value>
+  </data>
+  <data name="Grid" xml:space="preserve">
+    <value>Grid</value>
+  </data>
 </root>

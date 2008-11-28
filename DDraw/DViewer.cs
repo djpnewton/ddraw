@@ -122,6 +122,13 @@ namespace DDraw
             set;
         }
 
+        double grid = 20;
+        public double Grid
+        {
+            get { return grid; }
+            set { grid = value; }
+        }
+
         protected const int SHADOW_OFFSET = 5;
         protected const int MARGIN = SHADOW_OFFSET * 2;
 
@@ -237,6 +244,13 @@ namespace DDraw
                 backgroundFigure.Width = PageSize.X;
                 backgroundFigure.Height = PageSize.Y;
                 backgroundFigure.Paint(dg);
+            }
+            if (!Preview && Grid > 0)
+            {
+                for (int i = 1; i < (Width / Grid); i++)
+                    dg.DrawLine(new DPoint(i * grid, 0), new DPoint(i * grid, Height), DColor.LightGray, 1, DStrokeStyle.Solid, 1, DStrokeCap.Butt);
+                for (int i = 1; i < (Height / Grid); i++)
+                    dg.DrawLine(new DPoint(0, i * grid), new DPoint(Width, i * grid), DColor.LightGray, 1, DStrokeStyle.Solid, 1, DStrokeCap.Butt);
             }
             double invScale = 1 / scale;
             foreach (Figure figure in figures)

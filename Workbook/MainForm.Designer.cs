@@ -218,6 +218,7 @@ namespace Workbook
             this.actRedo = new Burkovsky.Controls.Action();
             this.actAnnoTools = new Burkovsky.Controls.Action();
             this.actScreenCapture = new Burkovsky.Controls.Action();
+            this.gridToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.cmsFigure.SuspendLayout();
             this.cmsCanvas.SuspendLayout();
             this.cmsPreview.SuspendLayout();
@@ -1095,6 +1096,7 @@ namespace Workbook
             this.zoomToolStripMenuItem,
             this.antialiasToolStripMenuItem,
             this.highlightSelectionToolStripMenuItem,
+            this.gridToolStripMenuItem,
             this.toolStripSeparator14,
             this.toolbarsToolStripMenuItem});
             this.viewToolStripMenuItem.Name = "viewToolStripMenuItem";
@@ -1119,7 +1121,7 @@ namespace Workbook
             // 
             this.actionListProvider1.SetAction(this.fitToPageToolStripMenuItem, null);
             this.fitToPageToolStripMenuItem.Name = "fitToPageToolStripMenuItem";
-            this.fitToPageToolStripMenuItem.Size = new System.Drawing.Size(130, 22);
+            this.fitToPageToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.fitToPageToolStripMenuItem.Text = "Fit to Page";
             this.fitToPageToolStripMenuItem.Click += new System.EventHandler(this.ZoomToolStripMenuItem_Click);
             // 
@@ -1127,7 +1129,7 @@ namespace Workbook
             // 
             this.actionListProvider1.SetAction(this.fitToWidthToolStripMenuItem, null);
             this.fitToWidthToolStripMenuItem.Name = "fitToWidthToolStripMenuItem";
-            this.fitToWidthToolStripMenuItem.Size = new System.Drawing.Size(130, 22);
+            this.fitToWidthToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.fitToWidthToolStripMenuItem.Text = "Fit to Width";
             this.fitToWidthToolStripMenuItem.Click += new System.EventHandler(this.ZoomToolStripMenuItem_Click);
             // 
@@ -1135,7 +1137,7 @@ namespace Workbook
             // 
             this.actionListProvider1.SetAction(this._050PcToolStripMenuItem, null);
             this._050PcToolStripMenuItem.Name = "_050PcToolStripMenuItem";
-            this._050PcToolStripMenuItem.Size = new System.Drawing.Size(130, 22);
+            this._050PcToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this._050PcToolStripMenuItem.Text = "50%";
             this._050PcToolStripMenuItem.Click += new System.EventHandler(this.ZoomToolStripMenuItem_Click);
             // 
@@ -1143,7 +1145,7 @@ namespace Workbook
             // 
             this.actionListProvider1.SetAction(this._100PcToolStripMenuItem, null);
             this._100PcToolStripMenuItem.Name = "_100PcToolStripMenuItem";
-            this._100PcToolStripMenuItem.Size = new System.Drawing.Size(130, 22);
+            this._100PcToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this._100PcToolStripMenuItem.Text = "100%";
             this._100PcToolStripMenuItem.Click += new System.EventHandler(this.ZoomToolStripMenuItem_Click);
             // 
@@ -1151,7 +1153,7 @@ namespace Workbook
             // 
             this.actionListProvider1.SetAction(this._150PcToolStripMenuItem, null);
             this._150PcToolStripMenuItem.Name = "_150PcToolStripMenuItem";
-            this._150PcToolStripMenuItem.Size = new System.Drawing.Size(130, 22);
+            this._150PcToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this._150PcToolStripMenuItem.Text = "150%";
             this._150PcToolStripMenuItem.Click += new System.EventHandler(this.ZoomToolStripMenuItem_Click);
             // 
@@ -1910,6 +1912,14 @@ namespace Workbook
             this.actScreenCapture.Text = "Screen Capture";
             this.actScreenCapture.Execute += new System.EventHandler(this.actScreenCapture_Execute);
             // 
+            // gridToolStripMenuItem
+            // 
+            this.actionListProvider1.SetAction(this.gridToolStripMenuItem, null);
+            this.gridToolStripMenuItem.Name = "gridToolStripMenuItem";
+            this.gridToolStripMenuItem.Size = new System.Drawing.Size(161, 22);
+            this.gridToolStripMenuItem.Text = "Grid";
+            this.gridToolStripMenuItem.Click += new System.EventHandler(this.gridToolStripMenuItem_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -2146,6 +2156,7 @@ namespace Workbook
         private Burkovsky.Controls.Action actExportSelectionToImage;
         private System.Windows.Forms.ToolStripMenuItem pNGToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem wMFToolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem gridToolStripMenuItem;
     }
 }
 

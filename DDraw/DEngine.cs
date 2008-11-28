@@ -394,6 +394,22 @@ namespace DDraw
             set { hsm.MoveName = value; }
         }
 
+        public double Grid
+        {
+            get { return hsm.Grid; }
+            set { hsm.Grid = value; }
+        }
+        public bool GridSnapPosition
+        {
+            get { return hsm.GridSnapPosition; }
+            set { hsm.GridSnapPosition = value; }
+        }
+        public bool GridSnapResize
+        {
+            get { return hsm.GridSnapResize; }
+            set { hsm.GridSnapResize = value; }
+        }
+
         UndoRedo<DPoint> _pageSize = new UndoRedo<DPoint>(PageTools.FormatToSize(PageFormat.Default));
         public DPoint PageSize
         {

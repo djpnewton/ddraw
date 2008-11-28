@@ -91,6 +91,11 @@ namespace Workbook
         const string autoSaveServerExt = ".servername";
         bool autoSaveOnSelectState = false;
 
+        int gridSize = 20;
+        bool showGrid = false;
+        bool gridSnapPosition = false;
+        bool gridSnapResize = false;
+
         public PersonalToolStrip PersonalToolStrip
         {
             get { return tsPersonal; }
@@ -172,6 +177,20 @@ namespace Workbook
             textInsertionPoint = null;
             // personal toolbar
             tsPersonal.De = de;
+            // set grid options
+            SetGridOptionsForCurrentDe();
+        }
+
+        private void SetGridOptionsForCurrentDe()
+        {
+            de.Grid = gridSize;
+            de.GridSnapPosition = gridSnapPosition;
+            de.GridSnapResize = gridSnapResize;
+            if (showGrid)
+                dvEditor.Grid = gridSize;
+            else
+                dvEditor.Grid = 0;
+            dvEditor.Update();
         }
 
         public MainForm()
@@ -276,6 +295,7 @@ namespace Workbook
             flipYToolStripMenuItem.Text = WbLocale.FlipUpDown;
             orderStripMenuItem.Text = WbLocale.Order;
             highlightSelectionToolStripMenuItem.Text = WbLocale.HighlightSelection;
+            gridToolStripMenuItem.Text = WbLocale.Grid;
             // Actions
             actAnnoTools.Text = WbLocale.ScreenAnnotate;
             actBackground.Text = WbLocale.Background;
@@ -327,6 +347,8 @@ namespace Workbook
             // autosave stuff
             CheckPreviousAutosaves();
             CreateAutosave();
+            // set grid
+            SetGridOptionsForCurrentDe();
         }
 
         void TryDelete(string fileName)
@@ -476,6 +498,11 @@ namespace Workbook
                 autoSaveTimer.Tick -= autoSaveTimer_Tick;
             WorkBookUtils.AutoRotateSnap = options.AutoRotateSnap;
             WorkBookUtils.AutoLockAspectRatio = options.AutoLockAspectRatio;
+            // grid options
+            gridSize = options.GridSize;
+            showGrid = options.ShowGrid;
+            gridSnapPosition = options.GridSnapPosition;
+            gridSnapResize = options.GridSnapResize;
             // load recent docs
             LoadRecentDocuments(options);
             // load personal toolbar
@@ -512,6 +539,11 @@ namespace Workbook
             options.ToolsToolbar = tsTools.Visible;
             // misc
             options.HighlightSelection = highlightSelection;
+            // grid options
+            options.GridSize = gridSize;
+            options.ShowGrid = showGrid;
+            options.GridSnapPosition = gridSnapPosition;
+            options.GridSnapResize = gridSnapResize;
             // write to file
             options.WriteIni();
             // save personal toolbar
@@ -2429,6 +2461,23 @@ namespace Workbook
                 MessageBox.Show(e2.Message, WbLocale.ErrorMailingPDF, MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
+        }
+
+        private void gridToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            GridForm f = new GridForm();
+            f.GridSize = gridSize;
+            f.ShowGrid = showGrid;
+            f.SnapPosition = gridSnapPosition;
+            f.SnapResize = gridSnapResize;
+            if (f.ShowDialog() == DialogResult.OK)
+            {
+                gridSize = f.GridSize;
+                showGrid = f.ShowGrid;
+                gridSnapPosition = f.SnapPosition;
+                gridSnapResize = f.SnapResize;
+                SetGridOptionsForCurrentDe();
+            }
         }
     }
 }

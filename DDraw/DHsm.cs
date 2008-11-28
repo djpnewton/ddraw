@@ -308,6 +308,25 @@ namespace DDraw
             set { moveName = value; }
         }
 
+        double grid = 20;
+        public double Grid
+        {
+            get { return grid; }
+            set { grid = value; }
+        }
+        bool gridSnapPosition = true;
+        public bool GridSnapPosition
+        {
+            get { return gridSnapPosition; }
+            set { gridSnapPosition = value; }
+        }
+        bool gridSnapResize = true;
+        public bool GridSnapResize
+        {
+            get { return gridSnapResize; }
+            set { gridSnapResize = value; }
+        }
+
         bool drawSelection = false;
         bool drawEraser = false;
 
@@ -917,6 +936,25 @@ namespace DDraw
             return this.Select;
         }
 
+        DPoint GridSnapOffset(double x, double y)
+        {
+            if (grid > 0)
+            {
+                double rX = x % grid;
+                if (rX > grid / 2)
+                    rX = grid - rX;
+                else
+                    rX = -rX;
+                double rY = y % grid;
+                if (rY > grid / 2)
+                    rY = grid - rY;
+                else
+                    rY = -rY;
+                return new DPoint(rX, rY);
+            }
+            return new DPoint(0, 0);
+        }
+
         delegate void SetPointDelegate(DPoint pt);
         delegate double GetRotationalSnapDelegate(double ar);
         void DoDragFigureMouseMove(DTkViewer dv, DPoint pt)
@@ -951,6 +989,14 @@ namespace DDraw
                             {
                                 f.X += dPos.X;
                                 f.Y += dPos.Y;
+                                if (gridSnapPosition && grid > 0)
+                                {
+                                    DPoint o = GridSnapOffset(f.X, f.Y);
+                                    f.X += o.X;
+                                    f.Y += o.Y;
+                                    pt.X += o.X;
+                                    pt.Y += o.Y;
+                                }
                             }
                     // store drag pt for reference later (eg. next mousemove event)
                     dragPt = pt;
@@ -998,6 +1044,13 @@ namespace DDraw
                     DRect oldRect = currentFigure.Rect;
                     currentFigure.Width += dSize.X;
                     currentFigure.Height += dSize.Y;
+                    // snap resize
+                    if (gridSnapResize && grid > 0)
+                    {
+                        DPoint o2 = GridSnapOffset(currentFigure.Width, currentFigure.Height);
+                        currentFigure.Width += o2.X;
+                        currentFigure.Height += o2.Y;
+                    }
                     DGeom.UpdateRotationPosition(currentFigure, oldRect, currentFigure.Rect); 
                     // final update rect
                     updateRect = updateRect.Union(GetBoundingBox(currentFigure));

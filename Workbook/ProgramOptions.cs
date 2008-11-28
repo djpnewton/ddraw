@@ -36,6 +36,10 @@ namespace Workbook
         const string AUTOSAVEINTERVAL_OPT = "AutosaveInterval";
         const string AUTOROTATESNAP_OPT = "AutoRotateSnap";
         const string AUTOLOCKASPECTRATIO_OPT = "AutoLockAspectRatio";
+        const string GRIDSIZE_OPT = "GridSize";
+        const string SHOWGRID_OPT = "ShowGrid";
+        const string GRIDSNAPPOSITION = "GridSnapPosition";
+        const string GRIDSNAPRESIZE = "GridSnapResize";
 
         public string IniFile
         {
@@ -64,6 +68,10 @@ namespace Workbook
         public int AutoSaveInterval;
         public bool AutoRotateSnap;
         public bool AutoLockAspectRatio;
+        public int GridSize;
+        public bool ShowGrid;
+        public bool GridSnapPosition;
+        public bool GridSnapResize;
 
         public ProgramOptions()
         {
@@ -136,6 +144,10 @@ namespace Workbook
             AutoSaveInterval = config.GetInt(AUTOSAVEINTERVAL_OPT, 300000);
             AutoRotateSnap = config.GetBoolean(AUTOROTATESNAP_OPT, true);
             AutoLockAspectRatio = config.GetBoolean(AUTOLOCKASPECTRATIO_OPT, true);
+            GridSize = config.GetInt(GRIDSIZE_OPT, 20);
+            ShowGrid = config.GetBoolean(SHOWGRID_OPT, false);
+            GridSnapPosition = config.GetBoolean(GRIDSNAPPOSITION, false);
+            GridSnapResize = config.GetBoolean(GRIDSNAPRESIZE, false);
         }
 
         public void WriteIni()
@@ -161,6 +173,10 @@ namespace Workbook
             config.Set(AUTOSAVEINTERVAL_OPT, AutoSaveInterval);
             config.Set(AUTOROTATESNAP_OPT, AutoRotateSnap);
             config.Set(AUTOLOCKASPECTRATIO_OPT, AutoLockAspectRatio);
+            config.Set(GRIDSIZE_OPT, GridSize);
+            config.Set(SHOWGRID_OPT, ShowGrid);
+            config.Set(GRIDSNAPPOSITION, GridSnapPosition);
+            config.Set(GRIDSNAPRESIZE, GridSnapResize);
 
             ConfigSource.Save();
         }

@@ -86,6 +86,12 @@
     <Compile Include="DimensionsForm.Designer.cs">
       <DependentUpon>DimensionsForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="GridForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GridForm.Designer.cs">
+      <DependentUpon>GridForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Localization\WbLocale.cs" />
     <Compile Include="Mapi.cs" />
     <Compile Include="PopupForms\ColorPicker.cs">
@@ -204,6 +210,10 @@
     <EmbeddedResource Include="ExportForm.resx">
       <SubType>Designer</SubType>
       <DependentUpon>ExportForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GridForm.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>GridForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="LinkForm.resx">
       <SubType>Designer</SubType>

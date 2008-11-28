@@ -1041,6 +1041,11 @@ namespace Workbook
         {
             get { return GetString("RemoveTextWrap"); }
         }
+
+        public static string Grid
+        {
+            get { return GetString("Grid"); }
+        }
         #endregion
 
         #region DEngine strings
@@ -1077,6 +1082,28 @@ namespace Workbook
         public static string Move
         {
             get { return GetString("Move"); }
+        }
+        #endregion
+
+        #region GridForm strings
+        public static string GridSize
+        {
+            get { return GetString("GridSize"); }
+        }
+
+        public static string ShowGrid
+        {
+            get { return GetString("ShowGrid"); }
+        }
+
+        public static string SnapPosition
+        {
+            get { return GetString("SnapPosition"); }
+        }
+
+        public static string SnapResize
+        {
+            get { return GetString("SnapResize"); }
         }
         #endregion
     }
