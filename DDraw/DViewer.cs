@@ -247,10 +247,10 @@ namespace DDraw
             }
             if (!Preview && Grid > 0)
             {
-                for (int i = 1; i < (Width / Grid); i++)
-                    dg.DrawLine(new DPoint(i * grid, 0), new DPoint(i * grid, Height), DColor.LightGray, 1, DStrokeStyle.Solid, 1, DStrokeCap.Butt);
-                for (int i = 1; i < (Height / Grid); i++)
-                    dg.DrawLine(new DPoint(0, i * grid), new DPoint(Width, i * grid), DColor.LightGray, 1, DStrokeStyle.Solid, 1, DStrokeCap.Butt);
+                for (int i = 1; i < (PageSize.X / Grid); i++)
+                    dg.DrawLine(new DPoint(i * grid, 0), new DPoint(i * grid, PageSize.Y), DColor.LightGray, 1, DStrokeStyle.Solid, 1, DStrokeCap.Butt);
+                for (int i = 1; i < (PageSize.Y / Grid); i++)
+                    dg.DrawLine(new DPoint(0, i * grid), new DPoint(PageSize.X, i * grid), DColor.LightGray, 1, DStrokeStyle.Solid, 1, DStrokeCap.Butt);
             }
             double invScale = 1 / scale;
             foreach (Figure figure in figures)

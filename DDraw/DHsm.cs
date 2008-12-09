@@ -983,20 +983,20 @@ namespace DDraw
                         updateRect = updateRect.Union(GetBoundingBox(f));
                     // apply x/y delta to figures
                     DPoint dPos = CalcDragDelta(pt);
+                    if (gridSnapPosition && grid > 0)
+                    {
+                        DPoint o = GridSnapOffset(currentFigure.X + dPos.X, currentFigure.Y + dPos.Y);
+                        dPos.X += o.X;
+                        dPos.Y += o.Y;
+                        pt.X += o.X;
+                        pt.Y += o.Y;
+                    }
                     if (dPos.X != 0 || dPos.Y != 0)
                         foreach (Figure f in figureHandler.SelectedFigures)
                             if (!f.Locked)
                             {
                                 f.X += dPos.X;
                                 f.Y += dPos.Y;
-                                if (gridSnapPosition && grid > 0)
-                                {
-                                    DPoint o = GridSnapOffset(f.X, f.Y);
-                                    f.X += o.X;
-                                    f.Y += o.Y;
-                                    pt.X += o.X;
-                                    pt.Y += o.Y;
-                                }
                             }
                     // store drag pt for reference later (eg. next mousemove event)
                     dragPt = pt;
