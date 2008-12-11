@@ -1105,6 +1105,11 @@ namespace Workbook
         {
             get { return GetString("SnapResize"); }
         }
+
+        public static string SnapLines
+        {
+            get { return GetString("SnapLines"); }
+        }
         #endregion
     }
 }

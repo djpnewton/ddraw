@@ -95,6 +95,7 @@ namespace Workbook
         bool showGrid = false;
         bool gridSnapPosition = false;
         bool gridSnapResize = false;
+        bool gridSnapLines = false;
 
         public PersonalToolStrip PersonalToolStrip
         {
@@ -186,6 +187,7 @@ namespace Workbook
             de.Grid = gridSize;
             de.GridSnapPosition = gridSnapPosition;
             de.GridSnapResize = gridSnapResize;
+            de.GridSnapLines = gridSnapLines;
             if (showGrid)
                 dvEditor.Grid = gridSize;
             else
@@ -503,6 +505,7 @@ namespace Workbook
             showGrid = options.ShowGrid;
             gridSnapPosition = options.GridSnapPosition;
             gridSnapResize = options.GridSnapResize;
+            gridSnapLines = options.GridSnapLines;
             // load recent docs
             LoadRecentDocuments(options);
             // load personal toolbar
@@ -544,6 +547,7 @@ namespace Workbook
             options.ShowGrid = showGrid;
             options.GridSnapPosition = gridSnapPosition;
             options.GridSnapResize = gridSnapResize;
+            options.GridSnapLines = gridSnapLines;
             // write to file
             options.WriteIni();
             // save personal toolbar
@@ -2470,12 +2474,14 @@ namespace Workbook
             f.ShowGrid = showGrid;
             f.SnapPosition = gridSnapPosition;
             f.SnapResize = gridSnapResize;
+            f.SnapLines = gridSnapLines;
             if (f.ShowDialog() == DialogResult.OK)
             {
                 gridSize = f.GridSize;
                 showGrid = f.ShowGrid;
                 gridSnapPosition = f.SnapPosition;
                 gridSnapResize = f.SnapResize;
+                gridSnapLines = f.SnapLines;
                 SetGridOptionsForCurrentDe();
             }
         }

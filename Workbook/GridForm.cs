@@ -34,6 +34,12 @@ namespace Workbook
             set { cbSnapResize.Checked = value; }
         }
 
+        public bool SnapLines
+        {
+            get { return cbSnapLines.Checked; }
+            set { cbSnapLines.Checked = value; }
+        }
+
         public GridForm()
         {
             InitializeComponent();
@@ -48,6 +54,7 @@ namespace Workbook
             cbShow.Text = WbLocale.ShowGrid;
             cbSnapPosition.Text = WbLocale.SnapPosition;
             cbSnapResize.Text = WbLocale.SnapResize;
+            cbSnapLines.Text = WbLocale.SnapLines;
         }
     }
 }

@@ -35,13 +35,14 @@ namespace Workbook
             this.cbShow = new System.Windows.Forms.CheckBox();
             this.cbSnapPosition = new System.Windows.Forms.CheckBox();
             this.cbSnapResize = new System.Windows.Forms.CheckBox();
+            this.cbSnapLines = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.nudSize)).BeginInit();
             this.SuspendLayout();
             // 
             // btnOk
             // 
             this.btnOk.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.btnOk.Location = new System.Drawing.Point(63, 102);
+            this.btnOk.Location = new System.Drawing.Point(58, 127);
             this.btnOk.Name = "btnOk";
             this.btnOk.Size = new System.Drawing.Size(75, 23);
             this.btnOk.TabIndex = 0;
@@ -51,7 +52,7 @@ namespace Workbook
             // btnCancel
             // 
             this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.btnCancel.Location = new System.Drawing.Point(144, 102);
+            this.btnCancel.Location = new System.Drawing.Point(139, 127);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(75, 23);
             this.btnCancel.TabIndex = 1;
@@ -119,13 +120,24 @@ namespace Workbook
             this.cbSnapResize.Text = "Snap Resize";
             this.cbSnapResize.UseVisualStyleBackColor = true;
             // 
+            // cbSnapLines
+            // 
+            this.cbSnapLines.AutoSize = true;
+            this.cbSnapLines.Location = new System.Drawing.Point(15, 102);
+            this.cbSnapLines.Name = "cbSnapLines";
+            this.cbSnapLines.Size = new System.Drawing.Size(79, 17);
+            this.cbSnapLines.TabIndex = 11;
+            this.cbSnapLines.Text = "Snap Lines";
+            this.cbSnapLines.UseVisualStyleBackColor = true;
+            // 
             // GridForm
             // 
             this.AcceptButton = this.btnOk;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btnCancel;
-            this.ClientSize = new System.Drawing.Size(226, 134);
+            this.ClientSize = new System.Drawing.Size(226, 162);
+            this.Controls.Add(this.cbSnapLines);
             this.Controls.Add(this.cbSnapResize);
             this.Controls.Add(this.cbSnapPosition);
             this.Controls.Add(this.cbShow);
@@ -154,5 +166,6 @@ namespace Workbook
         private System.Windows.Forms.CheckBox cbShow;
         private System.Windows.Forms.CheckBox cbSnapPosition;
         private System.Windows.Forms.CheckBox cbSnapResize;
+        private System.Windows.Forms.CheckBox cbSnapLines;
     }
 }

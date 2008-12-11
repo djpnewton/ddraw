@@ -409,6 +409,11 @@ namespace DDraw
             get { return hsm.GridSnapResize; }
             set { hsm.GridSnapResize = value; }
         }
+        public bool GridSnapLines
+        {
+            get { return hsm.GridSnapLines; }
+            set { hsm.GridSnapLines = value; }
+        }
 
         UndoRedo<DPoint> _pageSize = new UndoRedo<DPoint>(PageTools.FormatToSize(PageFormat.Default));
         public DPoint PageSize

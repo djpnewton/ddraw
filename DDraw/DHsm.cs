@@ -326,6 +326,12 @@ namespace DDraw
             get { return gridSnapResize; }
             set { gridSnapResize = value; }
         }
+        bool gridSnapLines = true;
+        public bool GridSnapLines
+        {
+            get { return gridSnapLines; }
+            set { gridSnapLines = value; }
+        }
 
         bool drawSelection = false;
         bool drawEraser = false;
@@ -1085,6 +1091,14 @@ namespace DDraw
                     }
                     SetPointDelegate setPoint = delegate(DPoint point)
                     {
+                        // snap point to grid
+                        if (gridSnapLines && grid > 0)
+                        {
+                            DPoint o3 = GridSnapOffset(point.X, point.Y);
+                            point.X += o3.X;
+                            point.Y += o3.Y;
+                        }
+                        // now set point
                         if (mouseHitTest == DHitTest.ReposLinePt1)
                             ls.Pt1 = point;
                         else

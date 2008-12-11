@@ -747,4 +747,7 @@
   <data name="Grid" xml:space="preserve">
     <value>Grid</value>
   </data>
+  <data name="SnapLines" xml:space="preserve">
+    <value>Snap Lines</value>
+  </data>
 </root>

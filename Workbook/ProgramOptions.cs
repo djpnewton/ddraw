@@ -40,6 +40,7 @@ namespace Workbook
         const string SHOWGRID_OPT = "ShowGrid";
         const string GRIDSNAPPOSITION = "GridSnapPosition";
         const string GRIDSNAPRESIZE = "GridSnapResize";
+        const string GRIDSNAPLINES = "GridSnapLines";
 
         public string IniFile
         {
@@ -72,6 +73,7 @@ namespace Workbook
         public bool ShowGrid;
         public bool GridSnapPosition;
         public bool GridSnapResize;
+        public bool GridSnapLines;
 
         public ProgramOptions()
         {
@@ -148,6 +150,7 @@ namespace Workbook
             ShowGrid = config.GetBoolean(SHOWGRID_OPT, false);
             GridSnapPosition = config.GetBoolean(GRIDSNAPPOSITION, false);
             GridSnapResize = config.GetBoolean(GRIDSNAPRESIZE, false);
+            GridSnapLines = config.GetBoolean(GRIDSNAPLINES, false);
         }
 
         public void WriteIni()
@@ -177,6 +180,7 @@ namespace Workbook
             config.Set(SHOWGRID_OPT, ShowGrid);
             config.Set(GRIDSNAPPOSITION, GridSnapPosition);
             config.Set(GRIDSNAPRESIZE, GridSnapResize);
+            config.Set(GRIDSNAPLINES, GridSnapLines);
 
             ConfigSource.Save();
         }
