@@ -362,6 +362,25 @@ namespace DDraw
         }
 
         void AddPoint(DPoint pt);
+
+        DPoint LastPoint
+        {
+            get;
+            set;
+        }
+    }
+
+    public interface IRepositionPoint
+    {
+        DPoint RepositionPoint
+        {
+            get;
+            set;
+        }
+        DPoint AnglePoint
+        {
+            get;
+        }
     }
 
     public interface IMarkable
@@ -1351,7 +1370,7 @@ namespace DDraw
 #endif
     }
 
-    public abstract class LineSegmentbaseFigure : LinebaseFigure, ILineSegment
+    public abstract class LineSegmentbaseFigure : LinebaseFigure, ILineSegment, IRepositionPoint
     {
         UndoRedo<double> _pt1x = new UndoRedo<double>();
         UndoRedo<double> _pt1y = new UndoRedo<double>();
@@ -1381,6 +1400,35 @@ namespace DDraw
                     _pt2x.Value = value.X;
                     _pt2y.Value = value.Y;
                 }
+            }
+        }
+
+        bool reposFirstPoint = true;
+        public DPoint RepositionPoint
+        {
+            get 
+            {
+                if (reposFirstPoint)
+                    return Pt1;
+                else
+                    return Pt2;
+            }
+            set
+            {
+                if (reposFirstPoint)
+                    Pt1 = value;
+                else
+                    Pt2 = value;
+            }
+        }
+        public DPoint AnglePoint
+        {
+            get
+            {
+                if (reposFirstPoint)
+                    return Pt2;
+                else
+                    return Pt1;
             }
         }
 
@@ -1614,9 +1662,15 @@ namespace DDraw
                 if (Pt1 != null && Pt2 != null)
                 {
                     if (DGeom.PointInRect(pt, GetPt1HandleRect()))
-                        return DHitTest.ReposLinePt1;
+                    {
+                        reposFirstPoint = true;
+                        return DHitTest.RepositionPoint;
+                    }
                     else if (DGeom.PointInRect(pt, GetPt2HandleRect()))
-                        return DHitTest.ReposLinePt2;
+                    {
+                        reposFirstPoint = false;
+                        return DHitTest.RepositionPoint;
+                    }
                 }
                 return DHitTest.None;
             }
@@ -1723,6 +1777,16 @@ namespace DDraw
                 pts = new DPoints();
             pts.Add(pt);
             Points = pts;
+        }
+
+        public DPoint LastPoint
+        {
+            get { return Points[Points.Count - 1]; }
+            set
+            {
+                Points[Points.Count - 1] = value;
+                MovePoints(0, 0);
+            }
         }
 
         void MovePoints(double dX, double dY)
@@ -1949,6 +2013,160 @@ namespace DDraw
                         dg.FillPolygon(GetStartMarkerPoints(), Stroke, Alpha);
                     if (EndMarker != DMarker.None)
                         dg.FillPolygon(GetEndMarkerPoints(), Stroke, Alpha);
+                }
+            }
+        }
+    }
+
+    public class MultiLineFigure : PolylineFigure, IRepositionPoint
+    {
+        int reposPointIndex = 0;
+        public DPoint RepositionPoint
+        {
+            get { return Points[reposPointIndex]; }
+            set 
+            { 
+                Points[reposPointIndex] = value;
+                DPoints newPts = new DPoints();
+                foreach (DPoint pt in Points)
+                    newPts.Add(pt);
+                Points = newPts;
+            }
+        }
+        int anglePointIndex = -1;
+        public DPoint AnglePoint
+        {
+            get 
+            {
+                if (anglePointIndex >= 0)
+                    return Points[anglePointIndex];
+                return null;
+            }
+        }
+
+        public override double Rotation
+        {
+            get { return 0; }
+            set
+            {
+                DPoint c = Rect.Center;
+                DPoints newPts = new DPoints();
+                foreach (DPoint pt in Points)
+                    newPts.Add(DGeom.RotatePoint(pt, c, value));
+                Points = newPts;
+            }
+        }
+
+        public override bool FlipX
+        {
+            get { return false; }
+            set
+            {
+                if (value)
+                {
+                    DPoint c = Rect.Center;
+                    DPoints newPts = new DPoints();
+                    foreach (DPoint pt in Points)
+                        newPts.Add(new DPoint(pt.X - 2 * (pt.X - c.X), pt.Y));
+                    Points = newPts;
+                }
+            }
+        }
+
+        public override bool FlipY
+        {
+            get { return false; }
+            set
+            {
+                if (value)
+                {
+                    DPoint c = Rect.Center;
+                    DPoints newPts = new DPoints();
+                    foreach (DPoint pt in Points)
+                        newPts.Add(new DPoint(pt.X, pt.Y - 2 * (pt.Y - c.Y)));
+                    Points = newPts;
+                }
+            }
+        }
+
+        public DRect GetPtHandleRect(DPoint pt)
+        {
+            double hs = HandleSize * _controlScale;
+            return new DRect(pt.X - hs, pt.Y - hs, hs + hs, hs + hs);
+        }
+
+        public override DHitTest RotateHitTest(DPoint pt)
+        {
+            return DHitTest.None;
+        }
+
+        public override DHitTest ResizeHitTest(DPoint pt)
+        {
+            if (Selected)
+            {
+                foreach (DPoint lnpt in Points)
+                    if (DGeom.PointInRect(pt, GetPtHandleRect(lnpt)))
+                    {
+                        reposPointIndex = Points.IndexOf(lnpt);
+                        anglePointIndex = -1;
+                        if (reposPointIndex > 0)
+                            anglePointIndex = reposPointIndex - 1;
+                        else
+                            anglePointIndex = reposPointIndex + 1;
+                        return DHitTest.RepositionPoint;
+                    }
+            }
+            return DHitTest.None;
+        }
+
+        public override DHitTest SelectHitTest(DPoint pt)
+        {
+            if (Points.Count >= 2)
+            {
+                for (int i = 0; i < Points.Count - 1; i++)
+                    if (Selected && DGeom.PointInLine(pt, Points[i], Points[i + 1], HandleSize * _controlScale))
+                        return DHitTest.SelectRect;
+            }
+            return DHitTest.None;
+        }
+
+        public override DRect GetContextHandleRect()
+        {
+            DRect r = base.GetContextHandleRect();
+            r.X += _handleSize;
+            r.Y -= _handleSize;
+            return r;
+        }
+
+        public override void PaintSelectionChrome(DGraphics dg)
+        {
+            if (Selected)
+            {
+                // save current transform
+                DMatrix m = dg.SaveTransform();
+                // apply transform
+                ApplyTransforms(dg, true);
+                if (Locked)
+                    PaintLockHandle(dg);
+                else
+                {
+                    // draw context handle
+                    PaintContextHandle(dg);
+                    // draw pt handles
+                    double hb = _handleBorder * _controlScale;
+                    double hb2 = hb + hb;
+                    foreach (DPoint pt in Points)
+                    {
+                        DRect r = GetPtHandleRect(pt);
+                        if (hb != 0)
+                            r = r.Resize(hb, hb, -hb2, -hb2);
+                        dg.FillEllipse(r.X, r.Y, r.Width, r.Height, DColor.Red, 1);
+                        dg.DrawEllipse(r.X, r.Y, r.Width, r.Height, DColor.Black, 1, _controlScale, DStrokeStyle.Solid);
+                    }
+                    // view outline
+                    //dg.DrawRect(GetEncompassingRect(), DColor.Black);
+                    // load previous transform
+                    dg.LoadTransform(m);
                 }
             }
         }

@@ -681,6 +681,10 @@ namespace DDraw
             nodes = xmldoc.SelectNodes("/FigureList/Figure[@Type='DDraw.ImageFigure']");
             foreach (XmlNode node in nodes)
                 UpdateOldIImage(xmldoc, node, typeof(BitmapFigure).ToString());
+            // update old LineFigure type to MultiLineFigure
+            nodes = xmldoc.SelectNodes("/FigureList/Figure[@Type='DDraw.LineFigure']");
+            foreach (XmlNode node in nodes)
+                UpdateOldLineFigure(xmldoc, node, typeof(MultiLineFigure).ToString());
             return xmldoc.OuterXml;
         }
 
@@ -703,6 +707,28 @@ namespace DDraw
                         bitmapNode.Attributes.Append(bitmapPositonAttr);
                     }
                     node.AppendChild(bitmapNode);
+                }
+            }
+        }
+
+        private static void UpdateOldLineFigure(XmlDocument xmldoc, XmlNode node, string newType)
+        {
+            if (newType != null)
+                node.Attributes["Type"].Value = newType;
+            XmlNode lineSegmentNode = node.SelectSingleNode(LINESEGMENT_ELE);
+            if (lineSegmentNode != null)
+            {
+                XmlAttribute pt1 = lineSegmentNode.Attributes[PT1_ATTR];
+                XmlAttribute pt2 = lineSegmentNode.Attributes[PT2_ATTR];
+                if (pt1 != null && pt2 != null)
+                {
+                    XmlElement pointsNode = xmldoc.CreateElement(POLYLINE_ELE);
+                    DPoints pts = new DPoints();
+                    pts.Add(DPoint.FromString(pt1.Value));
+                    pts.Add(DPoint.FromString(pt2.Value));
+                    XmlText txt = xmldoc.CreateTextNode(DPoints.FormatToString(pts));
+                    pointsNode.AppendChild(txt);
+                    lineSegmentNode.AppendChild(pointsNode);
                 }
             }
         }

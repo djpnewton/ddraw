@@ -725,10 +725,8 @@ namespace DDraw
                             dragPt = CalcSizeDelta(f.RotatePointToFigure(pt), f, LockingAspectRatio || f.LockAspectRatio);
                             lockInitialAspectRatio = figureLockAspectRatioMode == DHsmLockAspectRatioMode.Default;
                             break;
-                        case DHitTest.ReposLinePt1:
+                        case DHitTest.RepositionPoint:
                             break;
-                        case DHitTest.ReposLinePt2:
-                            goto case DHitTest.ReposLinePt1;
                         case DHitTest.Rotate:
                             dragRot = GetRotationOfPointComparedToFigure(f, pt) - f.Rotation;
                             if (dragRot > Math.PI)
@@ -802,9 +800,7 @@ namespace DDraw
                 case DHitTest.Resize:
                     dv.SetCursor(DCursor.MoveNWSE);
                     break;
-                case DHitTest.ReposLinePt1:
-                    goto case DHitTest.Resize;
-                case DHitTest.ReposLinePt2:
+                case DHitTest.RepositionPoint:
                     goto case DHitTest.Resize;
                 case DHitTest.Rotate:
                     dv.SetCursor(DCursor.Rotate);
@@ -1067,28 +1063,17 @@ namespace DDraw
                     DoDebugMessage(string.Format("{0} {1}", dSize.X, dSize.Y));
 #endif
                     break;
-                case DHitTest.ReposLinePt1:
+                case DHitTest.RepositionPoint:
                     System.Diagnostics.Trace.Assert(currentFigure != null, "currentFigure is null");
                     // bound pt to canvas
                     BoundPtToPage(pt);
                     // inital update rect
                     updateRect = GetBoundingBox(currentFigure);
-                    // get our line segment interface
-                    ILineSegment ls = (ILineSegment)currentFigure;
+                    // get our reposition point interface
+                    IRepositionPoint rp = (IRepositionPoint)currentFigure;
                     // setup points
-                    DPoint oldPoint, newPoint, otherPoint;
-                    if (mouseHitTest == DHitTest.ReposLinePt1)
-                    {
-                        oldPoint = ls.Pt1;
-                        newPoint = new DPoint(pt.X, pt.Y);
-                        otherPoint = ls.Pt2;
-                    }
-                    else
-                    {
-                        oldPoint = ls.Pt2;
-                        newPoint = new DPoint(pt.X, pt.Y);
-                        otherPoint = ls.Pt1;
-                    }
+                    DPoint newPoint;
+                    newPoint = new DPoint(pt.X, pt.Y);
                     SetPointDelegate setPoint = delegate(DPoint point)
                     {
                         // snap point to grid
@@ -1099,10 +1084,7 @@ namespace DDraw
                             point.Y += o3.Y;
                         }
                         // now set point
-                        if (mouseHitTest == DHitTest.ReposLinePt1)
-                            ls.Pt1 = point;
-                        else
-                            ls.Pt2 = point;
+                        rp.RepositionPoint = point;
                     };
                     GetRotationalSnapDelegate getRotationalSnap = delegate(double angleRemainder)
                     {
@@ -1113,61 +1095,64 @@ namespace DDraw
                         else
                             return 0;
                     };
-                    // find the current angle of the line and the remainder when divided by the snap angle
-                    double currentAngle = DGeom.AngleBetweenPoints(oldPoint, otherPoint);
-                    double ar = currentAngle % figureSnapAngle;
-                    // reposition line
-                    double newAngle;
-                    switch (FigureSnapAngleMode)
+                    if (rp.AnglePoint != null)
                     {
-                        case DHsmSnapAngleMode.Always:
-                            // slide point along snap angle
-                            newAngle = DGeom.AngleBetweenPoints(newPoint, otherPoint);
-                            ar = newAngle % figureSnapAngle;
-                            if (ar < figureSnapAngle / 2)
-                                setPoint(DGeom.RotatePoint(newPoint, otherPoint, -ar));
-                            else
-                                setPoint(DGeom.RotatePoint(newPoint, otherPoint, figureSnapAngle - ar));
-                            break;
-                        case DHsmSnapAngleMode.Default:
-                            if (ar == 0)
-                            {
-                                // line is snapped, test if new angle will unsnap the line
-                                newAngle = DGeom.AngleBetweenPoints(newPoint, otherPoint);
+                        // find the current angle of the line and the remainder when divided by the snap angle
+                        double currentAngle = DGeom.AngleBetweenPoints(rp.RepositionPoint, rp.AnglePoint);
+                        double ar = currentAngle % figureSnapAngle;
+                        // reposition line
+                        double newAngle;
+                        switch (FigureSnapAngleMode)
+                        {
+                            case DHsmSnapAngleMode.Always:
+                                // slide point along snap angle
+                                newAngle = DGeom.AngleBetweenPoints(newPoint, rp.AnglePoint);
                                 ar = newAngle % figureSnapAngle;
-                                if (ar > figureSnapRange && ar < figureSnapAngle - figureSnapRange)
-                                    // unsnapped, set new point
-                                    setPoint(newPoint);
+                                if (ar < figureSnapAngle / 2)
+                                    setPoint(DGeom.RotatePoint(newPoint, rp.AnglePoint, -ar));
+                                else
+                                    setPoint(DGeom.RotatePoint(newPoint, rp.AnglePoint, figureSnapAngle - ar));
+                                break;
+                            case DHsmSnapAngleMode.Default:
+                                if (ar == 0)
+                                {
+                                    // line is snapped, test if new angle will unsnap the line
+                                    newAngle = DGeom.AngleBetweenPoints(newPoint, rp.AnglePoint);
+                                    ar = newAngle % figureSnapAngle;
+                                    if (ar > figureSnapRange && ar < figureSnapAngle - figureSnapRange)
+                                        // unsnapped, set new point
+                                        setPoint(newPoint);
+                                    else
+                                    {
+                                        // slide point along snap angle
+                                        newPoint = DGeom.RotatePoint(newPoint, rp.AnglePoint, getRotationalSnap(ar));
+                                        setPoint(newPoint);
+                                    }
+                                }
                                 else
                                 {
-                                    // slide point along snap angle
-                                    newPoint = DGeom.RotatePoint(newPoint, otherPoint, getRotationalSnap(ar));
+                                    // set new point
                                     setPoint(newPoint);
+                                    // test whether to snap our line
+                                    newAngle = DGeom.AngleBetweenPoints(newPoint, rp.AnglePoint);
+                                    ar = newAngle % figureSnapAngle;
+                                    double rotationalSnap = getRotationalSnap(ar);
+                                    // snap it
+                                    if (rotationalSnap != 0)
+                                        setPoint(DGeom.RotatePoint(newPoint, rp.AnglePoint, rotationalSnap));
                                 }
-                            }
-                            else
-                            {
+                                break;
+                            case DHsmSnapAngleMode.Never:
                                 // set new point
                                 setPoint(newPoint);
-                                // test whether to snap our line
-                                newAngle = DGeom.AngleBetweenPoints(newPoint, otherPoint);
-                                ar = newAngle % figureSnapAngle;
-                                double rotationalSnap = getRotationalSnap(ar);
-                                // snap it
-                                if (rotationalSnap != 0)
-                                    setPoint(DGeom.RotatePoint(newPoint, otherPoint, rotationalSnap));
-                            }
-                            break;
-                        case DHsmSnapAngleMode.Never:
-                            // set new point
-                            setPoint(newPoint);
-                            break;
+                                break;
+                        }
                     }
+                    else
+                        setPoint(newPoint);
                     // final update rect
                     updateRect = updateRect.Union(GetBoundingBox(currentFigure));
                     break;
-                case DHitTest.ReposLinePt2:
-                    goto case DHitTest.ReposLinePt1;
                 case DHitTest.Rotate:
                     System.Diagnostics.Trace.Assert(currentFigure != null, "currentFigure is null");
                     // initial update rect
@@ -1414,25 +1399,30 @@ namespace DDraw
                 else if (currentFigure is IPolyline)
                 {
                     ((IPolyline)currentFigure).AddPoint(pt);
-                    // auto grouping stuff
-                    if (AutoGroupPolylines)
+                    if (!(currentFigure is IRepositionPoint))
                     {
-                        if (autoGroupPolylineFigure == null)
+                        // auto grouping stuff
+                        if (AutoGroupPolylines)
                         {
-                            autoGroupPolylineFigure = currentFigure;
-                            autoGroupPolylineTimeoutMet = false;
-                        }
-                        else
-                        {
-                            if (Environment.TickCount <= autoGroupPolylineStart + AutoGroupPolylinesTimeout)
-                                autoGroupPolylineTimeoutMet = true;
+                            if (autoGroupPolylineFigure == null)
+                            {
+                                autoGroupPolylineFigure = currentFigure;
+                                autoGroupPolylineTimeoutMet = false;
+                            }
                             else
                             {
-                                autoGroupPolylineTimeoutMet = false;
-                                autoGroupPolylineFigure = currentFigure;
+                                if (Environment.TickCount <= autoGroupPolylineStart + AutoGroupPolylinesTimeout)
+                                    autoGroupPolylineTimeoutMet = true;
+                                else
+                                {
+                                    autoGroupPolylineTimeoutMet = false;
+                                    autoGroupPolylineFigure = currentFigure;
+                                }
                             }
                         }
                     }
+                    else
+                        ((IPolyline)currentFigure).AddPoint(pt);
                 }
                 // add to list of figures
                 figureHandler.Add(currentFigure, true);
@@ -1484,7 +1474,12 @@ namespace DDraw
             if (currentFigure is ILineSegment)
                 ((ILineSegment)currentFigure).Pt2 = pt;
             else if (currentFigure is IPolyline)
-                ((IPolyline)currentFigure).AddPoint(pt);
+            {
+                if (!(currentFigure is IRepositionPoint))
+                    ((IPolyline)currentFigure).AddPoint(pt);
+                else
+                    ((IPolyline)currentFigure).LastPoint = pt;
+            }
             // update drawing
             dv.Update(updateRect.Union(currentFigure.GetSelectRect()));
         }
@@ -1493,57 +1488,60 @@ namespace DDraw
         {
             if (currentFigure is IPolyline)
             {
-                // test for finished line
-                bool lineNotFinished = false;
-                if (((IPolyline)currentFigure).Points.Count < 2)
+                if (!(currentFigure is IRepositionPoint))
                 {
-                    if (UsePolylineDots)
+                    // test for finished line
+                    bool lineNotFinished = false;
+                    if (((IPolyline)currentFigure).Points.Count < 2)
                     {
-                        DPoint currentPt = ((IPolyline)currentFigure).Points[0];
-                        DPoint newPt = new DPoint(currentPt.X + 0.01, currentPt.Y + 0.01);
-                        ((IPolyline)currentFigure).Points.Add(newPt);
-                    }
-                    else
-                        lineNotFinished = true;
-                }
-                if (!lineNotFinished)
-                {
-                    // simplify polyline
-                    if (SimplifyPolylines && currentFigure is IPolyline)
-                    {
-                        ((IPolyline)currentFigure).Points = DGeom.SimplifyPolyline(((IPolyline)currentFigure).Points, simplifyPolylinesTolerance);
-                        dv.Update(currentFigure.GetSelectRect());
-                    }
-                    // auto group
-                    if (autoGroupPolylineTimeoutMet)
-                    {
-                        autoGroupPolylineXLimitMet = DGeom.DistXBetweenRects(autoGroupPolylineFigure.GetEncompassingRect(),
-                            currentFigure.GetEncompassingRect()) < autoGroupPolylinesXLimit;
-                        autoGroupPolylineYLimitMet = DGeom.DistYBetweenRects(autoGroupPolylineFigure.GetEncompassingRect(),
-                            currentFigure.GetEncompassingRect()) < autoGroupPolylinesYLimit;
-                        if (autoGroupPolylineXLimitMet && autoGroupPolylineYLimitMet)
+                        if (UsePolylineDots)
                         {
-                            if (autoGroupPolylineFigure is GroupFigure)
-                            {
-                                figureHandler.Remove(currentFigure);
-                                IChildFigureable cf = (IChildFigureable)autoGroupPolylineFigure;
-                                cf.ChildFigures.Add(currentFigure);
-                                cf.ChildFigures = cf.ChildFigures;
-                            }
-                            else if (autoGroupPolylineFigure is IPolyline)
-                            {
-                                figureHandler.Remove(autoGroupPolylineFigure);
-                                figureHandler.Remove(currentFigure);
-                                GroupFigure gf = new GroupFigure(new List<Figure>(new Figure[] { autoGroupPolylineFigure, currentFigure }));
-                                figureHandler.Add(gf, false);
-                                autoGroupPolylineFigure = gf;
-                            }
+                            DPoint currentPt = ((IPolyline)currentFigure).Points[0];
+                            DPoint newPt = new DPoint(currentPt.X + 0.01, currentPt.Y + 0.01);
+                            ((IPolyline)currentFigure).Points.Add(newPt);
                         }
                         else
-                            autoGroupPolylineFigure = currentFigure;
+                            lineNotFinished = true;
                     }
+                    if (!lineNotFinished)
+                    {
+                        // simplify polyline
+                        if (SimplifyPolylines && currentFigure is IPolyline)
+                        {
+                            ((IPolyline)currentFigure).Points = DGeom.SimplifyPolyline(((IPolyline)currentFigure).Points, simplifyPolylinesTolerance);
+                            dv.Update(currentFigure.GetSelectRect());
+                        }
+                        // auto group
+                        if (autoGroupPolylineTimeoutMet)
+                        {
+                            autoGroupPolylineXLimitMet = DGeom.DistXBetweenRects(autoGroupPolylineFigure.GetEncompassingRect(),
+                                currentFigure.GetEncompassingRect()) < autoGroupPolylinesXLimit;
+                            autoGroupPolylineYLimitMet = DGeom.DistYBetweenRects(autoGroupPolylineFigure.GetEncompassingRect(),
+                                currentFigure.GetEncompassingRect()) < autoGroupPolylinesYLimit;
+                            if (autoGroupPolylineXLimitMet && autoGroupPolylineYLimitMet)
+                            {
+                                if (autoGroupPolylineFigure is GroupFigure)
+                                {
+                                    figureHandler.Remove(currentFigure);
+                                    IChildFigureable cf = (IChildFigureable)autoGroupPolylineFigure;
+                                    cf.ChildFigures.Add(currentFigure);
+                                    cf.ChildFigures = cf.ChildFigures;
+                                }
+                                else if (autoGroupPolylineFigure is IPolyline)
+                                {
+                                    figureHandler.Remove(autoGroupPolylineFigure);
+                                    figureHandler.Remove(currentFigure);
+                                    GroupFigure gf = new GroupFigure(new List<Figure>(new Figure[] { autoGroupPolylineFigure, currentFigure }));
+                                    figureHandler.Add(gf, false);
+                                    autoGroupPolylineFigure = gf;
+                                }
+                            }
+                            else
+                                autoGroupPolylineFigure = currentFigure;
+                        }
+                    }
+                    autoGroupPolylineStart = Environment.TickCount;
                 }
-                autoGroupPolylineStart = Environment.TickCount;
             }
             // commit to undo/redo
             CommitOrRollback(false);
@@ -1560,6 +1558,15 @@ namespace DDraw
                     return null;
                 case (int)DHsmSignals.MouseUp:
                     DoDrawingLineMouseUp(((QMouseEvent)qevent).Dv, ((QMouseEvent)qevent).Button, ((QMouseEvent)qevent).Pt);
+                    return null;
+                case (int)DHsmSignals.KeyDown:
+                    if (((QKeyEvent)qevent).Key.Ctrl && 
+                        currentFigure is IRepositionPoint && 
+                        currentFigure is IPolyline)
+                    {
+                        ((IPolyline)currentFigure).AddPoint(((IPolyline)currentFigure).LastPoint);
+                        ((QKeyEvent)qevent).Dv.Update(currentFigure.GetSelectRect());
+                    };
                     return null;
             }
             return this.DrawLine;

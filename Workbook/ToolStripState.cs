@@ -219,7 +219,7 @@ namespace Workbook
             btnRATriangle.Checked = de.HsmCurrentFigClassIs(typeof(RightAngleTriangleFigure));
             btnDiamond.Checked = de.HsmCurrentFigClassIs(typeof(DiamondFigure));
             btnPentagon.Checked = de.HsmCurrentFigClassIs(typeof(PentagonFigure));
-            btnLine.Checked = de.HsmCurrentFigClassIs(typeof(LineFigure));
+            btnLine.Checked = de.HsmCurrentFigClassIs(typeof(MultiLineFigure));
             btnEraser.Checked = state == DHsmState.Eraser;
             // update dap
             foreach (ToolStripButton btn in Items)
@@ -282,7 +282,7 @@ namespace Workbook
             else if (btn == btnPentagon)
                 return typeof(PentagonFigure);
             else if (btn == btnLine)
-                return typeof(LineFigure);
+                return typeof(MultiLineFigure);
             return null;
         }
 
@@ -331,7 +331,7 @@ namespace Workbook
                 else if (sender == btnPentagon)
                     figureClass = typeof(PentagonFigure);
                 else if (sender == btnLine)
-                    figureClass = typeof(LineFigure);
+                    figureClass = typeof(MultiLineFigure);
                 else
                     figureClass = null;
                 UpdateToFigureClass();
@@ -369,7 +369,7 @@ namespace Workbook
             btnRATriangle.Checked = typeof(RightAngleTriangleFigure).Equals(figureClass);
             btnDiamond.Checked = typeof(DiamondFigure).Equals(figureClass);
             btnPentagon.Checked = typeof(PentagonFigure).Equals(figureClass);
-            btnLine.Checked = typeof(LineFigure).Equals(figureClass);
+            btnLine.Checked = typeof(MultiLineFigure).Equals(figureClass);
         }
 
         void DoFigureClassChanged()
