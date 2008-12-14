@@ -169,29 +169,19 @@ namespace Workbook
             de.ClearPage();
             Figure f = (Figure)Activator.CreateInstance(figureClass);
             dap.ApplyPropertiesToFigure(f);
-            if (f is PolylineFigure || f is LineFigure)
+            if (f is PolylineFigure)
             {
-                DPoint pt1 = new DPoint(viewerSize.X / 4.0, viewerSize.Y / 4.0);
-                DPoint pt2 = new DPoint(viewerSize.X * 3 / 4.0, viewerSize.Y * 3 / 4.0);
-                if (f is PolylineFigure)
-                {
-                    DPoints pts = new DPoints();
-                    pts.Add(pt1);
-                    pts.Add(new DPoint(viewerSize.X * 1.25 / 4.0, viewerSize.Y * 1.10 / 4.0));
-                    pts.Add(new DPoint(viewerSize.X * 1.50 / 4.0, viewerSize.Y * 1.25 / 4.0));
-                    pts.Add(new DPoint(viewerSize.X * 1.75 / 4.0, viewerSize.Y * 1.50 / 4.0));
-                    pts.Add(new DPoint(viewerSize.X * 2.00 / 4.0, viewerSize.Y * 1.75 / 4.0));
-                    pts.Add(new DPoint(viewerSize.X * 2.25 / 4.0, viewerSize.Y * 2.00 / 4.0));
-                    pts.Add(new DPoint(viewerSize.X * 2.50 / 4.0, viewerSize.Y * 2.25 / 4.0));
-                    pts.Add(new DPoint(viewerSize.X * 2.75 / 4.0, viewerSize.Y * 2.50 / 4.0));
-                    pts.Add(pt2);
-                    ((PolylineFigure)f).Points = pts;
-                }
-                else if (f is LineFigure)
-                {
-                    ((LineFigure)f).Pt1 = pt1;
-                    ((LineFigure)f).Pt2 = pt2;
-                }
+                DPoints pts = new DPoints();
+                pts.Add(new DPoint(viewerSize.X / 4.0, viewerSize.Y / 4.0));
+                pts.Add(new DPoint(viewerSize.X * 1.25 / 4.0, viewerSize.Y * 1.10 / 4.0));
+                pts.Add(new DPoint(viewerSize.X * 1.50 / 4.0, viewerSize.Y * 1.25 / 4.0));
+                pts.Add(new DPoint(viewerSize.X * 1.75 / 4.0, viewerSize.Y * 1.50 / 4.0));
+                pts.Add(new DPoint(viewerSize.X * 2.00 / 4.0, viewerSize.Y * 1.75 / 4.0));
+                pts.Add(new DPoint(viewerSize.X * 2.25 / 4.0, viewerSize.Y * 2.00 / 4.0));
+                pts.Add(new DPoint(viewerSize.X * 2.50 / 4.0, viewerSize.Y * 2.25 / 4.0));
+                pts.Add(new DPoint(viewerSize.X * 2.75 / 4.0, viewerSize.Y * 2.50 / 4.0));
+                pts.Add(new DPoint(viewerSize.X * 3 / 4.0, viewerSize.Y * 3 / 4.0));
+                ((PolylineFigure)f).Points = pts;
             }
             else if (f is ITextable)
                 ((ITextable)f).Text = "Aa";

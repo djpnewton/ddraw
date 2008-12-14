@@ -58,9 +58,6 @@ namespace DDraw
         const string WRAPTHRESHOLD_ATTR = "WrapThreshold";
         const string WRAPFONTSIZE_ATTR = "WrapFontSize";
         const string CHILDFIGURES_ELE = "ChildFigures";
-        const string LINESEGMENT_ELE = "LineSegment";
-        const string PT1_ATTR = "Pt1";
-        const string PT2_ATTR = "Pt2";
         const string POLYLINE_ELE = "Polyline";
         const string MARKER_ELE = "Marker";
         const string STARTMARKER_ATTR = "StartMarker";
@@ -179,14 +176,6 @@ namespace DDraw
                 wr.WriteStartElement(CHILDFIGURES_ELE);
                 foreach (Figure childFigure in ((IChildFigureable)f).ChildFigures)
                     FormatToXml(childFigure, wr, images);
-                wr.WriteEndElement();
-            }
-            if (f is ILineSegment)
-            {
-                wr.WriteStartElement(LINESEGMENT_ELE);
-                ILineSegment lf = (ILineSegment)f;
-                wr.WriteAttributeString(PT1_ATTR, DPoint.FormatToString(lf.Pt1));
-                wr.WriteAttributeString(PT2_ATTR, DPoint.FormatToString(lf.Pt2));
                 wr.WriteEndElement();
             }
             if (f is IPolyline)
@@ -559,19 +548,6 @@ namespace DDraw
             c.ChildFigures = figs;
         }
 
-        static void ApplyLine(XmlReader re, ILineSegment ls)
-        {
-            re.MoveToContent();
-            for (int i = 0; i < re.AttributeCount; i++)
-            {
-                re.MoveToAttribute(i);
-                if (re.LocalName == PT1_ATTR)
-                    ls.Pt1 = DPoint.FromString(re.Value);
-                else if (re.LocalName == PT2_ATTR)
-                    ls.Pt2 = DPoint.FromString(re.Value);
-            }
-        }
-
         static void ApplyPolyline(XmlReader re, IPolyline pl)
         {
             re.MoveToContent();
@@ -648,8 +624,6 @@ namespace DDraw
                             ApplyText(re.ReadSubtree(), (ITextable)result);
                         else if (re.LocalName == CHILDFIGURES_ELE && result is IChildFigureable)
                             ApplyChildren(re.ReadSubtree(), (IChildFigureable)result);
-                        else if (re.LocalName == LINESEGMENT_ELE && result is ILineSegment)
-                            ApplyLine(re.ReadSubtree(), (ILineSegment)result);
                         else if (re.LocalName == POLYLINE_ELE && result is IPolyline)
                             ApplyPolyline(re.ReadSubtree(), (IPolyline)result);
                         else if (re.LocalName == MARKER_ELE && result is IMarkable)
@@ -684,7 +658,7 @@ namespace DDraw
             // update old LineFigure type to MultiLineFigure
             nodes = xmldoc.SelectNodes("/FigureList/Figure[@Type='DDraw.LineFigure']");
             foreach (XmlNode node in nodes)
-                UpdateOldLineFigure(xmldoc, node, typeof(MultiLineFigure).ToString());
+                UpdateOldLineFigure(xmldoc, node, typeof(LineFigure2).ToString());
             return xmldoc.OuterXml;
         }
 
@@ -715,11 +689,11 @@ namespace DDraw
         {
             if (newType != null)
                 node.Attributes["Type"].Value = newType;
-            XmlNode lineSegmentNode = node.SelectSingleNode(LINESEGMENT_ELE);
+            XmlNode lineSegmentNode = node.SelectSingleNode("LineSegment");
             if (lineSegmentNode != null)
             {
-                XmlAttribute pt1 = lineSegmentNode.Attributes[PT1_ATTR];
-                XmlAttribute pt2 = lineSegmentNode.Attributes[PT2_ATTR];
+                XmlAttribute pt1 = lineSegmentNode.Attributes["Pt1"];
+                XmlAttribute pt2 = lineSegmentNode.Attributes["Pt2"];
                 if (pt1 != null && pt2 != null)
                 {
                     XmlElement pointsNode = xmldoc.CreateElement(POLYLINE_ELE);

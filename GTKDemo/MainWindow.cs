@@ -85,9 +85,9 @@ namespace GTKDemo
             ((TriangleFigure)f).StrokeWidth = 10;
             de.AddFigure(f);
             // line figure
-            f = new LineFigure(new DPoint(100, 100), new DPoint(200, 200));
-            ((LineFigure)f).StrokeStyle = DStrokeStyle.DashDot;
-            ((LineFigure)f).StrokeWidth = 5;
+            f = new LineFigure2(new DPoint(100, 100), new DPoint(200, 200));
+            ((LineFigure2)f).StrokeStyle = DStrokeStyle.DashDot;
+            ((LineFigure2)f).StrokeWidth = 5;
             de.AddFigure(f);
             de.UndoRedo.Commit();
             de.UndoRedo.ClearHistory();

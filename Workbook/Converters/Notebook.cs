@@ -291,8 +291,8 @@ namespace Workbook.Converters
                     e2.X2 = new SvgLength((string)e2.Attributes["x2"]);
                     e2.Y2 = new SvgLength((string)e2.Attributes["y2"]);
 
-                    f = new LineFigure(new DPoint(e2.X1.Value, e2.Y1.Value),
-                        new DPoint(e2.X2.Value, e2.Y2.Value));
+                    f = new LineFigure2(new DPoint(e2.X1.Value, e2.Y1.Value),
+                                            new DPoint(e2.X2.Value, e2.Y2.Value));
                 }
             }
             else if (e is SvgGroupElement)

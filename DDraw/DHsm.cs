@@ -1391,12 +1391,7 @@ namespace DDraw
                 BoundPtToPage(pt);
                 // create line figure
                 currentFigure = (Figure)Activator.CreateInstance(currentFigureClass);
-                if (currentFigure is ILineSegment)
-                {
-                    ((ILineSegment)currentFigure).Pt1 = pt;
-                    ((ILineSegment)currentFigure).Pt2 = pt;
-                }
-                else if (currentFigure is IPolyline)
+                if (currentFigure is IPolyline)
                 {
                     ((IPolyline)currentFigure).AddPoint(pt);
                     if (!(currentFigure is IRepositionPoint))
@@ -1460,20 +1455,7 @@ namespace DDraw
             // bound pt to canvas
             BoundPtToPage(pt);
             // add point
-            if (figureSnapAngleMode == DHsmSnapAngleMode.Always && currentFigure is ILineSegment)
-            {
-                ILineSegment ls = ((ILineSegment)currentFigure);
-                // slide point along snap angle
-                double newAngle = DGeom.AngleBetweenPoints(pt, ls.Pt1);
-                double r = newAngle % figureSnapAngle;
-                if (r < figureSnapAngle / 2)
-                    pt = DGeom.RotatePoint(pt, ls.Pt1, -r);
-                else
-                    pt = DGeom.RotatePoint(pt, ls.Pt1, figureSnapAngle - r);
-            }
-            if (currentFigure is ILineSegment)
-                ((ILineSegment)currentFigure).Pt2 = pt;
-            else if (currentFigure is IPolyline)
+            if (currentFigure is IPolyline)
             {
                 if (!(currentFigure is IRepositionPoint))
                     ((IPolyline)currentFigure).AddPoint(pt);
