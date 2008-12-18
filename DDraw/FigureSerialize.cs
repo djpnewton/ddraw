@@ -652,11 +652,11 @@ namespace DDraw
             foreach (XmlNode node in nodes)
                 UpdateOldIImage(xmldoc, node, null);
             // update old ImageFigure type to BitmapFigure
-            nodes = xmldoc.SelectNodes("/FigureList/Figure[@Type='DDraw.ImageFigure']");
+            nodes = xmldoc.SelectNodes("//Figure[@Type='DDraw.ImageFigure']");
             foreach (XmlNode node in nodes)
                 UpdateOldIImage(xmldoc, node, typeof(BitmapFigure).ToString());
             // update old LineFigure type to MultiLineFigure
-            nodes = xmldoc.SelectNodes("/FigureList/Figure[@Type='DDraw.LineFigure']");
+            nodes = xmldoc.SelectNodes("//Figure[@Type='DDraw.LineFigure']");
             foreach (XmlNode node in nodes)
                 UpdateOldLineFigure(xmldoc, node, typeof(LineFigure2).ToString());
             return xmldoc.OuterXml;
