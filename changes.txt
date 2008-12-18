@@ -24,6 +24,7 @@ Workbook 1.1
   - added "Ctrl" hotkey to disable auto aspect ratio locking
   - added boolean Workbook.ini option AutoLockAspectRatio
   - basic grid/snap-to-grid
+  - LineFigure2 (upgraded from LineFigure), can have more then two editable points
 
   bug fixes
   - stop application closing aberrantly when screen annotation form is closed
